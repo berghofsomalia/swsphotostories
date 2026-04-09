@@ -1,0 +1,823 @@
+{
+  "stories": [
+    {
+      "id": "BD01",
+      "district": {
+        "slug": "baidoa",
+        "en": "Baidoa",
+        "so": "Baydhabo"
+      },
+      "cluster": {
+        "en": "Bay cluster",
+        "so": "Kutlada Bay"
+      },
+      "location": "Low-lying settlement",
+      "date": "2025-01-14",
+      "storyteller": "Hodan",
+      "primaryTheme": {
+        "slug": "flooding",
+        "en": "Flooding",
+        "so": "Fatahaad"
+      },
+      "secondaryThemes": [
+        {
+          "slug": "displacement",
+          "en": "Displacement",
+          "so": "Barakac"
+        },
+        {
+          "slug": "recovery",
+          "en": "Recovery",
+          "so": "Soo kabasho"
+        }
+      ],
+      "actors": [
+        "Children",
+        "Women/Girls",
+        "Men/Boys"
+      ],
+      "summary": {
+        "en": "Families describe how floodwater changed movement, work, and daily routines.",
+        "so": "Qoysas ka warramaya sida fatahaaddu u beddeshay socodka, shaqada, iyo nolol maalmeedka."
+      },
+      "story": {
+        "en": "Hodan describes Low-lying settlement in Baidoa as a place where flooding is felt through ordinary routines rather than dramatic announcements. Families describe how floodwater changed movement, work, and daily routines. The story begins in a documentary register, but it quickly loosens into a testing voice filled with soft static, half-notes, and deliberately unimportant details: tin-tin drift, market hum, side-lane murmur, dry-step shuffle, and a long ribbon of maybe-maybe language.\n\nThe text keeps circling back to bodies, buckets, weather, queues, edges, and the small changes that turn one day away from the last. Then it deliberately wanders into useful nonsense: lora lora, bendi-bendi, hushline, salt-noise, para-step, water-glint, coast-thread, dust-murmur, and field-echo. That gibberish is here on purpose so the page can hold longer reading blocks, test scrolling behaviour, and show how the typography behaves when the story becomes denser than the summary card below.\n\nEven in this inflated version, the main cues remain readable. Flooding sits in front, while Displacement, Recovery stay nearby as secondary currents. The people tags still matter, yet the prose avoids becoming technical. Instead it drifts through spoken fragments, observational loops, and little clusters of invented sound: nala-nala, brimstep, open hush, weather-click, shade-signal, road-gloss, and a few extra lines of pleasant nonsense to stretch the layout, settle the spacing, and keep the story field hovering at roughly two hundred and fifty words overall.",
+        "so": "Hodan wuxuu ka warramayaa Low-lying settlement ee Baydhabo sidii meel uu fatahaad uga muuqdo hawlo maalinle ah halkii uu ka ahaan lahaa dhacdo keliya oo weyn. Qoysas ka warramaya sida fatahaaddu u beddeshay socodka, shaqada, iyo nolol maalmeedka. Qoraalku wuxuu ku bilaabmaa cod deggan oo sharaxaya muuqaalka, dabadeedna si ula kac ah ayuu ugu leexdaa hadal tijaabo ah oo ay ku jiraan erayo buuxin ah iyo laxan yar oo micne yar leh: bala-bala, socod-hami, hadh-hadh, guux-fudud, iyo weedho dheer oo ah laga-yaabee-laga-yaabee.\n\nQoraalku mar kasta wuxuu ku soo laabanayaa jirka, biyo-qaadka, safka, cimilada, iyo geesaha yar ee kala beddela maalmaha. Dabadeed si ula kac ah ayuu u geliyaa gibberish waxtar leh: luli-luli, marooq-marooq, hadal-dabayl, socod-dhac, biyo-birlab, ciid-hadal, iyo guux-madhan. Nacasnimadan yar ayaa halkan loogu daray si boggu u qaado qoraal dheer, loo tijaabiyo rogista, loona arko sida faruhu u dhaqmaan marka sheekadu ka weynaato soo koobista ka muuqata kaarka gallery-ga.\n\nXataa noocan la buunbuuniyey, tiirarka ugu waaweyn way muuqdaan. Fatahaad ayaa safka hore joogta, halka Barakac, Soo kabasho ay u socdaan sida mawduucyo raaca. Calaamadaha dadka wali way shaqaynayaan, balse tuducyadu ma noqonayaan kuwo farsamo kaliya ah. Halkii, waxay ku qulqulayaan hadal qaybo-qaybo ah, wareegyo daawasho leh, iyo codad la sameeyey oo sida nala-nala, hummaag-jid, qorrax-qabow, iyo hadh-socod u shaqeeya, si dhererku u gaadho qiyaastii laba boqol iyo konton eray oo ku habboon tijaabada qaabeynta."
+      },
+      "reflection": {
+        "en": "This reflection reads the story first through flooding, because that is the clearest thread holding the scene together in Baidoa. The account remains grounded in ordinary actions rather than large declarations, and that helps the issue stay close to the reader. Hodan keeps returning to paths, pauses, repeated tasks, and tiny shifts in pace, which makes the setting feel lived rather than summarised. For layout testing, the paragraph also carries a little useful nonsense: tiri-tiri, hushline, side-glow, market-drift, and coast-thread, all inserted simply to give the text more weight on the page.\n\nThe secondary themes, especially Displacement and Recovery, widen the frame without taking over from the main one. They sit beside the primary theme like quieter signals, helping the story feel layered rather than boxed into one label. This is also where the prototype benefits from extra copy. A longer paragraph reveals whether spacing, margins, and line length still feel calm when the reading block grows. So the text wanders deliberately through soft filler and half-words: mira-mira, bendi-bendi, dust-echo, river-note, para-step, and lantern-noise, all there to make the section breathe more densely.\n\nThe people layer matters as well. Children, Women/Girls, Men/Boys appear as a human guide to who is visible in the account, but not as the only way of understanding it. That balance is important for browsing. The story should still feel local, textured, and particular, while the interface quietly supports comparison across places and themes. Here the reflection keeps that balance by staying plain, steady, and editorial. Then, for testing, it adds a few drifting sounds of language again: moro-moro, light-silt, market-flare, small-turn, road-whisper, and rain-edge.\n\nAs a whole, this section works like a soft bridge between the longer story above and the filtered gallery below. It tells the reader why the story connects to others without becoming overly academic or technical. It also gives the layout a heavier reading state so typography, hierarchy, and rhythm can be judged properly in both dark and light themes. Nothing in the added gibberish changes meaning, but it does help the design prove itself under longer editorial copy, longer scrolls, and denser visual pacing.",
+        "so": "Milicsigan waxa uu sheekada marka hore ka akhriyaa fatahaad, sababtoo ah taas ayaa ah xadhigga ugu muuqda ee isku haya goobta ka muuqata Baydhabo. Qoraalku waxa uu ku dheggan yahay falal maalinle ah halkii uu ka noqon lahaa hadal culus, taasina waxa ay akhriska ka dhigaysaa mid dhow. Hodan marar badan ayuu ku noqdaa waddooyinka, sugitaanka, hawlaha soo noqnoqda, iyo isbeddellada yar yar ee xawaaraha, si goobtu u ekaato mid la nool yahay. Tijaabadan awgeed waxa ku jira erayo aan macne lahayn sida tiri-tiri, hushline, side-glow, iyo coast-thread.\n\nMawduucyada kale, gaar ahaan Barakac iyo Soo kabasho, waxa ay ballaariyaan fahamka iyaga oo aan meesha ka saarayn mawduuca koowaad. Waxay ag joogsadaan sida calaamado deggan oo sheekada ka dhigaya mid lakabyo leh. Halkaas ayaana qoraalka dheer faa’iido leeyahay, sababtoo ah waxa uu muujinayaa in kala fogaanshaha, margin-ka, iyo dhererka sadaradu weli deggan yihiin marka qoraalku bato. Sidaas darteed waxa si ula kac ah u dhex socda ereyo tijaabo ah sida mira-mira, bendi-bendi, dust-echo, river-note, para-step, iyo lantern-noise.\n\nLakabka dadka isaguna waa muhiim. Carruur, Haween/Gabdho, Rag/Wiilal waxay muuqdaan sida tilmaam bani’aadamnimo oo tusaya cidda ugu badan ee sheekada ku jirta, balse ma noqdaan qaabka keliya ee lagu fahmo sheekada. Tani waxay muhiim u tahay marka la daalacanayo sheekooyin kala duwan. Sheekadu waa inay ahaataa mid deegaan leh, qoto dheer, oo gaar ah, halka is-dhexgalkuna si aamusnaan ah u taageerayo isbarbardhigga. Halkan qoraalku waxa uu ku sii daraa erayo sabbaynaya sida moro-moro, light-silt, market-flare, small-turn, road-whisper, iyo rain-edge.\n\nGuud ahaan, qaybta milicsigu waxay u shaqaysaa sidii buundo jilicsan oo u dhexaysa sheekada sare iyo gallery-ga la shaandheeyo ee hoose. Waxay u sheegaysaa akhristaha sababta sheekadani ugu xidhan tahay kuwo kale iyada oo aan aad u noqon mid culus ama farsamo badan. Waxa kale oo ay siisaa naqshadda xaalad akhris oo ka culus si xarfaha, kala sarreynta, iyo garaaca guud loo eego si fiican, labadaba muuqaalka madow iyo kan iftiinka. Gibberish-ka lagu daray ma beddelayo macnaha, balse waxa uu ka caawiyaa naqshadda inay u adkaysato qoraal dheer iyo socod dheer oo tijaabo ah."
+      },
+      "images": [
+        "images/leads/BD01.jpg",
+        "images/BD01/1.jpg",
+        "images/BD01/2.jpg",
+        "images/BD01/3.jpg",
+        "images/BD01/4.jpg"
+      ]
+    },
+    {
+      "id": "HD01",
+      "district": {
+        "slug": "hudur",
+        "en": "Hudur",
+        "so": "Xudur"
+      },
+      "cluster": {
+        "en": "Bakool cluster",
+        "so": "Kutlada Bakool"
+      },
+      "location": "Pastoral route",
+      "date": "2025-01-18",
+      "storyteller": "Asha",
+      "primaryTheme": {
+        "slug": "drought",
+        "en": "Drought",
+        "so": "Abaar"
+      },
+      "secondaryThemes": [
+        {
+          "slug": "mobility",
+          "en": "Mobility",
+          "so": "Socdaal"
+        },
+        {
+          "slug": "water-access",
+          "en": "Water access",
+          "so": "Helitaanka biyo"
+        }
+      ],
+      "actors": [
+        "Women/Girls",
+        "Children"
+      ],
+      "summary": {
+        "en": "Longer journeys for water and pasture have become part of one family’s daily story.",
+        "so": "Safarro sii dheeraanaya oo loogu raadinayo biyo iyo daaq ayaa noqday qayb ka mid ah sheekada qoyska."
+      },
+      "story": {
+        "en": "Asha describes Pastoral route in Hudur as a place where drought is felt through ordinary routines rather than dramatic announcements. Longer journeys for water and pasture have become part of one family’s daily story. The story begins in a documentary register, but it quickly loosens into a testing voice filled with soft static, half-notes, and deliberately unimportant details: tin-tin drift, market hum, side-lane murmur, dry-step shuffle, and a long ribbon of maybe-maybe language.\n\nThe text keeps circling back to bodies, buckets, weather, queues, edges, and the small changes that turn one day away from the last. Then it deliberately wanders into useful nonsense: lora lora, bendi-bendi, hushline, salt-noise, para-step, water-glint, coast-thread, dust-murmur, and field-echo. That gibberish is here on purpose so the page can hold longer reading blocks, test scrolling behaviour, and show how the typography behaves when the story becomes denser than the summary card below.\n\nEven in this inflated version, the main cues remain readable. Drought sits in front, while Mobility, Water access stay nearby as secondary currents. The people tags still matter, yet the prose avoids becoming technical. Instead it drifts through spoken fragments, observational loops, and little clusters of invented sound: nala-nala, brimstep, open hush, weather-click, shade-signal, road-gloss, and a few extra lines of pleasant nonsense to stretch the layout, settle the spacing, and keep the story field hovering at roughly two hundred and fifty words overall.",
+        "so": "Asha wuxuu ka warramayaa Pastoral route ee Xudur sidii meel uu abaar uga muuqdo hawlo maalinle ah halkii uu ka ahaan lahaa dhacdo keliya oo weyn. Safarro sii dheeraanaya oo loogu raadinayo biyo iyo daaq ayaa noqday qayb ka mid ah sheekada qoyska. Qoraalku wuxuu ku bilaabmaa cod deggan oo sharaxaya muuqaalka, dabadeedna si ula kac ah ayuu ugu leexdaa hadal tijaabo ah oo ay ku jiraan erayo buuxin ah iyo laxan yar oo micne yar leh: bala-bala, socod-hami, hadh-hadh, guux-fudud, iyo weedho dheer oo ah laga-yaabee-laga-yaabee.\n\nQoraalku mar kasta wuxuu ku soo laabanayaa jirka, biyo-qaadka, safka, cimilada, iyo geesaha yar ee kala beddela maalmaha. Dabadeed si ula kac ah ayuu u geliyaa gibberish waxtar leh: luli-luli, marooq-marooq, hadal-dabayl, socod-dhac, biyo-birlab, ciid-hadal, iyo guux-madhan. Nacasnimadan yar ayaa halkan loogu daray si boggu u qaado qoraal dheer, loo tijaabiyo rogista, loona arko sida faruhu u dhaqmaan marka sheekadu ka weynaato soo koobista ka muuqata kaarka gallery-ga.\n\nXataa noocan la buunbuuniyey, tiirarka ugu waaweyn way muuqdaan. Abaar ayaa safka hore joogta, halka Socdaal, Helitaanka biyo ay u socdaan sida mawduucyo raaca. Calaamadaha dadka wali way shaqaynayaan, balse tuducyadu ma noqonayaan kuwo farsamo kaliya ah. Halkii, waxay ku qulqulayaan hadal qaybo-qaybo ah, wareegyo daawasho leh, iyo codad la sameeyey oo sida nala-nala, hummaag-jid, qorrax-qabow, iyo hadh-socod u shaqeeya, si dhererku u gaadho qiyaastii laba boqol iyo konton eray oo ku habboon tijaabada qaabeynta."
+      },
+      "reflection": {
+        "en": "This reflection reads the story first through drought, because that is the clearest thread holding the scene together in Hudur. The account remains grounded in ordinary actions rather than large declarations, and that helps the issue stay close to the reader. Asha keeps returning to paths, pauses, repeated tasks, and tiny shifts in pace, which makes the setting feel lived rather than summarised. For layout testing, the paragraph also carries a little useful nonsense: tiri-tiri, hushline, side-glow, market-drift, and coast-thread, all inserted simply to give the text more weight on the page.\n\nThe secondary themes, especially Mobility and Water access, widen the frame without taking over from the main one. They sit beside the primary theme like quieter signals, helping the story feel layered rather than boxed into one label. This is also where the prototype benefits from extra copy. A longer paragraph reveals whether spacing, margins, and line length still feel calm when the reading block grows. So the text wanders deliberately through soft filler and half-words: mira-mira, bendi-bendi, dust-echo, river-note, para-step, and lantern-noise, all there to make the section breathe more densely.\n\nThe people layer matters as well. Women/Girls, Children appear as a human guide to who is visible in the account, but not as the only way of understanding it. That balance is important for browsing. The story should still feel local, textured, and particular, while the interface quietly supports comparison across places and themes. Here the reflection keeps that balance by staying plain, steady, and editorial. Then, for testing, it adds a few drifting sounds of language again: moro-moro, light-silt, market-flare, small-turn, road-whisper, and rain-edge.\n\nAs a whole, this section works like a soft bridge between the longer story above and the filtered gallery below. It tells the reader why the story connects to others without becoming overly academic or technical. It also gives the layout a heavier reading state so typography, hierarchy, and rhythm can be judged properly in both dark and light themes. Nothing in the added gibberish changes meaning, but it does help the design prove itself under longer editorial copy, longer scrolls, and denser visual pacing.",
+        "so": "Milicsigan waxa uu sheekada marka hore ka akhriyaa abaar, sababtoo ah taas ayaa ah xadhigga ugu muuqda ee isku haya goobta ka muuqata Xudur. Qoraalku waxa uu ku dheggan yahay falal maalinle ah halkii uu ka noqon lahaa hadal culus, taasina waxa ay akhriska ka dhigaysaa mid dhow. Asha marar badan ayuu ku noqdaa waddooyinka, sugitaanka, hawlaha soo noqnoqda, iyo isbeddellada yar yar ee xawaaraha, si goobtu u ekaato mid la nool yahay. Tijaabadan awgeed waxa ku jira erayo aan macne lahayn sida tiri-tiri, hushline, side-glow, iyo coast-thread.\n\nMawduucyada kale, gaar ahaan Socdaal iyo Helitaanka biyo, waxa ay ballaariyaan fahamka iyaga oo aan meesha ka saarayn mawduuca koowaad. Waxay ag joogsadaan sida calaamado deggan oo sheekada ka dhigaya mid lakabyo leh. Halkaas ayaana qoraalka dheer faa’iido leeyahay, sababtoo ah waxa uu muujinayaa in kala fogaanshaha, margin-ka, iyo dhererka sadaradu weli deggan yihiin marka qoraalku bato. Sidaas darteed waxa si ula kac ah u dhex socda ereyo tijaabo ah sida mira-mira, bendi-bendi, dust-echo, river-note, para-step, iyo lantern-noise.\n\nLakabka dadka isaguna waa muhiim. Haween/Gabdho, Carruur waxay muuqdaan sida tilmaam bani’aadamnimo oo tusaya cidda ugu badan ee sheekada ku jirta, balse ma noqdaan qaabka keliya ee lagu fahmo sheekada. Tani waxay muhiim u tahay marka la daalacanayo sheekooyin kala duwan. Sheekadu waa inay ahaataa mid deegaan leh, qoto dheer, oo gaar ah, halka is-dhexgalkuna si aamusnaan ah u taageerayo isbarbardhigga. Halkan qoraalku waxa uu ku sii daraa erayo sabbaynaya sida moro-moro, light-silt, market-flare, small-turn, road-whisper, iyo rain-edge.\n\nGuud ahaan, qaybta milicsigu waxay u shaqaysaa sidii buundo jilicsan oo u dhexaysa sheekada sare iyo gallery-ga la shaandheeyo ee hoose. Waxay u sheegaysaa akhristaha sababta sheekadani ugu xidhan tahay kuwo kale iyada oo aan aad u noqon mid culus ama farsamo badan. Waxa kale oo ay siisaa naqshadda xaalad akhris oo ka culus si xarfaha, kala sarreynta, iyo garaaca guud loo eego si fiican, labadaba muuqaalka madow iyo kan iftiinka. Gibberish-ka lagu daray ma beddelayo macnaha, balse waxa uu ka caawiyaa naqshadda inay u adkaysato qoraal dheer iyo socod dheer oo tijaabo ah."
+      },
+      "images": [
+        "images/leads/HD01.jpg",
+        "images/HD01/1.jpg",
+        "images/HD01/2.jpg",
+        "images/HD01/3.jpg"
+      ]
+    },
+    {
+      "id": "BW01",
+      "district": {
+        "slug": "barawe",
+        "en": "Barawe",
+        "so": "Barawy"
+      },
+      "cluster": {
+        "en": "Coastal cluster",
+        "so": "Kutlada xeebta"
+      },
+      "location": "Shared courtyard",
+      "date": "2025-01-22",
+      "storyteller": "Sahra",
+      "primaryTheme": {
+        "slug": "care-work",
+        "en": "Care work",
+        "so": "Daryeel"
+      },
+      "secondaryThemes": [
+        {
+          "slug": "shared-space",
+          "en": "Shared space",
+          "so": "Meel wadaag"
+        }
+      ],
+      "actors": [
+        "Women/Girls",
+        "Children"
+      ],
+      "summary": {
+        "en": "A shared courtyard becomes a place where care, negotiation, and repeated repair are visible.",
+        "so": "Barxad la wadaago ayaa noqotay meel lagu arko daryeel, wada-noolaansho, iyo dayactir joogto ah."
+      },
+      "story": {
+        "en": "Sahra describes Shared courtyard in Barawe as a place where care work is felt through ordinary routines rather than dramatic announcements. A shared courtyard becomes a place where care, negotiation, and repeated repair are visible. The story begins in a documentary register, but it quickly loosens into a testing voice filled with soft static, half-notes, and deliberately unimportant details: tin-tin drift, market hum, side-lane murmur, dry-step shuffle, and a long ribbon of maybe-maybe language.\n\nThe text keeps circling back to bodies, buckets, weather, queues, edges, and the small changes that turn one day away from the last. Then it deliberately wanders into useful nonsense: lora lora, bendi-bendi, hushline, salt-noise, para-step, water-glint, coast-thread, dust-murmur, and field-echo. That gibberish is here on purpose so the page can hold longer reading blocks, test scrolling behaviour, and show how the typography behaves when the story becomes denser than the summary card below.\n\nEven in this inflated version, the main cues remain readable. Care work sits in front, while Shared space stay nearby as secondary currents. The people tags still matter, yet the prose avoids becoming technical. Instead it drifts through spoken fragments, observational loops, and little clusters of invented sound: nala-nala, brimstep, open hush, weather-click, shade-signal, road-gloss, and a few extra lines of pleasant nonsense to stretch the layout, settle the spacing, and keep the story field hovering at roughly two hundred and fifty words overall.",
+        "so": "Sahra wuxuu ka warramayaa Shared courtyard ee Barawy sidii meel uu daryeel uga muuqdo hawlo maalinle ah halkii uu ka ahaan lahaa dhacdo keliya oo weyn. Barxad la wadaago ayaa noqotay meel lagu arko daryeel, wada-noolaansho, iyo dayactir joogto ah. Qoraalku wuxuu ku bilaabmaa cod deggan oo sharaxaya muuqaalka, dabadeedna si ula kac ah ayuu ugu leexdaa hadal tijaabo ah oo ay ku jiraan erayo buuxin ah iyo laxan yar oo micne yar leh: bala-bala, socod-hami, hadh-hadh, guux-fudud, iyo weedho dheer oo ah laga-yaabee-laga-yaabee.\n\nQoraalku mar kasta wuxuu ku soo laabanayaa jirka, biyo-qaadka, safka, cimilada, iyo geesaha yar ee kala beddela maalmaha. Dabadeed si ula kac ah ayuu u geliyaa gibberish waxtar leh: luli-luli, marooq-marooq, hadal-dabayl, socod-dhac, biyo-birlab, ciid-hadal, iyo guux-madhan. Nacasnimadan yar ayaa halkan loogu daray si boggu u qaado qoraal dheer, loo tijaabiyo rogista, loona arko sida faruhu u dhaqmaan marka sheekadu ka weynaato soo koobista ka muuqata kaarka gallery-ga.\n\nXataa noocan la buunbuuniyey, tiirarka ugu waaweyn way muuqdaan. Daryeel ayaa safka hore joogta, halka Meel wadaag ay u socdaan sida mawduucyo raaca. Calaamadaha dadka wali way shaqaynayaan, balse tuducyadu ma noqonayaan kuwo farsamo kaliya ah. Halkii, waxay ku qulqulayaan hadal qaybo-qaybo ah, wareegyo daawasho leh, iyo codad la sameeyey oo sida nala-nala, hummaag-jid, qorrax-qabow, iyo hadh-socod u shaqeeya, si dhererku u gaadho qiyaastii laba boqol iyo konton eray oo ku habboon tijaabada qaabeynta."
+      },
+      "reflection": {
+        "en": "This reflection reads the story first through care work, because that is the clearest thread holding the scene together in Barawe. The account remains grounded in ordinary actions rather than large declarations, and that helps the issue stay close to the reader. Sahra keeps returning to paths, pauses, repeated tasks, and tiny shifts in pace, which makes the setting feel lived rather than summarised. For layout testing, the paragraph also carries a little useful nonsense: tiri-tiri, hushline, side-glow, market-drift, and coast-thread, all inserted simply to give the text more weight on the page.\n\nThe secondary themes, especially Shared space, widen the frame without taking over from the main one. They sit beside the primary theme like quieter signals, helping the story feel layered rather than boxed into one label. This is also where the prototype benefits from extra copy. A longer paragraph reveals whether spacing, margins, and line length still feel calm when the reading block grows. So the text wanders deliberately through soft filler and half-words: mira-mira, bendi-bendi, dust-echo, river-note, para-step, and lantern-noise, all there to make the section breathe more densely.\n\nThe people layer matters as well. Women/Girls, Children appear as a human guide to who is visible in the account, but not as the only way of understanding it. That balance is important for browsing. The story should still feel local, textured, and particular, while the interface quietly supports comparison across places and themes. Here the reflection keeps that balance by staying plain, steady, and editorial. Then, for testing, it adds a few drifting sounds of language again: moro-moro, light-silt, market-flare, small-turn, road-whisper, and rain-edge.\n\nAs a whole, this section works like a soft bridge between the longer story above and the filtered gallery below. It tells the reader why the story connects to others without becoming overly academic or technical. It also gives the layout a heavier reading state so typography, hierarchy, and rhythm can be judged properly in both dark and light themes. Nothing in the added gibberish changes meaning, but it does help the design prove itself under longer editorial copy, longer scrolls, and denser visual pacing.",
+        "so": "Milicsigan waxa uu sheekada marka hore ka akhriyaa daryeel, sababtoo ah taas ayaa ah xadhigga ugu muuqda ee isku haya goobta ka muuqata Barawy. Qoraalku waxa uu ku dheggan yahay falal maalinle ah halkii uu ka noqon lahaa hadal culus, taasina waxa ay akhriska ka dhigaysaa mid dhow. Sahra marar badan ayuu ku noqdaa waddooyinka, sugitaanka, hawlaha soo noqnoqda, iyo isbeddellada yar yar ee xawaaraha, si goobtu u ekaato mid la nool yahay. Tijaabadan awgeed waxa ku jira erayo aan macne lahayn sida tiri-tiri, hushline, side-glow, iyo coast-thread.\n\nMawduucyada kale, gaar ahaan Meel wadaag, waxa ay ballaariyaan fahamka iyaga oo aan meesha ka saarayn mawduuca koowaad. Waxay ag joogsadaan sida calaamado deggan oo sheekada ka dhigaya mid lakabyo leh. Halkaas ayaana qoraalka dheer faa’iido leeyahay, sababtoo ah waxa uu muujinayaa in kala fogaanshaha, margin-ka, iyo dhererka sadaradu weli deggan yihiin marka qoraalku bato. Sidaas darteed waxa si ula kac ah u dhex socda ereyo tijaabo ah sida mira-mira, bendi-bendi, dust-echo, river-note, para-step, iyo lantern-noise.\n\nLakabka dadka isaguna waa muhiim. Haween/Gabdho, Carruur waxay muuqdaan sida tilmaam bani’aadamnimo oo tusaya cidda ugu badan ee sheekada ku jirta, balse ma noqdaan qaabka keliya ee lagu fahmo sheekada. Tani waxay muhiim u tahay marka la daalacanayo sheekooyin kala duwan. Sheekadu waa inay ahaataa mid deegaan leh, qoto dheer, oo gaar ah, halka is-dhexgalkuna si aamusnaan ah u taageerayo isbarbardhigga. Halkan qoraalku waxa uu ku sii daraa erayo sabbaynaya sida moro-moro, light-silt, market-flare, small-turn, road-whisper, iyo rain-edge.\n\nGuud ahaan, qaybta milicsigu waxay u shaqaysaa sidii buundo jilicsan oo u dhexaysa sheekada sare iyo gallery-ga la shaandheeyo ee hoose. Waxay u sheegaysaa akhristaha sababta sheekadani ugu xidhan tahay kuwo kale iyada oo aan aad u noqon mid culus ama farsamo badan. Waxa kale oo ay siisaa naqshadda xaalad akhris oo ka culus si xarfaha, kala sarreynta, iyo garaaca guud loo eego si fiican, labadaba muuqaalka madow iyo kan iftiinka. Gibberish-ka lagu daray ma beddelayo macnaha, balse waxa uu ka caawiyaa naqshadda inay u adkaysato qoraal dheer iyo socod dheer oo tijaabo ah."
+      },
+      "images": [
+        "images/leads/BW01.jpg",
+        "images/BW01/1.jpg",
+        "images/BW01/2.jpg",
+        "images/BW01/3.jpg",
+        "images/BW01/4.jpg",
+        "images/BW01/5.jpg"
+      ]
+    },
+    {
+      "id": "BW02",
+      "district": {
+        "slug": "barawe",
+        "en": "Barawe",
+        "so": "Barawy"
+      },
+      "cluster": {
+        "en": "Coastal cluster",
+        "so": "Kutlada xeebta"
+      },
+      "location": "Shoreline",
+      "date": "2025-01-29",
+      "storyteller": "Mahad",
+      "primaryTheme": {
+        "slug": "fishing",
+        "en": "Fishing",
+        "so": "Kalluumaysi"
+      },
+      "secondaryThemes": [
+        {
+          "slug": "weather",
+          "en": "Weather",
+          "so": "Cimilo"
+        },
+        {
+          "slug": "coast",
+          "en": "Coast",
+          "so": "Xeeb"
+        }
+      ],
+      "actors": [
+        "Men/Boys"
+      ],
+      "summary": {
+        "en": "The shoreline becomes both workplace and waiting room, with weather shaping what is possible each day.",
+        "so": "Xeebta ayaa isu beddeshay goob shaqo iyo sugitaan, halka cimiladu maalin kasta go’aamiso waxa suuragal ah."
+      },
+      "story": {
+        "en": "Mahad describes Shoreline in Barawe as a place where fishing is felt through ordinary routines rather than dramatic announcements. The shoreline becomes both workplace and waiting room, with weather shaping what is possible each day. The story begins in a documentary register, but it quickly loosens into a testing voice filled with soft static, half-notes, and deliberately unimportant details: tin-tin drift, market hum, side-lane murmur, dry-step shuffle, and a long ribbon of maybe-maybe language.\n\nThe text keeps circling back to bodies, buckets, weather, queues, edges, and the small changes that turn one day away from the last. Then it deliberately wanders into useful nonsense: lora lora, bendi-bendi, hushline, salt-noise, para-step, water-glint, coast-thread, dust-murmur, and field-echo. That gibberish is here on purpose so the page can hold longer reading blocks, test scrolling behaviour, and show how the typography behaves when the story becomes denser than the summary card below.\n\nEven in this inflated version, the main cues remain readable. Fishing sits in front, while Weather, Coast stay nearby as secondary currents. The people tags still matter, yet the prose avoids becoming technical. Instead it drifts through spoken fragments, observational loops, and little clusters of invented sound: nala-nala, brimstep, open hush, weather-click, shade-signal, road-gloss, and a few extra lines of pleasant nonsense to stretch the layout, settle the spacing, and keep the story field hovering at roughly two hundred and fifty words overall.",
+        "so": "Mahad wuxuu ka warramayaa Shoreline ee Barawy sidii meel uu kalluumaysi uga muuqdo hawlo maalinle ah halkii uu ka ahaan lahaa dhacdo keliya oo weyn. Xeebta ayaa isu beddeshay goob shaqo iyo sugitaan, halka cimiladu maalin kasta go’aamiso waxa suuragal ah. Qoraalku wuxuu ku bilaabmaa cod deggan oo sharaxaya muuqaalka, dabadeedna si ula kac ah ayuu ugu leexdaa hadal tijaabo ah oo ay ku jiraan erayo buuxin ah iyo laxan yar oo micne yar leh: bala-bala, socod-hami, hadh-hadh, guux-fudud, iyo weedho dheer oo ah laga-yaabee-laga-yaabee.\n\nQoraalku mar kasta wuxuu ku soo laabanayaa jirka, biyo-qaadka, safka, cimilada, iyo geesaha yar ee kala beddela maalmaha. Dabadeed si ula kac ah ayuu u geliyaa gibberish waxtar leh: luli-luli, marooq-marooq, hadal-dabayl, socod-dhac, biyo-birlab, ciid-hadal, iyo guux-madhan. Nacasnimadan yar ayaa halkan loogu daray si boggu u qaado qoraal dheer, loo tijaabiyo rogista, loona arko sida faruhu u dhaqmaan marka sheekadu ka weynaato soo koobista ka muuqata kaarka gallery-ga.\n\nXataa noocan la buunbuuniyey, tiirarka ugu waaweyn way muuqdaan. Kalluumaysi ayaa safka hore joogta, halka Cimilo, Xeeb ay u socdaan sida mawduucyo raaca. Calaamadaha dadka wali way shaqaynayaan, balse tuducyadu ma noqonayaan kuwo farsamo kaliya ah. Halkii, waxay ku qulqulayaan hadal qaybo-qaybo ah, wareegyo daawasho leh, iyo codad la sameeyey oo sida nala-nala, hummaag-jid, qorrax-qabow, iyo hadh-socod u shaqeeya, si dhererku u gaadho qiyaastii laba boqol iyo konton eray oo ku habboon tijaabada qaabeynta."
+      },
+      "reflection": {
+        "en": "This reflection reads the story first through fishing, because that is the clearest thread holding the scene together in Barawe. The account remains grounded in ordinary actions rather than large declarations, and that helps the issue stay close to the reader. Mahad keeps returning to paths, pauses, repeated tasks, and tiny shifts in pace, which makes the setting feel lived rather than summarised. For layout testing, the paragraph also carries a little useful nonsense: tiri-tiri, hushline, side-glow, market-drift, and coast-thread, all inserted simply to give the text more weight on the page.\n\nThe secondary themes, especially Weather and Coast, widen the frame without taking over from the main one. They sit beside the primary theme like quieter signals, helping the story feel layered rather than boxed into one label. This is also where the prototype benefits from extra copy. A longer paragraph reveals whether spacing, margins, and line length still feel calm when the reading block grows. So the text wanders deliberately through soft filler and half-words: mira-mira, bendi-bendi, dust-echo, river-note, para-step, and lantern-noise, all there to make the section breathe more densely.\n\nThe people layer matters as well. Men/Boys appear as a human guide to who is visible in the account, but not as the only way of understanding it. That balance is important for browsing. The story should still feel local, textured, and particular, while the interface quietly supports comparison across places and themes. Here the reflection keeps that balance by staying plain, steady, and editorial. Then, for testing, it adds a few drifting sounds of language again: moro-moro, light-silt, market-flare, small-turn, road-whisper, and rain-edge.\n\nAs a whole, this section works like a soft bridge between the longer story above and the filtered gallery below. It tells the reader why the story connects to others without becoming overly academic or technical. It also gives the layout a heavier reading state so typography, hierarchy, and rhythm can be judged properly in both dark and light themes. Nothing in the added gibberish changes meaning, but it does help the design prove itself under longer editorial copy, longer scrolls, and denser visual pacing.",
+        "so": "Milicsigan waxa uu sheekada marka hore ka akhriyaa kalluumaysi, sababtoo ah taas ayaa ah xadhigga ugu muuqda ee isku haya goobta ka muuqata Barawy. Qoraalku waxa uu ku dheggan yahay falal maalinle ah halkii uu ka noqon lahaa hadal culus, taasina waxa ay akhriska ka dhigaysaa mid dhow. Mahad marar badan ayuu ku noqdaa waddooyinka, sugitaanka, hawlaha soo noqnoqda, iyo isbeddellada yar yar ee xawaaraha, si goobtu u ekaato mid la nool yahay. Tijaabadan awgeed waxa ku jira erayo aan macne lahayn sida tiri-tiri, hushline, side-glow, iyo coast-thread.\n\nMawduucyada kale, gaar ahaan Cimilo iyo Xeeb, waxa ay ballaariyaan fahamka iyaga oo aan meesha ka saarayn mawduuca koowaad. Waxay ag joogsadaan sida calaamado deggan oo sheekada ka dhigaya mid lakabyo leh. Halkaas ayaana qoraalka dheer faa’iido leeyahay, sababtoo ah waxa uu muujinayaa in kala fogaanshaha, margin-ka, iyo dhererka sadaradu weli deggan yihiin marka qoraalku bato. Sidaas darteed waxa si ula kac ah u dhex socda ereyo tijaabo ah sida mira-mira, bendi-bendi, dust-echo, river-note, para-step, iyo lantern-noise.\n\nLakabka dadka isaguna waa muhiim. Rag/Wiilal waxay muuqdaan sida tilmaam bani’aadamnimo oo tusaya cidda ugu badan ee sheekada ku jirta, balse ma noqdaan qaabka keliya ee lagu fahmo sheekada. Tani waxay muhiim u tahay marka la daalacanayo sheekooyin kala duwan. Sheekadu waa inay ahaataa mid deegaan leh, qoto dheer, oo gaar ah, halka is-dhexgalkuna si aamusnaan ah u taageerayo isbarbardhigga. Halkan qoraalku waxa uu ku sii daraa erayo sabbaynaya sida moro-moro, light-silt, market-flare, small-turn, road-whisper, iyo rain-edge.\n\nGuud ahaan, qaybta milicsigu waxay u shaqaysaa sidii buundo jilicsan oo u dhexaysa sheekada sare iyo gallery-ga la shaandheeyo ee hoose. Waxay u sheegaysaa akhristaha sababta sheekadani ugu xidhan tahay kuwo kale iyada oo aan aad u noqon mid culus ama farsamo badan. Waxa kale oo ay siisaa naqshadda xaalad akhris oo ka culus si xarfaha, kala sarreynta, iyo garaaca guud loo eego si fiican, labadaba muuqaalka madow iyo kan iftiinka. Gibberish-ka lagu daray ma beddelayo macnaha, balse waxa uu ka caawiyaa naqshadda inay u adkaysato qoraal dheer iyo socod dheer oo tijaabo ah."
+      },
+      "images": [
+        "images/leads/BW02.jpg",
+        "images/BW02/1.jpg",
+        "images/BW02/2.jpg"
+      ]
+    },
+    {
+      "id": "BD02",
+      "district": {
+        "slug": "baidoa",
+        "en": "Baidoa",
+        "so": "Baydhabo"
+      },
+      "cluster": {
+        "en": "Bay cluster",
+        "so": "Kutlada Bay"
+      },
+      "location": "Water point",
+      "date": "2025-02-03",
+      "storyteller": "Ifrah",
+      "primaryTheme": {
+        "slug": "water-access",
+        "en": "Water access",
+        "so": "Helitaanka biyo"
+      },
+      "secondaryThemes": [
+        {
+          "slug": "care-work",
+          "en": "Care work",
+          "so": "Daryeel"
+        },
+        {
+          "slug": "routine",
+          "en": "Routine",
+          "so": "Jadwal maalinle"
+        }
+      ],
+      "actors": [
+        "Women/Girls",
+        "Children"
+      ],
+      "summary": {
+        "en": "Access to water shapes the whole day, from early routines to the shared weight of care work.",
+        "so": "Helitaanka biyaha ayaa qaabeeya maalinta oo dhan, laga bilaabo hawlaha aroornimada ilaa culayska la wada qaado."
+      },
+      "story": {
+        "en": "Ifrah describes Water point in Baidoa as a place where water access is felt through ordinary routines rather than dramatic announcements. Access to water shapes the whole day, from early routines to the shared weight of care work. The story begins in a documentary register, but it quickly loosens into a testing voice filled with soft static, half-notes, and deliberately unimportant details: tin-tin drift, market hum, side-lane murmur, dry-step shuffle, and a long ribbon of maybe-maybe language.\n\nThe text keeps circling back to bodies, buckets, weather, queues, edges, and the small changes that turn one day away from the last. Then it deliberately wanders into useful nonsense: lora lora, bendi-bendi, hushline, salt-noise, para-step, water-glint, coast-thread, dust-murmur, and field-echo. That gibberish is here on purpose so the page can hold longer reading blocks, test scrolling behaviour, and show how the typography behaves when the story becomes denser than the summary card below.\n\nEven in this inflated version, the main cues remain readable. Water access sits in front, while Care work, Routine stay nearby as secondary currents. The people tags still matter, yet the prose avoids becoming technical. Instead it drifts through spoken fragments, observational loops, and little clusters of invented sound: nala-nala, brimstep, open hush, weather-click, shade-signal, road-gloss, and a few extra lines of pleasant nonsense to stretch the layout, settle the spacing, and keep the story field hovering at roughly two hundred and fifty words overall.",
+        "so": "Ifrah wuxuu ka warramayaa Water point ee Baydhabo sidii meel uu helitaanka biyo uga muuqdo hawlo maalinle ah halkii uu ka ahaan lahaa dhacdo keliya oo weyn. Helitaanka biyaha ayaa qaabeeya maalinta oo dhan, laga bilaabo hawlaha aroornimada ilaa culayska la wada qaado. Qoraalku wuxuu ku bilaabmaa cod deggan oo sharaxaya muuqaalka, dabadeedna si ula kac ah ayuu ugu leexdaa hadal tijaabo ah oo ay ku jiraan erayo buuxin ah iyo laxan yar oo micne yar leh: bala-bala, socod-hami, hadh-hadh, guux-fudud, iyo weedho dheer oo ah laga-yaabee-laga-yaabee.\n\nQoraalku mar kasta wuxuu ku soo laabanayaa jirka, biyo-qaadka, safka, cimilada, iyo geesaha yar ee kala beddela maalmaha. Dabadeed si ula kac ah ayuu u geliyaa gibberish waxtar leh: luli-luli, marooq-marooq, hadal-dabayl, socod-dhac, biyo-birlab, ciid-hadal, iyo guux-madhan. Nacasnimadan yar ayaa halkan loogu daray si boggu u qaado qoraal dheer, loo tijaabiyo rogista, loona arko sida faruhu u dhaqmaan marka sheekadu ka weynaato soo koobista ka muuqata kaarka gallery-ga.\n\nXataa noocan la buunbuuniyey, tiirarka ugu waaweyn way muuqdaan. Helitaanka biyo ayaa safka hore joogta, halka Daryeel, Jadwal maalinle ay u socdaan sida mawduucyo raaca. Calaamadaha dadka wali way shaqaynayaan, balse tuducyadu ma noqonayaan kuwo farsamo kaliya ah. Halkii, waxay ku qulqulayaan hadal qaybo-qaybo ah, wareegyo daawasho leh, iyo codad la sameeyey oo sida nala-nala, hummaag-jid, qorrax-qabow, iyo hadh-socod u shaqeeya, si dhererku u gaadho qiyaastii laba boqol iyo konton eray oo ku habboon tijaabada qaabeynta."
+      },
+      "reflection": {
+        "en": "This reflection reads the story first through water access, because that is the clearest thread holding the scene together in Baidoa. The account remains grounded in ordinary actions rather than large declarations, and that helps the issue stay close to the reader. Ifrah keeps returning to paths, pauses, repeated tasks, and tiny shifts in pace, which makes the setting feel lived rather than summarised. For layout testing, the paragraph also carries a little useful nonsense: tiri-tiri, hushline, side-glow, market-drift, and coast-thread, all inserted simply to give the text more weight on the page.\n\nThe secondary themes, especially Care work and Routine, widen the frame without taking over from the main one. They sit beside the primary theme like quieter signals, helping the story feel layered rather than boxed into one label. This is also where the prototype benefits from extra copy. A longer paragraph reveals whether spacing, margins, and line length still feel calm when the reading block grows. So the text wanders deliberately through soft filler and half-words: mira-mira, bendi-bendi, dust-echo, river-note, para-step, and lantern-noise, all there to make the section breathe more densely.\n\nThe people layer matters as well. Women/Girls, Children appear as a human guide to who is visible in the account, but not as the only way of understanding it. That balance is important for browsing. The story should still feel local, textured, and particular, while the interface quietly supports comparison across places and themes. Here the reflection keeps that balance by staying plain, steady, and editorial. Then, for testing, it adds a few drifting sounds of language again: moro-moro, light-silt, market-flare, small-turn, road-whisper, and rain-edge.\n\nAs a whole, this section works like a soft bridge between the longer story above and the filtered gallery below. It tells the reader why the story connects to others without becoming overly academic or technical. It also gives the layout a heavier reading state so typography, hierarchy, and rhythm can be judged properly in both dark and light themes. Nothing in the added gibberish changes meaning, but it does help the design prove itself under longer editorial copy, longer scrolls, and denser visual pacing.",
+        "so": "Milicsigan waxa uu sheekada marka hore ka akhriyaa helitaanka biyo, sababtoo ah taas ayaa ah xadhigga ugu muuqda ee isku haya goobta ka muuqata Baydhabo. Qoraalku waxa uu ku dheggan yahay falal maalinle ah halkii uu ka noqon lahaa hadal culus, taasina waxa ay akhriska ka dhigaysaa mid dhow. Ifrah marar badan ayuu ku noqdaa waddooyinka, sugitaanka, hawlaha soo noqnoqda, iyo isbeddellada yar yar ee xawaaraha, si goobtu u ekaato mid la nool yahay. Tijaabadan awgeed waxa ku jira erayo aan macne lahayn sida tiri-tiri, hushline, side-glow, iyo coast-thread.\n\nMawduucyada kale, gaar ahaan Daryeel iyo Jadwal maalinle, waxa ay ballaariyaan fahamka iyaga oo aan meesha ka saarayn mawduuca koowaad. Waxay ag joogsadaan sida calaamado deggan oo sheekada ka dhigaya mid lakabyo leh. Halkaas ayaana qoraalka dheer faa’iido leeyahay, sababtoo ah waxa uu muujinayaa in kala fogaanshaha, margin-ka, iyo dhererka sadaradu weli deggan yihiin marka qoraalku bato. Sidaas darteed waxa si ula kac ah u dhex socda ereyo tijaabo ah sida mira-mira, bendi-bendi, dust-echo, river-note, para-step, iyo lantern-noise.\n\nLakabka dadka isaguna waa muhiim. Haween/Gabdho, Carruur waxay muuqdaan sida tilmaam bani’aadamnimo oo tusaya cidda ugu badan ee sheekada ku jirta, balse ma noqdaan qaabka keliya ee lagu fahmo sheekada. Tani waxay muhiim u tahay marka la daalacanayo sheekooyin kala duwan. Sheekadu waa inay ahaataa mid deegaan leh, qoto dheer, oo gaar ah, halka is-dhexgalkuna si aamusnaan ah u taageerayo isbarbardhigga. Halkan qoraalku waxa uu ku sii daraa erayo sabbaynaya sida moro-moro, light-silt, market-flare, small-turn, road-whisper, iyo rain-edge.\n\nGuud ahaan, qaybta milicsigu waxay u shaqaysaa sidii buundo jilicsan oo u dhexaysa sheekada sare iyo gallery-ga la shaandheeyo ee hoose. Waxay u sheegaysaa akhristaha sababta sheekadani ugu xidhan tahay kuwo kale iyada oo aan aad u noqon mid culus ama farsamo badan. Waxa kale oo ay siisaa naqshadda xaalad akhris oo ka culus si xarfaha, kala sarreynta, iyo garaaca guud loo eego si fiican, labadaba muuqaalka madow iyo kan iftiinka. Gibberish-ka lagu daray ma beddelayo macnaha, balse waxa uu ka caawiyaa naqshadda inay u adkaysato qoraal dheer iyo socod dheer oo tijaabo ah."
+      },
+      "images": [
+        "images/leads/BD02.jpg",
+        "images/BD02/1.jpg",
+        "images/BD02/2.jpg",
+        "images/BD02/3.jpg",
+        "images/BD02/4.jpg"
+      ]
+    },
+    {
+      "id": "HD02",
+      "district": {
+        "slug": "hudur",
+        "en": "Hudur",
+        "so": "Xudur"
+      },
+      "cluster": {
+        "en": "Bakool cluster",
+        "so": "Kutlada Bakool"
+      },
+      "location": "Farm plot",
+      "date": "2025-02-09",
+      "storyteller": "Abdi",
+      "primaryTheme": {
+        "slug": "agriculture",
+        "en": "Agriculture",
+        "so": "Beeraha"
+      },
+      "secondaryThemes": [
+        {
+          "slug": "rain-timing",
+          "en": "Rain timing",
+          "so": "Waqtiga roobka"
+        },
+        {
+          "slug": "harvest",
+          "en": "Harvest",
+          "so": "Goosasho"
+        }
+      ],
+      "actors": [
+        "Men/Boys"
+      ],
+      "summary": {
+        "en": "Planting decisions and hope for rain turn this into a story about timing, memory, and uncertainty.",
+        "so": "Go’aamada beerista iyo rajada roobku waxay sheekadan ka dhigayaan mid ka hadlaysa waqti, xusuus, iyo hubanti la’aan."
+      },
+      "story": {
+        "en": "Abdi describes Farm plot in Hudur as a place where agriculture is felt through ordinary routines rather than dramatic announcements. Planting decisions and hope for rain turn this into a story about timing, memory, and uncertainty. The story begins in a documentary register, but it quickly loosens into a testing voice filled with soft static, half-notes, and deliberately unimportant details: tin-tin drift, market hum, side-lane murmur, dry-step shuffle, and a long ribbon of maybe-maybe language.\n\nThe text keeps circling back to bodies, buckets, weather, queues, edges, and the small changes that turn one day away from the last. Then it deliberately wanders into useful nonsense: lora lora, bendi-bendi, hushline, salt-noise, para-step, water-glint, coast-thread, dust-murmur, and field-echo. That gibberish is here on purpose so the page can hold longer reading blocks, test scrolling behaviour, and show how the typography behaves when the story becomes denser than the summary card below.\n\nEven in this inflated version, the main cues remain readable. Agriculture sits in front, while Rain timing, Harvest stay nearby as secondary currents. The people tags still matter, yet the prose avoids becoming technical. Instead it drifts through spoken fragments, observational loops, and little clusters of invented sound: nala-nala, brimstep, open hush, weather-click, shade-signal, road-gloss, and a few extra lines of pleasant nonsense to stretch the layout, settle the spacing, and keep the story field hovering at roughly two hundred and fifty words overall.",
+        "so": "Abdi wuxuu ka warramayaa Farm plot ee Xudur sidii meel uu beeraha uga muuqdo hawlo maalinle ah halkii uu ka ahaan lahaa dhacdo keliya oo weyn. Go’aamada beerista iyo rajada roobku waxay sheekadan ka dhigayaan mid ka hadlaysa waqti, xusuus, iyo hubanti la’aan. Qoraalku wuxuu ku bilaabmaa cod deggan oo sharaxaya muuqaalka, dabadeedna si ula kac ah ayuu ugu leexdaa hadal tijaabo ah oo ay ku jiraan erayo buuxin ah iyo laxan yar oo micne yar leh: bala-bala, socod-hami, hadh-hadh, guux-fudud, iyo weedho dheer oo ah laga-yaabee-laga-yaabee.\n\nQoraalku mar kasta wuxuu ku soo laabanayaa jirka, biyo-qaadka, safka, cimilada, iyo geesaha yar ee kala beddela maalmaha. Dabadeed si ula kac ah ayuu u geliyaa gibberish waxtar leh: luli-luli, marooq-marooq, hadal-dabayl, socod-dhac, biyo-birlab, ciid-hadal, iyo guux-madhan. Nacasnimadan yar ayaa halkan loogu daray si boggu u qaado qoraal dheer, loo tijaabiyo rogista, loona arko sida faruhu u dhaqmaan marka sheekadu ka weynaato soo koobista ka muuqata kaarka gallery-ga.\n\nXataa noocan la buunbuuniyey, tiirarka ugu waaweyn way muuqdaan. Beeraha ayaa safka hore joogta, halka Waqtiga roobka, Goosasho ay u socdaan sida mawduucyo raaca. Calaamadaha dadka wali way shaqaynayaan, balse tuducyadu ma noqonayaan kuwo farsamo kaliya ah. Halkii, waxay ku qulqulayaan hadal qaybo-qaybo ah, wareegyo daawasho leh, iyo codad la sameeyey oo sida nala-nala, hummaag-jid, qorrax-qabow, iyo hadh-socod u shaqeeya, si dhererku u gaadho qiyaastii laba boqol iyo konton eray oo ku habboon tijaabada qaabeynta."
+      },
+      "reflection": {
+        "en": "This reflection reads the story first through agriculture, because that is the clearest thread holding the scene together in Hudur. The account remains grounded in ordinary actions rather than large declarations, and that helps the issue stay close to the reader. Abdi keeps returning to paths, pauses, repeated tasks, and tiny shifts in pace, which makes the setting feel lived rather than summarised. For layout testing, the paragraph also carries a little useful nonsense: tiri-tiri, hushline, side-glow, market-drift, and coast-thread, all inserted simply to give the text more weight on the page.\n\nThe secondary themes, especially Rain timing and Harvest, widen the frame without taking over from the main one. They sit beside the primary theme like quieter signals, helping the story feel layered rather than boxed into one label. This is also where the prototype benefits from extra copy. A longer paragraph reveals whether spacing, margins, and line length still feel calm when the reading block grows. So the text wanders deliberately through soft filler and half-words: mira-mira, bendi-bendi, dust-echo, river-note, para-step, and lantern-noise, all there to make the section breathe more densely.\n\nThe people layer matters as well. Men/Boys appear as a human guide to who is visible in the account, but not as the only way of understanding it. That balance is important for browsing. The story should still feel local, textured, and particular, while the interface quietly supports comparison across places and themes. Here the reflection keeps that balance by staying plain, steady, and editorial. Then, for testing, it adds a few drifting sounds of language again: moro-moro, light-silt, market-flare, small-turn, road-whisper, and rain-edge.\n\nAs a whole, this section works like a soft bridge between the longer story above and the filtered gallery below. It tells the reader why the story connects to others without becoming overly academic or technical. It also gives the layout a heavier reading state so typography, hierarchy, and rhythm can be judged properly in both dark and light themes. Nothing in the added gibberish changes meaning, but it does help the design prove itself under longer editorial copy, longer scrolls, and denser visual pacing.",
+        "so": "Milicsigan waxa uu sheekada marka hore ka akhriyaa beeraha, sababtoo ah taas ayaa ah xadhigga ugu muuqda ee isku haya goobta ka muuqata Xudur. Qoraalku waxa uu ku dheggan yahay falal maalinle ah halkii uu ka noqon lahaa hadal culus, taasina waxa ay akhriska ka dhigaysaa mid dhow. Abdi marar badan ayuu ku noqdaa waddooyinka, sugitaanka, hawlaha soo noqnoqda, iyo isbeddellada yar yar ee xawaaraha, si goobtu u ekaato mid la nool yahay. Tijaabadan awgeed waxa ku jira erayo aan macne lahayn sida tiri-tiri, hushline, side-glow, iyo coast-thread.\n\nMawduucyada kale, gaar ahaan Waqtiga roobka iyo Goosasho, waxa ay ballaariyaan fahamka iyaga oo aan meesha ka saarayn mawduuca koowaad. Waxay ag joogsadaan sida calaamado deggan oo sheekada ka dhigaya mid lakabyo leh. Halkaas ayaana qoraalka dheer faa’iido leeyahay, sababtoo ah waxa uu muujinayaa in kala fogaanshaha, margin-ka, iyo dhererka sadaradu weli deggan yihiin marka qoraalku bato. Sidaas darteed waxa si ula kac ah u dhex socda ereyo tijaabo ah sida mira-mira, bendi-bendi, dust-echo, river-note, para-step, iyo lantern-noise.\n\nLakabka dadka isaguna waa muhiim. Rag/Wiilal waxay muuqdaan sida tilmaam bani’aadamnimo oo tusaya cidda ugu badan ee sheekada ku jirta, balse ma noqdaan qaabka keliya ee lagu fahmo sheekada. Tani waxay muhiim u tahay marka la daalacanayo sheekooyin kala duwan. Sheekadu waa inay ahaataa mid deegaan leh, qoto dheer, oo gaar ah, halka is-dhexgalkuna si aamusnaan ah u taageerayo isbarbardhigga. Halkan qoraalku waxa uu ku sii daraa erayo sabbaynaya sida moro-moro, light-silt, market-flare, small-turn, road-whisper, iyo rain-edge.\n\nGuud ahaan, qaybta milicsigu waxay u shaqaysaa sidii buundo jilicsan oo u dhexaysa sheekada sare iyo gallery-ga la shaandheeyo ee hoose. Waxay u sheegaysaa akhristaha sababta sheekadani ugu xidhan tahay kuwo kale iyada oo aan aad u noqon mid culus ama farsamo badan. Waxa kale oo ay siisaa naqshadda xaalad akhris oo ka culus si xarfaha, kala sarreynta, iyo garaaca guud loo eego si fiican, labadaba muuqaalka madow iyo kan iftiinka. Gibberish-ka lagu daray ma beddelayo macnaha, balse waxa uu ka caawiyaa naqshadda inay u adkaysato qoraal dheer iyo socod dheer oo tijaabo ah."
+      },
+      "images": [
+        "images/leads/HD02.jpg",
+        "images/HD02/1.jpg",
+        "images/HD02/2.jpg",
+        "images/HD02/3.jpg"
+      ]
+    },
+    {
+      "id": "BD03",
+      "district": {
+        "slug": "baidoa",
+        "en": "Baidoa",
+        "so": "Baydhabo"
+      },
+      "cluster": {
+        "en": "Bay cluster",
+        "so": "Kutlada Bay"
+      },
+      "location": "River edge",
+      "date": "2025-02-14",
+      "storyteller": "Nasro",
+      "primaryTheme": {
+        "slug": "flooding",
+        "en": "Flooding",
+        "so": "Fatahaad"
+      },
+      "secondaryThemes": [
+        {
+          "slug": "weather",
+          "en": "Weather",
+          "so": "Cimilo"
+        }
+      ],
+      "actors": [
+        "Children",
+        "Women/Girls",
+        "Men/Boys"
+      ],
+      "summary": {
+        "en": "Rising water and unstable weather force families to keep rethinking what safety looks like.",
+        "so": "Biyaha kor u kacaya iyo cimilo aan la saadaalin karin ayaa ku qasbaya qoysaska inay mar kasta dib u qiyaasaan ammaankooda."
+      },
+      "story": {
+        "en": "Nasro describes River edge in Baidoa as a place where flooding is felt through ordinary routines rather than dramatic announcements. Rising water and unstable weather force families to keep rethinking what safety looks like. The story begins in a documentary register, but it quickly loosens into a testing voice filled with soft static, half-notes, and deliberately unimportant details: tin-tin drift, market hum, side-lane murmur, dry-step shuffle, and a long ribbon of maybe-maybe language.\n\nThe text keeps circling back to bodies, buckets, weather, queues, edges, and the small changes that turn one day away from the last. Then it deliberately wanders into useful nonsense: lora lora, bendi-bendi, hushline, salt-noise, para-step, water-glint, coast-thread, dust-murmur, and field-echo. That gibberish is here on purpose so the page can hold longer reading blocks, test scrolling behaviour, and show how the typography behaves when the story becomes denser than the summary card below.\n\nEven in this inflated version, the main cues remain readable. Flooding sits in front, while Weather stay nearby as secondary currents. The people tags still matter, yet the prose avoids becoming technical. Instead it drifts through spoken fragments, observational loops, and little clusters of invented sound: nala-nala, brimstep, open hush, weather-click, shade-signal, road-gloss, and a few extra lines of pleasant nonsense to stretch the layout, settle the spacing, and keep the story field hovering at roughly two hundred and fifty words overall.",
+        "so": "Nasro wuxuu ka warramayaa River edge ee Baydhabo sidii meel uu fatahaad uga muuqdo hawlo maalinle ah halkii uu ka ahaan lahaa dhacdo keliya oo weyn. Biyaha kor u kacaya iyo cimilo aan la saadaalin karin ayaa ku qasbaya qoysaska inay mar kasta dib u qiyaasaan ammaankooda. Qoraalku wuxuu ku bilaabmaa cod deggan oo sharaxaya muuqaalka, dabadeedna si ula kac ah ayuu ugu leexdaa hadal tijaabo ah oo ay ku jiraan erayo buuxin ah iyo laxan yar oo micne yar leh: bala-bala, socod-hami, hadh-hadh, guux-fudud, iyo weedho dheer oo ah laga-yaabee-laga-yaabee.\n\nQoraalku mar kasta wuxuu ku soo laabanayaa jirka, biyo-qaadka, safka, cimilada, iyo geesaha yar ee kala beddela maalmaha. Dabadeed si ula kac ah ayuu u geliyaa gibberish waxtar leh: luli-luli, marooq-marooq, hadal-dabayl, socod-dhac, biyo-birlab, ciid-hadal, iyo guux-madhan. Nacasnimadan yar ayaa halkan loogu daray si boggu u qaado qoraal dheer, loo tijaabiyo rogista, loona arko sida faruhu u dhaqmaan marka sheekadu ka weynaato soo koobista ka muuqata kaarka gallery-ga.\n\nXataa noocan la buunbuuniyey, tiirarka ugu waaweyn way muuqdaan. Fatahaad ayaa safka hore joogta, halka Cimilo ay u socdaan sida mawduucyo raaca. Calaamadaha dadka wali way shaqaynayaan, balse tuducyadu ma noqonayaan kuwo farsamo kaliya ah. Halkii, waxay ku qulqulayaan hadal qaybo-qaybo ah, wareegyo daawasho leh, iyo codad la sameeyey oo sida nala-nala, hummaag-jid, qorrax-qabow, iyo hadh-socod u shaqeeya, si dhererku u gaadho qiyaastii laba boqol iyo konton eray oo ku habboon tijaabada qaabeynta."
+      },
+      "reflection": {
+        "en": "This reflection reads the story first through flooding, because that is the clearest thread holding the scene together in Baidoa. The account remains grounded in ordinary actions rather than large declarations, and that helps the issue stay close to the reader. Nasro keeps returning to paths, pauses, repeated tasks, and tiny shifts in pace, which makes the setting feel lived rather than summarised. For layout testing, the paragraph also carries a little useful nonsense: tiri-tiri, hushline, side-glow, market-drift, and coast-thread, all inserted simply to give the text more weight on the page.\n\nThe secondary themes, especially Weather, widen the frame without taking over from the main one. They sit beside the primary theme like quieter signals, helping the story feel layered rather than boxed into one label. This is also where the prototype benefits from extra copy. A longer paragraph reveals whether spacing, margins, and line length still feel calm when the reading block grows. So the text wanders deliberately through soft filler and half-words: mira-mira, bendi-bendi, dust-echo, river-note, para-step, and lantern-noise, all there to make the section breathe more densely.\n\nThe people layer matters as well. Children, Women/Girls, Men/Boys appear as a human guide to who is visible in the account, but not as the only way of understanding it. That balance is important for browsing. The story should still feel local, textured, and particular, while the interface quietly supports comparison across places and themes. Here the reflection keeps that balance by staying plain, steady, and editorial. Then, for testing, it adds a few drifting sounds of language again: moro-moro, light-silt, market-flare, small-turn, road-whisper, and rain-edge.\n\nAs a whole, this section works like a soft bridge between the longer story above and the filtered gallery below. It tells the reader why the story connects to others without becoming overly academic or technical. It also gives the layout a heavier reading state so typography, hierarchy, and rhythm can be judged properly in both dark and light themes. Nothing in the added gibberish changes meaning, but it does help the design prove itself under longer editorial copy, longer scrolls, and denser visual pacing.",
+        "so": "Milicsigan waxa uu sheekada marka hore ka akhriyaa fatahaad, sababtoo ah taas ayaa ah xadhigga ugu muuqda ee isku haya goobta ka muuqata Baydhabo. Qoraalku waxa uu ku dheggan yahay falal maalinle ah halkii uu ka noqon lahaa hadal culus, taasina waxa ay akhriska ka dhigaysaa mid dhow. Nasro marar badan ayuu ku noqdaa waddooyinka, sugitaanka, hawlaha soo noqnoqda, iyo isbeddellada yar yar ee xawaaraha, si goobtu u ekaato mid la nool yahay. Tijaabadan awgeed waxa ku jira erayo aan macne lahayn sida tiri-tiri, hushline, side-glow, iyo coast-thread.\n\nMawduucyada kale, gaar ahaan Cimilo, waxa ay ballaariyaan fahamka iyaga oo aan meesha ka saarayn mawduuca koowaad. Waxay ag joogsadaan sida calaamado deggan oo sheekada ka dhigaya mid lakabyo leh. Halkaas ayaana qoraalka dheer faa’iido leeyahay, sababtoo ah waxa uu muujinayaa in kala fogaanshaha, margin-ka, iyo dhererka sadaradu weli deggan yihiin marka qoraalku bato. Sidaas darteed waxa si ula kac ah u dhex socda ereyo tijaabo ah sida mira-mira, bendi-bendi, dust-echo, river-note, para-step, iyo lantern-noise.\n\nLakabka dadka isaguna waa muhiim. Carruur, Haween/Gabdho, Rag/Wiilal waxay muuqdaan sida tilmaam bani’aadamnimo oo tusaya cidda ugu badan ee sheekada ku jirta, balse ma noqdaan qaabka keliya ee lagu fahmo sheekada. Tani waxay muhiim u tahay marka la daalacanayo sheekooyin kala duwan. Sheekadu waa inay ahaataa mid deegaan leh, qoto dheer, oo gaar ah, halka is-dhexgalkuna si aamusnaan ah u taageerayo isbarbardhigga. Halkan qoraalku waxa uu ku sii daraa erayo sabbaynaya sida moro-moro, light-silt, market-flare, small-turn, road-whisper, iyo rain-edge.\n\nGuud ahaan, qaybta milicsigu waxay u shaqaysaa sidii buundo jilicsan oo u dhexaysa sheekada sare iyo gallery-ga la shaandheeyo ee hoose. Waxay u sheegaysaa akhristaha sababta sheekadani ugu xidhan tahay kuwo kale iyada oo aan aad u noqon mid culus ama farsamo badan. Waxa kale oo ay siisaa naqshadda xaalad akhris oo ka culus si xarfaha, kala sarreynta, iyo garaaca guud loo eego si fiican, labadaba muuqaalka madow iyo kan iftiinka. Gibberish-ka lagu daray ma beddelayo macnaha, balse waxa uu ka caawiyaa naqshadda inay u adkaysato qoraal dheer iyo socod dheer oo tijaabo ah."
+      },
+      "images": [
+        "images/leads/BD03.jpg",
+        "images/BD03/1.jpg",
+        "images/BD03/2.jpg",
+        "images/BD03/3.jpg"
+      ]
+    },
+    {
+      "id": "BW03",
+      "district": {
+        "slug": "barawe",
+        "en": "Barawe",
+        "so": "Barawy"
+      },
+      "cluster": {
+        "en": "Coastal cluster",
+        "so": "Kutlada xeebta"
+      },
+      "location": "Landing site",
+      "date": "2025-02-18",
+      "storyteller": "Yusuf",
+      "primaryTheme": {
+        "slug": "fishing",
+        "en": "Fishing",
+        "so": "Kalluumaysi"
+      },
+      "secondaryThemes": [
+        {
+          "slug": "coast",
+          "en": "Coast",
+          "so": "Xeeb"
+        },
+        {
+          "slug": "weather",
+          "en": "Weather",
+          "so": "Cimilo"
+        }
+      ],
+      "actors": [
+        "Men/Boys",
+        "Youth"
+      ],
+      "summary": {
+        "en": "Work on the coast moves between risk, waiting, and hope shaped by the sea and the weather.",
+        "so": "Shaqada xeebtu waxay u dhaxaysaa halis, sugitaan, iyo rajo ku xiran badda iyo cimilada."
+      },
+      "story": {
+        "en": "Yusuf describes Landing site in Barawe as a place where fishing is felt through ordinary routines rather than dramatic announcements. Work on the coast moves between risk, waiting, and hope shaped by the sea and the weather. The story begins in a documentary register, but it quickly loosens into a testing voice filled with soft static, half-notes, and deliberately unimportant details: tin-tin drift, market hum, side-lane murmur, dry-step shuffle, and a long ribbon of maybe-maybe language.\n\nThe text keeps circling back to bodies, buckets, weather, queues, edges, and the small changes that turn one day away from the last. Then it deliberately wanders into useful nonsense: lora lora, bendi-bendi, hushline, salt-noise, para-step, water-glint, coast-thread, dust-murmur, and field-echo. That gibberish is here on purpose so the page can hold longer reading blocks, test scrolling behaviour, and show how the typography behaves when the story becomes denser than the summary card below.\n\nEven in this inflated version, the main cues remain readable. Fishing sits in front, while Coast, Weather stay nearby as secondary currents. The people tags still matter, yet the prose avoids becoming technical. Instead it drifts through spoken fragments, observational loops, and little clusters of invented sound: nala-nala, brimstep, open hush, weather-click, shade-signal, road-gloss, and a few extra lines of pleasant nonsense to stretch the layout, settle the spacing, and keep the story field hovering at roughly two hundred and fifty words overall.",
+        "so": "Yusuf wuxuu ka warramayaa Landing site ee Barawy sidii meel uu kalluumaysi uga muuqdo hawlo maalinle ah halkii uu ka ahaan lahaa dhacdo keliya oo weyn. Shaqada xeebtu waxay u dhaxaysaa halis, sugitaan, iyo rajo ku xiran badda iyo cimilada. Qoraalku wuxuu ku bilaabmaa cod deggan oo sharaxaya muuqaalka, dabadeedna si ula kac ah ayuu ugu leexdaa hadal tijaabo ah oo ay ku jiraan erayo buuxin ah iyo laxan yar oo micne yar leh: bala-bala, socod-hami, hadh-hadh, guux-fudud, iyo weedho dheer oo ah laga-yaabee-laga-yaabee.\n\nQoraalku mar kasta wuxuu ku soo laabanayaa jirka, biyo-qaadka, safka, cimilada, iyo geesaha yar ee kala beddela maalmaha. Dabadeed si ula kac ah ayuu u geliyaa gibberish waxtar leh: luli-luli, marooq-marooq, hadal-dabayl, socod-dhac, biyo-birlab, ciid-hadal, iyo guux-madhan. Nacasnimadan yar ayaa halkan loogu daray si boggu u qaado qoraal dheer, loo tijaabiyo rogista, loona arko sida faruhu u dhaqmaan marka sheekadu ka weynaato soo koobista ka muuqata kaarka gallery-ga.\n\nXataa noocan la buunbuuniyey, tiirarka ugu waaweyn way muuqdaan. Kalluumaysi ayaa safka hore joogta, halka Xeeb, Cimilo ay u socdaan sida mawduucyo raaca. Calaamadaha dadka wali way shaqaynayaan, balse tuducyadu ma noqonayaan kuwo farsamo kaliya ah. Halkii, waxay ku qulqulayaan hadal qaybo-qaybo ah, wareegyo daawasho leh, iyo codad la sameeyey oo sida nala-nala, hummaag-jid, qorrax-qabow, iyo hadh-socod u shaqeeya, si dhererku u gaadho qiyaastii laba boqol iyo konton eray oo ku habboon tijaabada qaabeynta."
+      },
+      "reflection": {
+        "en": "This reflection reads the story first through fishing, because that is the clearest thread holding the scene together in Barawe. The account remains grounded in ordinary actions rather than large declarations, and that helps the issue stay close to the reader. Yusuf keeps returning to paths, pauses, repeated tasks, and tiny shifts in pace, which makes the setting feel lived rather than summarised. For layout testing, the paragraph also carries a little useful nonsense: tiri-tiri, hushline, side-glow, market-drift, and coast-thread, all inserted simply to give the text more weight on the page.\n\nThe secondary themes, especially Coast and Weather, widen the frame without taking over from the main one. They sit beside the primary theme like quieter signals, helping the story feel layered rather than boxed into one label. This is also where the prototype benefits from extra copy. A longer paragraph reveals whether spacing, margins, and line length still feel calm when the reading block grows. So the text wanders deliberately through soft filler and half-words: mira-mira, bendi-bendi, dust-echo, river-note, para-step, and lantern-noise, all there to make the section breathe more densely.\n\nThe people layer matters as well. Men/Boys, Youth appear as a human guide to who is visible in the account, but not as the only way of understanding it. That balance is important for browsing. The story should still feel local, textured, and particular, while the interface quietly supports comparison across places and themes. Here the reflection keeps that balance by staying plain, steady, and editorial. Then, for testing, it adds a few drifting sounds of language again: moro-moro, light-silt, market-flare, small-turn, road-whisper, and rain-edge.\n\nAs a whole, this section works like a soft bridge between the longer story above and the filtered gallery below. It tells the reader why the story connects to others without becoming overly academic or technical. It also gives the layout a heavier reading state so typography, hierarchy, and rhythm can be judged properly in both dark and light themes. Nothing in the added gibberish changes meaning, but it does help the design prove itself under longer editorial copy, longer scrolls, and denser visual pacing.",
+        "so": "Milicsigan waxa uu sheekada marka hore ka akhriyaa kalluumaysi, sababtoo ah taas ayaa ah xadhigga ugu muuqda ee isku haya goobta ka muuqata Barawy. Qoraalku waxa uu ku dheggan yahay falal maalinle ah halkii uu ka noqon lahaa hadal culus, taasina waxa ay akhriska ka dhigaysaa mid dhow. Yusuf marar badan ayuu ku noqdaa waddooyinka, sugitaanka, hawlaha soo noqnoqda, iyo isbeddellada yar yar ee xawaaraha, si goobtu u ekaato mid la nool yahay. Tijaabadan awgeed waxa ku jira erayo aan macne lahayn sida tiri-tiri, hushline, side-glow, iyo coast-thread.\n\nMawduucyada kale, gaar ahaan Xeeb iyo Cimilo, waxa ay ballaariyaan fahamka iyaga oo aan meesha ka saarayn mawduuca koowaad. Waxay ag joogsadaan sida calaamado deggan oo sheekada ka dhigaya mid lakabyo leh. Halkaas ayaana qoraalka dheer faa’iido leeyahay, sababtoo ah waxa uu muujinayaa in kala fogaanshaha, margin-ka, iyo dhererka sadaradu weli deggan yihiin marka qoraalku bato. Sidaas darteed waxa si ula kac ah u dhex socda ereyo tijaabo ah sida mira-mira, bendi-bendi, dust-echo, river-note, para-step, iyo lantern-noise.\n\nLakabka dadka isaguna waa muhiim. Rag/Wiilal, Dhallinyaro waxay muuqdaan sida tilmaam bani’aadamnimo oo tusaya cidda ugu badan ee sheekada ku jirta, balse ma noqdaan qaabka keliya ee lagu fahmo sheekada. Tani waxay muhiim u tahay marka la daalacanayo sheekooyin kala duwan. Sheekadu waa inay ahaataa mid deegaan leh, qoto dheer, oo gaar ah, halka is-dhexgalkuna si aamusnaan ah u taageerayo isbarbardhigga. Halkan qoraalku waxa uu ku sii daraa erayo sabbaynaya sida moro-moro, light-silt, market-flare, small-turn, road-whisper, iyo rain-edge.\n\nGuud ahaan, qaybta milicsigu waxay u shaqaysaa sidii buundo jilicsan oo u dhexaysa sheekada sare iyo gallery-ga la shaandheeyo ee hoose. Waxay u sheegaysaa akhristaha sababta sheekadani ugu xidhan tahay kuwo kale iyada oo aan aad u noqon mid culus ama farsamo badan. Waxa kale oo ay siisaa naqshadda xaalad akhris oo ka culus si xarfaha, kala sarreynta, iyo garaaca guud loo eego si fiican, labadaba muuqaalka madow iyo kan iftiinka. Gibberish-ka lagu daray ma beddelayo macnaha, balse waxa uu ka caawiyaa naqshadda inay u adkaysato qoraal dheer iyo socod dheer oo tijaabo ah."
+      },
+      "images": [
+        "images/leads/BW03.jpg",
+        "images/BW03/1.jpg",
+        "images/BW03/2.jpg",
+        "images/BW03/3.jpg",
+        "images/BW03/4.jpg"
+      ]
+    },
+    {
+      "id": "HD03",
+      "district": {
+        "slug": "hudur",
+        "en": "Hudur",
+        "so": "Xudur"
+      },
+      "cluster": {
+        "en": "Bakool cluster",
+        "so": "Kutlada Bakool"
+      },
+      "location": "Dry grazing land",
+      "date": "2025-02-21",
+      "storyteller": "Hawo",
+      "primaryTheme": {
+        "slug": "drought",
+        "en": "Drought",
+        "so": "Abaar"
+      },
+      "secondaryThemes": [
+        {
+          "slug": "mobility",
+          "en": "Mobility",
+          "so": "Socdaal"
+        }
+      ],
+      "actors": [
+        "Children",
+        "Women/Girls",
+        "Men/Boys"
+      ],
+      "summary": {
+        "en": "As grazing land dries out, families find themselves living through constant movement and planning.",
+        "so": "Meelo sii engegay ayaa qoysaska ka dhigaya kuwo mar walba socdaal iyo qorshayn ku jira."
+      },
+      "story": {
+        "en": "Hawo describes Dry grazing land in Hudur as a place where drought is felt through ordinary routines rather than dramatic announcements. As grazing land dries out, families find themselves living through constant movement and planning. The story begins in a documentary register, but it quickly loosens into a testing voice filled with soft static, half-notes, and deliberately unimportant details: tin-tin drift, market hum, side-lane murmur, dry-step shuffle, and a long ribbon of maybe-maybe language.\n\nThe text keeps circling back to bodies, buckets, weather, queues, edges, and the small changes that turn one day away from the last. Then it deliberately wanders into useful nonsense: lora lora, bendi-bendi, hushline, salt-noise, para-step, water-glint, coast-thread, dust-murmur, and field-echo. That gibberish is here on purpose so the page can hold longer reading blocks, test scrolling behaviour, and show how the typography behaves when the story becomes denser than the summary card below.\n\nEven in this inflated version, the main cues remain readable. Drought sits in front, while Mobility stay nearby as secondary currents. The people tags still matter, yet the prose avoids becoming technical. Instead it drifts through spoken fragments, observational loops, and little clusters of invented sound: nala-nala, brimstep, open hush, weather-click, shade-signal, road-gloss, and a few extra lines of pleasant nonsense to stretch the layout, settle the spacing, and keep the story field hovering at roughly two hundred and fifty words overall.",
+        "so": "Hawo wuxuu ka warramayaa Dry grazing land ee Xudur sidii meel uu abaar uga muuqdo hawlo maalinle ah halkii uu ka ahaan lahaa dhacdo keliya oo weyn. Meelo sii engegay ayaa qoysaska ka dhigaya kuwo mar walba socdaal iyo qorshayn ku jira. Qoraalku wuxuu ku bilaabmaa cod deggan oo sharaxaya muuqaalka, dabadeedna si ula kac ah ayuu ugu leexdaa hadal tijaabo ah oo ay ku jiraan erayo buuxin ah iyo laxan yar oo micne yar leh: bala-bala, socod-hami, hadh-hadh, guux-fudud, iyo weedho dheer oo ah laga-yaabee-laga-yaabee.\n\nQoraalku mar kasta wuxuu ku soo laabanayaa jirka, biyo-qaadka, safka, cimilada, iyo geesaha yar ee kala beddela maalmaha. Dabadeed si ula kac ah ayuu u geliyaa gibberish waxtar leh: luli-luli, marooq-marooq, hadal-dabayl, socod-dhac, biyo-birlab, ciid-hadal, iyo guux-madhan. Nacasnimadan yar ayaa halkan loogu daray si boggu u qaado qoraal dheer, loo tijaabiyo rogista, loona arko sida faruhu u dhaqmaan marka sheekadu ka weynaato soo koobista ka muuqata kaarka gallery-ga.\n\nXataa noocan la buunbuuniyey, tiirarka ugu waaweyn way muuqdaan. Abaar ayaa safka hore joogta, halka Socdaal ay u socdaan sida mawduucyo raaca. Calaamadaha dadka wali way shaqaynayaan, balse tuducyadu ma noqonayaan kuwo farsamo kaliya ah. Halkii, waxay ku qulqulayaan hadal qaybo-qaybo ah, wareegyo daawasho leh, iyo codad la sameeyey oo sida nala-nala, hummaag-jid, qorrax-qabow, iyo hadh-socod u shaqeeya, si dhererku u gaadho qiyaastii laba boqol iyo konton eray oo ku habboon tijaabada qaabeynta."
+      },
+      "reflection": {
+        "en": "This reflection reads the story first through drought, because that is the clearest thread holding the scene together in Hudur. The account remains grounded in ordinary actions rather than large declarations, and that helps the issue stay close to the reader. Hawo keeps returning to paths, pauses, repeated tasks, and tiny shifts in pace, which makes the setting feel lived rather than summarised. For layout testing, the paragraph also carries a little useful nonsense: tiri-tiri, hushline, side-glow, market-drift, and coast-thread, all inserted simply to give the text more weight on the page.\n\nThe secondary themes, especially Mobility, widen the frame without taking over from the main one. They sit beside the primary theme like quieter signals, helping the story feel layered rather than boxed into one label. This is also where the prototype benefits from extra copy. A longer paragraph reveals whether spacing, margins, and line length still feel calm when the reading block grows. So the text wanders deliberately through soft filler and half-words: mira-mira, bendi-bendi, dust-echo, river-note, para-step, and lantern-noise, all there to make the section breathe more densely.\n\nThe people layer matters as well. Children, Women/Girls, Men/Boys appear as a human guide to who is visible in the account, but not as the only way of understanding it. That balance is important for browsing. The story should still feel local, textured, and particular, while the interface quietly supports comparison across places and themes. Here the reflection keeps that balance by staying plain, steady, and editorial. Then, for testing, it adds a few drifting sounds of language again: moro-moro, light-silt, market-flare, small-turn, road-whisper, and rain-edge.\n\nAs a whole, this section works like a soft bridge between the longer story above and the filtered gallery below. It tells the reader why the story connects to others without becoming overly academic or technical. It also gives the layout a heavier reading state so typography, hierarchy, and rhythm can be judged properly in both dark and light themes. Nothing in the added gibberish changes meaning, but it does help the design prove itself under longer editorial copy, longer scrolls, and denser visual pacing.",
+        "so": "Milicsigan waxa uu sheekada marka hore ka akhriyaa abaar, sababtoo ah taas ayaa ah xadhigga ugu muuqda ee isku haya goobta ka muuqata Xudur. Qoraalku waxa uu ku dheggan yahay falal maalinle ah halkii uu ka noqon lahaa hadal culus, taasina waxa ay akhriska ka dhigaysaa mid dhow. Hawo marar badan ayuu ku noqdaa waddooyinka, sugitaanka, hawlaha soo noqnoqda, iyo isbeddellada yar yar ee xawaaraha, si goobtu u ekaato mid la nool yahay. Tijaabadan awgeed waxa ku jira erayo aan macne lahayn sida tiri-tiri, hushline, side-glow, iyo coast-thread.\n\nMawduucyada kale, gaar ahaan Socdaal, waxa ay ballaariyaan fahamka iyaga oo aan meesha ka saarayn mawduuca koowaad. Waxay ag joogsadaan sida calaamado deggan oo sheekada ka dhigaya mid lakabyo leh. Halkaas ayaana qoraalka dheer faa’iido leeyahay, sababtoo ah waxa uu muujinayaa in kala fogaanshaha, margin-ka, iyo dhererka sadaradu weli deggan yihiin marka qoraalku bato. Sidaas darteed waxa si ula kac ah u dhex socda ereyo tijaabo ah sida mira-mira, bendi-bendi, dust-echo, river-note, para-step, iyo lantern-noise.\n\nLakabka dadka isaguna waa muhiim. Carruur, Haween/Gabdho, Rag/Wiilal waxay muuqdaan sida tilmaam bani’aadamnimo oo tusaya cidda ugu badan ee sheekada ku jirta, balse ma noqdaan qaabka keliya ee lagu fahmo sheekada. Tani waxay muhiim u tahay marka la daalacanayo sheekooyin kala duwan. Sheekadu waa inay ahaataa mid deegaan leh, qoto dheer, oo gaar ah, halka is-dhexgalkuna si aamusnaan ah u taageerayo isbarbardhigga. Halkan qoraalku waxa uu ku sii daraa erayo sabbaynaya sida moro-moro, light-silt, market-flare, small-turn, road-whisper, iyo rain-edge.\n\nGuud ahaan, qaybta milicsigu waxay u shaqaysaa sidii buundo jilicsan oo u dhexaysa sheekada sare iyo gallery-ga la shaandheeyo ee hoose. Waxay u sheegaysaa akhristaha sababta sheekadani ugu xidhan tahay kuwo kale iyada oo aan aad u noqon mid culus ama farsamo badan. Waxa kale oo ay siisaa naqshadda xaalad akhris oo ka culus si xarfaha, kala sarreynta, iyo garaaca guud loo eego si fiican, labadaba muuqaalka madow iyo kan iftiinka. Gibberish-ka lagu daray ma beddelayo macnaha, balse waxa uu ka caawiyaa naqshadda inay u adkaysato qoraal dheer iyo socod dheer oo tijaabo ah."
+      },
+      "images": [
+        "images/leads/HD03.jpg",
+        "images/HD03/1.jpg",
+        "images/HD03/2.jpg",
+        "images/HD03/3.jpg"
+      ]
+    },
+    {
+      "id": "BD04",
+      "district": {
+        "slug": "baidoa",
+        "en": "Baidoa",
+        "so": "Baydhabo"
+      },
+      "cluster": {
+        "en": "Bay cluster",
+        "so": "Kutlada Bay"
+      },
+      "location": "Neighbourhood lane",
+      "date": "2025-02-25",
+      "storyteller": "Luul",
+      "primaryTheme": {
+        "slug": "shared-space",
+        "en": "Shared space",
+        "so": "Meel wadaag"
+      },
+      "secondaryThemes": [
+        {
+          "slug": "routine",
+          "en": "Routine",
+          "so": "Jadwal maalinle"
+        }
+      ],
+      "actors": [
+        "Children",
+        "Women/Girls",
+        "Men/Boys"
+      ],
+      "summary": {
+        "en": "Small lanes and shared spaces reveal how everyday life ties people together.",
+        "so": "Jidadka yaryar iyo meelaha la wadaago ayaa noqda halka laga arko sida nolosha maalinlaha ahi u isku xirto dadka."
+      },
+      "story": {
+        "en": "Luul describes Neighbourhood lane in Baidoa as a place where shared space is felt through ordinary routines rather than dramatic announcements. Small lanes and shared spaces reveal how everyday life ties people together. The story begins in a documentary register, but it quickly loosens into a testing voice filled with soft static, half-notes, and deliberately unimportant details: tin-tin drift, market hum, side-lane murmur, dry-step shuffle, and a long ribbon of maybe-maybe language.\n\nThe text keeps circling back to bodies, buckets, weather, queues, edges, and the small changes that turn one day away from the last. Then it deliberately wanders into useful nonsense: lora lora, bendi-bendi, hushline, salt-noise, para-step, water-glint, coast-thread, dust-murmur, and field-echo. That gibberish is here on purpose so the page can hold longer reading blocks, test scrolling behaviour, and show how the typography behaves when the story becomes denser than the summary card below.\n\nEven in this inflated version, the main cues remain readable. Shared space sits in front, while Routine stay nearby as secondary currents. The people tags still matter, yet the prose avoids becoming technical. Instead it drifts through spoken fragments, observational loops, and little clusters of invented sound: nala-nala, brimstep, open hush, weather-click, shade-signal, road-gloss, and a few extra lines of pleasant nonsense to stretch the layout, settle the spacing, and keep the story field hovering at roughly two hundred and fifty words overall.",
+        "so": "Luul wuxuu ka warramayaa Neighbourhood lane ee Baydhabo sidii meel uu meel wadaag uga muuqdo hawlo maalinle ah halkii uu ka ahaan lahaa dhacdo keliya oo weyn. Jidadka yaryar iyo meelaha la wadaago ayaa noqda halka laga arko sida nolosha maalinlaha ahi u isku xirto dadka. Qoraalku wuxuu ku bilaabmaa cod deggan oo sharaxaya muuqaalka, dabadeedna si ula kac ah ayuu ugu leexdaa hadal tijaabo ah oo ay ku jiraan erayo buuxin ah iyo laxan yar oo micne yar leh: bala-bala, socod-hami, hadh-hadh, guux-fudud, iyo weedho dheer oo ah laga-yaabee-laga-yaabee.\n\nQoraalku mar kasta wuxuu ku soo laabanayaa jirka, biyo-qaadka, safka, cimilada, iyo geesaha yar ee kala beddela maalmaha. Dabadeed si ula kac ah ayuu u geliyaa gibberish waxtar leh: luli-luli, marooq-marooq, hadal-dabayl, socod-dhac, biyo-birlab, ciid-hadal, iyo guux-madhan. Nacasnimadan yar ayaa halkan loogu daray si boggu u qaado qoraal dheer, loo tijaabiyo rogista, loona arko sida faruhu u dhaqmaan marka sheekadu ka weynaato soo koobista ka muuqata kaarka gallery-ga.\n\nXataa noocan la buunbuuniyey, tiirarka ugu waaweyn way muuqdaan. Meel wadaag ayaa safka hore joogta, halka Jadwal maalinle ay u socdaan sida mawduucyo raaca. Calaamadaha dadka wali way shaqaynayaan, balse tuducyadu ma noqonayaan kuwo farsamo kaliya ah. Halkii, waxay ku qulqulayaan hadal qaybo-qaybo ah, wareegyo daawasho leh, iyo codad la sameeyey oo sida nala-nala, hummaag-jid, qorrax-qabow, iyo hadh-socod u shaqeeya, si dhererku u gaadho qiyaastii laba boqol iyo konton eray oo ku habboon tijaabada qaabeynta."
+      },
+      "reflection": {
+        "en": "This reflection reads the story first through shared space, because that is the clearest thread holding the scene together in Baidoa. The account remains grounded in ordinary actions rather than large declarations, and that helps the issue stay close to the reader. Luul keeps returning to paths, pauses, repeated tasks, and tiny shifts in pace, which makes the setting feel lived rather than summarised. For layout testing, the paragraph also carries a little useful nonsense: tiri-tiri, hushline, side-glow, market-drift, and coast-thread, all inserted simply to give the text more weight on the page.\n\nThe secondary themes, especially Routine, widen the frame without taking over from the main one. They sit beside the primary theme like quieter signals, helping the story feel layered rather than boxed into one label. This is also where the prototype benefits from extra copy. A longer paragraph reveals whether spacing, margins, and line length still feel calm when the reading block grows. So the text wanders deliberately through soft filler and half-words: mira-mira, bendi-bendi, dust-echo, river-note, para-step, and lantern-noise, all there to make the section breathe more densely.\n\nThe people layer matters as well. Children, Women/Girls, Men/Boys appear as a human guide to who is visible in the account, but not as the only way of understanding it. That balance is important for browsing. The story should still feel local, textured, and particular, while the interface quietly supports comparison across places and themes. Here the reflection keeps that balance by staying plain, steady, and editorial. Then, for testing, it adds a few drifting sounds of language again: moro-moro, light-silt, market-flare, small-turn, road-whisper, and rain-edge.\n\nAs a whole, this section works like a soft bridge between the longer story above and the filtered gallery below. It tells the reader why the story connects to others without becoming overly academic or technical. It also gives the layout a heavier reading state so typography, hierarchy, and rhythm can be judged properly in both dark and light themes. Nothing in the added gibberish changes meaning, but it does help the design prove itself under longer editorial copy, longer scrolls, and denser visual pacing.",
+        "so": "Milicsigan waxa uu sheekada marka hore ka akhriyaa meel wadaag, sababtoo ah taas ayaa ah xadhigga ugu muuqda ee isku haya goobta ka muuqata Baydhabo. Qoraalku waxa uu ku dheggan yahay falal maalinle ah halkii uu ka noqon lahaa hadal culus, taasina waxa ay akhriska ka dhigaysaa mid dhow. Luul marar badan ayuu ku noqdaa waddooyinka, sugitaanka, hawlaha soo noqnoqda, iyo isbeddellada yar yar ee xawaaraha, si goobtu u ekaato mid la nool yahay. Tijaabadan awgeed waxa ku jira erayo aan macne lahayn sida tiri-tiri, hushline, side-glow, iyo coast-thread.\n\nMawduucyada kale, gaar ahaan Jadwal maalinle, waxa ay ballaariyaan fahamka iyaga oo aan meesha ka saarayn mawduuca koowaad. Waxay ag joogsadaan sida calaamado deggan oo sheekada ka dhigaya mid lakabyo leh. Halkaas ayaana qoraalka dheer faa’iido leeyahay, sababtoo ah waxa uu muujinayaa in kala fogaanshaha, margin-ka, iyo dhererka sadaradu weli deggan yihiin marka qoraalku bato. Sidaas darteed waxa si ula kac ah u dhex socda ereyo tijaabo ah sida mira-mira, bendi-bendi, dust-echo, river-note, para-step, iyo lantern-noise.\n\nLakabka dadka isaguna waa muhiim. Carruur, Haween/Gabdho, Rag/Wiilal waxay muuqdaan sida tilmaam bani’aadamnimo oo tusaya cidda ugu badan ee sheekada ku jirta, balse ma noqdaan qaabka keliya ee lagu fahmo sheekada. Tani waxay muhiim u tahay marka la daalacanayo sheekooyin kala duwan. Sheekadu waa inay ahaataa mid deegaan leh, qoto dheer, oo gaar ah, halka is-dhexgalkuna si aamusnaan ah u taageerayo isbarbardhigga. Halkan qoraalku waxa uu ku sii daraa erayo sabbaynaya sida moro-moro, light-silt, market-flare, small-turn, road-whisper, iyo rain-edge.\n\nGuud ahaan, qaybta milicsigu waxay u shaqaysaa sidii buundo jilicsan oo u dhexaysa sheekada sare iyo gallery-ga la shaandheeyo ee hoose. Waxay u sheegaysaa akhristaha sababta sheekadani ugu xidhan tahay kuwo kale iyada oo aan aad u noqon mid culus ama farsamo badan. Waxa kale oo ay siisaa naqshadda xaalad akhris oo ka culus si xarfaha, kala sarreynta, iyo garaaca guud loo eego si fiican, labadaba muuqaalka madow iyo kan iftiinka. Gibberish-ka lagu daray ma beddelayo macnaha, balse waxa uu ka caawiyaa naqshadda inay u adkaysato qoraal dheer iyo socod dheer oo tijaabo ah."
+      },
+      "images": [
+        "images/leads/BD04.jpg",
+        "images/BD04/1.jpg",
+        "images/BD04/2.jpg"
+      ]
+    },
+    {
+      "id": "HD04",
+      "district": {
+        "slug": "hudur",
+        "en": "Hudur",
+        "so": "Xudur"
+      },
+      "cluster": {
+        "en": "Bakool cluster",
+        "so": "Kutlada Bakool"
+      },
+      "location": "Field edge",
+      "date": "2025-03-01",
+      "storyteller": "Maryan",
+      "primaryTheme": {
+        "slug": "agriculture",
+        "en": "Agriculture",
+        "so": "Beeraha"
+      },
+      "secondaryThemes": [
+        {
+          "slug": "harvest",
+          "en": "Harvest",
+          "so": "Goosasho"
+        }
+      ],
+      "actors": [
+        "Women/Girls",
+        "Men/Boys"
+      ],
+      "summary": {
+        "en": "The farming season combines hard work, waiting, and hope tied to the harvest.",
+        "so": "Xilliga beeraha waxa lagu arkaa isku darka shaqo culus, sugitaan, iyo rajo xiran natiijada goosashada."
+      },
+      "story": {
+        "en": "Maryan describes Field edge in Hudur as a place where agriculture is felt through ordinary routines rather than dramatic announcements. The farming season combines hard work, waiting, and hope tied to the harvest. The story begins in a documentary register, but it quickly loosens into a testing voice filled with soft static, half-notes, and deliberately unimportant details: tin-tin drift, market hum, side-lane murmur, dry-step shuffle, and a long ribbon of maybe-maybe language.\n\nThe text keeps circling back to bodies, buckets, weather, queues, edges, and the small changes that turn one day away from the last. Then it deliberately wanders into useful nonsense: lora lora, bendi-bendi, hushline, salt-noise, para-step, water-glint, coast-thread, dust-murmur, and field-echo. That gibberish is here on purpose so the page can hold longer reading blocks, test scrolling behaviour, and show how the typography behaves when the story becomes denser than the summary card below.\n\nEven in this inflated version, the main cues remain readable. Agriculture sits in front, while Harvest stay nearby as secondary currents. The people tags still matter, yet the prose avoids becoming technical. Instead it drifts through spoken fragments, observational loops, and little clusters of invented sound: nala-nala, brimstep, open hush, weather-click, shade-signal, road-gloss, and a few extra lines of pleasant nonsense to stretch the layout, settle the spacing, and keep the story field hovering at roughly two hundred and fifty words overall.",
+        "so": "Maryan wuxuu ka warramayaa Field edge ee Xudur sidii meel uu beeraha uga muuqdo hawlo maalinle ah halkii uu ka ahaan lahaa dhacdo keliya oo weyn. Xilliga beeraha waxa lagu arkaa isku darka shaqo culus, sugitaan, iyo rajo xiran natiijada goosashada. Qoraalku wuxuu ku bilaabmaa cod deggan oo sharaxaya muuqaalka, dabadeedna si ula kac ah ayuu ugu leexdaa hadal tijaabo ah oo ay ku jiraan erayo buuxin ah iyo laxan yar oo micne yar leh: bala-bala, socod-hami, hadh-hadh, guux-fudud, iyo weedho dheer oo ah laga-yaabee-laga-yaabee.\n\nQoraalku mar kasta wuxuu ku soo laabanayaa jirka, biyo-qaadka, safka, cimilada, iyo geesaha yar ee kala beddela maalmaha. Dabadeed si ula kac ah ayuu u geliyaa gibberish waxtar leh: luli-luli, marooq-marooq, hadal-dabayl, socod-dhac, biyo-birlab, ciid-hadal, iyo guux-madhan. Nacasnimadan yar ayaa halkan loogu daray si boggu u qaado qoraal dheer, loo tijaabiyo rogista, loona arko sida faruhu u dhaqmaan marka sheekadu ka weynaato soo koobista ka muuqata kaarka gallery-ga.\n\nXataa noocan la buunbuuniyey, tiirarka ugu waaweyn way muuqdaan. Beeraha ayaa safka hore joogta, halka Goosasho ay u socdaan sida mawduucyo raaca. Calaamadaha dadka wali way shaqaynayaan, balse tuducyadu ma noqonayaan kuwo farsamo kaliya ah. Halkii, waxay ku qulqulayaan hadal qaybo-qaybo ah, wareegyo daawasho leh, iyo codad la sameeyey oo sida nala-nala, hummaag-jid, qorrax-qabow, iyo hadh-socod u shaqeeya, si dhererku u gaadho qiyaastii laba boqol iyo konton eray oo ku habboon tijaabada qaabeynta."
+      },
+      "reflection": {
+        "en": "This reflection reads the story first through agriculture, because that is the clearest thread holding the scene together in Hudur. The account remains grounded in ordinary actions rather than large declarations, and that helps the issue stay close to the reader. Maryan keeps returning to paths, pauses, repeated tasks, and tiny shifts in pace, which makes the setting feel lived rather than summarised. For layout testing, the paragraph also carries a little useful nonsense: tiri-tiri, hushline, side-glow, market-drift, and coast-thread, all inserted simply to give the text more weight on the page.\n\nThe secondary themes, especially Harvest, widen the frame without taking over from the main one. They sit beside the primary theme like quieter signals, helping the story feel layered rather than boxed into one label. This is also where the prototype benefits from extra copy. A longer paragraph reveals whether spacing, margins, and line length still feel calm when the reading block grows. So the text wanders deliberately through soft filler and half-words: mira-mira, bendi-bendi, dust-echo, river-note, para-step, and lantern-noise, all there to make the section breathe more densely.\n\nThe people layer matters as well. Women/Girls, Men/Boys appear as a human guide to who is visible in the account, but not as the only way of understanding it. That balance is important for browsing. The story should still feel local, textured, and particular, while the interface quietly supports comparison across places and themes. Here the reflection keeps that balance by staying plain, steady, and editorial. Then, for testing, it adds a few drifting sounds of language again: moro-moro, light-silt, market-flare, small-turn, road-whisper, and rain-edge.\n\nAs a whole, this section works like a soft bridge between the longer story above and the filtered gallery below. It tells the reader why the story connects to others without becoming overly academic or technical. It also gives the layout a heavier reading state so typography, hierarchy, and rhythm can be judged properly in both dark and light themes. Nothing in the added gibberish changes meaning, but it does help the design prove itself under longer editorial copy, longer scrolls, and denser visual pacing.",
+        "so": "Milicsigan waxa uu sheekada marka hore ka akhriyaa beeraha, sababtoo ah taas ayaa ah xadhigga ugu muuqda ee isku haya goobta ka muuqata Xudur. Qoraalku waxa uu ku dheggan yahay falal maalinle ah halkii uu ka noqon lahaa hadal culus, taasina waxa ay akhriska ka dhigaysaa mid dhow. Maryan marar badan ayuu ku noqdaa waddooyinka, sugitaanka, hawlaha soo noqnoqda, iyo isbeddellada yar yar ee xawaaraha, si goobtu u ekaato mid la nool yahay. Tijaabadan awgeed waxa ku jira erayo aan macne lahayn sida tiri-tiri, hushline, side-glow, iyo coast-thread.\n\nMawduucyada kale, gaar ahaan Goosasho, waxa ay ballaariyaan fahamka iyaga oo aan meesha ka saarayn mawduuca koowaad. Waxay ag joogsadaan sida calaamado deggan oo sheekada ka dhigaya mid lakabyo leh. Halkaas ayaana qoraalka dheer faa’iido leeyahay, sababtoo ah waxa uu muujinayaa in kala fogaanshaha, margin-ka, iyo dhererka sadaradu weli deggan yihiin marka qoraalku bato. Sidaas darteed waxa si ula kac ah u dhex socda ereyo tijaabo ah sida mira-mira, bendi-bendi, dust-echo, river-note, para-step, iyo lantern-noise.\n\nLakabka dadka isaguna waa muhiim. Haween/Gabdho, Rag/Wiilal waxay muuqdaan sida tilmaam bani’aadamnimo oo tusaya cidda ugu badan ee sheekada ku jirta, balse ma noqdaan qaabka keliya ee lagu fahmo sheekada. Tani waxay muhiim u tahay marka la daalacanayo sheekooyin kala duwan. Sheekadu waa inay ahaataa mid deegaan leh, qoto dheer, oo gaar ah, halka is-dhexgalkuna si aamusnaan ah u taageerayo isbarbardhigga. Halkan qoraalku waxa uu ku sii daraa erayo sabbaynaya sida moro-moro, light-silt, market-flare, small-turn, road-whisper, iyo rain-edge.\n\nGuud ahaan, qaybta milicsigu waxay u shaqaysaa sidii buundo jilicsan oo u dhexaysa sheekada sare iyo gallery-ga la shaandheeyo ee hoose. Waxay u sheegaysaa akhristaha sababta sheekadani ugu xidhan tahay kuwo kale iyada oo aan aad u noqon mid culus ama farsamo badan. Waxa kale oo ay siisaa naqshadda xaalad akhris oo ka culus si xarfaha, kala sarreynta, iyo garaaca guud loo eego si fiican, labadaba muuqaalka madow iyo kan iftiinka. Gibberish-ka lagu daray ma beddelayo macnaha, balse waxa uu ka caawiyaa naqshadda inay u adkaysato qoraal dheer iyo socod dheer oo tijaabo ah."
+      },
+      "images": [
+        "images/leads/HD04.jpg",
+        "images/HD04/1.jpg",
+        "images/HD04/2.jpg",
+        "images/HD04/3.jpg",
+        "images/HD04/4.jpg"
+      ]
+    },
+    {
+      "id": "BW04",
+      "district": {
+        "slug": "barawe",
+        "en": "Barawe",
+        "so": "Barawy"
+      },
+      "cluster": {
+        "en": "Coastal cluster",
+        "so": "Kutlada xeebta"
+      },
+      "location": "Homes near shore",
+      "date": "2025-03-04",
+      "storyteller": "Fadumo",
+      "primaryTheme": {
+        "slug": "coast",
+        "en": "Coast",
+        "so": "Xeeb"
+      },
+      "secondaryThemes": [
+        {
+          "slug": "displacement",
+          "en": "Displacement",
+          "so": "Barakac"
+        }
+      ],
+      "actors": [
+        "Women/Girls",
+        "Children"
+      ],
+      "summary": {
+        "en": "Homes near the coast show how belonging and risk can exist side by side.",
+        "so": "Guryaha ku dhow xeebta waxay muujinayaan sida degaan iyo khatar ay isu dhinac socdaan."
+      },
+      "story": {
+        "en": "Fadumo describes Homes near shore in Barawe as a place where coast is felt through ordinary routines rather than dramatic announcements. Homes near the coast show how belonging and risk can exist side by side. The story begins in a documentary register, but it quickly loosens into a testing voice filled with soft static, half-notes, and deliberately unimportant details: tin-tin drift, market hum, side-lane murmur, dry-step shuffle, and a long ribbon of maybe-maybe language.\n\nThe text keeps circling back to bodies, buckets, weather, queues, edges, and the small changes that turn one day away from the last. Then it deliberately wanders into useful nonsense: lora lora, bendi-bendi, hushline, salt-noise, para-step, water-glint, coast-thread, dust-murmur, and field-echo. That gibberish is here on purpose so the page can hold longer reading blocks, test scrolling behaviour, and show how the typography behaves when the story becomes denser than the summary card below.\n\nEven in this inflated version, the main cues remain readable. Coast sits in front, while Displacement stay nearby as secondary currents. The people tags still matter, yet the prose avoids becoming technical. Instead it drifts through spoken fragments, observational loops, and little clusters of invented sound: nala-nala, brimstep, open hush, weather-click, shade-signal, road-gloss, and a few extra lines of pleasant nonsense to stretch the layout, settle the spacing, and keep the story field hovering at roughly two hundred and fifty words overall.",
+        "so": "Fadumo wuxuu ka warramayaa Homes near shore ee Barawy sidii meel uu xeeb uga muuqdo hawlo maalinle ah halkii uu ka ahaan lahaa dhacdo keliya oo weyn. Guryaha ku dhow xeebta waxay muujinayaan sida degaan iyo khatar ay isu dhinac socdaan. Qoraalku wuxuu ku bilaabmaa cod deggan oo sharaxaya muuqaalka, dabadeedna si ula kac ah ayuu ugu leexdaa hadal tijaabo ah oo ay ku jiraan erayo buuxin ah iyo laxan yar oo micne yar leh: bala-bala, socod-hami, hadh-hadh, guux-fudud, iyo weedho dheer oo ah laga-yaabee-laga-yaabee.\n\nQoraalku mar kasta wuxuu ku soo laabanayaa jirka, biyo-qaadka, safka, cimilada, iyo geesaha yar ee kala beddela maalmaha. Dabadeed si ula kac ah ayuu u geliyaa gibberish waxtar leh: luli-luli, marooq-marooq, hadal-dabayl, socod-dhac, biyo-birlab, ciid-hadal, iyo guux-madhan. Nacasnimadan yar ayaa halkan loogu daray si boggu u qaado qoraal dheer, loo tijaabiyo rogista, loona arko sida faruhu u dhaqmaan marka sheekadu ka weynaato soo koobista ka muuqata kaarka gallery-ga.\n\nXataa noocan la buunbuuniyey, tiirarka ugu waaweyn way muuqdaan. Xeeb ayaa safka hore joogta, halka Barakac ay u socdaan sida mawduucyo raaca. Calaamadaha dadka wali way shaqaynayaan, balse tuducyadu ma noqonayaan kuwo farsamo kaliya ah. Halkii, waxay ku qulqulayaan hadal qaybo-qaybo ah, wareegyo daawasho leh, iyo codad la sameeyey oo sida nala-nala, hummaag-jid, qorrax-qabow, iyo hadh-socod u shaqeeya, si dhererku u gaadho qiyaastii laba boqol iyo konton eray oo ku habboon tijaabada qaabeynta."
+      },
+      "reflection": {
+        "en": "This reflection reads the story first through coast, because that is the clearest thread holding the scene together in Barawe. The account remains grounded in ordinary actions rather than large declarations, and that helps the issue stay close to the reader. Fadumo keeps returning to paths, pauses, repeated tasks, and tiny shifts in pace, which makes the setting feel lived rather than summarised. For layout testing, the paragraph also carries a little useful nonsense: tiri-tiri, hushline, side-glow, market-drift, and coast-thread, all inserted simply to give the text more weight on the page.\n\nThe secondary themes, especially Displacement, widen the frame without taking over from the main one. They sit beside the primary theme like quieter signals, helping the story feel layered rather than boxed into one label. This is also where the prototype benefits from extra copy. A longer paragraph reveals whether spacing, margins, and line length still feel calm when the reading block grows. So the text wanders deliberately through soft filler and half-words: mira-mira, bendi-bendi, dust-echo, river-note, para-step, and lantern-noise, all there to make the section breathe more densely.\n\nThe people layer matters as well. Women/Girls, Children appear as a human guide to who is visible in the account, but not as the only way of understanding it. That balance is important for browsing. The story should still feel local, textured, and particular, while the interface quietly supports comparison across places and themes. Here the reflection keeps that balance by staying plain, steady, and editorial. Then, for testing, it adds a few drifting sounds of language again: moro-moro, light-silt, market-flare, small-turn, road-whisper, and rain-edge.\n\nAs a whole, this section works like a soft bridge between the longer story above and the filtered gallery below. It tells the reader why the story connects to others without becoming overly academic or technical. It also gives the layout a heavier reading state so typography, hierarchy, and rhythm can be judged properly in both dark and light themes. Nothing in the added gibberish changes meaning, but it does help the design prove itself under longer editorial copy, longer scrolls, and denser visual pacing.",
+        "so": "Milicsigan waxa uu sheekada marka hore ka akhriyaa xeeb, sababtoo ah taas ayaa ah xadhigga ugu muuqda ee isku haya goobta ka muuqata Barawy. Qoraalku waxa uu ku dheggan yahay falal maalinle ah halkii uu ka noqon lahaa hadal culus, taasina waxa ay akhriska ka dhigaysaa mid dhow. Fadumo marar badan ayuu ku noqdaa waddooyinka, sugitaanka, hawlaha soo noqnoqda, iyo isbeddellada yar yar ee xawaaraha, si goobtu u ekaato mid la nool yahay. Tijaabadan awgeed waxa ku jira erayo aan macne lahayn sida tiri-tiri, hushline, side-glow, iyo coast-thread.\n\nMawduucyada kale, gaar ahaan Barakac, waxa ay ballaariyaan fahamka iyaga oo aan meesha ka saarayn mawduuca koowaad. Waxay ag joogsadaan sida calaamado deggan oo sheekada ka dhigaya mid lakabyo leh. Halkaas ayaana qoraalka dheer faa’iido leeyahay, sababtoo ah waxa uu muujinayaa in kala fogaanshaha, margin-ka, iyo dhererka sadaradu weli deggan yihiin marka qoraalku bato. Sidaas darteed waxa si ula kac ah u dhex socda ereyo tijaabo ah sida mira-mira, bendi-bendi, dust-echo, river-note, para-step, iyo lantern-noise.\n\nLakabka dadka isaguna waa muhiim. Haween/Gabdho, Carruur waxay muuqdaan sida tilmaam bani’aadamnimo oo tusaya cidda ugu badan ee sheekada ku jirta, balse ma noqdaan qaabka keliya ee lagu fahmo sheekada. Tani waxay muhiim u tahay marka la daalacanayo sheekooyin kala duwan. Sheekadu waa inay ahaataa mid deegaan leh, qoto dheer, oo gaar ah, halka is-dhexgalkuna si aamusnaan ah u taageerayo isbarbardhigga. Halkan qoraalku waxa uu ku sii daraa erayo sabbaynaya sida moro-moro, light-silt, market-flare, small-turn, road-whisper, iyo rain-edge.\n\nGuud ahaan, qaybta milicsigu waxay u shaqaysaa sidii buundo jilicsan oo u dhexaysa sheekada sare iyo gallery-ga la shaandheeyo ee hoose. Waxay u sheegaysaa akhristaha sababta sheekadani ugu xidhan tahay kuwo kale iyada oo aan aad u noqon mid culus ama farsamo badan. Waxa kale oo ay siisaa naqshadda xaalad akhris oo ka culus si xarfaha, kala sarreynta, iyo garaaca guud loo eego si fiican, labadaba muuqaalka madow iyo kan iftiinka. Gibberish-ka lagu daray ma beddelayo macnaha, balse waxa uu ka caawiyaa naqshadda inay u adkaysato qoraal dheer iyo socod dheer oo tijaabo ah."
+      },
+      "images": [
+        "images/leads/BW04.jpg",
+        "images/BW04/1.jpg",
+        "images/BW04/2.jpg",
+        "images/BW04/3.jpg"
+      ]
+    },
+    {
+      "id": "BD05",
+      "district": {
+        "slug": "baidoa",
+        "en": "Baidoa",
+        "so": "Baydhabo"
+      },
+      "cluster": {
+        "en": "Bay cluster",
+        "so": "Kutlada Bay"
+      },
+      "location": "Water queue",
+      "date": "2025-03-08",
+      "storyteller": "Rahma",
+      "primaryTheme": {
+        "slug": "water-access",
+        "en": "Water access",
+        "so": "Helitaanka biyo"
+      },
+      "secondaryThemes": [
+        {
+          "slug": "routine",
+          "en": "Routine",
+          "so": "Jadwal maalinle"
+        }
+      ],
+      "actors": [
+        "Women/Girls"
+      ],
+      "summary": {
+        "en": "Water queues become a portrait of time, patience, and labour that often goes unseen.",
+        "so": "Safafka biyuhu waxay noqdaan sawir ka hadlaya waqti, dulqaad, iyo shaqada aan mar walba la arag."
+      },
+      "story": {
+        "en": "Rahma describes Water queue in Baidoa as a place where water access is felt through ordinary routines rather than dramatic announcements. Water queues become a portrait of time, patience, and labour that often goes unseen. The story begins in a documentary register, but it quickly loosens into a testing voice filled with soft static, half-notes, and deliberately unimportant details: tin-tin drift, market hum, side-lane murmur, dry-step shuffle, and a long ribbon of maybe-maybe language.\n\nThe text keeps circling back to bodies, buckets, weather, queues, edges, and the small changes that turn one day away from the last. Then it deliberately wanders into useful nonsense: lora lora, bendi-bendi, hushline, salt-noise, para-step, water-glint, coast-thread, dust-murmur, and field-echo. That gibberish is here on purpose so the page can hold longer reading blocks, test scrolling behaviour, and show how the typography behaves when the story becomes denser than the summary card below.\n\nEven in this inflated version, the main cues remain readable. Water access sits in front, while Routine stay nearby as secondary currents. The people tags still matter, yet the prose avoids becoming technical. Instead it drifts through spoken fragments, observational loops, and little clusters of invented sound: nala-nala, brimstep, open hush, weather-click, shade-signal, road-gloss, and a few extra lines of pleasant nonsense to stretch the layout, settle the spacing, and keep the story field hovering at roughly two hundred and fifty words overall.",
+        "so": "Rahma wuxuu ka warramayaa Water queue ee Baydhabo sidii meel uu helitaanka biyo uga muuqdo hawlo maalinle ah halkii uu ka ahaan lahaa dhacdo keliya oo weyn. Safafka biyuhu waxay noqdaan sawir ka hadlaya waqti, dulqaad, iyo shaqada aan mar walba la arag. Qoraalku wuxuu ku bilaabmaa cod deggan oo sharaxaya muuqaalka, dabadeedna si ula kac ah ayuu ugu leexdaa hadal tijaabo ah oo ay ku jiraan erayo buuxin ah iyo laxan yar oo micne yar leh: bala-bala, socod-hami, hadh-hadh, guux-fudud, iyo weedho dheer oo ah laga-yaabee-laga-yaabee.\n\nQoraalku mar kasta wuxuu ku soo laabanayaa jirka, biyo-qaadka, safka, cimilada, iyo geesaha yar ee kala beddela maalmaha. Dabadeed si ula kac ah ayuu u geliyaa gibberish waxtar leh: luli-luli, marooq-marooq, hadal-dabayl, socod-dhac, biyo-birlab, ciid-hadal, iyo guux-madhan. Nacasnimadan yar ayaa halkan loogu daray si boggu u qaado qoraal dheer, loo tijaabiyo rogista, loona arko sida faruhu u dhaqmaan marka sheekadu ka weynaato soo koobista ka muuqata kaarka gallery-ga.\n\nXataa noocan la buunbuuniyey, tiirarka ugu waaweyn way muuqdaan. Helitaanka biyo ayaa safka hore joogta, halka Jadwal maalinle ay u socdaan sida mawduucyo raaca. Calaamadaha dadka wali way shaqaynayaan, balse tuducyadu ma noqonayaan kuwo farsamo kaliya ah. Halkii, waxay ku qulqulayaan hadal qaybo-qaybo ah, wareegyo daawasho leh, iyo codad la sameeyey oo sida nala-nala, hummaag-jid, qorrax-qabow, iyo hadh-socod u shaqeeya, si dhererku u gaadho qiyaastii laba boqol iyo konton eray oo ku habboon tijaabada qaabeynta."
+      },
+      "reflection": {
+        "en": "This reflection reads the story first through water access, because that is the clearest thread holding the scene together in Baidoa. The account remains grounded in ordinary actions rather than large declarations, and that helps the issue stay close to the reader. Rahma keeps returning to paths, pauses, repeated tasks, and tiny shifts in pace, which makes the setting feel lived rather than summarised. For layout testing, the paragraph also carries a little useful nonsense: tiri-tiri, hushline, side-glow, market-drift, and coast-thread, all inserted simply to give the text more weight on the page.\n\nThe secondary themes, especially Routine, widen the frame without taking over from the main one. They sit beside the primary theme like quieter signals, helping the story feel layered rather than boxed into one label. This is also where the prototype benefits from extra copy. A longer paragraph reveals whether spacing, margins, and line length still feel calm when the reading block grows. So the text wanders deliberately through soft filler and half-words: mira-mira, bendi-bendi, dust-echo, river-note, para-step, and lantern-noise, all there to make the section breathe more densely.\n\nThe people layer matters as well. Women/Girls appear as a human guide to who is visible in the account, but not as the only way of understanding it. That balance is important for browsing. The story should still feel local, textured, and particular, while the interface quietly supports comparison across places and themes. Here the reflection keeps that balance by staying plain, steady, and editorial. Then, for testing, it adds a few drifting sounds of language again: moro-moro, light-silt, market-flare, small-turn, road-whisper, and rain-edge.\n\nAs a whole, this section works like a soft bridge between the longer story above and the filtered gallery below. It tells the reader why the story connects to others without becoming overly academic or technical. It also gives the layout a heavier reading state so typography, hierarchy, and rhythm can be judged properly in both dark and light themes. Nothing in the added gibberish changes meaning, but it does help the design prove itself under longer editorial copy, longer scrolls, and denser visual pacing.",
+        "so": "Milicsigan waxa uu sheekada marka hore ka akhriyaa helitaanka biyo, sababtoo ah taas ayaa ah xadhigga ugu muuqda ee isku haya goobta ka muuqata Baydhabo. Qoraalku waxa uu ku dheggan yahay falal maalinle ah halkii uu ka noqon lahaa hadal culus, taasina waxa ay akhriska ka dhigaysaa mid dhow. Rahma marar badan ayuu ku noqdaa waddooyinka, sugitaanka, hawlaha soo noqnoqda, iyo isbeddellada yar yar ee xawaaraha, si goobtu u ekaato mid la nool yahay. Tijaabadan awgeed waxa ku jira erayo aan macne lahayn sida tiri-tiri, hushline, side-glow, iyo coast-thread.\n\nMawduucyada kale, gaar ahaan Jadwal maalinle, waxa ay ballaariyaan fahamka iyaga oo aan meesha ka saarayn mawduuca koowaad. Waxay ag joogsadaan sida calaamado deggan oo sheekada ka dhigaya mid lakabyo leh. Halkaas ayaana qoraalka dheer faa’iido leeyahay, sababtoo ah waxa uu muujinayaa in kala fogaanshaha, margin-ka, iyo dhererka sadaradu weli deggan yihiin marka qoraalku bato. Sidaas darteed waxa si ula kac ah u dhex socda ereyo tijaabo ah sida mira-mira, bendi-bendi, dust-echo, river-note, para-step, iyo lantern-noise.\n\nLakabka dadka isaguna waa muhiim. Haween/Gabdho waxay muuqdaan sida tilmaam bani’aadamnimo oo tusaya cidda ugu badan ee sheekada ku jirta, balse ma noqdaan qaabka keliya ee lagu fahmo sheekada. Tani waxay muhiim u tahay marka la daalacanayo sheekooyin kala duwan. Sheekadu waa inay ahaataa mid deegaan leh, qoto dheer, oo gaar ah, halka is-dhexgalkuna si aamusnaan ah u taageerayo isbarbardhigga. Halkan qoraalku waxa uu ku sii daraa erayo sabbaynaya sida moro-moro, light-silt, market-flare, small-turn, road-whisper, iyo rain-edge.\n\nGuud ahaan, qaybta milicsigu waxay u shaqaysaa sidii buundo jilicsan oo u dhexaysa sheekada sare iyo gallery-ga la shaandheeyo ee hoose. Waxay u sheegaysaa akhristaha sababta sheekadani ugu xidhan tahay kuwo kale iyada oo aan aad u noqon mid culus ama farsamo badan. Waxa kale oo ay siisaa naqshadda xaalad akhris oo ka culus si xarfaha, kala sarreynta, iyo garaaca guud loo eego si fiican, labadaba muuqaalka madow iyo kan iftiinka. Gibberish-ka lagu daray ma beddelayo macnaha, balse waxa uu ka caawiyaa naqshadda inay u adkaysato qoraal dheer iyo socod dheer oo tijaabo ah."
+      },
+      "images": [
+        "images/leads/BD05.jpg",
+        "images/BD05/1.jpg",
+        "images/BD05/2.jpg",
+        "images/BD05/3.jpg"
+      ]
+    },
+    {
+      "id": "HD05",
+      "district": {
+        "slug": "hudur",
+        "en": "Hudur",
+        "so": "Xudur"
+      },
+      "cluster": {
+        "en": "Bakool cluster",
+        "so": "Kutlada Bakool"
+      },
+      "location": "Seasonal track",
+      "date": "2025-03-12",
+      "storyteller": "Khadar",
+      "primaryTheme": {
+        "slug": "rain-timing",
+        "en": "Rain timing",
+        "so": "Waqtiga roobka"
+      },
+      "secondaryThemes": [
+        {
+          "slug": "mobility",
+          "en": "Mobility",
+          "so": "Socdaal"
+        }
+      ],
+      "actors": [
+        "Youth",
+        "Men/Boys"
+      ],
+      "summary": {
+        "en": "Rain timing and travel decisions become tightly linked forces shaping daily life.",
+        "so": "Waqtiga roobka iyo go’aannada safarka ayaa noqda arrimo si dhow isugu xidhan oo hagaya nolosha."
+      },
+      "story": {
+        "en": "Khadar describes Seasonal track in Hudur as a place where rain timing is felt through ordinary routines rather than dramatic announcements. Rain timing and travel decisions become tightly linked forces shaping daily life. The story begins in a documentary register, but it quickly loosens into a testing voice filled with soft static, half-notes, and deliberately unimportant details: tin-tin drift, market hum, side-lane murmur, dry-step shuffle, and a long ribbon of maybe-maybe language.\n\nThe text keeps circling back to bodies, buckets, weather, queues, edges, and the small changes that turn one day away from the last. Then it deliberately wanders into useful nonsense: lora lora, bendi-bendi, hushline, salt-noise, para-step, water-glint, coast-thread, dust-murmur, and field-echo. That gibberish is here on purpose so the page can hold longer reading blocks, test scrolling behaviour, and show how the typography behaves when the story becomes denser than the summary card below.\n\nEven in this inflated version, the main cues remain readable. Rain timing sits in front, while Mobility stay nearby as secondary currents. The people tags still matter, yet the prose avoids becoming technical. Instead it drifts through spoken fragments, observational loops, and little clusters of invented sound: nala-nala, brimstep, open hush, weather-click, shade-signal, road-gloss, and a few extra lines of pleasant nonsense to stretch the layout, settle the spacing, and keep the story field hovering at roughly two hundred and fifty words overall.",
+        "so": "Khadar wuxuu ka warramayaa Seasonal track ee Xudur sidii meel uu waqtiga roobka uga muuqdo hawlo maalinle ah halkii uu ka ahaan lahaa dhacdo keliya oo weyn. Waqtiga roobka iyo go’aannada safarka ayaa noqda arrimo si dhow isugu xidhan oo hagaya nolosha. Qoraalku wuxuu ku bilaabmaa cod deggan oo sharaxaya muuqaalka, dabadeedna si ula kac ah ayuu ugu leexdaa hadal tijaabo ah oo ay ku jiraan erayo buuxin ah iyo laxan yar oo micne yar leh: bala-bala, socod-hami, hadh-hadh, guux-fudud, iyo weedho dheer oo ah laga-yaabee-laga-yaabee.\n\nQoraalku mar kasta wuxuu ku soo laabanayaa jirka, biyo-qaadka, safka, cimilada, iyo geesaha yar ee kala beddela maalmaha. Dabadeed si ula kac ah ayuu u geliyaa gibberish waxtar leh: luli-luli, marooq-marooq, hadal-dabayl, socod-dhac, biyo-birlab, ciid-hadal, iyo guux-madhan. Nacasnimadan yar ayaa halkan loogu daray si boggu u qaado qoraal dheer, loo tijaabiyo rogista, loona arko sida faruhu u dhaqmaan marka sheekadu ka weynaato soo koobista ka muuqata kaarka gallery-ga.\n\nXataa noocan la buunbuuniyey, tiirarka ugu waaweyn way muuqdaan. Waqtiga roobka ayaa safka hore joogta, halka Socdaal ay u socdaan sida mawduucyo raaca. Calaamadaha dadka wali way shaqaynayaan, balse tuducyadu ma noqonayaan kuwo farsamo kaliya ah. Halkii, waxay ku qulqulayaan hadal qaybo-qaybo ah, wareegyo daawasho leh, iyo codad la sameeyey oo sida nala-nala, hummaag-jid, qorrax-qabow, iyo hadh-socod u shaqeeya, si dhererku u gaadho qiyaastii laba boqol iyo konton eray oo ku habboon tijaabada qaabeynta."
+      },
+      "reflection": {
+        "en": "This reflection reads the story first through rain timing, because that is the clearest thread holding the scene together in Hudur. The account remains grounded in ordinary actions rather than large declarations, and that helps the issue stay close to the reader. Khadar keeps returning to paths, pauses, repeated tasks, and tiny shifts in pace, which makes the setting feel lived rather than summarised. For layout testing, the paragraph also carries a little useful nonsense: tiri-tiri, hushline, side-glow, market-drift, and coast-thread, all inserted simply to give the text more weight on the page.\n\nThe secondary themes, especially Mobility, widen the frame without taking over from the main one. They sit beside the primary theme like quieter signals, helping the story feel layered rather than boxed into one label. This is also where the prototype benefits from extra copy. A longer paragraph reveals whether spacing, margins, and line length still feel calm when the reading block grows. So the text wanders deliberately through soft filler and half-words: mira-mira, bendi-bendi, dust-echo, river-note, para-step, and lantern-noise, all there to make the section breathe more densely.\n\nThe people layer matters as well. Youth, Men/Boys appear as a human guide to who is visible in the account, but not as the only way of understanding it. That balance is important for browsing. The story should still feel local, textured, and particular, while the interface quietly supports comparison across places and themes. Here the reflection keeps that balance by staying plain, steady, and editorial. Then, for testing, it adds a few drifting sounds of language again: moro-moro, light-silt, market-flare, small-turn, road-whisper, and rain-edge.\n\nAs a whole, this section works like a soft bridge between the longer story above and the filtered gallery below. It tells the reader why the story connects to others without becoming overly academic or technical. It also gives the layout a heavier reading state so typography, hierarchy, and rhythm can be judged properly in both dark and light themes. Nothing in the added gibberish changes meaning, but it does help the design prove itself under longer editorial copy, longer scrolls, and denser visual pacing.",
+        "so": "Milicsigan waxa uu sheekada marka hore ka akhriyaa waqtiga roobka, sababtoo ah taas ayaa ah xadhigga ugu muuqda ee isku haya goobta ka muuqata Xudur. Qoraalku waxa uu ku dheggan yahay falal maalinle ah halkii uu ka noqon lahaa hadal culus, taasina waxa ay akhriska ka dhigaysaa mid dhow. Khadar marar badan ayuu ku noqdaa waddooyinka, sugitaanka, hawlaha soo noqnoqda, iyo isbeddellada yar yar ee xawaaraha, si goobtu u ekaato mid la nool yahay. Tijaabadan awgeed waxa ku jira erayo aan macne lahayn sida tiri-tiri, hushline, side-glow, iyo coast-thread.\n\nMawduucyada kale, gaar ahaan Socdaal, waxa ay ballaariyaan fahamka iyaga oo aan meesha ka saarayn mawduuca koowaad. Waxay ag joogsadaan sida calaamado deggan oo sheekada ka dhigaya mid lakabyo leh. Halkaas ayaana qoraalka dheer faa’iido leeyahay, sababtoo ah waxa uu muujinayaa in kala fogaanshaha, margin-ka, iyo dhererka sadaradu weli deggan yihiin marka qoraalku bato. Sidaas darteed waxa si ula kac ah u dhex socda ereyo tijaabo ah sida mira-mira, bendi-bendi, dust-echo, river-note, para-step, iyo lantern-noise.\n\nLakabka dadka isaguna waa muhiim. Dhallinyaro, Rag/Wiilal waxay muuqdaan sida tilmaam bani’aadamnimo oo tusaya cidda ugu badan ee sheekada ku jirta, balse ma noqdaan qaabka keliya ee lagu fahmo sheekada. Tani waxay muhiim u tahay marka la daalacanayo sheekooyin kala duwan. Sheekadu waa inay ahaataa mid deegaan leh, qoto dheer, oo gaar ah, halka is-dhexgalkuna si aamusnaan ah u taageerayo isbarbardhigga. Halkan qoraalku waxa uu ku sii daraa erayo sabbaynaya sida moro-moro, light-silt, market-flare, small-turn, road-whisper, iyo rain-edge.\n\nGuud ahaan, qaybta milicsigu waxay u shaqaysaa sidii buundo jilicsan oo u dhexaysa sheekada sare iyo gallery-ga la shaandheeyo ee hoose. Waxay u sheegaysaa akhristaha sababta sheekadani ugu xidhan tahay kuwo kale iyada oo aan aad u noqon mid culus ama farsamo badan. Waxa kale oo ay siisaa naqshadda xaalad akhris oo ka culus si xarfaha, kala sarreynta, iyo garaaca guud loo eego si fiican, labadaba muuqaalka madow iyo kan iftiinka. Gibberish-ka lagu daray ma beddelayo macnaha, balse waxa uu ka caawiyaa naqshadda inay u adkaysato qoraal dheer iyo socod dheer oo tijaabo ah."
+      },
+      "images": [
+        "images/leads/HD05.jpg",
+        "images/HD05/1.jpg",
+        "images/HD05/2.jpg"
+      ]
+    },
+    {
+      "id": "BW05",
+      "district": {
+        "slug": "barawe",
+        "en": "Barawe",
+        "so": "Barawy"
+      },
+      "cluster": {
+        "en": "Coastal cluster",
+        "so": "Kutlada xeebta"
+      },
+      "location": "Boat repair area",
+      "date": "2025-03-15",
+      "storyteller": "Salim",
+      "primaryTheme": {
+        "slug": "fishing",
+        "en": "Fishing",
+        "so": "Kalluumaysi"
+      },
+      "secondaryThemes": [
+        {
+          "slug": "recovery",
+          "en": "Recovery",
+          "so": "Soo kabasho"
+        }
+      ],
+      "actors": [
+        "Youth",
+        "Men/Boys"
+      ],
+      "summary": {
+        "en": "Boat repair turns this into a story about recovery, skill, and preparation.",
+        "so": "Dayactirka doomaha wuxuu sheekadan ka dhigayaa mid ka hadlaysa soo kabasho, xirfad, iyo diyaargarow."
+      },
+      "story": {
+        "en": "Salim describes Boat repair area in Barawe as a place where fishing is felt through ordinary routines rather than dramatic announcements. Boat repair turns this into a story about recovery, skill, and preparation. The story begins in a documentary register, but it quickly loosens into a testing voice filled with soft static, half-notes, and deliberately unimportant details: tin-tin drift, market hum, side-lane murmur, dry-step shuffle, and a long ribbon of maybe-maybe language.\n\nThe text keeps circling back to bodies, buckets, weather, queues, edges, and the small changes that turn one day away from the last. Then it deliberately wanders into useful nonsense: lora lora, bendi-bendi, hushline, salt-noise, para-step, water-glint, coast-thread, dust-murmur, and field-echo. That gibberish is here on purpose so the page can hold longer reading blocks, test scrolling behaviour, and show how the typography behaves when the story becomes denser than the summary card below.\n\nEven in this inflated version, the main cues remain readable. Fishing sits in front, while Recovery stay nearby as secondary currents. The people tags still matter, yet the prose avoids becoming technical. Instead it drifts through spoken fragments, observational loops, and little clusters of invented sound: nala-nala, brimstep, open hush, weather-click, shade-signal, road-gloss, and a few extra lines of pleasant nonsense to stretch the layout, settle the spacing, and keep the story field hovering at roughly two hundred and fifty words overall.",
+        "so": "Salim wuxuu ka warramayaa Boat repair area ee Barawy sidii meel uu kalluumaysi uga muuqdo hawlo maalinle ah halkii uu ka ahaan lahaa dhacdo keliya oo weyn. Dayactirka doomaha wuxuu sheekadan ka dhigayaa mid ka hadlaysa soo kabasho, xirfad, iyo diyaargarow. Qoraalku wuxuu ku bilaabmaa cod deggan oo sharaxaya muuqaalka, dabadeedna si ula kac ah ayuu ugu leexdaa hadal tijaabo ah oo ay ku jiraan erayo buuxin ah iyo laxan yar oo micne yar leh: bala-bala, socod-hami, hadh-hadh, guux-fudud, iyo weedho dheer oo ah laga-yaabee-laga-yaabee.\n\nQoraalku mar kasta wuxuu ku soo laabanayaa jirka, biyo-qaadka, safka, cimilada, iyo geesaha yar ee kala beddela maalmaha. Dabadeed si ula kac ah ayuu u geliyaa gibberish waxtar leh: luli-luli, marooq-marooq, hadal-dabayl, socod-dhac, biyo-birlab, ciid-hadal, iyo guux-madhan. Nacasnimadan yar ayaa halkan loogu daray si boggu u qaado qoraal dheer, loo tijaabiyo rogista, loona arko sida faruhu u dhaqmaan marka sheekadu ka weynaato soo koobista ka muuqata kaarka gallery-ga.\n\nXataa noocan la buunbuuniyey, tiirarka ugu waaweyn way muuqdaan. Kalluumaysi ayaa safka hore joogta, halka Soo kabasho ay u socdaan sida mawduucyo raaca. Calaamadaha dadka wali way shaqaynayaan, balse tuducyadu ma noqonayaan kuwo farsamo kaliya ah. Halkii, waxay ku qulqulayaan hadal qaybo-qaybo ah, wareegyo daawasho leh, iyo codad la sameeyey oo sida nala-nala, hummaag-jid, qorrax-qabow, iyo hadh-socod u shaqeeya, si dhererku u gaadho qiyaastii laba boqol iyo konton eray oo ku habboon tijaabada qaabeynta."
+      },
+      "reflection": {
+        "en": "This reflection reads the story first through fishing, because that is the clearest thread holding the scene together in Barawe. The account remains grounded in ordinary actions rather than large declarations, and that helps the issue stay close to the reader. Salim keeps returning to paths, pauses, repeated tasks, and tiny shifts in pace, which makes the setting feel lived rather than summarised. For layout testing, the paragraph also carries a little useful nonsense: tiri-tiri, hushline, side-glow, market-drift, and coast-thread, all inserted simply to give the text more weight on the page.\n\nThe secondary themes, especially Recovery, widen the frame without taking over from the main one. They sit beside the primary theme like quieter signals, helping the story feel layered rather than boxed into one label. This is also where the prototype benefits from extra copy. A longer paragraph reveals whether spacing, margins, and line length still feel calm when the reading block grows. So the text wanders deliberately through soft filler and half-words: mira-mira, bendi-bendi, dust-echo, river-note, para-step, and lantern-noise, all there to make the section breathe more densely.\n\nThe people layer matters as well. Youth, Men/Boys appear as a human guide to who is visible in the account, but not as the only way of understanding it. That balance is important for browsing. The story should still feel local, textured, and particular, while the interface quietly supports comparison across places and themes. Here the reflection keeps that balance by staying plain, steady, and editorial. Then, for testing, it adds a few drifting sounds of language again: moro-moro, light-silt, market-flare, small-turn, road-whisper, and rain-edge.\n\nAs a whole, this section works like a soft bridge between the longer story above and the filtered gallery below. It tells the reader why the story connects to others without becoming overly academic or technical. It also gives the layout a heavier reading state so typography, hierarchy, and rhythm can be judged properly in both dark and light themes. Nothing in the added gibberish changes meaning, but it does help the design prove itself under longer editorial copy, longer scrolls, and denser visual pacing.",
+        "so": "Milicsigan waxa uu sheekada marka hore ka akhriyaa kalluumaysi, sababtoo ah taas ayaa ah xadhigga ugu muuqda ee isku haya goobta ka muuqata Barawy. Qoraalku waxa uu ku dheggan yahay falal maalinle ah halkii uu ka noqon lahaa hadal culus, taasina waxa ay akhriska ka dhigaysaa mid dhow. Salim marar badan ayuu ku noqdaa waddooyinka, sugitaanka, hawlaha soo noqnoqda, iyo isbeddellada yar yar ee xawaaraha, si goobtu u ekaato mid la nool yahay. Tijaabadan awgeed waxa ku jira erayo aan macne lahayn sida tiri-tiri, hushline, side-glow, iyo coast-thread.\n\nMawduucyada kale, gaar ahaan Soo kabasho, waxa ay ballaariyaan fahamka iyaga oo aan meesha ka saarayn mawduuca koowaad. Waxay ag joogsadaan sida calaamado deggan oo sheekada ka dhigaya mid lakabyo leh. Halkaas ayaana qoraalka dheer faa’iido leeyahay, sababtoo ah waxa uu muujinayaa in kala fogaanshaha, margin-ka, iyo dhererka sadaradu weli deggan yihiin marka qoraalku bato. Sidaas darteed waxa si ula kac ah u dhex socda ereyo tijaabo ah sida mira-mira, bendi-bendi, dust-echo, river-note, para-step, iyo lantern-noise.\n\nLakabka dadka isaguna waa muhiim. Dhallinyaro, Rag/Wiilal waxay muuqdaan sida tilmaam bani’aadamnimo oo tusaya cidda ugu badan ee sheekada ku jirta, balse ma noqdaan qaabka keliya ee lagu fahmo sheekada. Tani waxay muhiim u tahay marka la daalacanayo sheekooyin kala duwan. Sheekadu waa inay ahaataa mid deegaan leh, qoto dheer, oo gaar ah, halka is-dhexgalkuna si aamusnaan ah u taageerayo isbarbardhigga. Halkan qoraalku waxa uu ku sii daraa erayo sabbaynaya sida moro-moro, light-silt, market-flare, small-turn, road-whisper, iyo rain-edge.\n\nGuud ahaan, qaybta milicsigu waxay u shaqaysaa sidii buundo jilicsan oo u dhexaysa sheekada sare iyo gallery-ga la shaandheeyo ee hoose. Waxay u sheegaysaa akhristaha sababta sheekadani ugu xidhan tahay kuwo kale iyada oo aan aad u noqon mid culus ama farsamo badan. Waxa kale oo ay siisaa naqshadda xaalad akhris oo ka culus si xarfaha, kala sarreynta, iyo garaaca guud loo eego si fiican, labadaba muuqaalka madow iyo kan iftiinka. Gibberish-ka lagu daray ma beddelayo macnaha, balse waxa uu ka caawiyaa naqshadda inay u adkaysato qoraal dheer iyo socod dheer oo tijaabo ah."
+      },
+      "images": [
+        "images/leads/BW05.jpg",
+        "images/BW05/1.jpg",
+        "images/BW05/2.jpg",
+        "images/BW05/3.jpg"
+      ]
+    },
+    {
+      "id": "BD06",
+      "district": {
+        "slug": "baidoa",
+        "en": "Baidoa",
+        "so": "Baydhabo"
+      },
+      "cluster": {
+        "en": "Bay cluster",
+        "so": "Kutlada Bay"
+      },
+      "location": "Meeting shade",
+      "date": "2025-03-19",
+      "storyteller": "Deqa",
+      "primaryTheme": {
+        "slug": "shared-space",
+        "en": "Shared space",
+        "so": "Meel wadaag"
+      },
+      "secondaryThemes": [
+        {
+          "slug": "care-work",
+          "en": "Care work",
+          "so": "Daryeel"
+        }
+      ],
+      "actors": [
+        "Women/Girls",
+        "Elders"
+      ],
+      "summary": {
+        "en": "Meeting spaces reveal consultation, care, and the sharing of both burdens and ideas.",
+        "so": "Meelaha lagu kulmo waxay noqdaan goob lagu arko wada-tashi, daryeel, iyo wadaagis culays iyo fikrad ah."
+      },
+      "story": {
+        "en": "Deqa describes Meeting shade in Baidoa as a place where shared space is felt through ordinary routines rather than dramatic announcements. Meeting spaces reveal consultation, care, and the sharing of both burdens and ideas. The story begins in a documentary register, but it quickly loosens into a testing voice filled with soft static, half-notes, and deliberately unimportant details: tin-tin drift, market hum, side-lane murmur, dry-step shuffle, and a long ribbon of maybe-maybe language.\n\nThe text keeps circling back to bodies, buckets, weather, queues, edges, and the small changes that turn one day away from the last. Then it deliberately wanders into useful nonsense: lora lora, bendi-bendi, hushline, salt-noise, para-step, water-glint, coast-thread, dust-murmur, and field-echo. That gibberish is here on purpose so the page can hold longer reading blocks, test scrolling behaviour, and show how the typography behaves when the story becomes denser than the summary card below.\n\nEven in this inflated version, the main cues remain readable. Shared space sits in front, while Care work stay nearby as secondary currents. The people tags still matter, yet the prose avoids becoming technical. Instead it drifts through spoken fragments, observational loops, and little clusters of invented sound: nala-nala, brimstep, open hush, weather-click, shade-signal, road-gloss, and a few extra lines of pleasant nonsense to stretch the layout, settle the spacing, and keep the story field hovering at roughly two hundred and fifty words overall.",
+        "so": "Deqa wuxuu ka warramayaa Meeting shade ee Baydhabo sidii meel uu meel wadaag uga muuqdo hawlo maalinle ah halkii uu ka ahaan lahaa dhacdo keliya oo weyn. Meelaha lagu kulmo waxay noqdaan goob lagu arko wada-tashi, daryeel, iyo wadaagis culays iyo fikrad ah. Qoraalku wuxuu ku bilaabmaa cod deggan oo sharaxaya muuqaalka, dabadeedna si ula kac ah ayuu ugu leexdaa hadal tijaabo ah oo ay ku jiraan erayo buuxin ah iyo laxan yar oo micne yar leh: bala-bala, socod-hami, hadh-hadh, guux-fudud, iyo weedho dheer oo ah laga-yaabee-laga-yaabee.\n\nQoraalku mar kasta wuxuu ku soo laabanayaa jirka, biyo-qaadka, safka, cimilada, iyo geesaha yar ee kala beddela maalmaha. Dabadeed si ula kac ah ayuu u geliyaa gibberish waxtar leh: luli-luli, marooq-marooq, hadal-dabayl, socod-dhac, biyo-birlab, ciid-hadal, iyo guux-madhan. Nacasnimadan yar ayaa halkan loogu daray si boggu u qaado qoraal dheer, loo tijaabiyo rogista, loona arko sida faruhu u dhaqmaan marka sheekadu ka weynaato soo koobista ka muuqata kaarka gallery-ga.\n\nXataa noocan la buunbuuniyey, tiirarka ugu waaweyn way muuqdaan. Meel wadaag ayaa safka hore joogta, halka Daryeel ay u socdaan sida mawduucyo raaca. Calaamadaha dadka wali way shaqaynayaan, balse tuducyadu ma noqonayaan kuwo farsamo kaliya ah. Halkii, waxay ku qulqulayaan hadal qaybo-qaybo ah, wareegyo daawasho leh, iyo codad la sameeyey oo sida nala-nala, hummaag-jid, qorrax-qabow, iyo hadh-socod u shaqeeya, si dhererku u gaadho qiyaastii laba boqol iyo konton eray oo ku habboon tijaabada qaabeynta."
+      },
+      "reflection": {
+        "en": "This reflection reads the story first through shared space, because that is the clearest thread holding the scene together in Baidoa. The account remains grounded in ordinary actions rather than large declarations, and that helps the issue stay close to the reader. Deqa keeps returning to paths, pauses, repeated tasks, and tiny shifts in pace, which makes the setting feel lived rather than summarised. For layout testing, the paragraph also carries a little useful nonsense: tiri-tiri, hushline, side-glow, market-drift, and coast-thread, all inserted simply to give the text more weight on the page.\n\nThe secondary themes, especially Care work, widen the frame without taking over from the main one. They sit beside the primary theme like quieter signals, helping the story feel layered rather than boxed into one label. This is also where the prototype benefits from extra copy. A longer paragraph reveals whether spacing, margins, and line length still feel calm when the reading block grows. So the text wanders deliberately through soft filler and half-words: mira-mira, bendi-bendi, dust-echo, river-note, para-step, and lantern-noise, all there to make the section breathe more densely.\n\nThe people layer matters as well. Women/Girls, Elders appear as a human guide to who is visible in the account, but not as the only way of understanding it. That balance is important for browsing. The story should still feel local, textured, and particular, while the interface quietly supports comparison across places and themes. Here the reflection keeps that balance by staying plain, steady, and editorial. Then, for testing, it adds a few drifting sounds of language again: moro-moro, light-silt, market-flare, small-turn, road-whisper, and rain-edge.\n\nAs a whole, this section works like a soft bridge between the longer story above and the filtered gallery below. It tells the reader why the story connects to others without becoming overly academic or technical. It also gives the layout a heavier reading state so typography, hierarchy, and rhythm can be judged properly in both dark and light themes. Nothing in the added gibberish changes meaning, but it does help the design prove itself under longer editorial copy, longer scrolls, and denser visual pacing.",
+        "so": "Milicsigan waxa uu sheekada marka hore ka akhriyaa meel wadaag, sababtoo ah taas ayaa ah xadhigga ugu muuqda ee isku haya goobta ka muuqata Baydhabo. Qoraalku waxa uu ku dheggan yahay falal maalinle ah halkii uu ka noqon lahaa hadal culus, taasina waxa ay akhriska ka dhigaysaa mid dhow. Deqa marar badan ayuu ku noqdaa waddooyinka, sugitaanka, hawlaha soo noqnoqda, iyo isbeddellada yar yar ee xawaaraha, si goobtu u ekaato mid la nool yahay. Tijaabadan awgeed waxa ku jira erayo aan macne lahayn sida tiri-tiri, hushline, side-glow, iyo coast-thread.\n\nMawduucyada kale, gaar ahaan Daryeel, waxa ay ballaariyaan fahamka iyaga oo aan meesha ka saarayn mawduuca koowaad. Waxay ag joogsadaan sida calaamado deggan oo sheekada ka dhigaya mid lakabyo leh. Halkaas ayaana qoraalka dheer faa’iido leeyahay, sababtoo ah waxa uu muujinayaa in kala fogaanshaha, margin-ka, iyo dhererka sadaradu weli deggan yihiin marka qoraalku bato. Sidaas darteed waxa si ula kac ah u dhex socda ereyo tijaabo ah sida mira-mira, bendi-bendi, dust-echo, river-note, para-step, iyo lantern-noise.\n\nLakabka dadka isaguna waa muhiim. Haween/Gabdho, Waayeel waxay muuqdaan sida tilmaam bani’aadamnimo oo tusaya cidda ugu badan ee sheekada ku jirta, balse ma noqdaan qaabka keliya ee lagu fahmo sheekada. Tani waxay muhiim u tahay marka la daalacanayo sheekooyin kala duwan. Sheekadu waa inay ahaataa mid deegaan leh, qoto dheer, oo gaar ah, halka is-dhexgalkuna si aamusnaan ah u taageerayo isbarbardhigga. Halkan qoraalku waxa uu ku sii daraa erayo sabbaynaya sida moro-moro, light-silt, market-flare, small-turn, road-whisper, iyo rain-edge.\n\nGuud ahaan, qaybta milicsigu waxay u shaqaysaa sidii buundo jilicsan oo u dhexaysa sheekada sare iyo gallery-ga la shaandheeyo ee hoose. Waxay u sheegaysaa akhristaha sababta sheekadani ugu xidhan tahay kuwo kale iyada oo aan aad u noqon mid culus ama farsamo badan. Waxa kale oo ay siisaa naqshadda xaalad akhris oo ka culus si xarfaha, kala sarreynta, iyo garaaca guud loo eego si fiican, labadaba muuqaalka madow iyo kan iftiinka. Gibberish-ka lagu daray ma beddelayo macnaha, balse waxa uu ka caawiyaa naqshadda inay u adkaysato qoraal dheer iyo socod dheer oo tijaabo ah."
+      },
+      "images": [
+        "images/leads/BD06.jpg",
+        "images/BD06/1.jpg",
+        "images/BD06/2.jpg",
+        "images/BD06/3.jpg",
+        "images/BD06/4.jpg"
+      ]
+    }
+  ]
+}
