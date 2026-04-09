@@ -122,14 +122,16 @@ svg {
 
 .story-stage {
   position: relative;
-  min-height: 70vh;
+  min-height: 100dvh;
+  min-height: 100svh;
   background: var(--stage);
   overflow: hidden;
 }
 
 .story-slides {
   position: relative;
-  min-height: 70vh;
+  min-height: 100dvh;
+  min-height: 100svh;
 }
 
 .story-slide {
@@ -144,7 +146,8 @@ svg {
 }
 
 .story-stage-image {
-  min-height: 70vh;
+  min-height: 100dvh;
+  min-height: 100svh;
 }
 
 .floating-controls {
@@ -305,6 +308,21 @@ svg {
 .adaptive-image.is-contain .adaptive-image-fg {
   object-fit: contain;
   padding: 1rem;
+}
+
+.story-stage-image .adaptive-image-bg {
+  filter: blur(0);
+  opacity: 0.78;
+  transform: scale(1.02);
+}
+
+.story-stage-image .adaptive-image-overlay {
+  background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.28));
+}
+
+.story-stage-image .adaptive-image-fg {
+  object-fit: cover;
+  object-position: center center;
 }
 
 .adaptive-image.is-cover .adaptive-image-fg {
@@ -789,12 +807,15 @@ button.chip:hover {
   position: fixed;
   inset: 0;
   z-index: 90;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   background: rgba(11, 14, 19, 0.96);
 }
 
 .intro-modal-shell {
   width: 100%;
-  height: 100%;
+  min-height: 100dvh;
+  min-height: 100svh;
 }
 
 .intro-split-layout {
@@ -846,7 +867,7 @@ button.chip:hover {
 .intro-panel-inner {
   width: min(100%, 42rem);
   margin-left: auto;
-  padding: 1.4rem 1.25rem 1.5rem;
+  padding: 1.4rem 1.25rem 1.75rem;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -863,7 +884,7 @@ button.chip:hover {
   gap: 0.22rem;
   max-width: 13ch;
   font-family: 'Space Grotesk', Inter, sans-serif;
-  font-size: clamp(2.05rem, 5vw, 4.1rem);
+  font-size: clamp(1.7rem, 4.1vw, 4.1rem);
   line-height: 0.94;
   letter-spacing: -0.045em;
   font-weight: 800;
@@ -993,6 +1014,26 @@ button.chip:hover {
   opacity: 0.92;
 }
 
+
+@media (max-height: 860px) and (min-width: 961px) {
+  .intro-panel-inner {
+    gap: 1rem;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .intro-full-title {
+    font-size: clamp(1.48rem, 3.15vw, 3.25rem);
+  }
+
+  .intro-stats-row {
+    font-size: 0.92rem;
+  }
+
+  .intro-action-row {
+    padding-bottom: 0.25rem;
+  }
+}
 @media (min-width: 961px) {
   .intro-split-layout {
     display: grid;
@@ -1160,7 +1201,7 @@ html[data-theme="light"] .stage-dot.is-active {
   .story-stage,
   .story-slides,
   .story-stage-image {
-    min-height: 56vh;
+    min-height: 72svh;
   }
 }
 

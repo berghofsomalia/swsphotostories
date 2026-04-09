@@ -661,7 +661,7 @@ function render() {
 
   const storySlides = story.images.map((src, index) => `
     <div class="story-slide ${index === state.currentImageIndex ? 'is-active' : ''}">
-      ${adaptiveImageMarkup(src, story.storyteller, 'contain', 'story-stage-image')}
+      ${adaptiveImageMarkup(src, story.storyteller, 'cover', 'story-stage-image')}
     </div>
   `).join('');
 
