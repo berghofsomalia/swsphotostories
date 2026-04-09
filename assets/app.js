@@ -108,8 +108,7 @@ const COPY = {
 const LANDING_COPY = {
   en: {
     titleLines: [
-      'Photostories from',
-      'Southwest State, Somalia',
+      'Photostories from Southwest State, Somalia',
       'on the nexus of climate change, environment, conflict and peace'
     ],
     photos: 'photos',
@@ -120,8 +119,7 @@ const LANDING_COPY = {
   },
   so: {
     titleLines: [
-      'Sawir-sheekooyin ka yimid',
-      'Koonfur Galbeed Soomaaliya',
+      'Sawir-sheekooyin ka yimid Koonfur Galbeed Soomaaliya',
       'ee ku saabsan isgoyska isbeddelka cimilada, deegaanka, colaadda iyo nabadda'
     ],
     photos: 'sawir',
