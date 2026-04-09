@@ -6,7 +6,7 @@ const STORAGE_KEYS = {
 
 const COPY = {
   en: {
-    siteTitle: 'Photostories from Southwest State',
+    siteTitle: 'Photostories from Southwest State, Somalia on the nexus of climate change, environment, conflict and peace',
     introTitleLines: ['PHOTOSTORIES', 'FROM', 'SOUTHWEST', 'STATE'],
     introEnter: 'Explore',
     themeLabel: 'Theme',
@@ -55,7 +55,7 @@ const COPY = {
     openSaved: 'Open saved stories'
   },
   so: {
-    siteTitle: 'Sheeko-sawirro ka socda Koonfur Galbeed',
+    siteTitle: 'Photostories from Southwest State, Somalia on the nexus of climate change, environment, conflict and peace',
     introTitleLines: ['SHEEKO', 'SAWIRRO', 'KOONFUR', 'GALBEED'],
     introEnter: 'Sahami',
     themeLabel: 'Muuqaal',
@@ -147,7 +147,10 @@ const icon = {
   instagram: () => '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" ry="5" fill="none"/><circle cx="12" cy="12" r="4" fill="none"/><circle cx="17.5" cy="6.5" r="1.1"/></svg>',
   x: () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 3H21l-4.6 5.3L22 21h-4.7l-3.7-4.9L9.4 21H7.3l4.9-5.6L2 3h4.8l3.4 4.6L18.9 3zm-1.6 16h1.3L6.1 4.9H4.7L17.3 19z"/></svg>',
   email: () => '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg>',
-  close: () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>'
+  close: () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>',
+  photo: () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h4l2-2h4l2 2h4v10H4z"/><circle cx="12" cy="12" r="3"/></svg>',
+  story: () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 0-3 3z"/><path d="M8 4v16"/></svg>',
+  reflection: () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>'
 };
 
 function createEmptyFilters() {
@@ -462,42 +465,49 @@ function renderIntroModal() {
   if (!state.introOpen) return '';
   const t = copy();
   const collageStories = state.collageIds.map((id) => getStoryById(id)).filter(Boolean);
-  const collage = collageStories.map((story, index) => {
-    const item = state.collageLayout[index] || { x: 2, y: 2, width: 24, height: 20, rotate: 0, z: 1 };
-    const style = [
-      `left:${item.x}%`,
-      `top:${item.y}%`,
-      `width:${item.width}%`,
-      `height:${item.height}%`,
-      `transform:rotate(${item.rotate}deg)`,
-      `z-index:${item.z}`
-    ].join(';');
-    return `
-      <div class="intro-collage-card" style="${style}">
-        <img src="${story.images[0]}" alt="" loading="eager" aria-hidden="true">
-      </div>
-    `;
-  }).join('');
+  const collage = collageStories.map((story) => `
+    <div class="intro-grid-cell">
+      <img src="${story.images[0]}" alt="" loading="eager" aria-hidden="true">
+    </div>
+  `).join('');
 
   return `
     <div class="intro-modal">
-      <div class="intro-collage">${collage}</div>
-      <div class="intro-centre-circle">
-        <div class="intro-title-stack">
-          ${t.introTitleLines.map((line) => `<span>${escapeHtml(line)}</span>`).join('')}
-        </div>
-        <div class="intro-lang-pill" role="group" aria-label="Language selector">
-          <button type="button" class="${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">${escapeHtml(t.somaali)}</button>
-          <button type="button" class="${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">${escapeHtml(t.english)}</button>
-        </div>
-        <div class="intro-theme-block">
-          <div class="intro-theme-label">${escapeHtml(t.themeLabel)}</div>
-          <div class="intro-theme-pill" role="group" aria-label="Theme selector">
-            <button type="button" class="${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${escapeHtml(t.dark)}</button>
-            <button type="button" class="${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${escapeHtml(t.light)}</button>
+      <div class="intro-modal-shell">
+        <div class="intro-split-layout">
+          <div class="intro-collage-grid">${collage}</div>
+          <div class="intro-panel">
+            <div class="intro-panel-inner">
+              <div class="intro-title-block">
+                <h1 class="intro-full-title">Photostories from<br>Southwest State, Somalia<br>on the nexus of climate change, environment, conflict and peace</h1>
+                <div class="intro-stats-row">
+                  <span class="intro-stat-item"><span class="intro-stat-icon">${icon.photo()}</span><strong>1000+</strong> photos</span>
+                  <span class="intro-stat-sep">|</span>
+                  <span class="intro-stat-item"><span class="intro-stat-icon">${icon.story()}</span><strong>350+</strong> stories</span>
+                  <span class="intro-stat-sep">|</span>
+                  <span class="intro-stat-item"><span class="intro-stat-icon">${icon.reflection()}</span><strong>150+</strong> reflections</span>
+                </div>
+              </div>
+              <div class="intro-switchers">
+                <div class="intro-lang-pill" role="group" aria-label="Language selector">
+                  <button type="button" class="${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">${escapeHtml(t.somaali)}</button>
+                  <button type="button" class="${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">${escapeHtml(t.english)}</button>
+                </div>
+                <div class="intro-theme-inline">
+                  <span class="intro-theme-inline-label">${escapeHtml(t.themeLabel)}</span>
+                  <div class="intro-theme-pill" role="group" aria-label="Theme selector">
+                    <button type="button" class="${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${escapeHtml(t.light)}</button>
+                    <button type="button" class="${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${escapeHtml(t.dark)}</button>
+                  </div>
+                </div>
+              </div>
+              <div class="intro-action-row">
+                <button type="button" class="intro-action-button is-accent" data-action="intro-random">${escapeHtml(state.language === 'so' ? 'Arag photostory aan kala sooc lahayn' : 'See a random photostory')}</button>
+                <button type="button" class="intro-action-button is-accent" data-action="intro-explore">${escapeHtml(state.language === 'so' ? 'Explore photostories by themes and locations' : 'Explore photostories by themes and locations')}</button>
+              </div>
+            </div>
           </div>
         </div>
-        <button type="button" class="intro-enter-button" data-action="enter-site">${escapeHtml(t.introEnter)}</button>
       </div>
     </div>
   `;
@@ -760,7 +770,7 @@ async function handleActionClick(event) {
   const action = event.currentTarget.dataset.action;
   const value = event.currentTarget.dataset.value || '';
   const story = currentStory();
-  if (!story && action !== 'set-language' && action !== 'enter-site') return;
+  if (!story && !['set-language', 'set-theme', 'enter-site', 'intro-random', 'intro-explore'].includes(action)) return;
 
   if (action === 'set-language') {
     state.language = value;
@@ -779,6 +789,19 @@ async function handleActionClick(event) {
   if (action === 'enter-site') {
     state.introOpen = false;
     render();
+    return;
+  }
+
+  if (action === 'intro-random') {
+    state.introOpen = false;
+    render();
+    return;
+  }
+
+  if (action === 'intro-explore') {
+    state.introOpen = false;
+    render();
+    setTimeout(() => scrollGallery(), 120);
     return;
   }
 
