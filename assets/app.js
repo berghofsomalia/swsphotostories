@@ -6,10 +6,9 @@ const STORAGE_KEYS = {
 
 const COPY = {
   en: {
-    siteTitle: 'Photostories from Southwest State, Somalia',
-    introTitleLines: ['Photostories from', 'Southwest State, Somalia', 'on the nexus of climate change, environment, conflict and peace'],
-    introRandom: 'See a random photostory',
-    introExplore: 'Explore photostories by themes and locations',
+    siteTitle: 'Photostories from Southwest State',
+    introTitleLines: ['PHOTOSTORIES', 'FROM', 'SOUTHWEST', 'STATE'],
+    introEnter: 'Explore',
     themeLabel: 'Theme',
     dark: 'Dark',
     light: 'Light',
@@ -56,10 +55,9 @@ const COPY = {
     openSaved: 'Open saved stories'
   },
   so: {
-    siteTitle: 'Sheeko-sawirro ka socda Koonfur Galbeed Soomaaliya',
-    introTitleLines: ['Sheeko-sawirro ka socda', 'Koonfur Galbeed Soomaaliya', 'ee ku saabsan isgoyska isbeddelka cimilada, deegaanka, colaadda iyo nabadda'],
-    introRandom: 'Arag photostory aan kala sooc lahayn',
-    introExplore: 'Ku sahamin photostories mawduucyo iyo goobo',
+    siteTitle: 'Sheeko-sawirro ka socda Koonfur Galbeed',
+    introTitleLines: ['SHEEKO', 'SAWIRRO', 'KOONFUR', 'GALBEED'],
+    introEnter: 'Sahami',
     themeLabel: 'Muuqaal',
     dark: 'Madow',
     light: 'Iftiin',
@@ -460,50 +458,46 @@ function renderStageControls(story) {
   `;
 }
 
-
 function renderIntroModal() {
   if (!state.introOpen) return '';
   const t = copy();
   const collageStories = state.collageIds.map((id) => getStoryById(id)).filter(Boolean);
-  const collage = collageStories.map((story) => `
-    <div class="intro-collage-card">
-      <img src="${story.images[0]}" alt="" loading="eager" aria-hidden="true">
-    </div>
-  `).join('');
+  const collage = collageStories.map((story, index) => {
+    const item = state.collageLayout[index] || { x: 2, y: 2, width: 24, height: 20, rotate: 0, z: 1 };
+    const style = [
+      `left:${item.x}%`,
+      `top:${item.y}%`,
+      `width:${item.width}%`,
+      `height:${item.height}%`,
+      `transform:rotate(${item.rotate}deg)`,
+      `z-index:${item.z}`
+    ].join(';');
+    return `
+      <div class="intro-collage-card" style="${style}">
+        <img src="${story.images[0]}" alt="" loading="eager" aria-hidden="true">
+      </div>
+    `;
+  }).join('');
 
   return `
-    <div class="intro-modal" role="dialog" aria-modal="true" aria-label="${escapeHtml(t.siteTitle)}">
-      <div class="intro-layout">
-        <div class="intro-collage-grid">${collage}</div>
-        <div class="intro-copy-panel">
-          <div class="intro-title-block">
-            ${t.introTitleLines.map((line) => `<div class="intro-title-line">${escapeHtml(line)}</div>`).join('')}
-          </div>
-
-          <div class="intro-stats" aria-label="Site statistics">
-            <div class="intro-stat">${icon.photo()}<strong>1000+ photos</strong></div>
-            <div class="intro-stat-divider">|</div>
-            <div class="intro-stat">${icon.story()}<strong>350+ stories</strong></div>
-            <div class="intro-stat-divider">|</div>
-            <div class="intro-stat">${icon.reflection()}<strong>150+ reflections</strong></div>
-          </div>
-
-          <div class="intro-switch-row">
-            <div class="intro-lang-pill" role="group" aria-label="Language selector">
-              <button type="button" class="${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">${escapeHtml(t.shortSo)}</button>
-              <button type="button" class="${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">${escapeHtml(t.shortEn)}</button>
-            </div>
-            <div class="intro-theme-pill" role="group" aria-label="Theme selector">
-              <button type="button" class="${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${escapeHtml(t.light)}</button>
-              <button type="button" class="${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${escapeHtml(t.dark)}</button>
-            </div>
-          </div>
-
-          <div class="intro-actions">
-            <button type="button" class="intro-action-button" data-action="intro-random">${escapeHtml(t.introRandom)}</button>
-            <button type="button" class="intro-action-button" data-action="intro-explore">${escapeHtml(t.introExplore)}</button>
+    <div class="intro-modal">
+      <div class="intro-collage">${collage}</div>
+      <div class="intro-centre-circle">
+        <div class="intro-title-stack">
+          ${t.introTitleLines.map((line) => `<span>${escapeHtml(line)}</span>`).join('')}
+        </div>
+        <div class="intro-lang-pill" role="group" aria-label="Language selector">
+          <button type="button" class="${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">${escapeHtml(t.somaali)}</button>
+          <button type="button" class="${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">${escapeHtml(t.english)}</button>
+        </div>
+        <div class="intro-theme-block">
+          <div class="intro-theme-label">${escapeHtml(t.themeLabel)}</div>
+          <div class="intro-theme-pill" role="group" aria-label="Theme selector">
+            <button type="button" class="${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${escapeHtml(t.dark)}</button>
+            <button type="button" class="${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${escapeHtml(t.light)}</button>
           </div>
         </div>
+        <button type="button" class="intro-enter-button" data-action="enter-site">${escapeHtml(t.introEnter)}</button>
       </div>
     </div>
   `;
@@ -625,7 +619,7 @@ function render() {
 
   const storySlides = story.images.map((src, index) => `
     <div class="story-slide ${index === state.currentImageIndex ? 'is-active' : ''}">
-      <img class="story-full-image" src="${src}" alt="${escapeHtml(story.storyteller)}" loading="${index === 0 ? 'eager' : 'lazy'}">
+      ${adaptiveImageMarkup(src, story.storyteller, 'contain', 'story-stage-image')}
     </div>
   `).join('');
 
@@ -766,7 +760,7 @@ async function handleActionClick(event) {
   const action = event.currentTarget.dataset.action;
   const value = event.currentTarget.dataset.value || '';
   const story = currentStory();
-  if (!story && !['set-language', 'set-theme', 'intro-random', 'intro-explore'].includes(action)) return;
+  if (!story && action !== 'set-language' && action !== 'enter-site') return;
 
   if (action === 'set-language') {
     state.language = value;
@@ -782,19 +776,9 @@ async function handleActionClick(event) {
     return;
   }
 
-  if (action === 'intro-random') {
+  if (action === 'enter-site') {
     state.introOpen = false;
     render();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    return;
-  }
-
-  if (action === 'intro-explore') {
-    state.introOpen = false;
-    state.filters = createEmptyFilters();
-    state.galleryMode = 'total';
-    render();
-    scrollGallery();
     return;
   }
 
@@ -1008,7 +992,6 @@ function stopAutoplay() {
 
 function startAutoplay() {
   stopAutoplay();
-  if (state.introOpen) return;
   const story = currentStory();
   if (!story || story.images.length <= 1) return;
 
@@ -1019,9 +1002,32 @@ function startAutoplay() {
   }, 5000);
 }
 
+async function loadStoriesPayload() {
+  const moduleUrl = new URL(import.meta.url);
+  const candidates = [
+    new URL('../data/stories.json', moduleUrl).toString(),
+    `${window.location.origin}${window.location.pathname.replace(/[^/]*$/, '')}data/stories.json`,
+    'data/stories.json'
+  ];
+
+  let lastError = null;
+  for (const url of candidates) {
+    try {
+      const response = await fetch(url, { cache: 'no-cache' });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status} for ${url}`);
+      }
+      return await response.json();
+    } catch (error) {
+      lastError = error;
+      console.warn('Stories payload load attempt failed:', url, error);
+    }
+  }
+  throw lastError || new Error('Unable to load stories.json');
+}
+
 async function initialise() {
-  const response = await fetch('data/stories.json');
-  const payload = await response.json();
+  const payload = await loadStoriesPayload();
   state.stories = payload.stories || [];
   state.collageIds = shuffle(state.stories.map((story) => story.id)).slice(0, 16);
   state.collageLayout = generateCollageLayout(state.collageIds.length);
@@ -1043,5 +1049,5 @@ window.addEventListener('beforeunload', stopAutoplay);
 initialise().catch((error) => {
   console.error(error);
   const app = qs('#app');
-  if (app) app.innerHTML = '<div class="error-state">Failed to load the site data.</div>';
+  if (app) app.innerHTML = '<div class="error-state">Failed to load the site data. Confirm that data/stories.json and the images folders were published at the site root.</div>';
 });
