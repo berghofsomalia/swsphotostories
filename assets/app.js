@@ -493,8 +493,13 @@ function renderIntroModal() {
   const t = copy();
   const landing = LANDING_COPY[state.language];
   const collageStories = state.collageIds.map((id) => getStoryById(id)).filter(Boolean);
-  const collage = collageStories.map((story) => `
-    <div class="intro-grid-cell">
+  const topStrip = collageStories.slice(0, 8).map((story) => `
+    <div class="intro-strip-cell">
+      <img src="${story.images[0]}" alt="" loading="eager" aria-hidden="true">
+    </div>
+  `).join('');
+  const bottomStrip = collageStories.slice(8, 16).map((story) => `
+    <div class="intro-strip-cell">
       <img src="${story.images[0]}" alt="" loading="eager" aria-hidden="true">
     </div>
   `).join('');
@@ -502,10 +507,10 @@ function renderIntroModal() {
   return `
     <div class="intro-modal">
       <div class="intro-modal-shell">
-        <div class="intro-split-layout">
-          <div class="intro-collage-grid">${collage}</div>
-          <div class="intro-panel">
-            <div class="intro-panel-inner">
+        <div class="intro-filmstrip-layout">
+          <div class="intro-filmstrip intro-filmstrip-top">${topStrip}</div>
+          <div class="intro-band">
+            <div class="intro-band-inner">
               <div class="intro-title-block">
                 <h1 class="intro-full-title">
                   <span>${escapeHtml(landing.titleLines[0])}</span>
@@ -539,6 +544,7 @@ function renderIntroModal() {
               </div>
             </div>
           </div>
+          <div class="intro-filmstrip intro-filmstrip-bottom">${bottomStrip}</div>
         </div>
       </div>
     </div>
