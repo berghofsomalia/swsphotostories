@@ -493,59 +493,61 @@ function renderIntroModal() {
   const t = copy();
   const landing = LANDING_COPY[state.language];
   const collageStories = state.collageIds.map((id) => getStoryById(id)).filter(Boolean);
-  const topStrip = collageStories.slice(0, 8).map((story) => `
-    <div class="intro-strip-cell">
-      <img src="${story.images[0]}" alt="" loading="eager" aria-hidden="true">
+  const topStories = collageStories.slice(0, 8);
+  const bottomStories = collageStories.slice(8, 16);
+
+  const renderStrip = (stories, position) => `
+    <div class="intro-filmstrip intro-filmstrip-${position}" aria-hidden="true">
+      ${stories.map((story) => `
+        <div class="intro-filmstrip-cell">
+          <img src="${story.images[0]}" alt="" loading="eager">
+        </div>
+      `).join('')}
     </div>
-  `).join('');
-  const bottomStrip = collageStories.slice(8, 16).map((story) => `
-    <div class="intro-strip-cell">
-      <img src="${story.images[0]}" alt="" loading="eager" aria-hidden="true">
-    </div>
-  `).join('');
+  `;
 
   return `
     <div class="intro-modal">
-      <div class="intro-modal-shell">
-        <div class="intro-filmstrip-layout">
-          <div class="intro-filmstrip intro-filmstrip-top">${topStrip}</div>
-          <div class="intro-band">
-            <div class="intro-band-inner">
-              <div class="intro-title-block">
-                <h1 class="intro-full-title">
-                  <span>${escapeHtml(landing.titleLines[0])}</span>
-                  <span>${escapeHtml(landing.titleLines[1])}</span>
-                  <span class="intro-title-subline">${escapeHtml(landing.titleLines[2])}</span>
-                </h1>
-                <div class="intro-stats-row">
-                  <span class="intro-stat-item"><span class="intro-stat-icon">${icon.photo()}</span><strong>1000+</strong> ${escapeHtml(landing.photos)}</span>
-                  <span class="intro-stat-sep">|</span>
-                  <span class="intro-stat-item"><span class="intro-stat-icon">${icon.story()}</span><strong>350+</strong> ${escapeHtml(landing.stories)}</span>
-                  <span class="intro-stat-sep">|</span>
-                  <span class="intro-stat-item"><span class="intro-stat-icon">${icon.reflection()}</span><strong>150+</strong> ${escapeHtml(landing.reflections)}</span>
-                </div>
-              </div>
-              <div class="intro-switchers">
-                <div class="intro-lang-pill" role="group" aria-label="Language selector">
-                  <button type="button" class="${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">${escapeHtml(t.shortSo)}</button>
-                  <button type="button" class="${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">${escapeHtml(t.shortEn)}</button>
-                </div>
-                <div class="intro-theme-inline">
-                  <span class="intro-theme-inline-label">${escapeHtml(t.themeLabel)}</span>
-                  <div class="intro-theme-pill" role="group" aria-label="Theme selector">
-                    <button type="button" class="${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${escapeHtml(t.light)}</button>
-                    <button type="button" class="${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${escapeHtml(t.dark)}</button>
-                  </div>
-                </div>
-              </div>
-              <div class="intro-action-row">
-                <button type="button" class="intro-action-button is-accent" data-action="intro-random">${escapeHtml(landing.random)}</button>
-                <button type="button" class="intro-action-button is-accent" data-action="intro-explore">${escapeHtml(landing.explore)}</button>
+      <div class="intro-filmstrip-shell">
+        ${renderStrip(topStories, 'top')}
+        <div class="intro-filmstrip-band">
+          <div class="intro-filmstrip-panel">
+            <div class="intro-title-block intro-title-block-centered">
+              <h1 class="intro-full-title intro-full-title-centered">
+                <span>${escapeHtml(landing.titleLines[0])}</span>
+                <span>${escapeHtml(landing.titleLines[1])}</span>
+                <span class="intro-title-subline intro-title-subline-centered">${escapeHtml(landing.titleLines[2])}</span>
+              </h1>
+              <div class="intro-stats-row intro-stats-row-centered">
+                <span class="intro-stat-item"><span class="intro-stat-icon">${icon.photo()}</span><strong>1000+</strong> ${escapeHtml(landing.photos)}</span>
+                <span class="intro-stat-sep">|</span>
+                <span class="intro-stat-item"><span class="intro-stat-icon">${icon.story()}</span><strong>350+</strong> ${escapeHtml(landing.stories)}</span>
+                <span class="intro-stat-sep">|</span>
+                <span class="intro-stat-item"><span class="intro-stat-icon">${icon.reflection()}</span><strong>150+</strong> ${escapeHtml(landing.reflections)}</span>
               </div>
             </div>
+
+            <div class="intro-switchers intro-switchers-centered">
+              <div class="intro-lang-pill" role="group" aria-label="Language selector">
+                <button type="button" class="${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">${escapeHtml(t.shortSo)}</button>
+                <button type="button" class="${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">${escapeHtml(t.shortEn)}</button>
+              </div>
+              <div class="intro-theme-inline intro-theme-inline-centered">
+                <span class="intro-theme-inline-label">${escapeHtml(t.themeLabel)}</span>
+                <div class="intro-theme-pill" role="group" aria-label="Theme selector">
+                  <button type="button" class="${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${escapeHtml(t.light)}</button>
+                  <button type="button" class="${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${escapeHtml(t.dark)}</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="intro-action-row intro-action-row-centered">
+              <button type="button" class="intro-action-button is-accent" data-action="intro-random">${escapeHtml(landing.random)}</button>
+              <button type="button" class="intro-action-button is-accent" data-action="intro-explore">${escapeHtml(landing.explore)}</button>
+            </div>
           </div>
-          <div class="intro-filmstrip intro-filmstrip-bottom">${bottomStrip}</div>
         </div>
+        ${renderStrip(bottomStories, 'bottom')}
       </div>
     </div>
   `;
