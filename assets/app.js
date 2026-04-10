@@ -107,42 +107,48 @@ const COPY = {
 
 const LANDING = {
   en: {
-    title: 'Visual storytelling of the nexus of climate change, environment, conflict and peace',
-    place: 'Southwest State, Somalia',
-    languageLabel: 'Language',
-    themeLabel: 'Theme',
-    dark: 'Dark',
-    light: 'Light',
-    heroCta: 'Explore 350 stories through 1000 photos and 150 community reflections',
-    surprise: 'Surprise me',
-    explore: 'Let me explore',
-    introLead: 'In late 2025, 42 community members across Baidoa, Barawe and Hudur, across generations and genders, have taken photos capturing various aspects of this nexus and told the human stories behind the photos. They asked themselves:',
+    section1TitleLines: [
+      'Visual storytelling',
+      'of the nexus of',
+      'climate (change), environment (degradation),',
+      'conflict and peace',
+      'Southwest State, Somalia'
+    ],
+    languageFooter: 'Language: SO / EN',
+    themeFooter: 'Theme: Dark / Light',
+    section2Intro: 'In late 2025, 42 community members across Baidoa, Barawe and Hudur, across generations and genders, have taken photos capturing various aspects of this nexus and told the human stories behind the photos. They asked themselves:',
     questions: [
       'Why did I choose to take these photos? What memories or emotions do these photos invoke in me?',
       'What do I want others to feel and understand from these photos? What community issues or strengths do I want to illustrate?',
       'If I imagine that the issues are getting resolved or the strengths are getting amplified over the next three years, what would these photos look like?',
-      'What cultural and religious elements such as poems, songs, proverbs, and teachings from the Quran or Hadith can describe the current photos and inspire us to work towards turning the imagined photos into reality?'
+      'What cultural and religious elements such as poems, songs, proverbs, and teaching from the Quran or Hadith can (a) describe the current photos, and (b) inspire us to work towards turning the imagined photos into reality?'
     ],
-    reflectionLead: 'The photos were shared in community spaces of storytelling and dialogue. People picked photos they connected to and shared their own reflections on the stories.'
+    section2Outro: 'The photos were shared in community spaces of storytelling and dialogue. People picked photos they connected to and shared their own reflections on the stories.',
+    section3Lead: 'Explore 350 stories through 1000 photos and 150 community reflections',
+    surprise: 'Surprise me',
+    explore: 'Let me explore'
   },
   so: {
-    title: 'Sheeko-muuqaal ku saabsan xiriirka ka dhexeeya cimilada, deegaanka, khilaafka iyo nabadda',
-    place: 'Koonfur Galbeed, Soomaaliya',
-    languageLabel: 'Luqad',
-    themeLabel: 'Muuqaal',
-    dark: 'Madow',
-    light: 'Iftiin',
-    heroCta: 'Baadh 350 sheeko adigoo maraya 1000 sawir iyo 150 milicsi bulsho',
-    surprise: 'I tus wax aan filayn',
-    explore: 'Aan baadho',
-    introLead: 'Dabayaaqadii 2025, 42 xubnood oo bulshada ka kala socday Baydhabo, Baraawe iyo Xudur, kana kala tirsanaa jiilal iyo jinsiyo kala duwan, ayaa qaaday sawirro muujinaya dhinacyo kala duwan oo ka mid ah isku-xirkan, isla markaana ka sheekeeyey sheekooyinka bini’aadannimo ee ka dambeeya sawirradaas. Waxay isweydiiyeen:',
+    section1TitleLines: [
+      'Sheeko-muuqaal',
+      'ku saabsan xiriirka ka dhexeeya',
+      '(isbeddelka) cimilada, (nabaad-guurka) deegaanka,',
+      'khilaafka iyo nabadda',
+      'ee Koonfur Galbeed, Soomaaliya'
+    ],
+    languageFooter: 'Luqad: SO / EN',
+    themeFooter: 'Muuqaal: Madow / Iftiin',
+    section2Intro: 'Dabayaaqadii 2025, 42 xubnood oo bulshada ka kala socday Baydhabo, Baraawe iyo Xudur, kana kala tirsanaa jiilal iyo jinsiyo kala duwan, ayaa qaaday sawirro muujinaya dhinacyo kala duwan oo ka mid ah isku-xirkan, isla markaana ka sheekeeyey sheekooyinka bini’aadannimo ee ka dambeeya sawirradaas. Waxay isweydiiyeen:',
     questions: [
       'Maxaan u doortay in aan sawirradan qaado? Xusuuso ama shucuur noocee ah ayay sawirradani igu kicinayaan?',
       'Maxaan rabaa in dadka kale ay ka dareemaan oo ka fahmaan sawirradan? Arrimahee ama xoogaggee bulshada ka jira ayaan rabaa in aan sawirradan ku muujiyo?',
       'Haddii aan qiyaaso in saddexda sano ee soo socota arrimahani la xallinayo ama xoogagga wanaagsani sii xoogaysanayaan, sawirradani markaas sidee bay u ekaan lahaayeen?',
-      'Waa maxay waxyaabaha dhaqanka iyo diinta ee, sida gabayo, heeso, maahmaahyo, iyo casharro ka imanaya Qur’aanka iyo Xadiiska, kuwaas oo sharrixi kara sawirrada hadda jira, isla markaana nagu dhiirrigelin kara in aan ka shaqayno sidii sawirrada la qiyaasay ay dhab u noqon lahaayeen?'
+      'Waa maxay waxyaabaha dhaqanka iyo diinta ee, sida gabayo, heeso, maahmaahyo, iyo casharro ka imanaya Qur’aanka/Xadiiska, kuwaas oo (a) sharraxi kara sawirrada hadda jira, iyo (b) nagu dhiirrigelin kara in aan ka shaqayno sidii sawirrada la qiyaasay ay dhab u noqon lahaayeen?'
     ],
-    reflectionLead: 'Sawirrada waxaa lagu wadaagay goobaha bulshadu ku kulanto ee sheeko-wadaagga iyo wada-hadalka. Dadku waxay doorteen sawirradii ay la xiriireen, dabadeedna waxay ka dhiibteen milicsiyadooda ku saabsan sheekooyinka.'
+    section2Outro: 'Sawirrada waxaa lagu wadaagay goobaha bulshadu ku kulanto ee sheeko-wadaagga iyo wada-hadalka. Dadku waxay doorteen sawirradii ay la xiriireen, dabadeedna waxay ka dhiibteen milicsiyadooda ku saabsan sheekooyinka.',
+    section3Lead: 'Baadh 350 sheeko adigoo maraya 1000 sawir iyo 150 milicsi bulsho',
+    surprise: 'I tus wax aan filayn',
+    explore: 'Aan baadho'
   }
 };
 
@@ -170,22 +176,22 @@ const STORY_GUIDANCE = {
 };
 
 const INTRO_SLOTS = [
-  { x: 6.5, y: 3, width: 19, height: 11.5, rotate: -4, z: 4 },
-  { x: 25.5, y: 6, width: 16, height: 13.2, rotate: 3.2, z: 5 },
-  { x: 71, y: 5, width: 17, height: 11, rotate: -2.8, z: 4 },
-  { x: 9, y: 19, width: 15.5, height: 13.5, rotate: 2.6, z: 4 },
-  { x: 74, y: 21, width: 16, height: 10.2, rotate: 3.6, z: 4 },
-  { x: 7.5, y: 39, width: 16, height: 13.5, rotate: -2.5, z: 4 },
-  { x: 22.5, y: 48.5, width: 11, height: 9.3, rotate: 2.8, z: 5 },
-  { x: 74.5, y: 44.5, width: 15, height: 9.5, rotate: -3.2, z: 4 },
-  { x: 8.5, y: 67.5, width: 15, height: 9.6, rotate: -2.2, z: 4 },
-  { x: 17, y: 77.2, width: 18.5, height: 11.6, rotate: 1.8, z: 5 },
-  { x: 69.5, y: 69.2, width: 16.5, height: 9.2, rotate: 2.3, z: 4 },
-  { x: 78.5, y: 77.4, width: 11.4, height: 12.2, rotate: -2.8, z: 4 },
-  { x: 5.5, y: 54.5, width: 11.5, height: 9.5, rotate: -1.6, z: 3 },
-  { x: 82, y: 56.8, width: 10.5, height: 8.5, rotate: 2.1, z: 3 },
-  { x: 31.5, y: 88.2, width: 12.5, height: 9.2, rotate: -1.5, z: 3 },
-  { x: 61, y: 90, width: 13.2, height: 8.6, rotate: 1.2, z: 3 }
+  { left: '4vw', top: '8svh', width: '12vw', height: '20svh', rotate: -4, z: 4 },
+  { left: '18vw', top: '11svh', width: '10vw', height: '16svh', rotate: 2.5, z: 5 },
+  { left: '28vw', top: '5svh', width: '13vw', height: '18svh', rotate: -1.5, z: 4 },
+  { left: '9vw', top: '29svh', width: '11vw', height: '18svh', rotate: 3.2, z: 4 },
+  { left: '26vw', top: '36svh', width: '14vw', height: '12svh', rotate: -2.8, z: 4 },
+  { left: '5vw', top: '112svh', width: '13vw', height: '20svh', rotate: -2.4, z: 4 },
+  { left: '19vw', top: '126svh', width: '10vw', height: '15svh', rotate: 1.8, z: 5 },
+  { left: '30vw', top: '117svh', width: '13vw', height: '11svh', rotate: -3.1, z: 4 },
+  { left: '8vw', top: '210svh', width: '12vw', height: '10svh', rotate: -2.2, z: 4 },
+  { left: '18vw', top: '223svh', width: '14vw', height: '16svh', rotate: 2, z: 5 },
+  { left: '31vw', top: '214svh', width: '12vw', height: '10svh', rotate: 2.8, z: 4 },
+  { left: '34vw', top: '235svh', width: '9vw', height: '17svh', rotate: -2.5, z: 4 },
+  { left: '3vw', top: '57svh', width: '9vw', height: '8svh', rotate: -1.6, z: 3 },
+  { left: '34vw', top: '58svh', width: '9vw', height: '7svh', rotate: 1.5, z: 3 },
+  { left: '4vw', top: '147svh', width: '10vw', height: '8svh', rotate: -1.2, z: 3 },
+  { left: '34vw', top: '146svh', width: '10vw', height: '8svh', rotate: 1.9, z: 3 }
 ];
 
 
@@ -536,85 +542,96 @@ function renderIntroModal() {
   const landing = landingCopy();
   const collageStories = state.collageIds.map((id) => getStoryById(id)).filter(Boolean);
   const photoSlots = collageStories.map((story, index) => {
-    const slot = state.collageLayout[index] || INTRO_SLOTS[index] || { x: 8, y: 8, width: 14, height: 10, rotate: 0, z: 2 };
+    const slot = INTRO_SLOTS[index] || { left: '5vw', top: '5svh', width: '12vw', height: '16svh', rotate: 0, z: 2 };
     const style = [
-      `left:${slot.x}%`,
-      `top:${slot.y}%`,
-      `width:${slot.width}%`,
-      `height:${slot.height}%`,
+      `left:${slot.left}`,
+      `top:${slot.top}`,
+      `width:${slot.width}`,
+      `height:${slot.height}`,
       `transform:rotate(${slot.rotate}deg)`,
       `z-index:${slot.z}`
     ].join(';');
     return `
-      <figure class="intro-photo-slot ${slot.height > slot.width ? 'is-portrait' : 'is-landscape'}" style="${style}">
-        <span class="intro-tape intro-tape-left"></span>
-        <span class="intro-tape intro-tape-right"></span>
+      <figure class="intro-photo-slot" style="${style}">
+        <span class="intro-tape"></span>
         <img src="${story.images[0]}" alt="" loading="eager" aria-hidden="true">
       </figure>
     `;
   }).join('');
 
-  const questionListEn = LANDING.en.questions.map((question) => `<li>${escapeHtml(question)}</li>`).join('');
-  const questionListSo = LANDING.so.questions.map((question) => `<li>${escapeHtml(question)}</li>`).join('');
+  const mobileTopStories = collageStories.slice(0, 3);
+  const mobileBottomStories = collageStories.slice(3, 6);
+  const mobileTopStrip = mobileTopStories.map((story) => `
+    <figure class="landing-mobile-photo">
+      <span class="intro-tape"></span>
+      <img src="${story.images[0]}" alt="" loading="eager" aria-hidden="true">
+    </figure>
+  `).join('');
+  const mobileBottomStrip = mobileBottomStories.map((story) => `
+    <figure class="landing-mobile-photo">
+      <span class="intro-tape"></span>
+      <img src="${story.images[0]}" alt="" loading="eager" aria-hidden="true">
+    </figure>
+  `).join('');
+
+  const questionList = landing.questions.map((question) => `<li>${escapeHtml(question)}</li>`).join('');
 
   return `
     <div class="intro-modal">
-      <div class="intro-wall">
+      <div class="intro-scroll">
         <div class="intro-wall-overlay"></div>
-        ${photoSlots}
+        <div class="intro-photo-layer">${photoSlots}</div>
+        <figure class="intro-map-sticker" aria-hidden="true">
+          <span class="intro-tape"></span>
+          <img src="assets/sws-map-wrinkle.png" alt="">
+        </figure>
 
-        <section class="landing-note landing-note-hero">
-          <span class="note-tape note-tape-left"></span>
-          <span class="note-tape note-tape-right"></span>
-          <div class="landing-note-inner">
-            <div class="landing-title-block">
-              <p class="landing-overline">${escapeHtml(landing.place)}</p>
-              <h1 class="landing-title">${escapeHtml(landing.title)}</h1>
-            </div>
-            <div class="landing-meta">1000+ photos <span>|</span> 350+ stories <span>|</span> 150+ reflections</div>
+        <section class="landing-section landing-section-1">
+          <div class="landing-mobile-strip landing-mobile-strip-top">${mobileTopStrip}</div>
+          <div class="landing-panel landing-panel-hero">
             <div class="landing-switch-row">
-              <div class="landing-switch-group">
-                <span class="landing-switch-label">${escapeHtml(landing.languageLabel)}:</span>
+              <div class="landing-switch-stack">
                 <div class="landing-switcher" role="group" aria-label="Language selector">
                   <button type="button" class="${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">SO</button>
                   <button type="button" class="${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">EN</button>
                 </div>
+                <div class="landing-switch-footer">${escapeHtml(landing.languageFooter)}</div>
               </div>
-              <div class="landing-switch-group">
-                <span class="landing-switch-label">${escapeHtml(landing.themeLabel)}:</span>
+              <div class="landing-switch-stack">
                 <div class="landing-switcher" role="group" aria-label="Theme selector">
-                  <button type="button" class="${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${escapeHtml(landing.dark)}</button>
-                  <button type="button" class="${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${escapeHtml(landing.light)}</button>
+                  <button type="button" class="${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${escapeHtml(COPY[state.language].dark)}</button>
+                  <button type="button" class="${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${escapeHtml(COPY[state.language].light)}</button>
                 </div>
+                <div class="landing-switch-footer">${escapeHtml(landing.themeFooter)}</div>
               </div>
             </div>
-            <p class="landing-cta-copy">${escapeHtml(landing.heroCta)}</p>
+            <div class="landing-title-block">
+              ${landing.section1TitleLines.map((line, index) => `<div class="landing-title-line ${index === landing.section1TitleLines.length - 1 ? 'is-place' : ''}">${escapeHtml(line)}</div>`).join('')}
+            </div>
+          </div>
+        </section>
+
+        <div class="landing-mobile-map-wrap">
+          <figure class="landing-mobile-map"><span class="intro-tape"></span><img src="assets/sws-map-wrinkle.png" alt=""></figure>
+        </div>
+
+        <section class="landing-section landing-section-2">
+          <div class="landing-panel landing-panel-copy">
+            <p>${escapeHtml(landing.section2Intro)}</p>
+            <ul>${questionList}</ul>
+            <p>${escapeHtml(landing.section2Outro)}</p>
+          </div>
+        </section>
+
+        <div class="landing-mobile-strip landing-mobile-strip-bottom">${mobileBottomStrip}</div>
+
+        <section class="landing-section landing-section-3">
+          <div class="landing-panel landing-panel-cta">
+            <p class="landing-cta-copy">${escapeHtml(landing.section3Lead)}</p>
             <div class="landing-button-row">
               <button type="button" class="landing-button" data-action="intro-random">${escapeHtml(landing.surprise)}</button>
               <button type="button" class="landing-button" data-action="intro-explore">${escapeHtml(landing.explore)}</button>
             </div>
-          </div>
-        </section>
-
-        <section class="landing-note landing-note-en">
-          <span class="note-tape note-tape-left"></span>
-          <span class="note-tape note-tape-right"></span>
-          <div class="landing-note-inner prose-note">
-            <h2>English</h2>
-            <p>${escapeHtml(LANDING.en.introLead)}</p>
-            <ul>${questionListEn}</ul>
-            <p>${escapeHtml(LANDING.en.reflectionLead)}</p>
-          </div>
-        </section>
-
-        <section class="landing-note landing-note-so">
-          <span class="note-tape note-tape-left"></span>
-          <span class="note-tape note-tape-right"></span>
-          <div class="landing-note-inner prose-note">
-            <h2>Soomaali</h2>
-            <p>${escapeHtml(LANDING.so.introLead)}</p>
-            <ul>${questionListSo}</ul>
-            <p>${escapeHtml(LANDING.so.reflectionLead)}</p>
           </div>
         </section>
       </div>
@@ -679,8 +696,7 @@ function renderShareModal() {
 function renderGuidanceBox() {
   const guidance = guidanceCopy();
   return `
-    <div class="story-guidance-box">
-      <div class="story-guidance-title">${escapeHtml(guidance.title)}</div>
+    <div class="story-guidance-box is-compact">
       <p>${escapeHtml(guidance.intro)}</p>
       <ul>
         ${guidance.questions.map((question) => `<li>${escapeHtml(question)}</li>`).join('')}
