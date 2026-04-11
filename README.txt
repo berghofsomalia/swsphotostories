@@ -19,3 +19,6 @@ Notes
 - Share links point to index.html?code=STORYCODE.
 - The first image for each story is the local real JPG lead image.
 - The remaining carousel images come from the original package image folders.
+
+
+Landing assets: replace files in /landing (1.jpg to 7.jpg, and sws on somalia map_wrinkle.png) to customise the landing visuals.

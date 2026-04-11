@@ -218,6 +218,8 @@ const state = {
   actionMessage: '',
   collageIds: [],
   collageLayout: [],
+  landingImages: [],
+  landingMap: 'landing/sws on somalia map_wrinkle.png',
   autoplayId: null
 };
 
@@ -310,6 +312,11 @@ function shuffle(items) {
 
 function generateCollageLayout(total) {
   return INTRO_SLOTS.slice(0, total);
+}
+
+function buildLandingImagePool() {
+  const filenames = ['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg', '7.jpg'];
+  return shuffle(filenames.map((name) => `landing/${name}`));
 }
 
 function syncGalleryCardHeights() {
@@ -540,97 +547,78 @@ function renderStageControls(story) {
 function renderIntroModal() {
   if (!state.introOpen) return '';
   const landing = landingCopy();
-  const collageStories = state.collageIds.map((id) => getStoryById(id)).filter(Boolean);
-  const photoSlots = collageStories.map((story, index) => {
-    const slot = INTRO_SLOTS[index] || { left: '5vw', top: '5svh', width: '12vw', height: '16svh', rotate: 0, z: 2 };
-    const style = [
-      `left:${slot.left}`,
-      `top:${slot.top}`,
-      `width:${slot.width}`,
-      `height:${slot.height}`,
-      `transform:rotate(${slot.rotate}deg)`,
-      `z-index:${slot.z}`
-    ].join(';');
-    return `
-      <figure class="intro-photo-slot" style="${style}">
-        <span class="intro-tape"></span>
-        <img src="${story.images[0]}" alt="" loading="eager" aria-hidden="true">
-      </figure>
-    `;
-  }).join('');
-
-  const mobileTopStories = collageStories.slice(0, 3);
-  const mobileBottomStories = collageStories.slice(3, 6);
-  const mobileTopStrip = mobileTopStories.map((story) => `
-    <figure class="landing-mobile-photo">
-      <span class="intro-tape"></span>
-      <img src="${story.images[0]}" alt="" loading="eager" aria-hidden="true">
-    </figure>
-  `).join('');
-  const mobileBottomStrip = mobileBottomStories.map((story) => `
-    <figure class="landing-mobile-photo">
-      <span class="intro-tape"></span>
-      <img src="${story.images[0]}" alt="" loading="eager" aria-hidden="true">
-    </figure>
-  `).join('');
-
+  const images = state.landingImages.length ? state.landingImages : buildLandingImagePool();
+  const img = (index) => images[index % images.length] || '';
+  const mapSrc = state.landingMap || 'landing/sws on somalia map_wrinkle.png';
   const questionList = landing.questions.map((question) => `<li>${escapeHtml(question)}</li>`).join('');
 
   return `
-    <div class="intro-modal">
-      <div class="intro-scroll">
-        <div class="intro-wall-overlay"></div>
-        <div class="intro-photo-layer">${photoSlots}</div>
-        <figure class="intro-map-sticker" aria-hidden="true">
-          <span class="intro-tape"></span>
-          <img src="assets/sws-map-wrinkle.png" alt="">
-        </figure>
-
-        <section class="landing-section landing-section-1">
-          <div class="landing-mobile-strip landing-mobile-strip-top">${mobileTopStrip}</div>
-          <div class="landing-panel landing-panel-hero">
-            <div class="landing-switch-row">
-              <div class="landing-switch-stack">
-                <div class="landing-switcher" role="group" aria-label="Language selector">
-                  <button type="button" class="${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">SO</button>
-                  <button type="button" class="${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">EN</button>
-                </div>
-                <div class="landing-switch-footer">${escapeHtml(landing.languageFooter)}</div>
-              </div>
-              <div class="landing-switch-stack">
-                <div class="landing-switcher" role="group" aria-label="Theme selector">
-                  <button type="button" class="${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${escapeHtml(COPY[state.language].dark)}</button>
-                  <button type="button" class="${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${escapeHtml(COPY[state.language].light)}</button>
-                </div>
-                <div class="landing-switch-footer">${escapeHtml(landing.themeFooter)}</div>
-              </div>
+    <div class="intro-modal intro-modal--nexus">
+      <div class="intro-scroll intro-scroll--nexus">
+        <section class="landing-nexus-section landing-nexus-section--hero">
+          <div class="landing-visual-column landing-visual-column--hero">
+            <div class="landing-visual-strip-row">
+              <figure class="landing-photo-card is-strip"><span class="intro-tape"></span><img src="${img(0)}" alt="" loading="eager" aria-hidden="true"></figure>
+              <figure class="landing-photo-card is-strip is-wide"><span class="intro-tape"></span><img src="${img(1)}" alt="" loading="eager" aria-hidden="true"></figure>
+              <figure class="landing-photo-card is-strip"><span class="intro-tape"></span><img src="${img(2)}" alt="" loading="eager" aria-hidden="true"></figure>
             </div>
-            <div class="landing-title-block">
-              ${landing.section1TitleLines.map((line, index) => `<div class="landing-title-line ${index === landing.section1TitleLines.length - 1 ? 'is-place' : ''}">${escapeHtml(line)}</div>`).join('')}
+          </div>
+          <div class="landing-text-column landing-text-column--hero">
+            <div class="landing-panel landing-panel--hero-modern">
+              <div class="landing-panel-map-wrap">
+                <img src="${mapSrc}" alt="" class="landing-panel-map" loading="eager" aria-hidden="true">
+              </div>
+              <div class="landing-switch-row landing-switch-row--stacked">
+                <div class="landing-switch-stack">
+                  <div class="landing-switcher" role="group" aria-label="Language selector">
+                    <button type="button" class="${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">SO</button>
+                    <button type="button" class="${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">EN</button>
+                  </div>
+                  <div class="landing-switch-footer">${escapeHtml(landing.languageFooter)}</div>
+                </div>
+                <div class="landing-switch-stack">
+                  <div class="landing-switcher" role="group" aria-label="Theme selector">
+                    <button type="button" class="${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${escapeHtml(COPY[state.language].dark)}</button>
+                    <button type="button" class="${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${escapeHtml(COPY[state.language].light)}</button>
+                  </div>
+                  <div class="landing-switch-footer">${escapeHtml(landing.themeFooter)}</div>
+                </div>
+              </div>
+              <div class="landing-title-block landing-title-block--modern">
+                ${landing.section1TitleLines.map((line, index) => `<div class="landing-title-line ${index === landing.section1TitleLines.length - 1 ? 'is-place' : ''}">${escapeHtml(line)}</div>`).join('')}
+              </div>
             </div>
           </div>
         </section>
 
-        <div class="landing-mobile-map-wrap">
-          <figure class="landing-mobile-map"><span class="intro-tape"></span><img src="assets/sws-map-wrinkle.png" alt=""></figure>
-        </div>
-
-        <section class="landing-section landing-section-2">
-          <div class="landing-panel landing-panel-copy">
-            <p>${escapeHtml(landing.section2Intro)}</p>
-            <ul>${questionList}</ul>
-            <p>${escapeHtml(landing.section2Outro)}</p>
+        <section class="landing-nexus-section landing-nexus-section--copy">
+          <div class="landing-visual-column landing-visual-column--copy">
+            <figure class="landing-photo-card is-tall"><span class="intro-tape"></span><img src="${img(3)}" alt="" loading="eager" aria-hidden="true"></figure>
+            <figure class="landing-photo-card is-tall"><span class="intro-tape"></span><img src="${img(4)}" alt="" loading="eager" aria-hidden="true"></figure>
+            <figure class="landing-photo-card is-medium"><span class="intro-tape"></span><img src="${img(5)}" alt="" loading="eager" aria-hidden="true"></figure>
+          </div>
+          <div class="landing-text-column landing-text-column--copy">
+            <div class="landing-panel landing-panel--copy-modern">
+              <div class="landing-copy-scroll">
+                <p>${escapeHtml(landing.section2Intro)}</p>
+                <ul>${questionList}</ul>
+                <p>${escapeHtml(landing.section2Outro)}</p>
+              </div>
+            </div>
           </div>
         </section>
 
-        <div class="landing-mobile-strip landing-mobile-strip-bottom">${mobileBottomStrip}</div>
-
-        <section class="landing-section landing-section-3">
-          <div class="landing-panel landing-panel-cta">
-            <p class="landing-cta-copy">${escapeHtml(landing.section3Lead)}</p>
-            <div class="landing-button-row">
-              <button type="button" class="landing-button" data-action="intro-random">${escapeHtml(landing.surprise)}</button>
-              <button type="button" class="landing-button" data-action="intro-explore">${escapeHtml(landing.explore)}</button>
+        <section class="landing-nexus-section landing-nexus-section--cta">
+          <div class="landing-visual-column landing-visual-column--cta">
+            <figure class="landing-photo-card is-wide-short"><span class="intro-tape"></span><img src="${img(6)}" alt="" loading="eager" aria-hidden="true"></figure>
+          </div>
+          <div class="landing-text-column landing-text-column--cta">
+            <div class="landing-panel landing-panel--cta-modern">
+              <p class="landing-cta-copy">${escapeHtml(landing.section3Lead)}</p>
+              <div class="landing-button-row landing-button-row--stacked">
+                <button type="button" class="landing-button" data-action="intro-random">${escapeHtml(landing.surprise)}</button>
+                <button type="button" class="landing-button" data-action="intro-explore">${escapeHtml(landing.explore)}</button>
+              </div>
             </div>
           </div>
         </section>
@@ -1171,6 +1159,8 @@ async function initialise() {
   state.stories = payload.stories || [];
   state.collageIds = shuffle(state.stories.map((story) => story.id)).slice(0, 16);
   state.collageLayout = generateCollageLayout(state.collageIds.length);
+  state.landingImages = buildLandingImagePool();
+  state.landingMap = 'landing/sws on somalia map_wrinkle.png';
 
   const code = new URLSearchParams(window.location.search).get('code');
   const existing = getStoryById(code);
