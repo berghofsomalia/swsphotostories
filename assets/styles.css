@@ -2829,28 +2829,28 @@ html[data-theme="light"] .intro-scroll--pdfstyle {
 /* switchers smaller and positioned higher, but not fixed */
 .landing-switch-row--top {
   position: absolute;
-  top: 0.18rem;
-  left: 0.4rem;
+  top: 0.06rem;
+  left: 0.42rem;
   padding: 0;
   z-index: 8;
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
-  gap: 0.38rem;
+  gap: 0.42rem;
 }
 
 .landing-switch-row--top .landing-switcher {
-  padding: 0.08rem;
-  gap: 0.06rem;
+  padding: 0.1rem;
+  gap: 0.08rem;
   background: rgba(34, 38, 43, 0.42);
   flex-wrap: nowrap;
   white-space: nowrap;
 }
 
 .landing-switch-row--top .landing-switcher button {
-  min-width: 1.75rem;
-  padding: 0.08rem 0.4rem;
-  font-size: 0.48rem;
+  min-width: 2.2rem;
+  padding: 0.12rem 0.55rem;
+  font-size: 0.58rem;
   line-height: 1;
   letter-spacing: 0.05em;
 }
@@ -2866,13 +2866,13 @@ html[data-theme="light"] .intro-scroll--pdfstyle {
 .landing-photo-pane--hero {
   grid-column: 1 / 3;
   grid-row: 1 / 3;
-  background: #4e4d4c;
+  background: transparent;
   margin-top: 0;
   align-self: stretch;
 }
 
 .landing-photo-pane--hero img {
-  object-fit: contain;
+  object-fit: cover;
   object-position: center center;
   width: 100%;
   height: 100%;
@@ -2921,14 +2921,14 @@ html[data-theme="light"] .landing-copy-card--title {
 
 /* section 2 */
 .landing-copy-card--section2 {
-  padding: clamp(2.8rem, 7vw, 6rem);
+  padding: clamp(3.4rem, 8vw, 7.6rem);
 }
 
 /* section 3 */
 .landing-question-card {
-  font-size: clamp(1.38rem, 1.95vw, 2.25rem);
-  line-height: 1.28;
-  padding: 1.8rem;
+  font-size: clamp(1.62rem, 2.2vw, 2.7rem);
+  line-height: 1.26;
+  padding: 2rem;
 }
 
 /* section 4 */
@@ -2952,9 +2952,9 @@ html[data-theme="light"] .landing-copy-card--title {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: min(28svh, 260px);
-  padding: 1.8rem 1.6rem 2rem;
-  background: linear-gradient(to top, rgba(135, 97, 63, 0.96), rgba(135, 97, 63, 0.88), rgba(135, 97, 63, 0));
+  min-height: min(30svh, 300px);
+  padding: 2rem 1.8rem 2.15rem;
+  background: linear-gradient(to top, rgba(88, 61, 40, 0.98), rgba(107, 73, 46, 0.9), rgba(107, 73, 46, 0.22), rgba(107, 73, 46, 0));
   color: #f8efe4;
   text-align: center;
   pointer-events: none;
@@ -2991,7 +2991,7 @@ html[data-theme="light"] .landing-copy-card--title {
   top: auto;
   width: auto;
   min-height: 0;
-  padding: 1.75rem 1.8rem 1.9rem;
+  padding: 1.85rem 1.8rem 2rem clamp(8.5rem, 16vw, 15rem);
   gap: 1.25rem;
   background: #9a7b67;
   box-shadow: none;
@@ -2999,6 +2999,7 @@ html[data-theme="light"] .landing-copy-card--title {
 
 .landing-cta-copy {
   max-width: 24ch;
+  margin-left: 0;
 }
 
 /* main-page process box smaller */
@@ -3020,23 +3021,23 @@ html[data-theme="light"] .landing-copy-card--title {
 @media (max-width: 760px) {
   .landing-switch-row--top {
     position: absolute;
-    top: 0.16rem;
+    top: 0.08rem;
     left: 0.22rem;
-    gap: 0.18rem;
+    gap: 0.16rem;
     z-index: 8;
     flex-wrap: nowrap;
   }
 
   .landing-switch-row--top .landing-switcher {
     padding: 0.05rem;
-    gap: 0.03rem;
+    gap: 0.02rem;
   }
 
   .landing-switch-row--top .landing-switcher button {
-    min-width: 1.12rem;
-    padding: 0.05rem 0.22rem;
-    font-size: 0.34rem;
-    letter-spacing: 0.03em;
+    min-width: 1.65rem;
+    padding: 0.05rem 0.24rem;
+    font-size: 0.46rem;
+    letter-spacing: 0.025em;
   }
 
   .landing-pdf-grid--hero {
@@ -3048,11 +3049,11 @@ html[data-theme="light"] .landing-copy-card--title {
   .landing-photo-pane--hero {
     grid-column: 1;
     grid-row: 1 / 3;
-    background: #4e4d4c;
+    background: transparent;
   }
 
   .landing-photo-pane--hero img {
-    object-fit: contain;
+    object-fit: cover;
   }
 
   .landing-copy-card--nexus,
@@ -3085,13 +3086,13 @@ html[data-theme="light"] .landing-copy-card--title {
   }
 
   .landing-copy-card--section2 {
-    padding: 1.8rem 1.45rem 1.9rem;
+    padding: 2.35rem 1.85rem 2.4rem;
   }
 
   .landing-question-card {
-    min-height: 240px;
-    font-size: 1.18rem;
-    padding: 1.25rem 1rem;
+    min-height: 260px;
+    font-size: 1.32rem;
+    padding: 1.35rem 1.05rem;
   }
 
   .landing-pdf-grid--shared {
@@ -3104,8 +3105,9 @@ html[data-theme="light"] .landing-copy-card--title {
     right: 0;
     bottom: 0;
     min-height: 0;
-    padding: 1rem 0.95rem 1.15rem;
+    padding: 1.15rem 1rem 1.28rem;
     font-size: 1rem;
+    background: linear-gradient(to top, rgba(88, 61, 40, 0.98), rgba(107, 73, 46, 0.9), rgba(107, 73, 46, 0.22), rgba(107, 73, 46, 0));
   }
 
   .landing-pdf-grid--cta {
@@ -3133,7 +3135,7 @@ html[data-theme="light"] .landing-copy-card--title {
     width: auto;
     min-height: 0;
     gap: 0.9rem;
-    padding: 1rem 0.95rem 1.15rem;
+    padding: 1rem 0.95rem 1.15rem 0.95rem;
   }
 
   .landing-cta-copy {
