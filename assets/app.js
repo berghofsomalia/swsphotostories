@@ -107,48 +107,40 @@ const COPY = {
 
 const LANDING = {
   en: {
-    section1TitleLines: [
-      'Visual storytelling',
-      'of the nexus of',
-      'climate (change), environment (degradation),',
-      'conflict and peace',
-      'Southwest State, Somalia'
-    ],
-    languageFooter: 'Language: SO / EN',
-    themeFooter: 'Theme: Dark / Light',
-    section2Intro: 'In late 2025, 42 community members across Baidoa, Barawe and Hudur, across generations and genders, have taken photos capturing various aspects of this nexus and told the human stories behind the photos. They asked themselves:',
+    section1Nexus: 'The nexus of climate (change), environment (degradation), conflict, and peace',
+    section1Title: 'Visual storytelling from Southwest State, Somalia',
+    section2Body: 'In late 2025, 42 community members across Baidoa, Barawe and Hudur, across generations and genders, took photos capturing various aspects of the nexus of climate (change), environment (degradation), conflict, and peace and told the human stories behind the photos.',
+    section3Lead: 'They pondered...',
     questions: [
       'Why did I choose to take these photos? What memories or emotions do these photos invoke in me?',
       'What do I want others to feel and understand from these photos? What community issues or strengths do I want to illustrate?',
       'If I imagine that the issues are getting resolved or the strengths are getting amplified over the next three years, what would these photos look like?',
-      'What cultural and religious elements such as poems, songs, proverbs, and teaching from the Quran or Hadith can (a) describe the current photos, and (b) inspire us to work towards turning the imagined photos into reality?'
+      'What cultural and religious elements (a) describe the current photos and (b) could inspire us to work towards turning the imagined photos into reality?'
     ],
-    section2Outro: 'The photos were shared in community spaces of storytelling and dialogue. People picked photos they connected to and shared their own reflections on the stories.',
-    section3Lead: 'Explore 350 stories through 1000 photos and 150 community reflections',
-    surprise: 'Surprise me',
-    explore: 'Let me explore'
+    section4Body: 'The photos were shared in community spaces of storytelling and dialogue. People picked photos they connected to and shared their own reflections on the stories.',
+    section5Body: 'There are currently 350 stories, 1000 photos and 150 community reflections. What would you like to do?',
+    surprise: 'See a photostory - surprise me!',
+    explore: 'Let me explore them myself',
+    shareOwn: 'Share my own photostory',
+    comingSoon: 'Coming soon'
   },
   so: {
-    section1TitleLines: [
-      'Sheeko-muuqaal',
-      'ku saabsan xiriirka ka dhexeeya',
-      '(isbeddelka) cimilada, (nabaad-guurka) deegaanka,',
-      'khilaafka iyo nabadda',
-      'ee Koonfur Galbeed, Soomaaliya'
-    ],
-    languageFooter: 'Luqad: SO / EN',
-    themeFooter: 'Muuqaal: Madow / Iftiin',
-    section2Intro: 'Dabayaaqadii 2025, 42 xubnood oo bulshada ka kala socday Baydhabo, Baraawe iyo Xudur, kana kala tirsanaa jiilal iyo jinsiyo kala duwan, ayaa qaaday sawirro muujinaya dhinacyo kala duwan oo ka mid ah isku-xirkan, isla markaana ka sheekeeyey sheekooyinka bini’aadannimo ee ka dambeeya sawirradaas. Waxay isweydiiyeen:',
+    section1Nexus: 'Xiriirka ka dhexeeya (isbeddelka) cimilada, (nabaad-guurka) deegaanka, khilaafka, iyo nabadda',
+    section1Title: 'Sheeko-muuqaal ka yimid Koonfur Galbeed, Soomaaliya',
+    section2Body: 'Dabayaaqadii 2025, 42 xubnood oo bulshada ka kala socday Baydhabo, Baraawe iyo Xudur, kana kala tirsanaa jiilal iyo jinsiyo kala duwan, ayaa qaaday sawirro muujinaya dhinacyo kala duwan oo ka mid ah xiriirka cimilada (isbeddelka), deegaanka (nabaad-guurka), khilaafka, iyo nabadda, waxayna ka sheekeeyeen sheekooyinka bini’aadannimo ee ka dambeeya sawirrada.',
+    section3Lead: 'Waxay isweydiiyeen...',
     questions: [
       'Maxaan u doortay in aan sawirradan qaado? Xusuuso ama shucuur noocee ah ayay sawirradani igu kicinayaan?',
       'Maxaan rabaa in dadka kale ay ka dareemaan oo ka fahmaan sawirradan? Arrimahee ama xoogaggee bulshada ka jira ayaan rabaa in aan sawirradan ku muujiyo?',
-      'Haddii aan qiyaaso in saddexda sano ee soo socota arrimahani la xallinayo ama xoogagga wanaagsani sii xoogaysanayaan, sawirradani markaas sidee bay u ekaan lahaayeen?',
-      'Waa maxay waxyaabaha dhaqanka iyo diinta ee, sida gabayo, heeso, maahmaahyo, iyo casharro ka imanaya Qur’aanka/Xadiiska, kuwaas oo (a) sharraxi kara sawirrada hadda jira, iyo (b) nagu dhiirrigelin kara in aan ka shaqayno sidii sawirrada la qiyaasay ay dhab u noqon lahaayeen?'
+      'Haddii aan qiyaaso in arrimahani la xallinayo ama xoogagga wanaagsani sii xoogaysanayaan saddexda sano ee soo socota, sawirradani sidee bay markaas u ekaan lahaayeen?',
+      'Waa maxay waxyaabaha dhaqanka iyo diinta ee (a) sharrixi kara sawirrada hadda jira, isla markaana (b) nagu dhiirrigelin kara in aan ka shaqayno sidii sawirrada la qiyaasay ay dhab u noqon lahaayeen?'
     ],
-    section2Outro: 'Sawirrada waxaa lagu wadaagay goobaha bulshadu ku kulanto ee sheeko-wadaagga iyo wada-hadalka. Dadku waxay doorteen sawirradii ay la xiriireen, dabadeedna waxay ka dhiibteen milicsiyadooda ku saabsan sheekooyinka.',
-    section3Lead: 'Baadh 350 sheeko adigoo maraya 1000 sawir iyo 150 milicsi bulsho',
-    surprise: 'I tus wax aan filayn',
-    explore: 'Aan baadho'
+    section4Body: 'Sawirrada waxaa lagu wadaagay goobaha bulshadu ku kulanto ee sheeko-wadaagga iyo wada-hadalka. Dadku waxay doorteen sawirradii ay la xiriireen, dabadeedna waxay ka dhiibteen milicsiyadooda ku saabsan sheekooyinka.',
+    section5Body: 'Hadda waxaa jira 350 sheeko, 1000 sawir iyo 150 milicsi bulsho. Maxaad jeclaan lahayd in aad samayso?',
+    surprise: 'I tus sheeko-sawir - yaab i geli!',
+    explore: 'Aan anigu is baadho',
+    shareOwn: 'Aan wadaago sheeko-sawirkayga',
+    comingSoon: 'Dhawaan'
   }
 };
 
@@ -218,8 +210,9 @@ const state = {
   actionMessage: '',
   collageIds: [],
   collageLayout: [],
-  landingImages: [],
-  landingMap: 'landing/sws on somalia map_wrinkle.png',
+  landingSectionImages: {},
+  landingMap: 'images/landing/map 2.png',
+  introSectionIndex: 0,
   autoplayId: null
 };
 
@@ -310,13 +303,36 @@ function shuffle(items) {
   return clone;
 }
 
-function generateCollageLayout(total) {
-  return INTRO_SLOTS.slice(0, total);
+async function imageExists(src) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(src);
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
 }
 
-function buildLandingImagePool() {
-  const filenames = ['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg', '7.jpg'];
-  return shuffle(filenames.map((name) => `landing/${name}`));
+async function loadSectionImage(sectionNumber) {
+  const probes = [];
+  const extensions = ['jpg', 'png'];
+  for (let i = 1; i <= 6; i += 1) {
+    extensions.forEach((ext) => {
+      probes.push(`images/landing/${sectionNumber} (${i}).${ext}`);
+    });
+  }
+  const existing = (await Promise.all(probes.map((src) => imageExists(src)))).filter(Boolean);
+  const shuffled = shuffle(existing);
+  if (shuffled.length > 0) return shuffled[0];
+  const fallbackStory = state.stories[Math.floor(Math.random() * state.stories.length)];
+  return fallbackStory?.images?.[0] || '';
+}
+
+async function loadLandingAssets() {
+  const mapSrc = await imageExists('images/landing/map 2.png') || await imageExists('images/landing/sws on somalia map_wrinkle.png') || 'assets/sws-map-wrinkle.png';
+  state.landingMap = mapSrc;
+  const sections = [1, 3, 4, 5];
+  const resolved = await Promise.all(sections.map((section) => loadSectionImage(section)));
+  state.landingSectionImages = Object.fromEntries(sections.map((section, index) => [section, resolved[index]]));
 }
 
 function syncGalleryCardHeights() {
@@ -547,79 +563,87 @@ function renderStageControls(story) {
 function renderIntroModal() {
   if (!state.introOpen) return '';
   const landing = landingCopy();
-  const images = state.landingImages.length ? state.landingImages : buildLandingImagePool();
-  const img = (index) => images[index % images.length] || '';
-  const mapSrc = state.landingMap || 'landing/sws on somalia map_wrinkle.png';
-  const questionList = landing.questions.map((question) => `<li>${escapeHtml(question)}</li>`).join('');
+  const sectionImages = state.landingSectionImages;
 
   return `
-    <div class="intro-modal intro-modal--nexus">
-      <div class="intro-scroll intro-scroll--nexus">
-        <section class="landing-nexus-section landing-nexus-section--hero">
-          <div class="landing-visual-column landing-visual-column--hero">
-            <div class="landing-visual-strip-row">
-              <figure class="landing-photo-card is-strip"><span class="intro-tape"></span><img src="${img(0)}" alt="" loading="eager" aria-hidden="true"></figure>
-              <figure class="landing-photo-card is-strip is-wide"><span class="intro-tape"></span><img src="${img(1)}" alt="" loading="eager" aria-hidden="true"></figure>
-              <figure class="landing-photo-card is-strip"><span class="intro-tape"></span><img src="${img(2)}" alt="" loading="eager" aria-hidden="true"></figure>
+    <div class="intro-modal intro-modal--pdfstyle">
+      <div class="intro-scroll intro-scroll--pdfstyle" id="intro-scroll">
+        <section class="landing-pdf-section landing-pdf-section--1" data-intro-section>
+          <div class="landing-pdf-grid landing-pdf-grid--hero">
+            <div class="landing-switch-row landing-switch-row--top">
+              <div class="landing-switcher" role="group" aria-label="Language selector">
+                <button type="button" class="${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">SO</button>
+                <button type="button" class="${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">EN</button>
+              </div>
+              <div class="landing-switcher" role="group" aria-label="Theme selector">
+                <button type="button" class="${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${escapeHtml(COPY[state.language].dark)}</button>
+                <button type="button" class="${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${escapeHtml(COPY[state.language].light)}</button>
+              </div>
             </div>
-          </div>
-          <div class="landing-text-column landing-text-column--hero">
-            <div class="landing-panel landing-panel--hero-modern">
-              <div class="landing-panel-map-wrap">
-                <img src="${mapSrc}" alt="" class="landing-panel-map" loading="eager" aria-hidden="true">
-              </div>
-              <div class="landing-switch-row landing-switch-row--stacked">
-                <div class="landing-switch-stack">
-                  <div class="landing-switcher" role="group" aria-label="Language selector">
-                    <button type="button" class="${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">SO</button>
-                    <button type="button" class="${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">EN</button>
-                  </div>
-                  <div class="landing-switch-footer">${escapeHtml(landing.languageFooter)}</div>
-                </div>
-                <div class="landing-switch-stack">
-                  <div class="landing-switcher" role="group" aria-label="Theme selector">
-                    <button type="button" class="${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${escapeHtml(COPY[state.language].dark)}</button>
-                    <button type="button" class="${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${escapeHtml(COPY[state.language].light)}</button>
-                  </div>
-                  <div class="landing-switch-footer">${escapeHtml(landing.themeFooter)}</div>
-                </div>
-              </div>
-              <div class="landing-title-block landing-title-block--modern">
-                ${landing.section1TitleLines.map((line, index) => `<div class="landing-title-line ${index === landing.section1TitleLines.length - 1 ? 'is-place' : ''}">${escapeHtml(line)}</div>`).join('')}
-              </div>
+            <div class="landing-photo-pane landing-photo-pane--hero">
+              <img src="${sectionImages[1] || ''}" alt="" loading="eager" aria-hidden="true">
+            </div>
+            <div class="landing-copy-card landing-copy-card--nexus">
+              <p>${escapeHtml(landing.section1Nexus)}</p>
+            </div>
+            <div class="landing-copy-card landing-copy-card--title">
+              <p>${escapeHtml(landing.section1Title)}</p>
             </div>
           </div>
         </section>
 
-        <section class="landing-nexus-section landing-nexus-section--copy">
-          <div class="landing-visual-column landing-visual-column--copy">
-            <figure class="landing-photo-card is-tall"><span class="intro-tape"></span><img src="${img(3)}" alt="" loading="eager" aria-hidden="true"></figure>
-            <figure class="landing-photo-card is-tall"><span class="intro-tape"></span><img src="${img(4)}" alt="" loading="eager" aria-hidden="true"></figure>
-            <figure class="landing-photo-card is-medium"><span class="intro-tape"></span><img src="${img(5)}" alt="" loading="eager" aria-hidden="true"></figure>
-          </div>
-          <div class="landing-text-column landing-text-column--copy">
-            <div class="landing-panel landing-panel--copy-modern">
-              <div class="landing-copy-scroll">
-                <p>${escapeHtml(landing.section2Intro)}</p>
-                <ul>${questionList}</ul>
-                <p>${escapeHtml(landing.section2Outro)}</p>
-              </div>
+        <section class="landing-pdf-section landing-pdf-section--2" data-intro-section>
+          <div class="landing-pdf-grid landing-pdf-grid--two-col">
+            <div class="landing-map-pane">
+              <img src="${state.landingMap}" alt="" loading="eager" aria-hidden="true">
+            </div>
+            <div class="landing-copy-card landing-copy-card--section2">
+              <p>${escapeHtml(landing.section2Body)}</p>
             </div>
           </div>
         </section>
 
-        <section class="landing-nexus-section landing-nexus-section--cta">
-          <div class="landing-visual-column landing-visual-column--cta">
-            <figure class="landing-photo-card is-wide-short"><span class="intro-tape"></span><img src="${img(6)}" alt="" loading="eager" aria-hidden="true"></figure>
+        <section class="landing-pdf-section landing-pdf-section--3" data-intro-section>
+          <div class="landing-pdf-grid landing-pdf-grid--questions">
+            <div class="landing-photo-pane landing-photo-pane--questions">
+              <img src="${sectionImages[3] || ''}" alt="" loading="eager" aria-hidden="true">
+            </div>
+            <div class="landing-copy-card landing-copy-card--pondered">
+              <p>${escapeHtml(landing.section3Lead)}</p>
+            </div>
+            ${landing.questions.map((question, index) => `<div class="landing-question-card landing-question-card--${index + 1}"><p>${escapeHtml(question)}</p></div>`).join('')}
           </div>
-          <div class="landing-text-column landing-text-column--cta">
-            <div class="landing-panel landing-panel--cta-modern">
-              <p class="landing-cta-copy">${escapeHtml(landing.section3Lead)}</p>
-              <div class="landing-button-row landing-button-row--stacked">
+        </section>
+
+        <section class="landing-pdf-section landing-pdf-section--4" data-intro-section>
+          <div class="landing-pdf-grid landing-pdf-grid--shared">
+            <div class="landing-photo-pane landing-photo-pane--shared">
+              <img src="${sectionImages[4] || ''}" alt="" loading="eager" aria-hidden="true">
+            </div>
+            <div class="landing-copy-card landing-copy-card--section4">
+              <p>${escapeHtml(landing.section4Body)}</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="landing-pdf-section landing-pdf-section--5" data-intro-section>
+          <div class="landing-pdf-grid landing-pdf-grid--cta">
+            <div class="landing-photo-pane landing-photo-pane--cta">
+              <img src="${sectionImages[5] || ''}" alt="" loading="eager" aria-hidden="true">
+            </div>
+            <div class="landing-copy-card landing-copy-card--cta-spacer"></div>
+            <div class="landing-copy-card landing-copy-card--section5">
+              <p class="landing-cta-copy">${escapeHtml(landing.section5Body)}</p>
+              <div class="landing-button-row landing-button-row--pdf">
                 <button type="button" class="landing-button" data-action="intro-random">${escapeHtml(landing.surprise)}</button>
                 <button type="button" class="landing-button" data-action="intro-explore">${escapeHtml(landing.explore)}</button>
+                <button type="button" class="landing-button" data-action="intro-share-own">${escapeHtml(landing.shareOwn)}</button>
               </div>
             </div>
+          </div>
+          <div class="landing-nav-arrows">
+            <button type="button" class="landing-nav-arrow" data-action="intro-scroll-prev" aria-label="Scroll up">${icon.chevronLeft()}</button>
+            <button type="button" class="landing-nav-arrow is-down" data-action="intro-scroll-next" aria-label="Scroll down">${icon.chevronRight()}</button>
           </div>
         </section>
       </div>
@@ -853,6 +877,16 @@ function bindEvents() {
     element.addEventListener('click', handleActionClick);
   });
 
+  const introScroll = qs('#intro-scroll');
+  if (introScroll) {
+    introScroll.addEventListener('scroll', () => {
+      const sections = qsa('[data-intro-section]', introScroll);
+      if (!sections.length) return;
+      const positions = sections.map((section) => Math.abs(section.offsetTop - introScroll.scrollTop));
+      state.introSectionIndex = positions.indexOf(Math.min(...positions));
+    }, { passive: true });
+  }
+
   const stage = qs('.story-slides');
   if (stage) {
     let touchStartX = null;
@@ -930,6 +964,23 @@ async function handleActionClick(event) {
     return;
   }
 
+  if (action === 'intro-share-own') {
+    window.location.href = 'mailto:?subject=Photostory submission';
+    return;
+  }
+
+  if (action === 'intro-scroll-next' || action === 'intro-scroll-prev') {
+    const scrollEl = qs('#intro-scroll');
+    const sections = qsa('[data-intro-section]', scrollEl);
+    if (!scrollEl || sections.length === 0) return;
+    const positions = sections.map((section) => Math.abs(section.offsetTop - scrollEl.scrollTop));
+    const currentIndex = positions.indexOf(Math.min(...positions));
+    const nextIndex = action === 'intro-scroll-next'
+      ? Math.min(sections.length - 1, currentIndex + 1)
+      : Math.max(0, currentIndex - 1);
+    sections[nextIndex]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return;
+  }
 
   if (action === 'open-saved') {
     state.savedOpen = !state.savedOpen;
@@ -1157,10 +1208,7 @@ async function initialise() {
   const response = await fetch(dataUrl);
   const payload = await response.json();
   state.stories = payload.stories || [];
-  state.collageIds = shuffle(state.stories.map((story) => story.id)).slice(0, 16);
-  state.collageLayout = generateCollageLayout(state.collageIds.length);
-  state.landingImages = buildLandingImagePool();
-  state.landingMap = 'landing/sws on somalia map_wrinkle.png';
+  await loadLandingAssets();
 
   const code = new URLSearchParams(window.location.search).get('code');
   const existing = getStoryById(code);

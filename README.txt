@@ -21,4 +21,4 @@ Notes
 - The remaining carousel images come from the original package image folders.
 
 
-Landing assets: replace files in /landing (1.jpg to 7.jpg, and sws on somalia map_wrinkle.png) to customise the landing visuals.
+Landing assets: place landing visuals in /images/landing using names like 1 (1).jpg, 1 (2).jpg for section 1, 3 (1).jpg for section 3, 4 (1).jpg for section 4, 5 (1).jpg for section 5, and map 2.png for the map section. The first digit is the section number and the number in brackets is used for randomisation on each page load.

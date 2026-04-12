@@ -2106,3 +2106,465 @@ html[data-theme="light"] .landing-panel--cta-modern { background: rgba(170, 145,
   .landing-visual-column--copy .landing-photo-card:nth-child(3) { width: 78%; }
   .landing-photo-card.is-wide-short { width: 100%; }
 }
+
+/* --- Landing redesign: PDF-style 5 sections --- */
+.intro-modal--pdfstyle {
+  background: #696867;
+  color: #f4eadf;
+}
+
+html[data-theme="light"] .intro-modal--pdfstyle {
+  background: #d7d2cc;
+  color: #2b2622;
+}
+
+.intro-scroll--pdfstyle {
+  height: 100svh;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+}
+
+.landing-pdf-section {
+  min-height: 100svh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  background: #696867;
+  position: relative;
+}
+
+html[data-theme="light"] .landing-pdf-section {
+  background: #d7d2cc;
+}
+
+.landing-pdf-grid {
+  min-height: 100svh;
+  display: grid;
+}
+
+.landing-pdf-grid--hero {
+  grid-template-columns: 1.2fr 1.2fr 0.9fr;
+  grid-template-rows: 70px 1fr 1fr;
+}
+
+.landing-switch-row--top {
+  grid-column: 1 / 3;
+  grid-row: 1;
+  align-self: start;
+  justify-self: start;
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem 0;
+  z-index: 3;
+}
+
+.landing-switch-row--top .landing-switcher {
+  background: rgba(34, 38, 43, 0.38);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 999px;
+  padding: 0.22rem;
+  display: inline-flex;
+  gap: 0.18rem;
+}
+
+.landing-switch-row--top .landing-switcher button {
+  min-width: 3rem;
+  padding: 0.3rem 0.75rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(255,255,255,0.78);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.landing-switch-row--top .landing-switcher button.is-active {
+  background: #b66a2c;
+  color: #fff;
+}
+
+html[data-theme="light"] .landing-switch-row--top .landing-switcher {
+  background: rgba(255,255,255,0.55);
+  border-color: rgba(0,0,0,0.08);
+}
+
+html[data-theme="light"] .landing-switch-row--top .landing-switcher button {
+  color: rgba(31,29,26,0.72);
+}
+
+html[data-theme="light"] .landing-switch-row--top .landing-switcher button.is-active {
+  color: #fff;
+}
+
+.landing-photo-pane,
+.landing-map-pane {
+  position: relative;
+  overflow: hidden;
+}
+
+.landing-photo-pane img,
+.landing-map-pane img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.landing-photo-pane--hero {
+  grid-column: 1 / 3;
+  grid-row: 2 / 4;
+}
+
+.landing-copy-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1.25rem, 3vw, 2.4rem);
+  font-family: Inter, system-ui, sans-serif;
+}
+
+.landing-copy-card p {
+  margin: 0;
+}
+
+.landing-copy-card--nexus {
+  grid-column: 3;
+  grid-row: 1 / 3;
+  background: #8d520f;
+  color: #f8efe5;
+  font-size: clamp(1.9rem, 2.8vw, 3.2rem);
+  line-height: 1.16;
+  font-weight: 300;
+  text-wrap: balance;
+}
+
+.landing-copy-card--title {
+  grid-column: 3;
+  grid-row: 3;
+  background: #686765;
+  color: #c48514;
+  font-size: clamp(1.9rem, 2.5vw, 3rem);
+  line-height: 1.18;
+  font-weight: 300;
+  text-wrap: balance;
+}
+
+html[data-theme="light"] .landing-copy-card--nexus { background: #a35c12; }
+html[data-theme="light"] .landing-copy-card--title { background: #807b76; }
+
+.landing-pdf-grid--two-col {
+  grid-template-columns: 0.6fr 1fr;
+}
+
+.landing-map-pane {
+  background: #c9e0ea;
+}
+
+.landing-copy-card--section2 {
+  background: #8d520f;
+  color: #f8efe5;
+  font-size: clamp(1.6rem, 2.2vw, 2.9rem);
+  line-height: 1.34;
+  font-weight: 300;
+  align-items: flex-start;
+}
+
+.landing-copy-card--section2 strong,
+.landing-copy-card--section2 b {
+  font-weight: 700;
+}
+
+.landing-pdf-grid--questions {
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: 46svh 1fr;
+}
+
+.landing-photo-pane--questions {
+  grid-column: 1 / 3;
+  grid-row: 1;
+}
+
+.landing-copy-card--pondered {
+  grid-column: 3 / 5;
+  grid-row: 1;
+  background: #686765;
+  color: #f3d3cb;
+  font-size: clamp(2rem, 2.5vw, 3.2rem);
+  font-weight: 300;
+}
+
+.landing-question-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.4rem;
+  text-align: center;
+  color: #f3efe9;
+  font-size: clamp(1.05rem, 1.4vw, 1.55rem);
+  line-height: 1.38;
+  font-weight: 300;
+}
+
+.landing-question-card p { margin: 0; }
+.landing-question-card--1 { background: #836042; }
+.landing-question-card--2 { background: #96673d; }
+.landing-question-card--3 { background: #9e5d18; }
+.landing-question-card--4 { background: #a85d08; }
+
+.landing-pdf-grid--shared {
+  grid-template-rows: 1fr auto;
+}
+
+.landing-photo-pane--shared {
+  min-height: 0;
+}
+
+.landing-copy-card--section4 {
+  background: #87613f;
+  color: #f8efe4;
+  font-size: clamp(1.6rem, 2vw, 2.5rem);
+  line-height: 1.35;
+  font-weight: 300;
+  text-align: center;
+}
+
+.landing-pdf-grid--cta {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+.landing-photo-pane--cta {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.landing-copy-card--cta-spacer {
+  grid-column: 2;
+  grid-row: 1;
+  background: #686765;
+}
+
+.landing-copy-card--section5 {
+  grid-column: 2;
+  grid-row: 2;
+  background: #9a7b67;
+  color: #f8ede2;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.landing-cta-copy {
+  font-size: clamp(1.55rem, 2vw, 2.45rem);
+  line-height: 1.35;
+  font-weight: 300;
+}
+
+.landing-button-row--pdf {
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 420px);
+  gap: 0.8rem;
+}
+
+.landing-button-row--pdf .landing-button {
+  width: 100%;
+  border: 0;
+  border-radius: 14px;
+  background: rgba(236, 195, 174, 0.46);
+  color: #fff7f0;
+  padding: 0.95rem 1.1rem;
+  text-align: left;
+  font-size: clamp(1rem, 1.3vw, 1.45rem);
+  font-weight: 500;
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+.landing-button-row--pdf .landing-button:hover {
+  background: rgba(236, 195, 174, 0.62);
+  transform: translateY(-1px);
+}
+
+.landing-nav-arrows {
+  position: fixed;
+  right: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.landing-nav-arrow {
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(20,22,26,0.38);
+  color: #fff;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.landing-nav-arrow svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  fill: none;
+}
+
+.landing-nav-arrow { transform: rotate(90deg); }
+.landing-nav-arrow.is-down { transform: rotate(-90deg); }
+
+@media (max-width: 900px) {
+  .landing-copy-card--nexus {
+    font-size: clamp(1.4rem, 2.3vw, 2.3rem);
+  }
+  .landing-copy-card--title {
+    font-size: clamp(1.45rem, 2.1vw, 2.3rem);
+  }
+  .landing-copy-card--section2 {
+    font-size: clamp(1.2rem, 1.9vw, 2rem);
+  }
+  .landing-question-card {
+    font-size: clamp(0.95rem, 1.3vw, 1.2rem);
+  }
+  .landing-copy-card--section4,
+  .landing-cta-copy {
+    font-size: clamp(1.2rem, 1.8vw, 1.9rem);
+  }
+}
+
+@media (max-width: 760px) {
+  .landing-nav-arrows {
+    right: 0.6rem;
+    top: auto;
+    bottom: 0.8rem;
+    transform: none;
+    flex-direction: row;
+  }
+
+  .landing-pdf-section,
+  .landing-pdf-grid {
+    min-height: auto;
+  }
+
+  .landing-pdf-grid--hero {
+    grid-template-columns: 1.05fr 0.95fr;
+    grid-template-rows: 38svh auto auto;
+  }
+
+  .landing-switch-row--top {
+    grid-column: 1 / 3;
+    grid-row: 3;
+    position: relative;
+    padding: 0.7rem 0.85rem 1rem;
+    background: #6b6864;
+  }
+
+  .landing-photo-pane--hero {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    min-height: 0;
+  }
+
+  .landing-copy-card--nexus {
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 1.2rem;
+    padding: 1rem;
+  }
+
+  .landing-copy-card--title {
+    grid-column: 2;
+    grid-row: 2;
+    font-size: 1.15rem;
+    padding: 1rem;
+  }
+
+  .landing-pdf-grid--two-col {
+    grid-template-columns: 1fr;
+  }
+
+  .landing-map-pane { min-height: 40svh; }
+  .landing-copy-card--section2 { font-size: 1.05rem; line-height: 1.45; }
+
+  .landing-pdf-grid--questions {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 34svh auto auto auto;
+  }
+
+  .landing-photo-pane--questions {
+    grid-column: 1 / 3;
+    grid-row: 1;
+  }
+
+  .landing-copy-card--pondered {
+    grid-column: 1 / 3;
+    grid-row: 2;
+    font-size: 1.4rem;
+    min-height: 110px;
+  }
+
+  .landing-question-card {
+    min-height: 180px;
+    font-size: 0.98rem;
+    padding: 1rem;
+  }
+
+  .landing-question-card--1 { grid-column: 1; grid-row: 3; }
+  .landing-question-card--2 { grid-column: 2; grid-row: 3; }
+  .landing-question-card--3 { grid-column: 1; grid-row: 4; }
+  .landing-question-card--4 { grid-column: 2; grid-row: 4; }
+
+  .landing-pdf-grid--shared {
+    grid-template-rows: 34svh auto;
+  }
+
+  .landing-copy-card--section4 {
+    font-size: 1.02rem;
+    padding: 1.1rem 1rem 1.2rem;
+  }
+
+  .landing-pdf-grid--cta {
+    grid-template-columns: 1fr;
+    grid-template-rows: 34svh auto;
+  }
+
+  .landing-photo-pane--cta {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .landing-copy-card--cta-spacer {
+    display: none;
+  }
+
+  .landing-copy-card--section5 {
+    grid-column: 1;
+    grid-row: 2;
+    gap: 1rem;
+    padding: 1.2rem 1rem 1.4rem;
+  }
+
+  .landing-cta-copy {
+    font-size: 1.02rem;
+  }
+
+  .landing-button-row--pdf {
+    width: 100%;
+  }
+
+  .landing-button-row--pdf .landing-button {
+    text-align: center;
+    font-size: 0.98rem;
+  }
+}
