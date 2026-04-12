@@ -3272,3 +3272,202 @@ html[data-theme="light"] .landing-copy-card--title {
 .landing-pdf-grid--cta, .landing-pdf-grid--shared {
   overflow: visible;
 }
+
+/* ===== fix6 landing overrides ===== */
+.landing-pdf-section--1,
+.landing-pdf-section--1 .landing-pdf-grid--hero {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.landing-pdf-grid--hero {
+  gap: 0;
+}
+
+.landing-switch-row--top {
+  top: 0.35rem;
+  left: 0.55rem;
+  gap: 0.35rem;
+}
+
+.landing-switch-row--top .landing-switcher {
+  padding: 0.12rem;
+  gap: 0.08rem;
+}
+
+.landing-switch-row--top .landing-switcher button {
+  min-width: 2.7rem;
+  padding: 0.28rem 0.72rem;
+  font-size: 0.72rem;
+  line-height: 1;
+  letter-spacing: 0.08em;
+}
+
+.landing-photo-pane--hero,
+.landing-photo-pane--hero img {
+  margin-top: 0;
+}
+
+.landing-copy-card--section4 {
+  justify-content: flex-end;
+  padding: 11.5rem 2rem 2.4rem;
+  background: linear-gradient(
+    to top,
+    rgba(70, 48, 31, 0.99),
+    rgba(86, 58, 37, 0.96) 32%,
+    rgba(86, 58, 37, 0.42) 68%,
+    rgba(86, 58, 37, 0)
+  );
+}
+
+.landing-pdf-grid--cta {
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  min-height: 100svh;
+  background: transparent;
+}
+
+.landing-photo-pane--cta {
+  grid-column: 1 / 3;
+  grid-row: 1 / 3;
+  z-index: 3;
+}
+
+.landing-copy-card--cta-spacer {
+  grid-column: 3 / 5;
+  grid-row: 1;
+  z-index: 1;
+}
+
+.landing-copy-card--section5 {
+  grid-column: 2 / 5;
+  grid-row: 2 / 4;
+  z-index: 2;
+  align-items: flex-start;
+  text-align: left;
+  justify-content: flex-start;
+  padding: 2rem 2rem 2.2rem max(34%, 13rem);
+}
+
+.landing-copy-card--section5 .landing-cta-copy,
+.landing-copy-card--section5 .landing-button-row {
+  max-width: 26rem;
+}
+
+.landing-copy-card--section5 .landing-button-row {
+  width: 100%;
+}
+
+@media (max-width: 760px) {
+  .landing-switch-row--top {
+    top: 0.55rem;
+    left: 0.55rem;
+    gap: 0.28rem;
+  }
+
+  .landing-switch-row--top .landing-switcher {
+    padding: 0.1rem;
+    gap: 0.04rem;
+  }
+
+  .landing-switch-row--top .landing-switcher button {
+    min-width: 2.15rem;
+    padding: 0.24rem 0.52rem;
+    font-size: 0.64rem;
+    letter-spacing: 0.05em;
+  }
+
+  .landing-pdf-grid--hero {
+    display: block;
+    position: relative;
+    min-height: 52svh;
+  }
+
+  .landing-photo-pane--hero {
+    min-height: 52svh;
+    height: 52svh;
+  }
+
+  .landing-photo-pane--hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+  }
+
+  .landing-copy-card--nexus,
+  .landing-copy-card--title {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    min-height: 0;
+    padding: 1.15rem 1rem;
+  }
+
+  .landing-copy-card--nexus {
+    inset: 0 auto auto 0;
+    width: min(64%, 20rem);
+    height: 48%;
+    background: rgba(141, 82, 15, 0.72);
+    text-align: left;
+    justify-content: flex-start;
+  }
+
+  .landing-copy-card--title {
+    inset: auto 0 0 auto;
+    width: min(60%, 19rem);
+    height: 42%;
+    background: rgba(104, 103, 101, 0.72);
+    text-align: right;
+    justify-content: flex-end;
+  }
+
+  .landing-pdf-grid--two-col {
+    grid-template-columns: 1fr;
+  }
+
+  .landing-map-pane {
+    min-height: 42svh;
+  }
+
+  .landing-copy-card--section4 {
+    min-height: 0;
+    padding: 14rem 1rem 1.4rem;
+    justify-content: flex-end;
+  }
+
+  .landing-pdf-grid--cta {
+    display: block;
+    min-height: auto;
+  }
+
+  .landing-photo-pane--cta {
+    min-height: 39svh;
+    height: 39svh;
+  }
+
+  .landing-photo-pane--cta img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+  }
+
+  .landing-copy-card--cta-spacer {
+    display: none;
+  }
+
+  .landing-copy-card--section5 {
+    width: 100%;
+    max-width: none;
+    min-height: 0;
+    padding: 1.7rem 1.1rem 2rem;
+    text-align: center;
+    align-items: center;
+  }
+
+  .landing-copy-card--section5 .landing-cta-copy,
+  .landing-copy-card--section5 .landing-button-row {
+    max-width: none;
+  }
+}
