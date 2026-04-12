@@ -2658,9 +2658,8 @@ select,
 }
 
 .landing-photo-pane--shared {
-  grid-column: 1;
-  grid-row: 1;
   min-height: 100svh;
+  height: 100svh;
 }
 
 .landing-copy-card--section4 {
@@ -2805,13 +2804,13 @@ select,
 }
 
 .intro-modal {
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .intro-scroll--pdfstyle {
-  height: 100svh;
-  overflow-y: auto;
-  overflow-x: clip;
+  min-height: 100svh;
+  overflow: visible;
   background: #696867;
 }
 
@@ -2830,23 +2829,30 @@ html[data-theme="light"] .intro-scroll--pdfstyle {
 /* switchers smaller and positioned higher, but not fixed */
 .landing-switch-row--top {
   position: absolute;
-  top: 0.55rem;
-  left: 0.65rem;
+  top: 0.18rem;
+  left: 0.4rem;
   padding: 0;
   z-index: 8;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.38rem;
 }
 
 .landing-switch-row--top .landing-switcher {
-  padding: 0.12rem;
-  gap: 0.1rem;
+  padding: 0.08rem;
+  gap: 0.06rem;
   background: rgba(34, 38, 43, 0.42);
+  flex-wrap: nowrap;
+  white-space: nowrap;
 }
 
 .landing-switch-row--top .landing-switcher button {
-  min-width: 2rem;
-  padding: 0.12rem 0.46rem;
-  font-size: 0.5rem;
-  letter-spacing: 0.06em;
+  min-width: 1.75rem;
+  padding: 0.08rem 0.4rem;
+  font-size: 0.48rem;
+  line-height: 1;
+  letter-spacing: 0.05em;
 }
 
 /* section 1 */
@@ -2854,12 +2860,15 @@ html[data-theme="light"] .intro-scroll--pdfstyle {
   position: relative;
   grid-template-rows: 1fr 1fr;
   min-height: 100svh;
+  margin-top: 0;
 }
 
 .landing-photo-pane--hero {
   grid-column: 1 / 3;
   grid-row: 1 / 3;
   background: #4e4d4c;
+  margin-top: 0;
+  align-self: stretch;
 }
 
 .landing-photo-pane--hero img {
@@ -2867,15 +2876,23 @@ html[data-theme="light"] .intro-scroll--pdfstyle {
   object-position: center center;
   width: 100%;
   height: 100%;
+  display: block;
 }
 
 .landing-copy-card--nexus,
 .landing-copy-card--title {
   min-height: 0;
   padding: clamp(1.3rem, 3vw, 2.4rem);
-  background: rgba(104, 103, 101, 0.7);
   display: flex;
   align-items: center;
+}
+
+.landing-copy-card--nexus {
+  background: rgba(141, 82, 15, 0.72);
+}
+
+.landing-copy-card--title {
+  background: rgba(104, 103, 101, 0.72);
 }
 
 .landing-copy-card--nexus {
@@ -2894,33 +2911,36 @@ html[data-theme="light"] .intro-scroll--pdfstyle {
   justify-content: flex-end;
 }
 
-html[data-theme="light"] .landing-copy-card--nexus,
+html[data-theme="light"] .landing-copy-card--nexus {
+  background: rgba(163, 92, 18, 0.72);
+}
+
 html[data-theme="light"] .landing-copy-card--title {
-  background: rgba(128, 123, 118, 0.7);
+  background: rgba(128, 123, 118, 0.72);
 }
 
 /* section 2 */
 .landing-copy-card--section2 {
-  padding: clamp(2rem, 5vw, 4rem);
+  padding: clamp(2.8rem, 7vw, 6rem);
 }
 
 /* section 3 */
 .landing-question-card {
-  font-size: clamp(1.18rem, 1.6vw, 1.85rem);
-  line-height: 1.34;
-  padding: 1.6rem;
+  font-size: clamp(1.38rem, 1.95vw, 2.25rem);
+  line-height: 1.28;
+  padding: 1.8rem;
 }
 
 /* section 4 */
 .landing-pdf-grid--shared {
   position: relative;
-  grid-template-rows: 100svh;
+  display: block;
+  min-height: 100svh;
 }
 
 .landing-photo-pane--shared {
-  grid-column: 1;
-  grid-row: 1;
   min-height: 100svh;
+  height: 100svh;
 }
 
 .landing-copy-card--section4 {
@@ -2928,11 +2948,11 @@ html[data-theme="light"] .landing-copy-card--title {
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 3;
+  z-index: 4;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: min(26svh, 240px);
+  min-height: min(28svh, 260px);
   padding: 1.8rem 1.6rem 2rem;
   background: linear-gradient(to top, rgba(135, 97, 63, 0.96), rgba(135, 97, 63, 0.88), rgba(135, 97, 63, 0));
   color: #f8efe4;
@@ -3000,22 +3020,23 @@ html[data-theme="light"] .landing-copy-card--title {
 @media (max-width: 760px) {
   .landing-switch-row--top {
     position: absolute;
-    top: 0.38rem;
-    left: 0.42rem;
-    gap: 0.32rem;
+    top: 0.16rem;
+    left: 0.22rem;
+    gap: 0.18rem;
     z-index: 8;
+    flex-wrap: nowrap;
   }
 
   .landing-switch-row--top .landing-switcher {
-    padding: 0.08rem;
-    gap: 0.04rem;
+    padding: 0.05rem;
+    gap: 0.03rem;
   }
 
   .landing-switch-row--top .landing-switcher button {
-    min-width: 1.45rem;
-    padding: 0.08rem 0.28rem;
-    font-size: 0.42rem;
-    letter-spacing: 0.04em;
+    min-width: 1.12rem;
+    padding: 0.05rem 0.22rem;
+    font-size: 0.34rem;
+    letter-spacing: 0.03em;
   }
 
   .landing-pdf-grid--hero {
@@ -3038,6 +3059,13 @@ html[data-theme="light"] .landing-copy-card--title {
   .landing-copy-card--title {
     min-height: 0;
     padding: 0.95rem;
+  }
+
+  .landing-copy-card--nexus {
+    background: rgba(141, 82, 15, 0.72);
+  }
+
+  .landing-copy-card--title {
     background: rgba(104, 103, 101, 0.72);
   }
 
@@ -3057,20 +3085,24 @@ html[data-theme="light"] .landing-copy-card--title {
   }
 
   .landing-copy-card--section2 {
-    padding: 1.3rem 1.1rem 1.45rem;
+    padding: 1.8rem 1.45rem 1.9rem;
   }
 
   .landing-question-card {
-    min-height: 210px;
-    font-size: 1.08rem;
-    padding: 1.1rem 0.95rem;
+    min-height: 240px;
+    font-size: 1.18rem;
+    padding: 1.25rem 1rem;
   }
 
   .landing-pdf-grid--shared {
-    grid-template-rows: 34svh;
+    min-height: auto;
   }
 
   .landing-copy-card--section4 {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
     min-height: 0;
     padding: 1rem 0.95rem 1.15rem;
     font-size: 1rem;
@@ -3108,4 +3140,18 @@ html[data-theme="light"] .landing-copy-card--title {
     max-width: none;
     font-size: 1rem;
   }
+}
+
+
+/* final visibility fixes */
+.landing-pdf-section--4, .landing-pdf-section--5 {
+  min-height: 100svh;
+}
+
+.landing-pdf-section--5 {
+  overflow: visible;
+}
+
+.landing-pdf-grid--cta, .landing-pdf-grid--shared {
+  overflow: visible;
 }
