@@ -640,12 +640,7 @@ function renderIntroModal() {
                 <button type="button" class="landing-button" data-action="intro-share-own">${escapeHtml(landing.shareOwn)}</button>
               </div>
             </div>
-          </div>
-          <div class="landing-nav-arrows">
-            <button type="button" class="landing-nav-arrow" data-action="intro-scroll-prev" aria-label="Scroll up">${icon.chevronLeft()}</button>
-            <button type="button" class="landing-nav-arrow is-down" data-action="intro-scroll-next" aria-label="Scroll down">${icon.chevronRight()}</button>
-          </div>
-        </section>
+          </div>        </section>
       </div>
     </div>
   `;

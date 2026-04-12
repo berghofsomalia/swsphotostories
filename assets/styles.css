@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Caveat:wght@500;600;700&family=Kalam:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=PT+Sans+Narrow:wght@400;700&display=swap');
 
 :root {
   --bg: #13171d;
@@ -55,7 +55,7 @@ body {
   min-height: 100vh;
   background: var(--bg);
   color: var(--text);
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'PT Sans Narrow', 'Arial Narrow', Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   transition: background 180ms ease, color 180ms ease;
 }
 
@@ -2566,5 +2566,233 @@ html[data-theme="light"] .landing-copy-card--title { background: #807b76; }
   .landing-button-row--pdf .landing-button {
     text-align: center;
     font-size: 0.98rem;
+  }
+}
+
+
+/* --- Update: PDF landing refinement --- */
+body,
+button,
+input,
+textarea,
+select,
+.storyteller-name,
+.section-kicker,
+.drawer-title,
+.gallery-header,
+.intro-title-stack,
+.landing-copy-card,
+.landing-question-card,
+.story-copy p,
+.reflection-copy p,
+.story-guidance-box,
+.saved-copy,
+.chip,
+.filter-group h3,
+.share-title,
+.share-option,
+.action-button,
+.landing-button,
+.landing-switcher button {
+  font-family: 'PT Sans Narrow', 'Arial Narrow', Inter, system-ui, sans-serif;
+}
+
+.story-guidance-box.is-compact p,
+.story-guidance-box.is-compact li {
+  font-size: 0.82rem;
+  line-height: 1.42;
+}
+
+.story-guidance-box.is-compact ul {
+  gap: 0.45rem;
+}
+
+.intro-scroll--pdfstyle {
+  scroll-snap-type: none;
+}
+
+.landing-pdf-section {
+  scroll-snap-align: none;
+  scroll-snap-stop: normal;
+}
+
+.landing-nav-arrows {
+  display: none !important;
+}
+
+.landing-switch-row--top {
+  position: fixed;
+  top: 0.8rem;
+  left: 0.8rem;
+  grid-column: auto;
+  grid-row: auto;
+  padding: 0;
+  z-index: 120;
+}
+
+.landing-switch-row--top .landing-switcher {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+.landing-copy-card--nexus {
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.landing-copy-card--title {
+  align-items: flex-end;
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.landing-copy-card--section2 {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.landing-pdf-grid--shared {
+  position: relative;
+  grid-template-rows: 1fr;
+}
+
+.landing-photo-pane--shared {
+  grid-column: 1;
+  grid-row: 1;
+  min-height: 100svh;
+}
+
+.landing-copy-card--section4 {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: end;
+  justify-self: stretch;
+  margin: 0;
+  min-height: 0;
+  padding: 1.6rem 1.5rem 1.9rem;
+  background: linear-gradient(to top, rgba(135, 97, 63, 0.92), rgba(135, 97, 63, 0.86), rgba(135, 97, 63, 0.0));
+  text-align: center;
+}
+
+.landing-pdf-grid--cta {
+  position: relative;
+  display: block;
+  min-height: 100svh;
+}
+
+.landing-photo-pane--cta {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: min(57vw, 720px);
+  height: min(58svh, 640px);
+}
+
+.landing-copy-card--cta-spacer {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+}
+
+.landing-copy-card--section5 {
+  position: absolute;
+  right: 6vw;
+  top: min(46svh, 440px);
+  width: min(42vw, 540px);
+  min-height: min(42svh, 380px);
+  gap: 1.35rem;
+  padding: 1.65rem 1.7rem 1.8rem;
+  box-shadow: var(--shadow-soft);
+}
+
+.landing-cta-copy {
+  max-width: 26ch;
+}
+
+@media (max-width: 760px) {
+  .landing-switch-row--top {
+    position: fixed;
+    top: 0.7rem;
+    left: 0.65rem;
+    padding: 0;
+    background: transparent;
+    z-index: 120;
+  }
+
+  .landing-pdf-grid--hero {
+    padding-top: 3.65rem;
+  }
+
+  .landing-pdf-grid--two-col,
+  .landing-pdf-grid--questions,
+  .landing-pdf-grid--shared,
+  .landing-pdf-grid--cta {
+    min-height: auto;
+  }
+
+  .landing-copy-card--nexus {
+    align-items: flex-start;
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .landing-copy-card--title {
+    align-items: flex-end;
+    justify-content: flex-end;
+    text-align: right;
+  }
+
+  .landing-pdf-grid--shared {
+    grid-template-rows: 34svh auto;
+  }
+
+  .landing-photo-pane--shared {
+    min-height: 34svh;
+    position: relative;
+  }
+
+  .landing-copy-card--section4 {
+    grid-column: 1;
+    grid-row: 2;
+    position: relative;
+    background: #87613f;
+    padding: 1.1rem 1rem 1.2rem;
+  }
+
+  .landing-pdf-grid--cta {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 34svh auto;
+    min-height: auto;
+  }
+
+  .landing-photo-pane--cta {
+    position: relative;
+    width: 100%;
+    height: auto;
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .landing-copy-card--cta-spacer {
+    display: none;
+  }
+
+  .landing-copy-card--section5 {
+    position: relative;
+    right: auto;
+    top: auto;
+    width: 100%;
+    min-height: 0;
+    grid-column: 1;
+    grid-row: 2;
+    gap: 1rem;
+    padding: 1.2rem 1rem 1.4rem;
+    box-shadow: none;
+  }
+
+  .landing-cta-copy {
+    max-width: none;
   }
 }
