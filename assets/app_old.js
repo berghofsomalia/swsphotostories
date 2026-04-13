@@ -107,16 +107,9 @@ const COPY = {
 
 const LANDING = {
   en: {
-    section1NexusLines: [
-      'The nexus of',
-      'climate (change), environment (degradation),',
-      'conflict, and peace'
-    ],
-    section1TitleLines: [
-      'Visual storytelling',
-      'from Southwest State, Somalia'
-    ],
-    section2Body: 'In late 2025, 42 community members across Baidoa, Barawe and Hudur, across generations and genders, took photos capturing various aspects of the nexus of climate (change), environment (degradation), conflict, and peace and told the human stories behind the photos.',
+    section1Nexus: 'The nexus of <br/>climate (change), <br/>environment (degradation), <br/>conflict, and peace',
+    section1Title: 'Visual storytelling <br/>from Southwest State, Somalia',
+    section2Body: 'In late 2025, 42 community members across Baidoa, Barawe and Hudur, <br/>across generations and genders, <br/>took photos capturing various aspects of the nexus of <br/>climate (change), environment (degradation), conflict, and peace <br/>and told the human stories behind the photos.',
     section3Lead: 'They pondered...',
     questions: [
       'Why did I choose to take these photos? What memories or emotions do these photos invoke in me?',
@@ -124,10 +117,7 @@ const LANDING = {
       'If I imagine that the issues are getting resolved or the strengths are getting amplified over the next three years, what would these photos look like?',
       'What cultural and religious elements (a) describe the current photos and (b) could inspire us to work towards turning the imagined photos into reality?'
     ],
-    section4Lines: [
-      'The photos were shared in community spaces of storytelling and dialogue.',
-      'People picked photos they connected to and shared their own reflections on the stories.'
-    ],
+    section4Body: 'The photos were shared in community spaces of storytelling and dialogue. People picked photos they connected to and shared their own reflections on the stories.',
     section5Body: 'There are currently 350 stories, 1000 photos and 150 community reflections. What would you like to do?',
     surprise: 'See a photostory - surprise me!',
     explore: 'Let me explore them myself',
@@ -135,15 +125,8 @@ const LANDING = {
     comingSoon: 'Coming soon'
   },
   so: {
-    section1NexusLines: [
-      'Xiriirka ka dhexeeya',
-      '(isbeddelka) cimilada, (nabaad-guurka) deegaanka,',
-      'khilaafka, iyo nabadda'
-    ],
-    section1TitleLines: [
-      'Sheeko-muuqaal',
-      'ka yimid Koonfur Galbeed, Soomaaliya'
-    ],
+    section1Nexus: 'Xiriirka ka dhexeeya (isbeddelka) cimilada, (nabaad-guurka) deegaanka, khilaafka, iyo nabadda',
+    section1Title: 'Sheeko-muuqaal ka yimid Koonfur Galbeed, Soomaaliya',
     section2Body: 'Dabayaaqadii 2025, 42 xubnood oo bulshada ka kala socday Baydhabo, Baraawe iyo Xudur, kana kala tirsanaa jiilal iyo jinsiyo kala duwan, ayaa qaaday sawirro muujinaya dhinacyo kala duwan oo ka mid ah xiriirka cimilada (isbeddelka), deegaanka (nabaad-guurka), khilaafka, iyo nabadda, waxayna ka sheekeeyeen sheekooyinka bini’aadannimo ee ka dambeeya sawirrada.',
     section3Lead: 'Waxay isweydiiyeen...',
     questions: [
@@ -152,10 +135,7 @@ const LANDING = {
       'Haddii aan qiyaaso in arrimahani la xallinayo ama xoogagga wanaagsani sii xoogaysanayaan saddexda sano ee soo socota, sawirradani sidee bay markaas u ekaan lahaayeen?',
       'Waa maxay waxyaabaha dhaqanka iyo diinta ee (a) sharrixi kara sawirrada hadda jira, isla markaana (b) nagu dhiirrigelin kara in aan ka shaqayno sidii sawirrada la qiyaasay ay dhab u noqon lahaayeen?'
     ],
-    section4Lines: [
-      'Sawirrada waxaa lagu wadaagay goobaha bulshadu ku kulanto ee sheeko-wadaagga iyo wada-hadalka.',
-      'Dadku waxay doorteen sawirradii ay la xiriireen, dabadeedna waxay ka dhiibteen milicsiyadooda ku saabsan sheekooyinka.'
-    ],
+    section4Body: 'Sawirrada waxaa lagu wadaagay goobaha bulshadu ku kulanto ee sheeko-wadaagga iyo wada-hadalka. Dadku waxay doorteen sawirradii ay la xiriireen, dabadeedna waxay ka dhiibteen milicsiyadooda ku saabsan sheekooyinka.',
     section5Body: 'Hadda waxaa jira 350 sheeko, 1000 sawir iyo 150 milicsi bulsho. Maxaad jeclaan lahayd in aad samayso?',
     surprise: 'I tus sheeko-sawir - yaab i geli!',
     explore: 'Aan anigu is baadho',
@@ -283,11 +263,6 @@ function escapeHtml(value = '') {
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#39;');
-}
-
-
-function renderLineBreakCopy(lines, lineClass = '') {
-  return lines.map((line) => `<span${lineClass ? ` class="${lineClass}"` : ''}>${escapeHtml(line)}</span>`).join('<br>');
 }
 
 function getStoryById(id) {
@@ -596,25 +571,23 @@ function renderIntroModal() {
         <section class="landing-pdf-section landing-pdf-section--1" data-intro-section>
           <div class="landing-pdf-grid landing-pdf-grid--hero">
             <div class="landing-switch-row landing-switch-row--top">
-              <div class="landing-switch-stack">
-                <div class="landing-switcher" role="group" aria-label="Language selector">
-                  <button type="button" class="${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">SO</button>
-                  <button type="button" class="${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">EN</button>
-                </div>
-                <div class="landing-switcher" role="group" aria-label="Theme selector">
-                  <button type="button" class="${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${escapeHtml(COPY[state.language].dark)}</button>
-                  <button type="button" class="${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${escapeHtml(COPY[state.language].light)}</button>
-                </div>
+              <div class="landing-switcher" role="group" aria-label="Language selector">
+                <button type="button" class="${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">SO</button>
+                <button type="button" class="${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">EN</button>
+              </div>
+              <div class="landing-switcher" role="group" aria-label="Theme selector">
+                <button type="button" class="${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${escapeHtml(COPY[state.language].dark)}</button>
+                <button type="button" class="${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${escapeHtml(COPY[state.language].light)}</button>
               </div>
             </div>
             <div class="landing-photo-pane landing-photo-pane--hero">
               <img src="${sectionImages[1] || ''}" alt="" loading="eager" aria-hidden="true">
             </div>
             <div class="landing-copy-card landing-copy-card--nexus">
-              <p>${renderLineBreakCopy(landing.section1NexusLines)}</p>
+              <p>${escapeHtml(landing.section1Nexus)}</p>
             </div>
             <div class="landing-copy-card landing-copy-card--title">
-              <p>${renderLineBreakCopy(landing.section1TitleLines)}</p>
+              <p>${escapeHtml(landing.section1Title)}</p>
             </div>
           </div>
         </section>
@@ -648,7 +621,7 @@ function renderIntroModal() {
               <img src="${sectionImages[4] || ''}" alt="" loading="eager" aria-hidden="true">
             </div>
             <div class="landing-copy-card landing-copy-card--section4">
-              <p>${renderLineBreakCopy(landing.section4Lines)}</p>
+              <p>${escapeHtml(landing.section4Body)}</p>
             </div>
           </div>
         </section>

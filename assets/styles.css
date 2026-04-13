@@ -3854,7 +3854,7 @@ html[data-theme="light"] .landing-pdf-grid--cta {
   justify-content: flex-start !important;
   align-items: flex-start !important;
   gap: 1.15rem !important;
-  padding: 1.4rem 1.6rem 1.9rem clamp(9rem, 17vw, 15rem) !important;
+  padding: 1.4rem 1.6rem 1.9rem clamp(9rem, 21vw, 15rem) !important;
   background: #9a7b67 !important;
   box-shadow: none !important;
 }
