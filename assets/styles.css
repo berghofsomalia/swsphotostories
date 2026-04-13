@@ -3566,35 +3566,454 @@ html[data-theme="light"] .landing-copy-card--section5 {
   }
 }
 
-
-
-/* --- 2026-04-13 repair pass --- */
-
-/* section 1 desktop: smaller text */
-@media (min-width: 761px) {
-  .landing-copy-card--nexus p {
-    font-size: clamp(0.78rem, 0.88vw, 1rem) !important;
-    line-height: 1.08 !important;
-  }
-
-  .landing-copy-card--title p {
-    width: 100% !important;
-    max-width: none !important;
-    margin-left: 0 !important;
-    font-size: clamp(1.45rem, 2vw, 2.35rem) !important;
-    line-height: 1.02 !important;
-  }
+/* --- final cleanup + requested layout adjustments --- */
+body,
+button,
+input,
+textarea,
+select,
+.storyteller-name,
+.section-kicker,
+.drawer-title,
+.gallery-header,
+.intro-title-stack,
+.landing-copy-card,
+.landing-copy-card p,
+.landing-question-card,
+.landing-question-card p,
+.story-copy p,
+.reflection-copy p,
+.story-guidance-box,
+.saved-copy,
+.saved-summary,
+.chip,
+.filter-group h3,
+.share-title,
+.share-option,
+.action-button,
+.landing-button,
+.landing-switcher button,
+.landing-cta-copy,
+.landing-switch-footer,
+.landing-copy-scroll p,
+.landing-copy-scroll li {
+  font-family: 'PT Sans Narrow', 'Arial Narrow', Inter, system-ui, sans-serif !important;
 }
 
-/* both switchers: same width */
+.intro-scroll--pdfstyle {
+  background: #696867 !important;
+}
+
+html[data-theme="light"] .intro-scroll--pdfstyle {
+  background: #d7d2cc !important;
+}
+
+.landing-pdf-section,
+.landing-pdf-grid,
+.landing-pdf-grid--hero,
+.landing-pdf-grid--shared,
+.landing-pdf-grid--cta {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* section 1 */
+.landing-pdf-grid--hero {
+  display: block !important;
+  position: relative !important;
+  min-height: 100svh !important;
+  overflow: hidden !important;
+}
+
+.landing-photo-pane--hero {
+  position: absolute !important;
+  inset: 0 !important;
+  min-height: 100svh !important;
+  z-index: 0 !important;
+  background: #696867 !important;
+}
+
+.landing-photo-pane--hero img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  background: transparent !important;
+}
+
 .landing-switch-row--top {
-  align-items: stretch !important;
+  position: absolute !important;
+  top: 0.9rem !important;
+  right: 0.9rem !important;
+  left: auto !important;
+  z-index: 8 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-end !important;
+  gap: 0.5rem !important;
+  padding: 0 !important;
+  background: transparent !important;
 }
 
 .landing-switch-row--top .landing-switcher {
-  width: 10.8rem !important;
-  min-width: 10.8rem !important;
-  max-width: 10.8rem !important;
+  display: inline-flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 0.18rem !important;
+  gap: 0.12rem !important;
+  border-radius: 999px !important;
+  background: rgba(34, 38, 43, 0.46) !important;
+  border: 1px solid rgba(255,255,255,0.14) !important;
+  white-space: nowrap !important;
+}
+
+.landing-switch-row--top .landing-switcher button {
+  min-width: 3.35rem !important;
+  padding: 0.42rem 0.86rem !important;
+  font-size: 0.76rem !important;
+  line-height: 1 !important;
+  letter-spacing: 0.08em !important;
+}
+
+html[data-theme="light"] .landing-switch-row--top .landing-switcher {
+  background: rgba(255,255,255,0.78) !important;
+  border-color: rgba(31,29,26,0.12) !important;
+}
+
+html[data-theme="light"] .landing-switch-row--top .landing-switcher button {
+  color: rgba(31,29,26,0.72) !important;
+}
+
+.landing-copy-card--nexus,
+.landing-copy-card--title {
+  position: absolute !important;
+  z-index: 3 !important;
+  display: flex !important;
+  align-items: center !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(2px) !important;
+  -webkit-backdrop-filter: blur(2px) !important;
+}
+
+.landing-copy-card--nexus {
+  top: 0 !important;
+  left: 0 !important;
+  right: auto !important;
+  width: min(31vw, 380px) !important;
+  min-height: min(34vh, 320px) !important;
+  padding: 1.3rem 1.1rem !important;
+  justify-content: flex-start !important;
+  text-align: left !important;
+  background: rgba(141, 82, 15, 0.72) !important;
+  color: #f8efe5 !important;
+}
+
+.landing-copy-card--nexus p {
+  max-width: 11ch !important;
+  font-size: clamp(1.6rem, 2.2vw, 2.65rem) !important;
+  line-height: 1.08 !important;
+  font-weight: 400 !important;
+  text-wrap: balance !important;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.18) !important;
+}
+
+.landing-copy-card--title {
+  right: 0 !important;
+  bottom: 0 !important;
+  left: auto !important;
+  width: min(34vw, 500px) !important;
+  min-height: min(26vh, 240px) !important;
+  padding: 1.3rem 1.25rem !important;
+  justify-content: flex-end !important;
+  text-align: right !important;
+  background: rgba(104, 103, 101, 0.62) !important;
+}
+
+.landing-copy-card--title p {
+  margin-left: auto !important;
+  max-width: 10.5ch !important;
+  font-size: clamp(2.05rem, 3vw, 3.55rem) !important;
+  line-height: 1.02 !important;
+  font-weight: 700 !important;
+  color: #d0951a !important;
+  text-wrap: balance !important;
+  text-shadow: 0 3px 14px rgba(0,0,0,0.28) !important;
+}
+
+html[data-theme="light"] .landing-copy-card--nexus {
+  background: rgba(163, 92, 18, 0.74) !important;
+}
+
+html[data-theme="light"] .landing-copy-card--title {
+  background: rgba(128, 123, 118, 0.72) !important;
+}
+
+/* section 2 */
+.landing-copy-card--section2 {
+  padding: clamp(3rem, 8vw, 6.5rem) clamp(4rem, 9vw, 7rem) !important;
+  text-align: center !important;
+}
+
+html[data-theme="light"] .landing-copy-card--section2 {
+  background: #a9662d !important;
+  color: #fff7f0 !important;
+}
+
+/* section 3 */
+.landing-question-card {
+  font-size: clamp(1.18rem, 1.55vw, 1.9rem) !important;
+  line-height: 1.34 !important;
+  padding: 1.7rem !important;
+}
+
+html[data-theme="light"] .landing-question-card--1 { background: #987352 !important; }
+html[data-theme="light"] .landing-question-card--2 { background: #a87648 !important; }
+html[data-theme="light"] .landing-question-card--3 { background: #b56f26 !important; }
+html[data-theme="light"] .landing-question-card--4 { background: #bc6a14 !important; }
+
+/* section 4 */
+.landing-pdf-grid--shared {
+  position: relative !important;
+  display: block !important;
+  min-height: 100svh !important;
+  overflow: hidden !important;
+  background: #696867 !important;
+}
+
+.landing-photo-pane--shared {
+  min-height: 100svh !important;
+  height: 100svh !important;
+}
+
+.landing-copy-card--section4 {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 4 !important;
+  width: 100% !important;
+  min-height: min(30svh, 320px) !important;
+  justify-content: flex-end !important;
+  align-items: flex-end !important;
+  text-align: center !important;
+  padding: clamp(18rem, 50vh, 32rem) clamp(2rem, 5vw, 6rem) clamp(2.4rem, 6vh, 4.2rem) !important;
+  background: linear-gradient(to top, rgba(55, 36, 22, 0.98) 0%, rgba(76, 50, 29, 0.94) 34%, rgba(76, 50, 29, 0.08) 86%) !important;
+  color: #f8efe4 !important;
+}
+
+.landing-copy-card--section4 p {
+  max-width: none !important;
+  width: 100% !important;
+}
+
+html[data-theme="light"] .landing-copy-card--section4 {
+  background: linear-gradient(to top, rgba(90, 62, 38, 0.95) 0%, rgba(116, 80, 50, 0.92) 36%, rgba(116, 80, 50, 0.06) 86%) !important;
+}
+
+/* section 5 */
+.landing-pdf-section--5,
+.landing-pdf-grid--cta {
+  background: #696867 !important;
+}
+
+html[data-theme="light"] .landing-pdf-section--5,
+html[data-theme="light"] .landing-pdf-grid--cta {
+  background: #d7d2cc !important;
+}
+
+.landing-pdf-grid--cta {
+  position: relative !important;
+  display: grid !important;
+  grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+  grid-template-rows: repeat(12, minmax(0, 1fr)) !important;
+  min-height: 100svh !important;
+  overflow: hidden !important;
+}
+
+.landing-photo-pane--cta {
+  grid-column: 1 / span 6 !important;
+  grid-row: 1 / span 8 !important;
+  z-index: 3 !important;
+  min-height: 0 !important;
+}
+
+.landing-copy-card--cta-spacer {
+  display: none !important;
+}
+
+.landing-copy-card--section5 {
+  position: relative !important;
+  grid-column: 5 / -1 !important;
+  grid-row: 5 / -1 !important;
+  z-index: 1 !important;
+  width: auto !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  gap: 1.15rem !important;
+  padding: 1.4rem 1.6rem 1.9rem clamp(9rem, 17vw, 15rem) !important;
+  background: #9a7b67 !important;
+  box-shadow: none !important;
+}
+
+.landing-copy-card--section5 .landing-cta-copy,
+.landing-copy-card--section5 .landing-button-row--pdf {
+  width: min(100%, 420px) !important;
+  max-width: min(100%, 420px) !important;
+}
+
+.landing-cta-copy {
+  max-width: 24ch !important;
+  margin-left: 0 !important;
+}
+
+html[data-theme="light"] .landing-copy-card--section5 {
+  background: #ad9382 !important;
+  color: #fffaf6 !important;
+}
+
+/* mobile */
+@media (max-width: 760px) {
+  .landing-switch-row--top {
+    top: 0.75rem !important;
+    right: 0.75rem !important;
+    left: auto !important;
+    gap: 0.45rem !important;
+    align-items: flex-end !important;
+  }
+
+  .landing-switch-row--top .landing-switcher {
+    padding: 0.14rem !important;
+    background: rgba(34, 38, 43, 0.5) !important;
+  }
+
+  .landing-switch-row--top .landing-switcher button {
+    min-width: 3.4rem !important;
+    padding: 0.54rem 0.78rem !important;
+    font-size: 0.74rem !important;
+    letter-spacing: 0.06em !important;
+  }
+
+  .landing-pdf-grid--hero {
+    min-height: 100svh !important;
+  }
+
+  .landing-copy-card--nexus {
+    top: 4.5rem !important;
+    left: 0 !important;
+    right: auto !important;
+    width: min(68vw, 22rem) !important;
+    min-height: 0 !important;
+    padding: 1rem 1rem 1rem 0.9rem !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+  }
+
+  .landing-copy-card--nexus p {
+    max-width: 11ch !important;
+    font-size: clamp(1.5rem, 7vw, 2.45rem) !important;
+  }
+
+  .landing-copy-card--title {
+    right: 0 !important;
+    bottom: 0 !important;
+    left: auto !important;
+    width: min(76vw, 25rem) !important;
+    min-height: 0 !important;
+    padding: 1rem 0.9rem 1.1rem 1.2rem !important;
+    align-items: flex-end !important;
+    justify-content: flex-end !important;
+  }
+
+  .landing-copy-card--title p {
+    max-width: 12ch !important;
+    font-size: clamp(2rem, 8.6vw, 3.15rem) !important;
+  }
+
+  .landing-copy-card--section2 {
+    padding: 2.5rem 2rem 2.6rem !important;
+  }
+
+  .landing-question-card {
+    min-height: 230px !important;
+    font-size: 1.22rem !important;
+    padding: 1.25rem 1rem !important;
+  }
+
+  .landing-pdf-grid--shared,
+  .landing-pdf-grid--cta {
+    min-height: auto !important;
+  }
+
+  .landing-copy-card--section4 {
+    padding: clamp(14rem, 44vh, 22rem) 1rem 1.5rem !important;
+    font-size: 1.04rem !important;
+  }
+
+  .landing-pdf-grid--cta {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: 46svh auto !important;
+    overflow: hidden !important;
+  }
+
+  .landing-photo-pane--cta {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 46svh !important;
+  }
+
+  .landing-copy-card--section5 {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    padding: 1.25rem 1rem 1.45rem !important;
+    gap: 0.95rem !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+  }
+
+  .landing-copy-card--section5 .landing-cta-copy,
+  .landing-copy-card--section5 .landing-button-row--pdf {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .landing-cta-copy {
+    max-width: none !important;
+    font-size: 1.06rem !important;
+    text-align: center !important;
+  }
+
+  .landing-button-row--pdf .landing-button {
+    text-align: center !important;
+  }
+}
+
+
+
+/* --- 2026-04-13 targeted landing fixes --- */
+
+/* switchers: same width, stacked, aligned top-right */
+.landing-switch-row--top {
+  top: 0.72rem !important;
+  right: 0.72rem !important;
+  left: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-end !important;
+  gap: 0.42rem !important;
+}
+
+.landing-switch-row--top .landing-switcher {
+  width: 9.4rem !important;
+  min-width: 9.4rem !important;
+  max-width: 9.4rem !important;
   display: inline-flex !important;
   flex-wrap: nowrap !important;
   justify-content: space-between !important;
@@ -3606,33 +4025,162 @@ html[data-theme="light"] .landing-copy-card--section5 {
   text-align: center !important;
 }
 
-/* section 5 desktop: move text panel clear of image */
-@media (min-width: 761px) {
-  .landing-pdf-grid--cta {
-    grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
-    grid-template-rows: repeat(12, minmax(0, 1fr)) !important;
+/* section 1 desktop */
+.landing-copy-card--nexus,
+.landing-copy-card--title {
+  align-items: center !important;
+}
+
+.landing-copy-card--nexus p,
+.landing-copy-card--title p {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+.landing-copy-card--nexus {
+  width: min(31vw, 420px) !important;
+  padding: 1.05rem 1rem !important;
+}
+
+.landing-copy-card--nexus p {
+  font-size: clamp(1rem, 1.2vw, 1.45rem) !important;
+  line-height: 1.16 !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+.landing-copy-card--title {
+  width: min(27vw, 395px) !important;
+}
+
+.landing-copy-card--title p {
+  max-width: none !important;
+}
+
+/* section 2 desktop */
+.landing-copy-card--section2 {
+  padding: clamp(3.2rem, 8vw, 6.8rem) clamp(5rem, 11vw, 8.5rem) !important;
+}
+
+/* section 4 */
+.landing-copy-card--section4 {
+  width: 100% !important;
+}
+
+.landing-copy-card--section4 p {
+  display: block !important;
+  width: 100% !important;
+  max-width: none !important;
+  white-space: normal !important;
+}
+
+/* section 5 desktop: push panel further right and ensure text starts clear of image */
+.landing-pdf-grid--cta {
+  grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+  grid-template-rows: repeat(12, minmax(0, 1fr)) !important;
+}
+
+.landing-photo-pane--cta {
+  grid-column: 1 / span 6 !important;
+  grid-row: 1 / span 8 !important;
+  z-index: 3 !important;
+}
+
+.landing-copy-card--section5 {
+  grid-column: 5 / -1 !important;
+  grid-row: 4 / -1 !important;
+  padding: 1.2rem 1.4rem 1.7rem clamp(15.5rem, 33vw, 25rem) !important;
+  width: auto !important;
+}
+
+.landing-copy-card--section5 .landing-cta-copy,
+.landing-copy-card--section5 .landing-button-row--pdf {
+  width: min(100%, 360px) !important;
+  max-width: min(100%, 360px) !important;
+}
+
+.landing-copy-card--section5 .landing-cta-copy {
+  margin-top: 0 !important;
+}
+
+/* mobile */
+@media (max-width: 760px) {
+  .landing-switch-row--top {
+    top: 0.65rem !important;
+    right: 0.65rem !important;
+    gap: 0.36rem !important;
   }
 
-  .landing-photo-pane--cta {
-    grid-column: 1 / span 6 !important;
-    grid-row: 1 / span 8 !important;
-    z-index: 3 !important;
+  .landing-switch-row--top .landing-switcher {
+    width: 10.2rem !important;
+    min-width: 10.2rem !important;
+    max-width: 10.2rem !important;
+    padding: 0.14rem !important;
+  }
+
+  .landing-switch-row--top .landing-switcher button {
+    padding: 0.58rem 0.52rem !important;
+    font-size: 0.76rem !important;
+    letter-spacing: 0.05em !important;
+  }
+
+  .landing-copy-card--nexus {
+    top: 0 !important;
+    left: 0 !important;
+    width: min(66vw, 22rem) !important;
+    padding: 0.9rem 0.95rem !important;
+    align-items: flex-start !important;
+  }
+
+  .landing-copy-card--nexus p {
+    font-size: clamp(1rem, 4.4vw, 1.35rem) !important;
+    line-height: 1.12 !important;
+  }
+
+  .landing-copy-card--title {
+    width: min(76vw, 24rem) !important;
+    padding: 0.95rem 0.9rem 1rem 1.1rem !important;
+  }
+
+  .landing-copy-card--title p {
+    width: 100% !important;
+    max-width: none !important;
   }
 
   .landing-copy-card--section5 {
-    grid-column: 5 / -1 !important;
-    grid-row: 4 / -1 !important;
-    padding: 1.15rem 0.95rem 1.55rem clamp(17.5rem, 35vw, 27rem) !important;
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    width: 100% !important;
+    padding: 1.1rem 1rem 1.35rem !important;
   }
 
   .landing-copy-card--section5 .landing-cta-copy,
   .landing-copy-card--section5 .landing-button-row--pdf {
-    width: min(100%, 340px) !important;
-    max-width: min(100%, 340px) !important;
+    width: 100% !important;
+    max-width: 100% !important;
   }
 }
 
-/* section 5 mobile: hard reset to stable stacked layout */
+
+
+/* --- 2026-04-13 extra tweak: section 1 title text use full block width --- */
+@media (min-width: 761px) {
+  .landing-copy-card--title {
+    align-items: stretch !important;
+  }
+
+  .landing-copy-card--title p {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+  }
+}
+
+
+
+/* --- section 5 mobile only fix --- */
 @media (max-width: 760px) {
   .landing-pdf-grid--cta {
     position: relative !important;
@@ -3641,18 +4189,15 @@ html[data-theme="light"] .landing-copy-card--section5 {
     grid-template-rows: minmax(40svh, 46svh) auto !important;
     min-height: auto !important;
     overflow: visible !important;
-    background: #696867 !important;
-  }
-
-  html[data-theme="light"] .landing-pdf-grid--cta {
-    background: #d7d2cc !important;
   }
 
   .landing-photo-pane--cta {
     position: relative !important;
     inset: auto !important;
     left: auto !important;
+    right: auto !important;
     top: auto !important;
+    bottom: auto !important;
     grid-column: 1 !important;
     grid-row: 1 !important;
     width: 100% !important;
@@ -3674,26 +4219,21 @@ html[data-theme="light"] .landing-copy-card--section5 {
   .landing-copy-card--section5 {
     position: relative !important;
     inset: auto !important;
+    left: auto !important;
     right: auto !important;
     top: auto !important;
-    left: auto !important;
     bottom: auto !important;
     grid-column: 1 !important;
     grid-row: 2 !important;
     width: 100% !important;
     min-height: 0 !important;
     margin: 0 !important;
-    padding: 1.05rem 1rem 1.3rem !important;
-    gap: 0.9rem !important;
+    padding: 1.2rem 1rem 1.4rem !important;
+    gap: 1rem !important;
     align-items: flex-start !important;
     justify-content: flex-start !important;
     text-align: left !important;
-    background: #9a7b67 !important;
     box-shadow: none !important;
-  }
-
-  html[data-theme="light"] .landing-copy-card--section5 {
-    background: #ad9382 !important;
   }
 
   .landing-copy-card--section5 .landing-cta-copy,
