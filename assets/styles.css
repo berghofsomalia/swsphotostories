@@ -3854,7 +3854,7 @@ html[data-theme="light"] .landing-pdf-grid--cta {
   justify-content: flex-start !important;
   align-items: flex-start !important;
   gap: 1.15rem !important;
-  padding: 1.4rem 1.6rem 1.9rem clamp(9rem, 21vw, 15rem) !important;
+  padding: 1.4rem 1.6rem 1.9rem clamp(9rem, 17vw, 15rem) !important;
   background: #9a7b67 !important;
   box-shadow: none !important;
 }
@@ -3997,97 +3997,162 @@ html[data-theme="light"] .landing-copy-card--section5 {
 
 
 
-/* --- 2026-04-13 targeted current-file tweaks --- */
+/* --- 2026-04-13 targeted landing fixes --- */
 
-/* section 1 nexus block */
-.landing-copy-card--nexus {
-  min-height: min(24vh, 225px) !important;
-  padding: 0.88rem 0.92rem !important;
+/* switchers: same width, stacked, aligned top-right */
+.landing-switch-row--top {
+  top: 0.72rem !important;
+  right: 0.72rem !important;
+  left: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-end !important;
+  gap: 0.42rem !important;
 }
 
-.landing-copy-card--nexus p {
-  width: 100% !important;
-  max-width: none !important;
-  font-size: clamp(0.92rem, 1.05vw, 1.28rem) !important;
-  line-height: 1.08 !important;
-  font-weight: 700 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.04em !important;
+.landing-switch-row--top .landing-switcher {
+  width: 9.4rem !important;
+  min-width: 9.4rem !important;
+  max-width: 9.4rem !important;
+  display: inline-flex !important;
+  flex-wrap: nowrap !important;
+  justify-content: space-between !important;
 }
 
-/* section 2 */
-.landing-copy-card--section2 {
-  text-align: left !important;
-  justify-content: center !important;
+.landing-switch-row--top .landing-switcher button {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  text-align: center !important;
+}
+
+/* section 1 desktop */
+.landing-copy-card--nexus,
+.landing-copy-card--title {
   align-items: center !important;
 }
 
-.landing-copy-card--section2 p {
+.landing-copy-card--nexus p,
+.landing-copy-card--title p {
   width: 100% !important;
   max-width: none !important;
-  text-align: left !important;
 }
 
-/* section 5 desktop */
+.landing-copy-card--nexus {
+  width: min(31vw, 420px) !important;
+  padding: 1.05rem 1rem !important;
+}
+
+.landing-copy-card--nexus p {
+  font-size: clamp(1rem, 1.2vw, 1.45rem) !important;
+  line-height: 1.16 !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+.landing-copy-card--title {
+  width: min(27vw, 395px) !important;
+}
+
+.landing-copy-card--title p {
+  max-width: none !important;
+}
+
+/* section 2 desktop */
+.landing-copy-card--section2 {
+  padding: clamp(3.2rem, 8vw, 6.8rem) clamp(5rem, 11vw, 8.5rem) !important;
+}
+
+/* section 4 */
+.landing-copy-card--section4 {
+  width: 100% !important;
+}
+
+.landing-copy-card--section4 p {
+  display: block !important;
+  width: 100% !important;
+  max-width: none !important;
+  white-space: normal !important;
+}
+
+/* section 5 desktop: push panel further right and ensure text starts clear of image */
+.landing-pdf-grid--cta {
+  grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+  grid-template-rows: repeat(12, minmax(0, 1fr)) !important;
+}
+
+.landing-photo-pane--cta {
+  grid-column: 1 / span 6 !important;
+  grid-row: 1 / span 8 !important;
+  z-index: 3 !important;
+}
+
 .landing-copy-card--section5 {
-  grid-column: 4 / -1 !important;
+  grid-column: 5 / -1 !important;
   grid-row: 4 / -1 !important;
-  padding: 1.15rem 0.95rem 1.6rem clamp(15rem, 30vw, 22rem) !important;
+  padding: 1.2rem 1.4rem 1.7rem clamp(15.5rem, 33vw, 25rem) !important;
+  width: auto !important;
 }
 
 .landing-copy-card--section5 .landing-cta-copy,
 .landing-copy-card--section5 .landing-button-row--pdf {
-  width: min(100%, 390px) !important;
-  max-width: min(100%, 390px) !important;
+  width: min(100%, 360px) !important;
+  max-width: min(100%, 360px) !important;
+}
+
+.landing-copy-card--section5 .landing-cta-copy {
+  margin-top: 0 !important;
 }
 
 /* mobile */
 @media (max-width: 760px) {
+  .landing-switch-row--top {
+    top: 0.65rem !important;
+    right: 0.65rem !important;
+    gap: 0.36rem !important;
+  }
+
+  .landing-switch-row--top .landing-switcher {
+    width: 10.2rem !important;
+    min-width: 10.2rem !important;
+    max-width: 10.2rem !important;
+    padding: 0.14rem !important;
+  }
+
+  .landing-switch-row--top .landing-switcher button {
+    padding: 0.58rem 0.52rem !important;
+    font-size: 0.76rem !important;
+    letter-spacing: 0.05em !important;
+  }
+
   .landing-copy-card--nexus {
     top: 0 !important;
     left: 0 !important;
-    width: min(64vw, 21rem) !important;
-    min-height: 0 !important;
-    padding: 0.8rem 0.85rem !important;
+    width: min(66vw, 22rem) !important;
+    padding: 0.9rem 0.95rem !important;
+    align-items: flex-start !important;
   }
 
   .landing-copy-card--nexus p {
-    font-size: clamp(0.9rem, 4.1vw, 1.16rem) !important;
-    line-height: 1.06 !important;
+    font-size: clamp(1rem, 4.4vw, 1.35rem) !important;
+    line-height: 1.12 !important;
   }
 
-  .landing-copy-card--section2 {
-    padding: 1.45rem 1.15rem 1.55rem !important;
+  .landing-copy-card--title {
+    width: min(76vw, 24rem) !important;
+    padding: 0.95rem 0.9rem 1rem 1.1rem !important;
   }
 
-  .landing-pdf-grid--cta {
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-    grid-template-rows: minmax(38svh, 46svh) auto !important;
-    min-height: auto !important;
-    overflow: visible !important;
-  }
-
-  .landing-photo-pane--cta {
-    position: relative !important;
-    grid-column: 1 !important;
-    grid-row: 1 !important;
+  .landing-copy-card--title p {
     width: 100% !important;
-    height: 100% !important;
-    min-height: 38svh !important;
+    max-width: none !important;
   }
 
   .landing-copy-card--section5 {
-    position: relative !important;
     grid-column: 1 !important;
     grid-row: 2 !important;
     width: 100% !important;
-    min-height: 0 !important;
     padding: 1.1rem 1rem 1.35rem !important;
-    gap: 0.9rem !important;
-    align-items: flex-start !important;
-    justify-content: flex-start !important;
-    text-align: left !important;
   }
 
   .landing-copy-card--section5 .landing-cta-copy,
@@ -4095,13 +4160,20 @@ html[data-theme="light"] .landing-copy-card--section5 {
     width: 100% !important;
     max-width: 100% !important;
   }
+}
 
-  .landing-cta-copy {
-    max-width: none !important;
-    text-align: left !important;
+
+
+/* --- 2026-04-13 extra tweak: section 1 title text use full block width --- */
+@media (min-width: 761px) {
+  .landing-copy-card--title {
+    align-items: stretch !important;
   }
 
-  .landing-button-row--pdf .landing-button {
-    text-align: center !important;
+  .landing-copy-card--title p {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
   }
 }

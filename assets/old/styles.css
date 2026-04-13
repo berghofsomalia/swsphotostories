@@ -3994,3 +3994,114 @@ html[data-theme="light"] .landing-copy-card--section5 {
     text-align: center !important;
   }
 }
+
+
+
+/* --- 2026-04-13 targeted current-file tweaks --- */
+
+/* section 1 nexus block */
+.landing-copy-card--nexus {
+  min-height: min(24vh, 225px) !important;
+  padding: 0.88rem 0.92rem !important;
+}
+
+.landing-copy-card--nexus p {
+  width: 100% !important;
+  max-width: none !important;
+  font-size: clamp(0.92rem, 1.05vw, 1.28rem) !important;
+  line-height: 1.08 !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+}
+
+/* section 2 */
+.landing-copy-card--section2 {
+  text-align: left !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.landing-copy-card--section2 p {
+  width: 100% !important;
+  max-width: none !important;
+  text-align: left !important;
+}
+
+/* section 5 desktop */
+.landing-copy-card--section5 {
+  grid-column: 4 / -1 !important;
+  grid-row: 4 / -1 !important;
+  padding: 1.15rem 0.95rem 1.6rem clamp(15rem, 30vw, 22rem) !important;
+}
+
+.landing-copy-card--section5 .landing-cta-copy,
+.landing-copy-card--section5 .landing-button-row--pdf {
+  width: min(100%, 390px) !important;
+  max-width: min(100%, 390px) !important;
+}
+
+/* mobile */
+@media (max-width: 760px) {
+  .landing-copy-card--nexus {
+    top: 0 !important;
+    left: 0 !important;
+    width: min(64vw, 21rem) !important;
+    min-height: 0 !important;
+    padding: 0.8rem 0.85rem !important;
+  }
+
+  .landing-copy-card--nexus p {
+    font-size: clamp(0.9rem, 4.1vw, 1.16rem) !important;
+    line-height: 1.06 !important;
+  }
+
+  .landing-copy-card--section2 {
+    padding: 1.45rem 1.15rem 1.55rem !important;
+  }
+
+  .landing-pdf-grid--cta {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: minmax(38svh, 46svh) auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+  }
+
+  .landing-photo-pane--cta {
+    position: relative !important;
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 38svh !important;
+  }
+
+  .landing-copy-card--section5 {
+    position: relative !important;
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    padding: 1.1rem 1rem 1.35rem !important;
+    gap: 0.9rem !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+  }
+
+  .landing-copy-card--section5 .landing-cta-copy,
+  .landing-copy-card--section5 .landing-button-row--pdf {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .landing-cta-copy {
+    max-width: none !important;
+    text-align: left !important;
+  }
+
+  .landing-button-row--pdf .landing-button {
+    text-align: center !important;
+  }
+}
