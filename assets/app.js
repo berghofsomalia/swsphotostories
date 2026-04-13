@@ -107,9 +107,9 @@ const COPY = {
 
 const LANDING = {
   en: {
-    section1Nexus: 'The nexus of climate (change), environment (degradation), conflict, and peace',
-    section1Title: 'Visual storytelling from Southwest State, Somalia',
-    section2Body: 'In late 2025, 42 community members across Baidoa, Barawe and Hudur, across generations and genders, took photos capturing various aspects of the nexus of climate (change), environment (degradation), conflict, and peace and told the human stories behind the photos.',
+    section1Nexus: 'The nexus of <br/>climate (change), <br/>environment (degradation), <br/>conflict, and peace',
+    section1Title: 'Visual storytelling <br/>from Southwest State, Somalia',
+    section2Body: 'In late 2025, 42 community members across Baidoa, Barawe and Hudur, <br/>across generations and genders, <br/>took photos capturing various aspects of the nexus of <br/>climate (change), environment (degradation), conflict, and peace <br/>and told the human stories behind the photos.',
     section3Lead: 'They pondered...',
     questions: [
       'Why did I choose to take these photos? What memories or emotions do these photos invoke in me?',
