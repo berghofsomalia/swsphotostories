@@ -6,7 +6,7 @@ const STORAGE_KEYS = {
 
 const COPY = {
   en: {
-    siteTitle: 'Photostories from Southwest State, Somalia on the nexus of climate change, environment, conflict and peace',
+    siteTitle: 'Photostories from Southwest State',
     introTitleLines: ['PHOTOSTORIES', 'FROM', 'SOUTHWEST', 'STATE'],
     introEnter: 'Explore',
     themeLabel: 'Theme',
@@ -55,7 +55,7 @@ const COPY = {
     openSaved: 'Open saved stories'
   },
   so: {
-    siteTitle: 'Photostories from Southwest State, Somalia on the nexus of climate change, environment, conflict and peace',
+    siteTitle: 'Sheeko-sawirro ka socda Koonfur Galbeed',
     introTitleLines: ['SHEEKO', 'SAWIRRO', 'KOONFUR', 'GALBEED'],
     introEnter: 'Sahami',
     themeLabel: 'Muuqaal',
@@ -105,44 +105,111 @@ const COPY = {
   }
 };
 
-const LANDING_COPY = {
+const LANDING = {
   en: {
-    nexusLines: [
+    section1NexusLines: [
       'The nexus of',
-      'climate (change)',
-      'environment (degradation)',
-      'conflict',
-      '& peace'
+      ' climate (change)',
+      ' environment (degradation)',
+      ' conflict',
+      '  & peace'
     ],
-    titleLines: [
+    section1TitleLines: [
       'Visual storytelling',
       'from Southwest State, Somalia'
     ],
-    photos: 'photos',
-    stories: 'stories',
-    reflections: 'reflections',
-    random: 'See a random photostory',
-    explore: 'Explore photostories by themes and locations'
+    section2Body: 'In late 2025, 42 community members across Baidoa, Barawe and Hudur, across generations and genders, took photos capturing various aspects of the nexus of climate (change), environment (degradation), conflict, and peace and told the human stories behind the photos.',
+    section3Lead: 'They pondered...',
+    questions: [
+      'Why did I choose to take these photos? What memories or emotions do these photos invoke in me?',
+      'What do I want others to feel and understand from these photos? What community issues or strengths do I want to illustrate?',
+      'If I imagine that the issues are getting resolved or the strengths are getting amplified over the next three years, what would these photos look like?',
+      'What cultural and religious elements (a) describe the current photos and (b) could inspire us to work towards turning the imagined photos into reality?'
+    ],
+    section4Lines: [
+      'The photos were shared in community spaces of storytelling and dialogue.',
+      'People picked photos they connected to and shared their own reflections on the stories.'
+    ],
+    section5Body: 'There are currently 350 stories, 1000 photos and 150 community reflections. What would you like to do?',
+    surprise: 'See a photostory - surprise me!',
+    explore: 'Let me explore them myself',
+    shareOwn: 'Share my own photostory',
+    comingSoon: 'Coming soon'
   },
   so: {
-    nexusLines: [
+    section1NexusLines: [
       'Xiriirka ka dhexeeya',
-      '(isbeddelka) cimilada',
-      '(nabaad-guurka) deegaanka',
-      'khilaafka',
-      '& nabadda'
+      ' (isbeddelka) cimilada',
+      ' (nabaad-guurka) deegaanka',
+      ' khilaafka',
+      '  iyo nabadda'
     ],
-    titleLines: [
+    section1TitleLines: [
       'Sheeko-muuqaal',
       'ka yimid Koonfur Galbeed, Soomaaliya'
     ],
-    photos: 'sawir',
-    stories: 'sheeko',
-    reflections: 'milicsi',
-    random: 'Arag sawir-sheeko aan kala sooc lahayn',
-    explore: 'Sahami sawir-sheekooyinka mawduucyo iyo goobo ahaan'
+    section2Body: 'Dabayaaqadii 2025, 42 xubnood oo bulshada ka kala socday Baydhabo, Baraawe iyo Xudur, kana kala tirsanaa jiilal iyo jinsiyo kala duwan, ayaa qaaday sawirro muujinaya dhinacyo kala duwan oo ka mid ah xiriirka cimilada (isbeddelka), deegaanka (nabaad-guurka), khilaafka, iyo nabadda, waxayna ka sheekeeyeen sheekooyinka bini’aadannimo ee ka dambeeya sawirrada.',
+    section3Lead: 'Waxay isweydiiyeen...',
+    questions: [
+      'Maxaan u doortay in aan sawirradan qaado? Xusuuso ama shucuur noocee ah ayay sawirradani igu kicinayaan?',
+      'Maxaan rabaa in dadka kale ay ka dareemaan oo ka fahmaan sawirradan? Arrimahee ama xoogaggee bulshada ka jira ayaan rabaa in aan sawirradan ku muujiyo?',
+      'Haddii aan qiyaaso in arrimahani la xallinayo ama xoogagga wanaagsani sii xoogaysanayaan saddexda sano ee soo socota, sawirradani sidee bay markaas u ekaan lahaayeen?',
+      'Waa maxay waxyaabaha dhaqanka iyo diinta ee (a) sharrixi kara sawirrada hadda jira, isla markaana (b) nagu dhiirrigelin kara in aan ka shaqayno sidii sawirrada la qiyaasay ay dhab u noqon lahaayeen?'
+    ],
+    section4Lines: [
+      'Sawirrada waxaa lagu wadaagay goobaha bulshadu ku kulanto ee sheeko-wadaagga iyo wada-hadalka.',
+      'Dadku waxay doorteen sawirradii ay la xiriireen, dabadeedna waxay ka dhiibteen milicsiyadooda ku saabsan sheekooyinka.'
+    ],
+    section5Body: 'Hadda waxaa jira 350 sheeko, 1000 sawir iyo 150 milicsi bulsho. Maxaad jeclaan lahayd in aad samayso?',
+    surprise: 'I tus sheeko-sawir - yaab i geli!',
+    explore: 'Aan anigu is baadho',
+    shareOwn: 'Aan wadaago sheeko-sawirkayga',
+    comingSoon: 'Dhawaan'
   }
 };
+
+const STORY_GUIDANCE = {
+  en: {
+    title: 'Story process',
+    intro: 'The stories and community reflections on the photos follow this pattern of questions:',
+    questions: [
+      'Why did I choose to take or pick these photos? What memories or emotions do these photos invoke in me?',
+      'What do I want others to feel and understand from these photos? What community issues or strengths do I want to illustrate?',
+      'If I imagine that the issues are getting resolved or the strengths are getting amplified over the next three years, what would these photos look like?',
+      'What cultural and religious elements such as poems, songs, proverbs, and teachings from the Quran or Hadith can describe the current photos and inspire us to work towards turning the imagined photos into reality?'
+    ]
+  },
+  so: {
+    title: 'Hannaanka sheekada',
+    intro: 'Sheekooyinka iyo milicsiyada bulshadu ka bixisay sawirrada waxay raacayaan hannaan su’aalo ah oo sidan u dhisan:',
+    questions: [
+      'Maxaan u doortay in aan sawirradan qaado ama u xusho? Xusuuso ama shucuur noocee ah ayay sawirradani igu kicinayaan?',
+      'Maxaan rabaa in dadka kale ay ka dareemaan oo ka fahmaan sawirradan? Arrimahee ama xoogaggee bulshada ka jira ayaan rabaa in aan ku muujiyo?',
+      'Haddii aan qiyaaso in saddexda sano ee soo socota arrimahani la xallinayo ama xoogagga wanaagsani sii xoogaysanayaan, sawirradani markaas sidee bay u ekaan lahaayeen?',
+      'Waa maxay waxyaabaha dhaqanka iyo diinta ee, sida gabayo, heeso, maahmaahyo, iyo casharro ka imanaya Qur’aanka iyo Xadiiska, kuwaas oo sharrixi kara sawirrada hadda jira, isla markaana nagu dhiirrigelin kara in aan ka shaqayno sidii sawirrada la qiyaasay ay dhab u noqon lahaayeen?'
+    ]
+  }
+};
+
+const INTRO_SLOTS = [
+  { left: '4vw', top: '8svh', width: '12vw', height: '20svh', rotate: -4, z: 4 },
+  { left: '18vw', top: '11svh', width: '10vw', height: '16svh', rotate: 2.5, z: 5 },
+  { left: '28vw', top: '5svh', width: '13vw', height: '18svh', rotate: -1.5, z: 4 },
+  { left: '9vw', top: '29svh', width: '11vw', height: '18svh', rotate: 3.2, z: 4 },
+  { left: '26vw', top: '36svh', width: '14vw', height: '12svh', rotate: -2.8, z: 4 },
+  { left: '5vw', top: '112svh', width: '13vw', height: '20svh', rotate: -2.4, z: 4 },
+  { left: '19vw', top: '126svh', width: '10vw', height: '15svh', rotate: 1.8, z: 5 },
+  { left: '30vw', top: '117svh', width: '13vw', height: '11svh', rotate: -3.1, z: 4 },
+  { left: '8vw', top: '210svh', width: '12vw', height: '10svh', rotate: -2.2, z: 4 },
+  { left: '18vw', top: '223svh', width: '14vw', height: '16svh', rotate: 2, z: 5 },
+  { left: '31vw', top: '214svh', width: '12vw', height: '10svh', rotate: 2.8, z: 4 },
+  { left: '34vw', top: '235svh', width: '9vw', height: '17svh', rotate: -2.5, z: 4 },
+  { left: '3vw', top: '57svh', width: '9vw', height: '8svh', rotate: -1.6, z: 3 },
+  { left: '34vw', top: '58svh', width: '9vw', height: '7svh', rotate: 1.5, z: 3 },
+  { left: '4vw', top: '147svh', width: '10vw', height: '8svh', rotate: -1.2, z: 3 },
+  { left: '34vw', top: '146svh', width: '10vw', height: '8svh', rotate: 1.9, z: 3 }
+];
+
 
 const ACTOR_LABELS = {
   'Children': { en: 'Children', so: 'Carruur' },
@@ -167,6 +234,9 @@ const state = {
   actionMessage: '',
   collageIds: [],
   collageLayout: [],
+  landingSectionImages: {},
+  landingMap: 'images/landing/map 2.png',
+  introSectionIndex: 0,
   autoplayId: null
 };
 
@@ -186,10 +256,7 @@ const icon = {
   instagram: () => '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" ry="5" fill="none"/><circle cx="12" cy="12" r="4" fill="none"/><circle cx="17.5" cy="6.5" r="1.1"/></svg>',
   x: () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 3H21l-4.6 5.3L22 21h-4.7l-3.7-4.9L9.4 21H7.3l4.9-5.6L2 3h4.8l3.4 4.6L18.9 3zm-1.6 16h1.3L6.1 4.9H4.7L17.3 19z"/></svg>',
   email: () => '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg>',
-  close: () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>',
-  photo: () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h4l2-2h4l2 2h4v10H4z"/><circle cx="12" cy="12" r="3"/></svg>',
-  story: () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 0-3 3z"/><path d="M8 4v16"/></svg>',
-  reflection: () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>'
+  close: () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>'
 };
 
 function createEmptyFilters() {
@@ -222,12 +289,25 @@ function escapeHtml(value = '') {
     .replaceAll("'", '&#39;');
 }
 
+
+function renderLineBreakCopy(lines, lineClass = '') {
+  return lines.map((line) => `<span${lineClass ? ` class="${lineClass}"` : ''}>${escapeHtml(line)}</span>`).join('<br>');
+}
+
 function getStoryById(id) {
   return state.stories.find((story) => story.id === id) || null;
 }
 
 function currentStory() {
   return getStoryById(state.currentStoryId) || state.stories[0] || null;
+}
+
+function landingCopy() {
+  return LANDING[state.language];
+}
+
+function guidanceCopy() {
+  return STORY_GUIDANCE[state.language];
 }
 
 function isSaved(id) {
@@ -252,29 +332,36 @@ function shuffle(items) {
   return clone;
 }
 
-function generateCollageLayout(total) {
-  const cols = 4;
-  const rows = Math.ceil(total / cols);
-  const layout = [];
-  const width = 100 / cols;
-  const height = 100 / rows;
+async function imageExists(src) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(src);
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+}
 
-  for (let index = 0; index < total; index += 1) {
-    const col = index % cols;
-    const row = Math.floor(index / cols);
-    const x = col * width;
-    const y = row * height;
-    layout.push({
-      x,
-      y,
-      width,
-      height,
-      rotate: 0,
-      z: 1
+async function loadSectionImage(sectionNumber) {
+  const probes = [];
+  const extensions = ['jpg', 'png'];
+  for (let i = 1; i <= 6; i += 1) {
+    extensions.forEach((ext) => {
+      probes.push(`images/landing/${sectionNumber} (${i}).${ext}`);
     });
   }
+  const existing = (await Promise.all(probes.map((src) => imageExists(src)))).filter(Boolean);
+  const shuffled = shuffle(existing);
+  if (shuffled.length > 0) return shuffled[0];
+  const fallbackStory = state.stories[Math.floor(Math.random() * state.stories.length)];
+  return fallbackStory?.images?.[0] || '';
+}
 
-  return layout;
+async function loadLandingAssets() {
+  const mapSrc = await imageExists('images/landing/map 2.png') || await imageExists('images/landing/sws on somalia map_wrinkle.png') || 'assets/sws-map-wrinkle.png';
+  state.landingMap = mapSrc;
+  const sections = [1, 3, 4, 5];
+  const resolved = await Promise.all(sections.map((section) => loadSectionImage(section)));
+  state.landingSectionImages = Object.fromEntries(sections.map((section, index) => [section, resolved[index]]));
 }
 
 function syncGalleryCardHeights() {
@@ -500,69 +587,101 @@ function renderStageControls(story) {
   `;
 }
 
+
+
 function renderIntroModal() {
   if (!state.introOpen) return '';
-  const t = copy();
-  const landing = LANDING_COPY[state.language];
-  const collageStories = state.collageIds.map((id) => getStoryById(id)).filter(Boolean);
-  const collage = collageStories.map((story) => `
-    <div class="intro-grid-cell">
-      <img src="${story.images[0]}" alt="" loading="eager" aria-hidden="true">
-    </div>
-  `).join('');
-  const nexusHtml = landing.nexusLines.map((line) => escapeHtml(line)).join('<br>');
-  const titleHtml = landing.titleLines.map((line) => escapeHtml(line)).join('<br>');
+  const landing = landingCopy();
+  const sectionImages = state.landingSectionImages;
 
   return `
-    <div class="intro-modal">
-      <div class="intro-modal-shell">
-        <div class="intro-hero-layout">
-          <div class="intro-collage-grid">${collage}</div>
-          <div class="intro-hero-overlay" aria-hidden="true"></div>
-
-          <div class="intro-hero-controls">
-            <div class="intro-lang-pill" role="group" aria-label="Language selector">
-              <button type="button" class="${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">${escapeHtml(t.shortSo)}</button>
-              <button type="button" class="${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">${escapeHtml(t.shortEn)}</button>
+    <div class="intro-modal intro-modal--pdfstyle">
+      <div class="intro-scroll intro-scroll--pdfstyle" id="intro-scroll">
+        <section class="landing-pdf-section landing-pdf-section--1" data-intro-section>
+          <div class="landing-pdf-grid landing-pdf-grid--hero">
+            <div class="landing-switch-row landing-switch-row--top">
+              <div class="landing-switch-stack">
+                <div class="landing-switcher" role="group" aria-label="Language selector">
+                  <button type="button" class="${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">SO</button>
+                  <button type="button" class="${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">EN</button>
+                </div>
+                <div class="landing-switcher" role="group" aria-label="Theme selector">
+                  <button type="button" class="${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${escapeHtml(COPY[state.language].dark)}</button>
+                  <button type="button" class="${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${escapeHtml(COPY[state.language].light)}</button>
+                </div>
+              </div>
             </div>
-            <div class="intro-theme-pill" role="group" aria-label="Theme selector">
-              <button type="button" class="${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${escapeHtml(t.light)}</button>
-              <button type="button" class="${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${escapeHtml(t.dark)}</button>
+            <div class="landing-photo-pane landing-photo-pane--hero">
+              <img src="${sectionImages[1] || ''}" alt="" loading="eager" aria-hidden="true">
             </div>
-          </div>
-
-          <div class="quarter-circle top-left intro-quarter-nexus">
-            <span>${nexusHtml}</span>
-          </div>
-
-          <div class="quarter-circle bottom-right intro-quarter-title">
-            <span>${titleHtml}</span>
-          </div>
-
-          <div class="intro-hero-meta">
-            <div class="intro-stats-row">
-              <span class="intro-stat-item"><span class="intro-stat-icon">${icon.photo()}</span><strong>1000+</strong> ${escapeHtml(landing.photos)}</span>
-              <span class="intro-stat-sep">|</span>
-              <span class="intro-stat-item"><span class="intro-stat-icon">${icon.story()}</span><strong>350+</strong> ${escapeHtml(landing.stories)}</span>
-              <span class="intro-stat-sep">|</span>
-              <span class="intro-stat-item"><span class="intro-stat-icon">${icon.reflection()}</span><strong>150+</strong> ${escapeHtml(landing.reflections)}</span>
+            <div class="landing-copy-card landing-copy-card--nexus">
+              <p>${renderLineBreakCopy(landing.section1NexusLines)}</p>
             </div>
-            <div class="intro-action-row intro-action-row--hero">
-              <button type="button" class="intro-action-button is-accent" data-action="intro-random">${escapeHtml(landing.random)}</button>
-              <button type="button" class="intro-action-button is-accent" data-action="intro-explore">${escapeHtml(landing.explore)}</button>
+            <div class="landing-copy-card landing-copy-card--title">
+              <p>${renderLineBreakCopy(landing.section1TitleLines)}</p>
             </div>
           </div>
-        </div>
+        </section>
+
+        <section class="landing-pdf-section landing-pdf-section--2" data-intro-section>
+          <div class="landing-pdf-grid landing-pdf-grid--two-col">
+            <div class="landing-map-pane">
+              <img src="${state.landingMap}" alt="" loading="eager" aria-hidden="true">
+            </div>
+            <div class="landing-copy-card landing-copy-card--section2">
+              <p>${escapeHtml(landing.section2Body)}</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="landing-pdf-section landing-pdf-section--3" data-intro-section>
+          <div class="landing-pdf-grid landing-pdf-grid--questions">
+            <div class="landing-photo-pane landing-photo-pane--questions">
+              <img src="${sectionImages[3] || ''}" alt="" loading="eager" aria-hidden="true">
+            </div>
+            <div class="landing-copy-card landing-copy-card--pondered">
+              <p>${escapeHtml(landing.section3Lead)}</p>
+            </div>
+            ${landing.questions.map((question, index) => `<div class="landing-question-card landing-question-card--${index + 1}"><p>${escapeHtml(question)}</p></div>`).join('')}
+          </div>
+        </section>
+
+        <section class="landing-pdf-section landing-pdf-section--4" data-intro-section>
+          <div class="landing-pdf-grid landing-pdf-grid--shared">
+            <div class="landing-photo-pane landing-photo-pane--shared">
+              <img src="${sectionImages[4] || ''}" alt="" loading="eager" aria-hidden="true">
+            </div>
+            <div class="landing-copy-card landing-copy-card--section4">
+              <p>${renderLineBreakCopy(landing.section4Lines)}</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="landing-pdf-section landing-pdf-section--5" data-intro-section>
+          <div class="landing-pdf-grid landing-pdf-grid--cta">
+            <div class="landing-photo-pane landing-photo-pane--cta">
+              <img src="${sectionImages[5] || ''}" alt="" loading="eager" aria-hidden="true">
+            </div>
+            <div class="landing-copy-card landing-copy-card--cta-spacer"></div>
+            <div class="landing-copy-card landing-copy-card--section5">
+              <p class="landing-cta-copy">${escapeHtml(landing.section5Body)}</p>
+              <div class="landing-button-row landing-button-row--pdf">
+                <button type="button" class="landing-button" data-action="intro-random">${escapeHtml(landing.surprise)}</button>
+                <button type="button" class="landing-button" data-action="intro-explore">${escapeHtml(landing.explore)}</button>
+                <button type="button" class="landing-button" data-action="intro-share-own">${escapeHtml(landing.shareOwn)}</button>
+              </div>
+            </div>
+          </div>        </section>
       </div>
     </div>
   `;
 }
 
 function renderSavedDrawer() {
+
   const t = copy();
   const savedStories = state.stories.filter((story) => isSaved(story.id));
   return `
-    <div class="drawer-backdrop ${state.savedOpen ? 'is-open' : ''}" data-action="close-saved"></div>
     <aside class="saved-drawer ${state.savedOpen ? 'is-open' : ''}" aria-hidden="${state.savedOpen ? 'false' : 'true'}">
       <div class="drawer-header">
         <div>
@@ -608,6 +727,18 @@ function renderShareModal() {
         <button type="button" class="share-option" data-action="share-x">${icon.x()}<span>${escapeHtml(t.x)}</span></button>
         <button type="button" class="share-option" data-action="share-email">${icon.email()}<span>${escapeHtml(t.email)}</span></button>
       </div>
+    </div>
+  `;
+}
+
+function renderGuidanceBox() {
+  const guidance = guidanceCopy();
+  return `
+    <div class="story-guidance-box is-compact">
+      <p>${escapeHtml(guidance.intro)}</p>
+      <ul>
+        ${guidance.questions.map((question) => `<li>${escapeHtml(question)}</li>`).join('')}
+      </ul>
     </div>
   `;
 }
@@ -674,7 +805,7 @@ function render() {
 
   const storySlides = story.images.map((src, index) => `
     <div class="story-slide ${index === state.currentImageIndex ? 'is-active' : ''}">
-      ${adaptiveImageMarkup(src, story.storyteller, 'cover', 'story-stage-image')}
+      ${adaptiveImageMarkup(src, story.storyteller, 'contain', 'story-stage-image')}
     </div>
   `).join('');
 
@@ -692,6 +823,7 @@ function render() {
 
         <section class="story-band">
           <div class="content-wrap narrow">
+            ${renderGuidanceBox()}
             <div class="tag-row">${storyTagChips(story)}</div>
             <div class="storyteller-name">${escapeHtml(story.storyteller)}</div>
             <div class="story-copy">${renderParagraphBlock(labelFor(story.story))}</div>
@@ -771,6 +903,16 @@ function bindEvents() {
     element.addEventListener('click', handleActionClick);
   });
 
+  const introScroll = qs('#intro-scroll');
+  if (introScroll) {
+    introScroll.addEventListener('scroll', () => {
+      const sections = qsa('[data-intro-section]', introScroll);
+      if (!sections.length) return;
+      const positions = sections.map((section) => Math.abs(section.offsetTop - introScroll.scrollTop));
+      state.introSectionIndex = positions.indexOf(Math.min(...positions));
+    }, { passive: true });
+  }
+
   const stage = qs('.story-slides');
   if (stage) {
     let touchStartX = null;
@@ -815,7 +957,7 @@ async function handleActionClick(event) {
   const action = event.currentTarget.dataset.action;
   const value = event.currentTarget.dataset.value || '';
   const story = currentStory();
-  if (!story && !['set-language', 'set-theme', 'enter-site', 'intro-random', 'intro-explore'].includes(action)) return;
+  if (!story && action !== 'set-language' && action !== 'enter-site') return;
 
   if (action === 'set-language') {
     state.language = value;
@@ -831,27 +973,43 @@ async function handleActionClick(event) {
     return;
   }
 
-  if (action === 'enter-site') {
-    state.introOpen = false;
-    render();
-    return;
-  }
-
   if (action === 'intro-random') {
+    const candidate = state.stories[Math.floor(Math.random() * state.stories.length)] || story;
+    if (candidate) state.currentStoryId = candidate.id;
+    state.currentImageIndex = 0;
     state.introOpen = false;
     render();
+    scrollStoryTop();
     return;
   }
 
   if (action === 'intro-explore') {
     state.introOpen = false;
     render();
-    setTimeout(() => scrollGallery(), 120);
+    setTimeout(scrollGallery, 120);
+    return;
+  }
+
+  if (action === 'intro-share-own') {
+    window.location.href = 'mailto:?subject=Photostory submission';
+    return;
+  }
+
+  if (action === 'intro-scroll-next' || action === 'intro-scroll-prev') {
+    const scrollEl = qs('#intro-scroll');
+    const sections = qsa('[data-intro-section]', scrollEl);
+    if (!scrollEl || sections.length === 0) return;
+    const positions = sections.map((section) => Math.abs(section.offsetTop - scrollEl.scrollTop));
+    const currentIndex = positions.indexOf(Math.min(...positions));
+    const nextIndex = action === 'intro-scroll-next'
+      ? Math.min(sections.length - 1, currentIndex + 1)
+      : Math.max(0, currentIndex - 1);
+    sections[nextIndex]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     return;
   }
 
   if (action === 'open-saved') {
-    state.savedOpen = true;
+    state.savedOpen = !state.savedOpen;
     render();
     return;
   }
@@ -1070,35 +1228,13 @@ function startAutoplay() {
   }, 5000);
 }
 
-async function loadStoriesPayload() {
-  const moduleUrl = new URL(import.meta.url);
-  const candidates = [
-    new URL('../data/stories.json', moduleUrl).toString(),
-    `${window.location.origin}${window.location.pathname.replace(/[^/]*$/, '')}data/stories.json`,
-    'data/stories.json'
-  ];
-
-  let lastError = null;
-  for (const url of candidates) {
-    try {
-      const response = await fetch(url, { cache: 'no-cache' });
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status} for ${url}`);
-      }
-      return await response.json();
-    } catch (error) {
-      lastError = error;
-      console.warn('Stories payload load attempt failed:', url, error);
-    }
-  }
-  throw lastError || new Error('Unable to load stories.json');
-}
 
 async function initialise() {
-  const payload = await loadStoriesPayload();
+  const dataUrl = new URL('../data/stories.json', import.meta.url);
+  const response = await fetch(dataUrl);
+  const payload = await response.json();
   state.stories = payload.stories || [];
-  state.collageIds = shuffle(state.stories.map((story) => story.id)).slice(0, 16);
-  state.collageLayout = generateCollageLayout(state.collageIds.length);
+  await loadLandingAssets();
 
   const code = new URLSearchParams(window.location.search).get('code');
   const existing = getStoryById(code);
@@ -1109,6 +1245,7 @@ async function initialise() {
   render();
 }
 
+
 window.addEventListener('resize', () => {
   window.clearTimeout(window.__photostoryResizeTimer);
   window.__photostoryResizeTimer = window.setTimeout(syncGalleryCardHeights, 120);
@@ -1118,5 +1255,5 @@ window.addEventListener('beforeunload', stopAutoplay);
 initialise().catch((error) => {
   console.error(error);
   const app = qs('#app');
-  if (app) app.innerHTML = '<div class="error-state">Failed to load the site data. Confirm that data/stories.json and the images folders were published at the site root.</div>';
+  if (app) app.innerHTML = '<div class="error-state">Failed to load the site data. Check the browser console and verify that data/stories.json and the images folder were published.</div>';
 });
