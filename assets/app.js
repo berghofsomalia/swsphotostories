@@ -109,10 +109,10 @@ const LANDING = {
   en: {
     section1NexusLines: [
       'The nexus of',
-      ' climate (change)',
-      ' environment (degradation)',
-      ' conflict',
-      '  & peace'
+      'climate (change)',
+      'environment (degradation)',
+      'conflict',
+      '& peace'
     ],
     section1TitleLines: [
       'Visual storytelling',
@@ -139,10 +139,10 @@ const LANDING = {
   so: {
     section1NexusLines: [
       'Xiriirka ka dhexeeya',
-      ' (isbeddelka) cimilada',
-      ' (nabaad-guurka) deegaanka',
-      ' khilaafka',
-      '  iyo nabadda'
+      '(isbeddelka) cimilada',
+      '(nabaad-guurka) deegaanka',
+      'khilaafka',
+      'iyo nabadda'
     ],
     section1TitleLines: [
       'Sheeko-muuqaal',

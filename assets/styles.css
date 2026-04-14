@@ -4365,3 +4365,128 @@ html[data-theme="light"] .landing-copy-card--title {
     rgba(128, 123, 118, 0) 100%
   ) !important;
 }
+
+
+
+/* --- final quarter-circle update for section 1 only --- */
+.landing-copy-card--nexus,
+.landing-copy-card--title {
+  overflow: hidden !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+.landing-copy-card--nexus::after,
+.landing-copy-card--title::after {
+  content: none !important;
+}
+
+/* top-left quarter circle */
+.landing-copy-card--nexus {
+  top: 0 !important;
+  left: 0 !important;
+  right: auto !important;
+  width: clamp(15.5rem, 27vw, 22rem) !important;
+  height: clamp(9.5rem, 19vw, 15rem) !important;
+  min-height: 0 !important;
+  padding: clamp(0.8rem, 1.7vw, 1.2rem) clamp(0.95rem, 1.8vw, 1.35rem) !important;
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  text-align: left !important;
+  border-radius: 0 0 100% 0 !important;
+  background: rgba(141, 82, 15, 0.60) !important;
+  color: #dddada !important;
+}
+
+.landing-copy-card--nexus p {
+  width: 72% !important;
+  max-width: 72% !important;
+  margin: 0 !important;
+  font-size: clamp(0.72rem, 0.98vw, 1rem) !important;
+  line-height: 1.14 !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.035em !important;
+  text-shadow: none !important;
+}
+
+.landing-copy-card--nexus p span {
+  display: inline !important;
+}
+
+/* bottom-right quarter circle */
+.landing-copy-card--title {
+  right: 0 !important;
+  bottom: 0 !important;
+  left: auto !important;
+  width: clamp(19rem, 35vw, 32rem) !important;
+  height: clamp(10.5rem, 22vw, 17rem) !important;
+  min-height: 0 !important;
+  padding: clamp(1rem, 2vw, 1.6rem) clamp(1.2rem, 2.1vw, 1.8rem) !important;
+  align-items: flex-end !important;
+  justify-content: flex-end !important;
+  text-align: right !important;
+  border-radius: 100% 0 0 0 !important;
+  background: rgba(51, 51, 51, 0.60) !important;
+  color: rgb(234, 178, 12) !important;
+}
+
+.landing-copy-card--title p {
+  width: 80% !important;
+  max-width: 80% !important;
+  margin: 0 0 0 auto !important;
+  font-size: clamp(1.1rem, 1.85vw, 1.85rem) !important;
+  line-height: 1.08 !important;
+  font-weight: 700 !important;
+  text-shadow: none !important;
+  color: rgb(234, 178, 12) !important;
+}
+
+html[data-theme="light"] .landing-copy-card--nexus {
+  background: rgba(141, 82, 15, 0.56) !important;
+  color: #f2ede8 !important;
+}
+
+html[data-theme="light"] .landing-copy-card--title {
+  background: rgba(66, 66, 66, 0.42) !important;
+  color: rgb(204, 140, 10) !important;
+}
+
+html[data-theme="light"] .landing-copy-card--title p {
+  color: rgb(204, 140, 10) !important;
+}
+
+@media (max-width: 760px) {
+  .landing-copy-card--nexus {
+    top: 0 !important;
+    left: 0 !important;
+    width: min(72vw, 18rem) !important;
+    height: min(13rem, 36svh) !important;
+    padding: 0.8rem 0.9rem !important;
+    border-radius: 0 0 100% 0 !important;
+  }
+
+  .landing-copy-card--nexus p {
+    width: 73% !important;
+    max-width: 73% !important;
+    font-size: clamp(0.7rem, 2.7vw, 0.92rem) !important;
+    line-height: 1.12 !important;
+  }
+
+  .landing-copy-card--title {
+    right: 0 !important;
+    bottom: 0 !important;
+    width: min(80vw, 20rem) !important;
+    height: min(12.5rem, 33svh) !important;
+    padding: 0.95rem 1rem 1rem 1.2rem !important;
+    border-radius: 100% 0 0 0 !important;
+  }
+
+  .landing-copy-card--title p {
+    width: 82% !important;
+    max-width: 82% !important;
+    font-size: clamp(0.98rem, 4.2vw, 1.35rem) !important;
+    line-height: 1.08 !important;
+  }
+}
