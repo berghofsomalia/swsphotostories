@@ -35,7 +35,8 @@ const icon = {
   x: () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 3H21l-4.6 5.3L22 21h-4.7l-3.7-4.9L9.4 21H7.3l4.9-5.6L2 3h4.8l3.4 4.6L18.9 3zm-1.6 16h1.3L6.1 4.9H4.7L17.3 19z"/></svg>',
   email: () => '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg>',
   close: () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>',
-  menu: () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/></svg>'
+  menu: () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/></svg>',
+  home: () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 12 5l8 6.5"/><path d="M6.5 10.5V20h11V10.5"/></svg>'
 };
 
 function escapeHtml(value = '') {
@@ -107,23 +108,38 @@ function renderUtilityMenu(state) {
           ${icon.menu()}
         </button>
         <div class="utility-menu-panel" aria-hidden="${state.menuOpen ? 'false' : 'true'}">
-          <a class="utility-menu-link" href="../">${escapeHtml(t.home)}</a>
-          <button type="button" class="utility-menu-button" data-action="open-saved" aria-label="${escapeHtml(t.openSaved)}">
-            <span>${escapeHtml(t.savedPhotostories)}</span>
-            <span class="utility-menu-badge">${state.savedIds.length}</span>
-          </button>
+          <div class="utility-menu-pill utility-menu-pill--single">
+            <a class="utility-menu-control utility-menu-control--single" href="../">
+              <span class="utility-menu-control-copy">
+                <span class="utility-menu-control-icon" aria-hidden="true">${icon.home()}</span>
+                <span>${escapeHtml(t.home)}</span>
+              </span>
+            </a>
+          </div>
+
+          <div class="utility-menu-pill utility-menu-pill--single">
+            <button type="button" class="utility-menu-control utility-menu-control--single" data-action="open-saved" aria-label="${escapeHtml(t.openSaved)}">
+              <span class="utility-menu-control-copy">
+                <span class="utility-menu-control-icon" aria-hidden="true">${icon.bookmark()}</span>
+                <span>${escapeHtml(t.savedPhotostories)}</span>
+              </span>
+              <span class="utility-menu-badge">${state.savedIds.length}</span>
+            </button>
+          </div>
+
           <div class="utility-menu-group">
             <div class="utility-menu-group-label">${escapeHtml(t.language)}</div>
-            <div class="utility-menu-switchers" role="group" aria-label="Language selector">
-              <button type="button" class="utility-menu-option ${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">${escapeHtml(t.shortSo)}</button>
-              <button type="button" class="utility-menu-option ${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">${escapeHtml(t.shortEn)}</button>
+            <div class="utility-menu-pill utility-menu-switchers" role="group" aria-label="Language selector">
+              <button type="button" class="utility-menu-control ${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">${escapeHtml(t.shortSo)}</button>
+              <button type="button" class="utility-menu-control ${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">${escapeHtml(t.shortEn)}</button>
             </div>
           </div>
+
           <div class="utility-menu-group">
             <div class="utility-menu-group-label">${escapeHtml(t.theme)}</div>
-            <div class="utility-menu-switchers" role="group" aria-label="Theme selector">
-              <button type="button" class="utility-menu-option ${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${escapeHtml(t.dark)}</button>
-              <button type="button" class="utility-menu-option ${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${escapeHtml(t.light)}</button>
+            <div class="utility-menu-pill utility-menu-switchers" role="group" aria-label="Theme selector">
+              <button type="button" class="utility-menu-control ${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${escapeHtml(t.dark)}</button>
+              <button type="button" class="utility-menu-control ${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${escapeHtml(t.light)}</button>
             </div>
           </div>
         </div>
@@ -154,16 +170,15 @@ function renderStageControls(state, story) {
 }
 
 function renderStoryMetaPanel(state, story) {
-  const t = getUiText(state.language);
-
   return `
     <aside class="story-meta-panel">
-      <p class="story-meta-summary">${escapeHtml(labelFor(story.summary, state.language))}</p>
-      <div class="tag-row story-meta-tags">${storyTagChips(state, story)}</div>
-      <div class="story-meta-credit">
-        <span class="story-meta-credit-label">${escapeHtml(t.photographerStoryteller)}</span>
-        <span class="story-meta-credit-name">${escapeHtml(story.storyteller)}</span>
+      <div class="story-meta-header">
+        <h1 class="story-meta-name">${escapeHtml(story.storyteller)}</h1>
+        <p class="story-meta-teaser">${escapeHtml(labelFor(story.summary, state.language))}</p>
       </div>
+      <div class="tag-row story-meta-tags">${storyTagChips(state, story)}</div>
+      <div class="story-meta-divider" aria-hidden="true"></div>
+      ${renderGuidanceBox(state, { compact: true, plain: true })}
     </aside>
   `;
 }
@@ -221,10 +236,14 @@ function renderShareModal(state, story) {
   `;
 }
 
-function renderGuidanceBox(state) {
+function renderGuidanceBox(state, options = {}) {
   const guidance = getGuidanceText(state.language);
+  const classes = ['story-guidance-box'];
+  if (options.compact) classes.push('is-compact');
+  if (options.plain) classes.push('story-guidance-box--plain');
+
   return `
-    <div class="story-guidance-box is-compact">
+    <div class="${classes.join(' ')}">
       <p>${escapeHtml(guidance.intro)}</p>
       <ul>
         ${guidance.questions.map((question) => `<li>${escapeHtml(question)}</li>`).join('')}
@@ -341,7 +360,6 @@ export function renderApp(state) {
 
     <section class="story-band">
       <div class="content-wrap narrow">
-        ${renderGuidanceBox(state)}
         <div class="story-copy">${renderParagraphBlock(labelFor(story.story, state.language))}</div>
       </div>
     </section>
