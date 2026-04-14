@@ -70,12 +70,14 @@ function renderChip(label, options = {}) {
   return `<button type="button" class="${classes.join(' ')}" data-action="${options.onClick.action}" data-value="${escapeHtml(options.onClick.value)}">${content}</button>`;
 }
 
-function renderParagraphBlock(copy = '') {
-  return escapeHtml(copy).split(/
-{2,}/).map((paragraph) => `<p>${paragraph.replaceAll('
-', '<br>')}</p>`).join('');
+function renderParagraphBlock(text, className = '') {
+  return text
+    .split(/\n\s*\n/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean)
+    .map((paragraph) => `<p>${escapeHtml(paragraph).replaceAll('\n', '<br>')}</p>`)
+    .join('') || `<p class="${className}"></p>`;
 }
-
 function storyTagChips(state, story) {
   const chips = [
     renderChip(labelFor(story.district, state.language)),
