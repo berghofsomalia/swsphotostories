@@ -61,6 +61,7 @@ function setCurrentStory(id, options = {}) {
   state.currentStoryId = story.id;
   state.currentImageIndex = 0;
   state.shareOpen = false;
+  state.menuOpen = false;
   state.storyVisible = options.storyVisible ?? true;
   state.galleryVisible = options.galleryVisible ?? false;
   updateUrlForStory(story, { hash: options.hash || '' });
@@ -146,7 +147,21 @@ const ACTIONS = {
     savePersistentState(state);
     renderSite();
   },
+  'set-theme': async ({ value }) => {
+    state.theme = value === 'light' ? 'light' : 'dark';
+    savePersistentState(state);
+    renderSite();
+  },
+  'toggle-menu': async () => {
+    state.menuOpen = !state.menuOpen;
+    renderSite();
+  },
+  'close-menu': async () => {
+    state.menuOpen = false;
+    renderSite();
+  },
   'open-saved': async () => {
+    state.menuOpen = false;
     state.savedOpen = !state.savedOpen;
     renderSite();
   },
@@ -159,6 +174,7 @@ const ACTIONS = {
     setCurrentStory(value, { scrollTop: true });
   },
   'open-share': async () => {
+    state.menuOpen = false;
     state.shareOpen = true;
     renderSite();
   },
@@ -363,6 +379,14 @@ function attachGlobalListeners() {
 
   window.addEventListener('hashchange', () => {
     requestAnimationFrame(() => scrollFromHash());
+  });
+  window.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    if (!state.menuOpen && !state.shareOpen && !state.savedOpen) return;
+    state.menuOpen = false;
+    state.shareOpen = false;
+    state.savedOpen = false;
+    renderSite();
   });
   window.addEventListener('beforeunload', stopAutoplay);
   listenersAttached = true;

@@ -34,7 +34,8 @@ const icon = {
   instagram: () => '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" ry="5" fill="none"/><circle cx="12" cy="12" r="4" fill="none"/><circle cx="17.5" cy="6.5" r="1.1"/></svg>',
   x: () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 3H21l-4.6 5.3L22 21h-4.7l-3.7-4.9L9.4 21H7.3l4.9-5.6L2 3h4.8l3.4 4.6L18.9 3zm-1.6 16h1.3L6.1 4.9H4.7L17.3 19z"/></svg>',
   email: () => '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg>',
-  close: () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>'
+  close: () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>',
+  menu: () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/></svg>'
 };
 
 function escapeHtml(value = '') {
@@ -90,22 +91,43 @@ function storyTagChips(state, story) {
   return chips.join('');
 }
 
-function renderFloatingControls(state) {
+function renderUtilityMenu(state) {
   const t = getUiText(state.language);
-  const classes = ['floating-controls'];
-  if (!state.storyVisible) classes.push('floating-controls--page');
 
   return `
-    <div class="${classes.join(' ')}">
-      <a class="home-pill" href="../">${escapeHtml(t.home)}</a>
-      <div class="lang-pill" role="group" aria-label="Language selector">
-        <button type="button" class="${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">${escapeHtml(t.shortSo)}</button>
-        <button type="button" class="${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">${escapeHtml(t.shortEn)}</button>
+    <div class="utility-menu-shell">
+      ${state.menuOpen ? `<button type="button" class="utility-menu-backdrop" data-action="close-menu" aria-label="${escapeHtml(t.close)}"></button>` : ''}
+      <div class="utility-menu ${state.menuOpen ? 'is-open' : ''}">
+        <button
+          type="button"
+          class="utility-menu-toggle"
+          data-action="toggle-menu"
+          aria-label="${escapeHtml(t.menu)}"
+          aria-expanded="${state.menuOpen ? 'true' : 'false'}">
+          ${icon.menu()}
+        </button>
+        <div class="utility-menu-panel" aria-hidden="${state.menuOpen ? 'false' : 'true'}">
+          <a class="utility-menu-link" href="../">${escapeHtml(t.home)}</a>
+          <button type="button" class="utility-menu-button" data-action="open-saved" aria-label="${escapeHtml(t.openSaved)}">
+            <span>${escapeHtml(t.savedPhotostories)}</span>
+            <span class="utility-menu-badge">${state.savedIds.length}</span>
+          </button>
+          <div class="utility-menu-group">
+            <div class="utility-menu-group-label">${escapeHtml(t.language)}</div>
+            <div class="utility-menu-switchers" role="group" aria-label="Language selector">
+              <button type="button" class="utility-menu-option ${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">${escapeHtml(t.shortSo)}</button>
+              <button type="button" class="utility-menu-option ${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">${escapeHtml(t.shortEn)}</button>
+            </div>
+          </div>
+          <div class="utility-menu-group">
+            <div class="utility-menu-group-label">${escapeHtml(t.theme)}</div>
+            <div class="utility-menu-switchers" role="group" aria-label="Theme selector">
+              <button type="button" class="utility-menu-option ${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${escapeHtml(t.dark)}</button>
+              <button type="button" class="utility-menu-option ${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${escapeHtml(t.light)}</button>
+            </div>
+          </div>
+        </div>
       </div>
-      <button type="button" class="saved-icon-button" data-action="open-saved" aria-label="${escapeHtml(t.openSaved)}">
-        ${icon.bookmark()}
-        <span class="saved-count-badge">${state.savedIds.length}</span>
-      </button>
     </div>
   `;
 }
@@ -131,6 +153,21 @@ function renderStageControls(state, story) {
   `;
 }
 
+function renderStoryMetaPanel(state, story) {
+  const t = getUiText(state.language);
+
+  return `
+    <aside class="story-meta-panel">
+      <p class="story-meta-summary">${escapeHtml(labelFor(story.summary, state.language))}</p>
+      <div class="tag-row story-meta-tags">${storyTagChips(state, story)}</div>
+      <div class="story-meta-credit">
+        <span class="story-meta-credit-label">${escapeHtml(t.photographerStoryteller)}</span>
+        <span class="story-meta-credit-name">${escapeHtml(story.storyteller)}</span>
+      </div>
+    </aside>
+  `;
+}
+
 function renderSavedDrawer(state) {
   const t = getUiText(state.language);
   const savedStories = state.stories.filter((story) => isSaved(state, story.id));
@@ -139,7 +176,7 @@ function renderSavedDrawer(state) {
     <aside class="saved-drawer ${state.savedOpen ? 'is-open' : ''}" aria-hidden="${state.savedOpen ? 'false' : 'true'}">
       <div class="drawer-header">
         <div>
-          <div class="drawer-title">${escapeHtml(t.saved)}</div>
+          <div class="drawer-title">${escapeHtml(t.savedPhotostories)}</div>
           <div class="drawer-subtitle">${savedStories.length} ${escapeHtml(savedStories.length === 1 ? t.story : t.stories)}</div>
         </div>
         <button type="button" class="icon-button" data-action="close-saved" aria-label="${escapeHtml(t.close)}">${icon.close()}</button>
@@ -289,17 +326,22 @@ export function renderApp(state) {
 
   const storyMarkup = state.storyVisible ? `
     <section id="story-top" class="story-stage-shell">
-      <div class="story-stage">
-        <div class="story-slides">${storySlides}</div>
+      <div class="content-wrap story-hero-wrap">
+        <div class="story-hero-layout">
+          <div class="story-hero-media">
+            <div class="story-stage">
+              <div class="story-slides">${storySlides}</div>
+            </div>
+            ${renderStageControls(state, story)}
+          </div>
+          ${renderStoryMetaPanel(state, story)}
+        </div>
       </div>
-      ${renderStageControls(state, story)}
     </section>
 
     <section class="story-band">
       <div class="content-wrap narrow">
         ${renderGuidanceBox(state)}
-        <div class="tag-row">${storyTagChips(state, story)}</div>
-        <div class="storyteller-name">${escapeHtml(story.storyteller)}</div>
         <div class="story-copy">${renderParagraphBlock(labelFor(story.story, state.language))}</div>
       </div>
     </section>
@@ -366,7 +408,7 @@ export function renderApp(state) {
 
   app.innerHTML = `
     <div class="site-shell ${!state.storyVisible ? 'is-gallery-only' : ''}">
-      ${renderFloatingControls(state)}
+      ${renderUtilityMenu(state)}
       <main>
         ${storyMarkup}
         ${galleryMarkup}

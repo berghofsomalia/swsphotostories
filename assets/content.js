@@ -48,6 +48,11 @@ export const UI_TEXT = {
     previousImage: 'Previous image',
     nextImage: 'Next image',
     openSaved: 'Open saved stories',
+    savedPhotostories: 'Saved photostories',
+    photographerStoryteller: 'Photographer-Storyteller:',
+    language: 'Language',
+    theme: 'Theme',
+    menu: 'Open menu',
     home: 'Home'
   },
   so: {
@@ -93,6 +98,11 @@ export const UI_TEXT = {
     previousImage: 'Sawirkii hore',
     nextImage: 'Sawirka xiga',
     openSaved: 'Fur sheekooyinka la kaydiyey',
+    savedPhotostories: 'Sheeko-sawirro la kaydiyey',
+    photographerStoryteller: 'Sawir-qaade Sheeko-wadaage:',
+    language: 'Luqad',
+    theme: 'Muuqaal',
+    menu: 'Fur liiska',
     home: 'Hore'
   }
 };

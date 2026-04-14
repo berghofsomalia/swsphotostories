@@ -33,6 +33,7 @@ export function createInitialState() {
     galleryVisible: false,
     shareOpen: false,
     savedOpen: false,
+    menuOpen: false,
     actionMessage: '',
     autoplayId: null
   };
