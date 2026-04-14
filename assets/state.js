@@ -29,6 +29,8 @@ export function createInitialState() {
     currentImageIndex: 0,
     filters: createEmptyFilters(),
     galleryMode: 'total',
+    storyVisible: true,
+    galleryVisible: false,
     shareOpen: false,
     savedOpen: false,
     actionMessage: '',

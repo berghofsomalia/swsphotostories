@@ -92,8 +92,11 @@ function storyTagChips(state, story) {
 
 function renderFloatingControls(state) {
   const t = getUiText(state.language);
+  const classes = ['floating-controls'];
+  if (!state.storyVisible) classes.push('floating-controls--page');
+
   return `
-    <div class="floating-controls">
+    <div class="${classes.join(' ')}">
       <a class="home-pill" href="../">${escapeHtml(t.home)}</a>
       <div class="lang-pill" role="group" aria-label="Language selector">
         <button type="button" class="${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">${escapeHtml(t.shortSo)}</button>
@@ -284,82 +287,89 @@ export function renderApp(state) {
     </div>
   `).join('');
 
-  app.innerHTML = `
-    <div class="site-shell">
-      <main>
-        <section id="story-top" class="story-stage-shell">
-          <div class="story-stage">
-            ${renderFloatingControls(state)}
-            <div class="story-slides">${storySlides}</div>
-          </div>
-          ${renderStageControls(state, story)}
-        </section>
+  const storyMarkup = state.storyVisible ? `
+    <section id="story-top" class="story-stage-shell">
+      <div class="story-stage">
+        <div class="story-slides">${storySlides}</div>
+      </div>
+      ${renderStageControls(state, story)}
+    </section>
 
-        <section class="story-band">
-          <div class="content-wrap narrow">
-            ${renderGuidanceBox(state)}
-            <div class="tag-row">${storyTagChips(state, story)}</div>
-            <div class="storyteller-name">${escapeHtml(story.storyteller)}</div>
-            <div class="story-copy">${renderParagraphBlock(labelFor(story.story, state.language))}</div>
-          </div>
-        </section>
+    <section class="story-band">
+      <div class="content-wrap narrow">
+        ${renderGuidanceBox(state)}
+        <div class="tag-row">${storyTagChips(state, story)}</div>
+        <div class="storyteller-name">${escapeHtml(story.storyteller)}</div>
+        <div class="story-copy">${renderParagraphBlock(labelFor(story.story, state.language))}</div>
+      </div>
+    </section>
 
-        <section class="reflection-band">
-          <div class="content-wrap narrow">
-            <div class="section-kicker">${escapeHtml(t.communityReflections)}</div>
-            <div class="reflection-copy">${renderParagraphBlock(labelFor(story.reflection, state.language))}</div>
-          </div>
-        </section>
+    <section class="reflection-band">
+      <div class="content-wrap narrow">
+        <div class="section-kicker">${escapeHtml(t.communityReflections)}</div>
+        <div class="reflection-copy">${renderParagraphBlock(labelFor(story.reflection, state.language))}</div>
+      </div>
+    </section>
 
-        <section class="actions-band">
-          <div class="content-wrap">
-            <div class="actions-row">
-              <button type="button" class="action-button ${isSaved(state, story.id) ? 'is-saved' : ''}" data-action="toggle-save">${icon.bookmark()}<span>${escapeHtml(isSaved(state, story.id) ? t.saved : t.save)}</span></button>
-              <button type="button" class="action-button" data-action="open-share">${icon.share()}<span>${escapeHtml(t.share)}</span></button>
-              <button type="button" class="action-button" data-action="random-related">${icon.shuffle()}<span>${escapeHtml(t.relatedRandom)}</span></button>
-              <button type="button" class="action-button" data-action="show-related">${icon.related()}<span>${escapeHtml(t.related)}</span></button>
-              <button type="button" class="action-button" data-action="explore-all">${icon.sliders()}<span>${escapeHtml(t.explore)}</span></button>
+    <section class="actions-band">
+      <div class="content-wrap">
+        <div class="actions-row">
+          <button type="button" class="action-button ${isSaved(state, story.id) ? 'is-saved' : ''}" data-action="toggle-save">${icon.bookmark()}<span>${escapeHtml(isSaved(state, story.id) ? t.saved : t.save)}</span></button>
+          <button type="button" class="action-button" data-action="open-share">${icon.share()}<span>${escapeHtml(t.share)}</span></button>
+          <button type="button" class="action-button" data-action="random-related">${icon.shuffle()}<span>${escapeHtml(t.relatedRandom)}</span></button>
+          <button type="button" class="action-button" data-action="show-related">${icon.related()}<span>${escapeHtml(t.related)}</span></button>
+          <button type="button" class="action-button" data-action="explore-all">${icon.sliders()}<span>${escapeHtml(t.explore)}</span></button>
+        </div>
+        ${state.actionMessage ? `<div class="action-message">${escapeHtml(state.actionMessage)}</div>` : ''}
+      </div>
+    </section>
+  ` : '';
+
+  const galleryMarkup = state.galleryVisible ? `
+    <section id="gallery" class="gallery-band gallery-band--entry">
+      <div class="content-wrap">
+        <div class="gallery-header">${escapeHtml(storyGalleryHeader(state))}</div>
+        <div class="gallery-layout">
+          <aside class="filter-panel">
+            <div class="filter-reset-slot">
+              <button type="button" class="filter-reset ${hasActiveFilters(state.filters) ? 'is-visible' : ''}" data-action="reset-filters">${escapeHtml(t.reset)}</button>
             </div>
-            ${state.actionMessage ? `<div class="action-message">${escapeHtml(state.actionMessage)}</div>` : ''}
-          </div>
-        </section>
-
-        <section id="gallery" class="gallery-band">
-          <div class="content-wrap">
-            <div class="gallery-header">${escapeHtml(storyGalleryHeader(state))}</div>
-            <div class="gallery-layout">
-              <aside class="filter-panel">
-                <div class="filter-reset-slot">
-                  <button type="button" class="filter-reset ${hasActiveFilters(state.filters) ? 'is-visible' : ''}" data-action="reset-filters">${escapeHtml(t.reset)}</button>
+            ${renderFilterGroup(state, t.district, t.all, districtItems, state.filters.district, 'filter-district')}
+            ${renderFilterGroup(state, t.primaryTheme, t.all, primaryItems, state.filters.primaryTheme, 'filter-primary')}
+            ${renderFilterGroup(state, t.secondaryThemes, t.all, secondaryItems, state.filters.secondaryThemes, 'filter-secondary', true)}
+            ${renderFilterGroup(state, t.people, t.all, peopleItems, state.filters.people, 'filter-people', true)}
+          </aside>
+          <div class="gallery-grid">
+            ${galleryStories.map((item) => `
+              <button type="button" class="gallery-card" data-action="open-story" data-value="${item.id}">
+                <div class="gallery-image-frame">
+                  <img class="gallery-image-cover" src="${item.images[0]}" alt="${escapeHtml(item.storyteller)}" loading="lazy">
                 </div>
-                ${renderFilterGroup(state, t.district, t.all, districtItems, state.filters.district, 'filter-district')}
-                ${renderFilterGroup(state, t.primaryTheme, t.all, primaryItems, state.filters.primaryTheme, 'filter-primary')}
-                ${renderFilterGroup(state, t.secondaryThemes, t.all, secondaryItems, state.filters.secondaryThemes, 'filter-secondary', true)}
-                ${renderFilterGroup(state, t.people, t.all, peopleItems, state.filters.people, 'filter-people', true)}
-              </aside>
-              <div class="gallery-grid">
-                ${galleryStories.map((item) => `
-                  <button type="button" class="gallery-card" data-action="open-story" data-value="${item.id}">
-                    <div class="gallery-image-frame">
-                      <img class="gallery-image-cover" src="${item.images[0]}" alt="${escapeHtml(item.storyteller)}" loading="lazy">
-                    </div>
-                    <div class="gallery-card-body">
-                      <p class="gallery-summary">${escapeHtml(labelFor(item.summary, state.language))}</p>
-                      <div class="tag-row small">
-                        ${renderChip(labelFor(item.district, state.language), { muted: true })}
-                        ${renderChip(labelFor(item.cluster, state.language), { muted: true })}
-                        ${renderChip(labelFor(item.primaryTheme, state.language))}
-                        ${item.secondaryThemes.map((theme) => renderChip(labelFor(theme, state.language), { muted: true })).join('')}
-                        ${item.actors.map((person) => renderChip(actorLabel(person, state.language), { muted: true })).join('')}
-                      </div>
-                      ${isSaved(state, item.id) ? `<div class="saved-marker">${icon.bookmark()}<span>${escapeHtml(t.saved)}</span></div>` : ''}
-                    </div>
-                  </button>
-                `).join('')}
-              </div>
-            </div>
+                <div class="gallery-card-body">
+                  <p class="gallery-summary">${escapeHtml(labelFor(item.summary, state.language))}</p>
+                  <div class="tag-row small">
+                    ${renderChip(labelFor(item.district, state.language), { muted: true })}
+                    ${renderChip(labelFor(item.cluster, state.language), { muted: true })}
+                    ${renderChip(labelFor(item.primaryTheme, state.language))}
+                    ${item.secondaryThemes.map((theme) => renderChip(labelFor(theme, state.language), { muted: true })).join('')}
+                    ${item.actors.map((person) => renderChip(actorLabel(person, state.language), { muted: true })).join('')}
+                  </div>
+                  ${isSaved(state, item.id) ? `<div class="saved-marker">${icon.bookmark()}<span>${escapeHtml(t.saved)}</span></div>` : ''}
+                </div>
+              </button>
+            `).join('')}
           </div>
-        </section>
+        </div>
+      </div>
+    </section>
+  ` : '';
+
+  app.innerHTML = `
+    <div class="site-shell ${!state.storyVisible ? 'is-gallery-only' : ''}">
+      ${renderFloatingControls(state)}
+      <main>
+        ${storyMarkup}
+        ${galleryMarkup}
       </main>
       ${renderSavedDrawer(state)}
       ${renderShareModal(state, story)}

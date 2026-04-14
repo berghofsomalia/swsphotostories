@@ -40,6 +40,20 @@ function scrollGallery() {
   qs('#gallery')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+function scrollFromHash(options = {}) {
+  const hash = window.location.hash;
+  const behavior = options.behavior || 'smooth';
+
+  if (hash === '#gallery') {
+    qs('#gallery')?.scrollIntoView({ behavior, block: 'start' });
+    return;
+  }
+
+  if (hash === '#story-top') {
+    qs('#story-top')?.scrollIntoView({ behavior, block: 'start' });
+  }
+}
+
 function setCurrentStory(id, options = {}) {
   const story = getStoryById(state.stories, id);
   if (!story) return;
@@ -47,7 +61,9 @@ function setCurrentStory(id, options = {}) {
   state.currentStoryId = story.id;
   state.currentImageIndex = 0;
   state.shareOpen = false;
-  updateUrlForStory(story);
+  state.storyVisible = options.storyVisible ?? true;
+  state.galleryVisible = options.galleryVisible ?? false;
+  updateUrlForStory(story, { hash: options.hash || '' });
   renderSite();
 
   if (options.scrollTop) {
@@ -214,12 +230,16 @@ ${shareUrl}`);
       people: [...story.actors]
     };
     state.galleryMode = 'related';
+    state.storyVisible = true;
+    state.galleryVisible = true;
     renderSite();
     scrollGallery();
   },
   'explore-all': async () => {
     state.filters = createEmptyFilters();
     state.galleryMode = 'total';
+    state.storyVisible = true;
+    state.galleryVisible = true;
     renderSite();
     scrollGallery();
   },
@@ -341,6 +361,9 @@ function attachGlobalListeners() {
     window.__photostoryResizeTimer = window.setTimeout(syncGalleryCardHeights, 120);
   });
 
+  window.addEventListener('hashchange', () => {
+    requestAnimationFrame(() => scrollFromHash());
+  });
   window.addEventListener('beforeunload', stopAutoplay);
   listenersAttached = true;
 }
@@ -354,6 +377,7 @@ function stopAutoplay() {
 
 function startAutoplay() {
   stopAutoplay();
+  if (!state.storyVisible) return;
   const story = currentStory(state);
   if (!story || story.images.length <= 1) return;
 
@@ -381,9 +405,18 @@ export async function initialiseApp() {
   const code = params.get('code');
   const existing = getStoryById(state.stories, code);
   const randomStory = state.stories[Math.floor(Math.random() * state.stories.length)] || null;
+  const startInGallery = window.location.hash === '#gallery' && !code && !params.has('random');
 
   state.currentStoryId = existing?.id || randomStory?.id || null;
+  state.storyVisible = !startInGallery;
+  state.galleryVisible = startInGallery;
 
   savePersistentState(state);
   renderSite();
+
+  if (window.location.hash && state.galleryVisible) {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => scrollFromHash({ behavior: 'auto' }));
+    });
+  }
 }

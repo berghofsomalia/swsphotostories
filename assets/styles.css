@@ -77,6 +77,15 @@
 .floating-controls > * {
   pointer-events: auto;
 }
+.site-shell.is-gallery-only {
+  padding-top: 5.85rem;
+}
+.floating-controls--page {
+  position: fixed;
+}
+.gallery-band--entry .content-wrap {
+  padding-top: 1.35rem;
+}
 .lang-pill {
   display: inline-flex;
   align-items: center;

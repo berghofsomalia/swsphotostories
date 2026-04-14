@@ -45,9 +45,10 @@ export function buildShareUrl(story) {
   return url.toString();
 }
 
-export function updateUrlForStory(story) {
+export function updateUrlForStory(story, options = {}) {
   const url = storyAppUrl();
   url.searchParams.set('code', story.id);
+  url.hash = options.hash || '';
   history.replaceState({}, '', url);
 }
 

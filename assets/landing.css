@@ -51,6 +51,9 @@
   margin-top: 1.15rem;
 }
 .landing-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-width: 10rem;
   min-height: 3.05rem;
   padding: 0.85rem 1.4rem;
@@ -61,6 +64,7 @@
   font-family: Kalam, "Segoe Print", cursive;
   font-size: 1.06rem;
   font-weight: 700;
+  text-decoration: none;
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
 }
 .landing-button:hover {
