@@ -29,15 +29,24 @@ export function shuffle(items) {
   return clone;
 }
 
-export function buildShareUrl(story) {
+function storyAppUrl() {
   const url = new URL(window.location.href);
-  url.pathname = `${url.pathname.replace(/[^/]*$/, '')}index.html`;
+  url.pathname = url.pathname.replace(/index\.html$/, '');
+  if (!url.pathname.endsWith('/')) url.pathname += '/';
+  url.searchParams.delete('random');
+  return url;
+}
+
+export function buildShareUrl(story) {
+  const url = storyAppUrl();
+  url.search = '';
+  url.hash = '';
   url.searchParams.set('code', story.id);
   return url.toString();
 }
 
 export function updateUrlForStory(story) {
-  const url = new URL(window.location.href);
+  const url = storyAppUrl();
   url.searchParams.set('code', story.id);
   history.replaceState({}, '', url);
 }

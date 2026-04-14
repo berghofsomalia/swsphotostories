@@ -2326,3 +2326,11 @@ html[data-theme="light"] .landing-copy-card--title p {
     line-height: 1.08 !important;
   }
 }
+
+
+.landing-page-shell {
+  position: relative;
+  inset: auto;
+  overflow: visible;
+  min-height: 100vh;
+}

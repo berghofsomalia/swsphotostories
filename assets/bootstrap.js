@@ -1,4 +1,3 @@
-import { getUiText, labelFor } from './content.js';
 import { renderApp, qs, qsa, syncGalleryCardHeights } from './render.js';
 import { state, createEmptyFilters } from './state.js';
 import {
@@ -11,6 +10,7 @@ import {
   updateUrlForStory,
   isSaved
 } from './story-data.js';
+import { getUiText, labelFor } from './content.js';
 
 let actionMessageTimerId = null;
 let touchStartX = null;
@@ -130,30 +130,6 @@ const ACTIONS = {
     savePersistentState(state);
     renderSite();
   },
-  'set-theme': async ({ value }) => {
-    state.theme = value === 'light' ? 'light' : 'dark';
-    savePersistentState(state);
-    renderSite();
-  },
-  'intro-random': async () => {
-    const fallback = currentStory(state);
-    const candidate = state.stories[Math.floor(Math.random() * state.stories.length)] || fallback;
-    if (!candidate) return;
-
-    state.currentStoryId = candidate.id;
-    state.currentImageIndex = 0;
-    state.introOpen = false;
-    renderSite();
-    scrollStoryTop();
-  },
-  'intro-explore': async () => {
-    state.introOpen = false;
-    renderSite();
-    window.setTimeout(scrollGallery, 120);
-  },
-  'intro-share-own': async () => {
-    window.location.href = 'mailto:?subject=Photostory submission';
-  },
   'open-saved': async () => {
     state.savedOpen = !state.savedOpen;
     renderSite();
@@ -214,7 +190,9 @@ const ACTIONS = {
 
     const shareUrl = buildShareUrl(story);
     const subject = encodeURIComponent(currentStoryLabel(story));
-    const body = encodeURIComponent(`${labelFor(story.summary, state.language)}\n\n${shareUrl}`);
+    const body = encodeURIComponent(`${labelFor(story.summary, state.language)}
+
+${shareUrl}`);
     window.location.href = `mailto:?subject=${subject}&body=${body}`;
     state.shareOpen = false;
     renderSite();
@@ -377,7 +355,7 @@ function stopAutoplay() {
 function startAutoplay() {
   stopAutoplay();
   const story = currentStory(state);
-  if (state.introOpen || !story || story.images.length <= 1) return;
+  if (!story || story.images.length <= 1) return;
 
   state.autoplayId = setInterval(() => {
     state.currentImageIndex = (state.currentImageIndex + 1) % story.images.length;
@@ -391,44 +369,6 @@ function restartAutoplay() {
   startAutoplay();
 }
 
-async function imageExists(src) {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => resolve(src);
-    img.onerror = () => resolve(null);
-    img.src = src;
-  });
-}
-
-async function loadSectionImage(sectionNumber) {
-  const probes = [];
-  const extensions = ['jpg', 'png'];
-
-  for (let index = 1; index <= 6; index += 1) {
-    extensions.forEach((extension) => {
-      probes.push(`images/landing/${sectionNumber} (${index}).${extension}`);
-    });
-  }
-
-  const existing = (await Promise.all(probes.map((src) => imageExists(src)))).filter(Boolean);
-  const shuffled = existing.sort(() => Math.random() - 0.5);
-
-  if (shuffled.length > 0) return shuffled[0];
-
-  const fallbackStory = state.stories[Math.floor(Math.random() * state.stories.length)];
-  return fallbackStory?.images?.[0] || '';
-}
-
-async function loadLandingAssets() {
-  const primaryMap = await imageExists('images/landing/map 2.png');
-  const fallbackMap = await imageExists('images/landing/sws on somalia map_wrinkle.png');
-  state.landingMap = primaryMap || fallbackMap || 'assets/sws-map-wrinkle.png';
-
-  const sections = [1, 3, 4, 5];
-  const resolved = await Promise.all(sections.map((section) => loadSectionImage(section)));
-  state.landingSectionImages = Object.fromEntries(sections.map((section, index) => [section, resolved[index]]));
-}
-
 export async function initialiseApp() {
   attachGlobalListeners();
 
@@ -437,14 +377,12 @@ export async function initialiseApp() {
   const payload = await response.json();
   state.stories = payload.stories || [];
 
-  await loadLandingAssets();
-
-  const code = new URLSearchParams(window.location.search).get('code');
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get('code');
   const existing = getStoryById(state.stories, code);
   const randomStory = state.stories[Math.floor(Math.random() * state.stories.length)] || null;
 
   state.currentStoryId = existing?.id || randomStory?.id || null;
-  state.introOpen = !existing;
 
   savePersistentState(state);
   renderSite();

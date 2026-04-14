@@ -1,7 +1,6 @@
 import {
   actorLabel,
   getGuidanceText,
-  getLandingText,
   getUiText,
   labelFor
 } from './content.js';
@@ -47,10 +46,6 @@ function escapeHtml(value = '') {
     .replaceAll("'", '&#39;');
 }
 
-function renderLineBreakCopy(lines, lineClass = '') {
-  return lines.map((line) => `<span class="${lineClass}">${escapeHtml(line)}</span>`).join('<br>');
-}
-
 function adaptiveImageMarkup(src, alt, mode = 'contain', extraClass = '') {
   return `
     <div class="adaptive-image ${mode === 'cover' ? 'is-cover' : 'is-contain'} ${extraClass}">
@@ -72,16 +67,13 @@ function renderChip(label, options = {}) {
     return `<span class="${classes.join(' ')}">${content}</span>`;
   }
 
-  return `<button type="button" class="${classes.join(' ')}" data-action="${options.onClick.action}" data-value="${escapeHtml(options.onClick.value || '')}">${content}</button>`;
+  return `<button type="button" class="${classes.join(' ')}" data-action="${options.onClick.action}" data-value="${escapeHtml(options.onClick.value)}">${content}</button>`;
 }
 
-function renderParagraphBlock(text, className = '') {
-  return text
-    .split(/\n\s*\n/)
-    .map((paragraph) => paragraph.trim())
-    .filter(Boolean)
-    .map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`)
-    .join('') || `<p class="${className}"></p>`;
+function renderParagraphBlock(copy = '') {
+  return escapeHtml(copy).split(/
+{2,}/).map((paragraph) => `<p>${paragraph.replaceAll('
+', '<br>')}</p>`).join('');
 }
 
 function storyTagChips(state, story) {
@@ -100,6 +92,7 @@ function renderFloatingControls(state) {
   const t = getUiText(state.language);
   return `
     <div class="floating-controls">
+      <a class="home-pill" href="../">${escapeHtml(t.home)}</a>
       <div class="lang-pill" role="group" aria-label="Language selector">
         <button type="button" class="${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">${escapeHtml(t.shortSo)}</button>
         <button type="button" class="${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">${escapeHtml(t.shortEn)}</button>
@@ -129,97 +122,6 @@ function renderStageControls(state, story) {
       <button type="button" class="control-button" data-action="prev-image" aria-label="${escapeHtml(t.previousImage)}">${icon.chevronLeft()}</button>
       <div class="stage-dots">${dots}</div>
       <button type="button" class="control-button" data-action="next-image" aria-label="${escapeHtml(t.nextImage)}">${icon.chevronRight()}</button>
-    </div>
-  `;
-}
-
-function renderIntroModal(state) {
-  if (!state.introOpen) return '';
-
-  const landing = getLandingText(state.language);
-  const t = getUiText(state.language);
-  const sectionImages = state.landingSectionImages;
-
-  return `
-    <div class="intro-modal intro-modal--pdfstyle">
-      <div class="intro-scroll intro-scroll--pdfstyle" id="intro-scroll">
-        <section class="landing-pdf-section landing-pdf-section--1" data-intro-section>
-          <div class="landing-pdf-grid landing-pdf-grid--hero">
-            <div class="landing-switch-row landing-switch-row--top">
-              <div class="landing-switch-stack">
-                <div class="landing-switcher" role="group" aria-label="Language selector">
-                  <button type="button" class="${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">SO</button>
-                  <button type="button" class="${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">EN</button>
-                </div>
-                <div class="landing-switcher" role="group" aria-label="Theme selector">
-                  <button type="button" class="${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${escapeHtml(t.dark)}</button>
-                  <button type="button" class="${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${escapeHtml(t.light)}</button>
-                </div>
-              </div>
-            </div>
-            <div class="landing-photo-pane landing-photo-pane--hero">
-              <img src="${sectionImages[1] || ''}" alt="" loading="eager" aria-hidden="true">
-            </div>
-            <div class="landing-copy-card landing-copy-card--nexus">
-              <p>${renderLineBreakCopy(landing.section1NexusLines)}</p>
-            </div>
-            <div class="landing-copy-card landing-copy-card--title">
-              <p>${renderLineBreakCopy(landing.section1TitleLines)}</p>
-            </div>
-          </div>
-        </section>
-
-        <section class="landing-pdf-section landing-pdf-section--2" data-intro-section>
-          <div class="landing-pdf-grid landing-pdf-grid--two-col">
-            <div class="landing-map-pane">
-              <img src="${state.landingMap}" alt="" loading="eager" aria-hidden="true">
-            </div>
-            <div class="landing-copy-card landing-copy-card--section2">
-              <p>${escapeHtml(landing.section2Body)}</p>
-            </div>
-          </div>
-        </section>
-
-        <section class="landing-pdf-section landing-pdf-section--3" data-intro-section>
-          <div class="landing-pdf-grid landing-pdf-grid--questions">
-            <div class="landing-photo-pane landing-photo-pane--questions">
-              <img src="${sectionImages[3] || ''}" alt="" loading="eager" aria-hidden="true">
-            </div>
-            <div class="landing-copy-card landing-copy-card--pondered">
-              <p>${escapeHtml(landing.section3Lead)}</p>
-            </div>
-            ${landing.questions.map((question, index) => `<div class="landing-question-card landing-question-card--${index + 1}"><p>${escapeHtml(question)}</p></div>`).join('')}
-          </div>
-        </section>
-
-        <section class="landing-pdf-section landing-pdf-section--4" data-intro-section>
-          <div class="landing-pdf-grid landing-pdf-grid--shared">
-            <div class="landing-photo-pane landing-photo-pane--shared">
-              <img src="${sectionImages[4] || ''}" alt="" loading="eager" aria-hidden="true">
-            </div>
-            <div class="landing-copy-card landing-copy-card--section4">
-              <p>${renderLineBreakCopy(landing.section4Lines)}</p>
-            </div>
-          </div>
-        </section>
-
-        <section class="landing-pdf-section landing-pdf-section--5" data-intro-section>
-          <div class="landing-pdf-grid landing-pdf-grid--cta">
-            <div class="landing-photo-pane landing-photo-pane--cta">
-              <img src="${sectionImages[5] || ''}" alt="" loading="eager" aria-hidden="true">
-            </div>
-            <div class="landing-copy-card landing-copy-card--cta-spacer"></div>
-            <div class="landing-copy-card landing-copy-card--section5">
-              <p class="landing-cta-copy">${escapeHtml(landing.section5Body)}</p>
-              <div class="landing-button-row landing-button-row--pdf">
-                <button type="button" class="landing-button" data-action="intro-random">${escapeHtml(landing.surprise)}</button>
-                <button type="button" class="landing-button" data-action="intro-explore">${escapeHtml(landing.explore)}</button>
-                <button type="button" class="landing-button" data-action="intro-share-own">${escapeHtml(landing.shareOwn)}</button>
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
     </div>
   `;
 }
@@ -381,8 +283,7 @@ export function renderApp(state) {
   `).join('');
 
   app.innerHTML = `
-    <div class="site-shell ${state.introOpen ? 'has-intro-open' : ''}">
-      ${renderIntroModal(state)}
+    <div class="site-shell">
       <main>
         <section id="story-top" class="story-stage-shell">
           <div class="story-stage">

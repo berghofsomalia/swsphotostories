@@ -31,10 +31,7 @@ export function createInitialState() {
     galleryMode: 'total',
     shareOpen: false,
     savedOpen: false,
-    introOpen: true,
     actionMessage: '',
-    landingSectionImages: {},
-    landingMap: 'images/landing/map 2.png',
     autoplayId: null
   };
 }

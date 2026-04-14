@@ -47,7 +47,8 @@ export const UI_TEXT = {
     imageLabel: 'Go to image',
     previousImage: 'Previous image',
     nextImage: 'Next image',
-    openSaved: 'Open saved stories'
+    openSaved: 'Open saved stories',
+    home: 'Home'
   },
   so: {
     siteTitle: 'Sheeko-sawirro ka socda Koonfur Galbeed',
@@ -91,7 +92,8 @@ export const UI_TEXT = {
     imageLabel: 'U gudub sawirka',
     previousImage: 'Sawirkii hore',
     nextImage: 'Sawirka xiga',
-    openSaved: 'Fur sheekooyinka la kaydiyey'
+    openSaved: 'Fur sheekooyinka la kaydiyey',
+    home: 'Hore'
   }
 };
 
