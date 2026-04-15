@@ -121,7 +121,7 @@ function renderUtilityMenu(state) {
             <button type="button" class="utility-menu-control utility-menu-control--single" data-action="open-saved" aria-label="${escapeHtml(t.openSaved)}">
               <span class="utility-menu-control-copy">
                 <span class="utility-menu-control-icon" aria-hidden="true">${icon.bookmark()}</span>
-                <span>${escapeHtml(t.savedPhotostories)}</span>
+                <span>${escapeHtml(t.saved)}</span>
               </span>
               <span class="utility-menu-badge">${state.savedIds.length}</span>
             </button>
@@ -188,13 +188,13 @@ function renderSavedDrawer(state) {
   const savedStories = state.stories.filter((story) => isSaved(state, story.id));
 
   return `
+    ${state.savedOpen ? `<button type="button" class="saved-drawer-backdrop is-open" data-action="close-saved" aria-label="${escapeHtml(t.close)}"></button>` : ''}
     <aside class="saved-drawer ${state.savedOpen ? 'is-open' : ''}" aria-hidden="${state.savedOpen ? 'false' : 'true'}">
-      <div class="drawer-header">
-        <div>
+      <div class="drawer-header drawer-header--inline">
+        <div class="drawer-title-row">
+          <button type="button" class="icon-button drawer-close-button" data-action="close-saved" aria-label="${escapeHtml(t.close)}">${icon.close()}</button>
           <div class="drawer-title">${escapeHtml(t.savedPhotostories)}</div>
-          <div class="drawer-subtitle">${savedStories.length} ${escapeHtml(savedStories.length === 1 ? t.story : t.stories)}</div>
         </div>
-        <button type="button" class="icon-button" data-action="close-saved" aria-label="${escapeHtml(t.close)}">${icon.close()}</button>
       </div>
       <div class="drawer-body">
         ${savedStories.length === 0 ? `<div class="drawer-empty">${escapeHtml(t.noSaved)}</div>` : savedStories.map((story) => `
@@ -244,10 +244,14 @@ function renderGuidanceBox(state, options = {}) {
 
   return `
     <div class="${classes.join(' ')}">
-      <p>${escapeHtml(guidance.intro)}</p>
-      <ul>
-        ${guidance.questions.map((question) => `<li>${escapeHtml(question)}</li>`).join('')}
-      </ul>
+      <p class="story-guidance-intro">${escapeHtml(guidance.intro)}</p>
+      <div class="story-guidance-grid">
+        ${guidance.questions.map((question, index) => `
+          <div class="story-guidance-card story-guidance-card--${index + 1}">
+            <p>${escapeHtml(question)}</p>
+          </div>
+        `).join('')}
+      </div>
     </div>
   `;
 }
