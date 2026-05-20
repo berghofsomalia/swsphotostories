@@ -5,6 +5,7 @@ import {
   labelFor
 } from './content.js';
 import {
+  allClusters,
   allDistricts,
   allPeople,
   allPrimaryThemes,
@@ -14,6 +15,7 @@ import {
   filteredStories,
   hasActiveFilters,
   isSaved,
+  resolveSlug,
   storyCountLabel
 } from './story-data.js';
 import { createEmptyFilters } from './state.js';
@@ -80,6 +82,7 @@ function renderParagraphBlock(text, className = '') {
     .map((paragraph) => `<p>${escapeHtml(paragraph).replaceAll('\n', '<br>')}</p>`)
     .join('') || `<p class="${className}"></p>`;
 }
+
 function storyTagChips(state, story) {
   const chips = [
     renderChip(labelFor(story.district, state.language)),
@@ -257,13 +260,18 @@ function renderGuidanceBox(state, options = {}) {
 }
 
 function renderFilterGroup(state, title, allLabel, items, currentValue, action, isMulti = false) {
-  const allCountFilters = createEmptyFilters();
-  allCountFilters.district = state.filters.district;
-  allCountFilters.primaryTheme = state.filters.primaryTheme;
-  allCountFilters.secondaryThemes = [...state.filters.secondaryThemes];
-  allCountFilters.people = [...state.filters.people];
+  // Build baseline filters for the "All" count: same as current but with this
+  // group cleared so the count reflects what you'd see after clearing it.
+  const allCountFilters = {
+    district: state.filters.district,
+    cluster: state.filters.cluster,
+    primaryTheme: state.filters.primaryTheme,
+    secondaryThemes: [...state.filters.secondaryThemes],
+    people: [...state.filters.people]
+  };
 
   if (action === 'filter-district') allCountFilters.district = '';
+  if (action === 'filter-cluster') allCountFilters.cluster = '';
   if (action === 'filter-primary') allCountFilters.primaryTheme = '';
   if (action === 'filter-secondary') allCountFilters.secondaryThemes = [];
   if (action === 'filter-people') allCountFilters.people = [];
@@ -283,12 +291,14 @@ function renderFilterGroup(state, title, allLabel, items, currentValue, action, 
           const active = isMulti ? currentValue.includes(value) : currentValue === value;
           const nextFilters = {
             district: state.filters.district,
+            cluster: state.filters.cluster,
             primaryTheme: state.filters.primaryTheme,
             secondaryThemes: [...state.filters.secondaryThemes],
             people: [...state.filters.people]
           };
 
           if (action === 'filter-district') nextFilters.district = value;
+          if (action === 'filter-cluster') nextFilters.cluster = value;
           if (action === 'filter-primary') nextFilters.primaryTheme = value;
           if (action === 'filter-secondary' && !nextFilters.secondaryThemes.includes(value)) nextFilters.secondaryThemes.push(value);
           if (action === 'filter-people' && !nextFilters.people.includes(value)) nextFilters.people.push(value);
@@ -334,7 +344,10 @@ export function renderApp(state) {
 
   const t = getUiText(state.language);
   const galleryStories = filteredStories(state);
-  const districtItems = allDistricts(state).map((district) => ({ value: district.slug, label: labelFor(district, state.language) }));
+
+  // Build filter option lists
+  const districtItems = allDistricts(state).map((d) => ({ value: d.slug, label: labelFor(d, state.language) }));
+  const clusterItems = allClusters(state).map((c) => ({ value: resolveSlug(c), label: labelFor(c, state.language) }));
   const primaryItems = allPrimaryThemes(state).map((theme) => ({ value: theme.slug, label: labelFor(theme, state.language) }));
   const secondaryItems = allSecondaryThemes(state).map((theme) => ({ value: theme.slug, label: labelFor(theme, state.language) }));
   const peopleItems = allPeople(state).map((person) => ({ value: person, label: actorLabel(person, state.language) }));
@@ -389,6 +402,31 @@ export function renderApp(state) {
     </section>
   ` : '';
 
+  // Gallery grid — with empty state when filters return no results
+  const galleryGridMarkup = galleryStories.length === 0
+    ? `<div class="gallery-empty">
+        <p>${escapeHtml(t.noResults)}</p>
+        <button type="button" class="action-button" data-action="reset-filters">${escapeHtml(t.reset)}</button>
+       </div>`
+    : galleryStories.map((item) => `
+        <button type="button" class="gallery-card" data-action="open-story" data-value="${item.id}">
+          <div class="gallery-image-frame">
+            <img class="gallery-image-cover" src="${item.images[0]}" alt="${escapeHtml(item.storyteller)}" loading="lazy">
+          </div>
+          <div class="gallery-card-body">
+            <p class="gallery-summary">${escapeHtml(labelFor(item.summary, state.language))}</p>
+            <div class="tag-row small">
+              ${renderChip(labelFor(item.district, state.language), { muted: true })}
+              ${renderChip(labelFor(item.cluster, state.language), { muted: true })}
+              ${renderChip(labelFor(item.primaryTheme, state.language))}
+              ${item.secondaryThemes.map((theme) => renderChip(labelFor(theme, state.language), { muted: true })).join('')}
+              ${item.actors.map((person) => renderChip(actorLabel(person, state.language), { muted: true })).join('')}
+            </div>
+            ${isSaved(state, item.id) ? `<div class="saved-marker">${icon.bookmark()}<span>${escapeHtml(t.saved)}</span></div>` : ''}
+          </div>
+        </button>
+      `).join('');
+
   const galleryMarkup = state.galleryVisible ? `
     <section id="gallery" class="gallery-band gallery-band--entry">
       <div class="content-wrap">
@@ -399,29 +437,13 @@ export function renderApp(state) {
               <button type="button" class="filter-reset ${hasActiveFilters(state.filters) ? 'is-visible' : ''}" data-action="reset-filters">${escapeHtml(t.reset)}</button>
             </div>
             ${renderFilterGroup(state, t.district, t.all, districtItems, state.filters.district, 'filter-district')}
+            ${renderFilterGroup(state, t.cluster, t.all, clusterItems, state.filters.cluster, 'filter-cluster')}
             ${renderFilterGroup(state, t.primaryTheme, t.all, primaryItems, state.filters.primaryTheme, 'filter-primary')}
             ${renderFilterGroup(state, t.secondaryThemes, t.all, secondaryItems, state.filters.secondaryThemes, 'filter-secondary', true)}
             ${renderFilterGroup(state, t.people, t.all, peopleItems, state.filters.people, 'filter-people', true)}
           </aside>
           <div class="gallery-grid">
-            ${galleryStories.map((item) => `
-              <button type="button" class="gallery-card" data-action="open-story" data-value="${item.id}">
-                <div class="gallery-image-frame">
-                  <img class="gallery-image-cover" src="${item.images[0]}" alt="${escapeHtml(item.storyteller)}" loading="lazy">
-                </div>
-                <div class="gallery-card-body">
-                  <p class="gallery-summary">${escapeHtml(labelFor(item.summary, state.language))}</p>
-                  <div class="tag-row small">
-                    ${renderChip(labelFor(item.district, state.language), { muted: true })}
-                    ${renderChip(labelFor(item.cluster, state.language), { muted: true })}
-                    ${renderChip(labelFor(item.primaryTheme, state.language))}
-                    ${item.secondaryThemes.map((theme) => renderChip(labelFor(theme, state.language), { muted: true })).join('')}
-                    ${item.actors.map((person) => renderChip(actorLabel(person, state.language), { muted: true })).join('')}
-                  </div>
-                  ${isSaved(state, item.id) ? `<div class="saved-marker">${icon.bookmark()}<span>${escapeHtml(t.saved)}</span></div>` : ''}
-                </div>
-              </button>
-            `).join('')}
+            ${galleryGridMarkup}
           </div>
         </div>
       </div>

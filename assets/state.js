@@ -3,6 +3,7 @@ import { STORAGE_KEYS } from './content.js';
 export function createEmptyFilters() {
   return {
     district: '',
+    cluster: '',           // added: top-level cluster filter
     primaryTheme: '',
     secondaryThemes: [],
     people: []
@@ -35,7 +36,8 @@ export function createInitialState() {
     savedOpen: false,
     menuOpen: false,
     actionMessage: '',
-    autoplayId: null
+    autoplayId: null,
+    urlHash: ''            // added: tracks intended URL hash across renders
   };
 }
 

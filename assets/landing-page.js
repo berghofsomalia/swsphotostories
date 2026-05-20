@@ -1,4 +1,5 @@
 import { getLandingText, getUiText, STORAGE_KEYS } from './content.js';
+import { fetchStories } from './api.js';
 
 const state = {
   language: localStorage.getItem(STORAGE_KEYS.language) || 'en',
@@ -193,10 +194,7 @@ async function init() {
 
   attachListeners();
 
-  const dataUrl = new URL('../data/stories.json', import.meta.url);
-  const response = await fetch(dataUrl);
-  const payload = await response.json();
-  state.stories = payload.stories || [];
+  state.stories = await fetchStories();
 
   await loadLandingAssets();
   renderLandingPage();

@@ -29,6 +29,24 @@ export function shuffle(items) {
   return clone;
 }
 
+/**
+ * Returns a URL-safe slug for a tagged object.
+ *
+ * Uses the object's own .slug when the database provides one.
+ * Falls back to deriving a slug from the English label for test data that
+ * lacks explicit slugs (e.g. cluster objects in stories.json).
+ *
+ * Remove the fallback branch once every object in the database carries a slug.
+ */
+export function resolveSlug(item) {
+  if (!item) return '';
+  if (item.slug) return item.slug;
+  // Fallback: derive from English label
+  return item.en
+    ? item.en.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+    : '';
+}
+
 function storyAppUrl() {
   const url = new URL(window.location.href);
   url.pathname = url.pathname.replace(/index\.html$/, '');
@@ -45,19 +63,19 @@ export function buildShareUrl(story) {
   return url.toString();
 }
 
-export function updateUrlForStory(story, options = {}) {
-  const url = storyAppUrl();
-  url.searchParams.set('code', story.id);
-  url.hash = options.hash || '';
-  history.replaceState({}, '', url);
-}
-
 export function hasActiveFilters(filters) {
-  return Boolean(filters.district || filters.primaryTheme || filters.secondaryThemes.length || filters.people.length);
+  return Boolean(
+    filters.district ||
+    filters.cluster ||
+    filters.primaryTheme ||
+    filters.secondaryThemes.length ||
+    filters.people.length
+  );
 }
 
 export function storyMatchesFilters(story, filters) {
   if (filters.district && story.district.slug !== filters.district) return false;
+  if (filters.cluster && resolveSlug(story.cluster) !== filters.cluster) return false;
   if (filters.primaryTheme && story.primaryTheme.slug !== filters.primaryTheme) return false;
 
   if (filters.secondaryThemes.length > 0) {
@@ -82,6 +100,7 @@ function scoreRelated(base, candidate) {
   score += candidate.secondaryThemes.some((theme) => theme.slug === base.primaryTheme.slug) ? 3 : 0;
   score += base.actors.filter((actor) => candidate.actors.includes(actor)).length * 2;
   if (base.district.slug === candidate.district.slug) score += 1;
+  if (resolveSlug(base.cluster) === resolveSlug(candidate.cluster)) score += 1;
   return score;
 }
 
@@ -106,11 +125,28 @@ export function storyCountLabel(count, singular, plural) {
 }
 
 function uniqueBySlug(entries) {
-  return [...new Map(entries.map((entry) => [entry.slug, entry])).values()];
+  return [...new Map(entries.map((entry) => [resolveSlug(entry), entry])).values()];
 }
 
 export function allDistricts(state) {
   return uniqueBySlug(state.stories.map((story) => story.district));
+}
+
+/**
+ * Returns all clusters found across stories.
+ * Each cluster object is augmented with a .slug derived via resolveSlug so
+ * the filter system can use it as a key. When the database provides .slug
+ * natively, resolveSlug will just pass it through unchanged.
+ */
+export function allClusters(state) {
+  const seen = new Map();
+  for (const story of state.stories) {
+    const slug = resolveSlug(story.cluster);
+    if (!seen.has(slug)) {
+      seen.set(slug, { ...story.cluster, slug });
+    }
+  }
+  return [...seen.values()];
 }
 
 export function allPrimaryThemes(state) {

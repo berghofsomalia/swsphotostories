@@ -53,7 +53,10 @@ export const UI_TEXT = {
     language: 'Language',
     theme: 'Theme',
     menu: 'Open menu',
-    home: 'Home'
+    home: 'Home',
+    cluster: 'Cluster',
+    noResults: 'No stories match these filters.',
+    loading: 'Loading stories…'
   },
   so: {
     siteTitle: 'Sheeko-sawirro ka socda Koonfur Galbeed',
@@ -103,7 +106,10 @@ export const UI_TEXT = {
     language: 'Luqad',
     theme: 'Muuqaal',
     menu: 'Fur liiska',
-    home: 'Hore'
+    home: 'Hore',
+    cluster: 'Kutla',                              // TODO: verify Somali translation
+    noResults: 'Wax sheeko ah oo la jaanqaadi kara shaandhooyinkaaga lama helin.',
+    loading: 'Sheekooyinka waa la raraya…'
   }
 };
 
