@@ -31,17 +31,13 @@ export function shuffle(items) {
 
 /**
  * Returns a URL-safe slug for a tagged object.
- *
  * Uses the object's own .slug when the database provides one.
- * Falls back to deriving a slug from the English label for test data that
- * lacks explicit slugs (e.g. cluster objects in stories.json).
- *
- * Remove the fallback branch once every object in the database carries a slug.
+ * Falls back to deriving from the English label for test data without slugs.
+ * Remove the fallback once every object in the database carries a slug.
  */
 export function resolveSlug(item) {
   if (!item) return '';
   if (item.slug) return item.slug;
-  // Fallback: derive from English label
   return item.en
     ? item.en.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
     : '';
@@ -63,13 +59,21 @@ export function buildShareUrl(story) {
   return url.toString();
 }
 
+export function updateUrlForStory(story, options = {}) {
+  const url = storyAppUrl();
+  url.searchParams.set('code', story.id);
+  url.hash = options.hash || '';
+  history.replaceState({}, '', url);
+}
+
 export function hasActiveFilters(filters) {
   return Boolean(
     filters.district ||
     filters.cluster ||
     filters.primaryTheme ||
     filters.secondaryThemes.length ||
-    filters.people.length
+    filters.people.length ||
+    filters.searchQuery
   );
 }
 
@@ -79,11 +83,24 @@ export function storyMatchesFilters(story, filters) {
   if (filters.primaryTheme && story.primaryTheme.slug !== filters.primaryTheme) return false;
 
   if (filters.secondaryThemes.length > 0) {
-    const storyThemeSlugs = [story.primaryTheme.slug, ...story.secondaryThemes.map((theme) => theme.slug)];
+    const storyThemeSlugs = [story.primaryTheme.slug, ...story.secondaryThemes.map((t) => t.slug)];
     if (!filters.secondaryThemes.some((slug) => storyThemeSlugs.includes(slug))) return false;
   }
 
   if (filters.people.length > 0 && !filters.people.some((person) => story.actors.includes(person))) return false;
+
+  // Full-text search across storyteller name, location, and summary
+  if (filters.searchQuery) {
+    const q = filters.searchQuery.toLowerCase();
+    const haystack = [
+      story.storyteller,
+      story.location || '',
+      story.summary?.en || '',
+      story.summary?.so || ''
+    ].join(' ').toLowerCase();
+    if (!haystack.includes(q)) return false;
+  }
+
   return true;
 }
 
@@ -96,8 +113,8 @@ function scoreRelated(base, candidate) {
 
   let score = 0;
   if (base.primaryTheme.slug === candidate.primaryTheme.slug) score += 5;
-  score += base.secondaryThemes.filter((theme) => candidate.secondaryThemes.some((other) => other.slug === theme.slug)).length * 2;
-  score += candidate.secondaryThemes.some((theme) => theme.slug === base.primaryTheme.slug) ? 3 : 0;
+  score += base.secondaryThemes.filter((t) => candidate.secondaryThemes.some((o) => o.slug === t.slug)).length * 2;
+  score += candidate.secondaryThemes.some((t) => t.slug === base.primaryTheme.slug) ? 3 : 0;
   score += base.actors.filter((actor) => candidate.actors.includes(actor)).length * 2;
   if (base.district.slug === candidate.district.slug) score += 1;
   if (resolveSlug(base.cluster) === resolveSlug(candidate.cluster)) score += 1;
@@ -133,18 +150,15 @@ export function allDistricts(state) {
 }
 
 /**
- * Returns all clusters found across stories.
- * Each cluster object is augmented with a .slug derived via resolveSlug so
- * the filter system can use it as a key. When the database provides .slug
- * natively, resolveSlug will just pass it through unchanged.
+ * Returns all clusters found across stories, each augmented with a .slug.
+ * resolveSlug derives the slug from the English label when the DB hasn't
+ * provided one yet — remove that fallback once slugs come from the backend.
  */
 export function allClusters(state) {
   const seen = new Map();
   for (const story of state.stories) {
     const slug = resolveSlug(story.cluster);
-    if (!seen.has(slug)) {
-      seen.set(slug, { ...story.cluster, slug });
-    }
+    if (!seen.has(slug)) seen.set(slug, { ...story.cluster, slug });
   }
   return [...seen.values()];
 }

@@ -20,9 +20,13 @@ export const UI_TEXT = {
     communityReflections: 'COMMUNITY REFLECTIONS',
     reset: 'Reset all filters',
     district: 'District',
+    cluster: 'Cluster',
     primaryTheme: 'Primary theme',
     secondaryThemes: 'Secondary themes',
     people: 'People',
+    searchPlaceholder: 'Search stories…',
+    noResults: 'No stories match these filters.',
+    loading: 'Loading stories…',
     all: 'All',
     copyLink: 'Copy link',
     facebook: 'Facebook',
@@ -53,10 +57,7 @@ export const UI_TEXT = {
     language: 'Language',
     theme: 'Theme',
     menu: 'Open menu',
-    home: 'Home',
-    cluster: 'Cluster',
-    noResults: 'No stories match these filters.',
-    loading: 'Loading stories…'
+    home: 'Home'
   },
   so: {
     siteTitle: 'Sheeko-sawirro ka socda Koonfur Galbeed',
@@ -73,9 +74,13 @@ export const UI_TEXT = {
     communityReflections: 'ARAGTIYO BULSHO',
     reset: 'Nadiifi shaandhooyinka',
     district: 'Degmo',
+    cluster: 'Kutla',
     primaryTheme: 'Mawduuca koowaad',
     secondaryThemes: 'Mawduucyo kale',
     people: 'Dadka',
+    searchPlaceholder: 'Raadi sheekooyinka…',
+    noResults: 'Wax sheeko ah oo la jaanqaadi kara shaandhooyinkaaga lama helin.',
+    loading: 'Sheekooyinka waa la raraya…',
     all: 'Dhammaan',
     copyLink: 'Koobiyee xidhiidhka',
     facebook: 'Facebook',
@@ -106,10 +111,7 @@ export const UI_TEXT = {
     language: 'Luqad',
     theme: 'Muuqaal',
     menu: 'Fur liiska',
-    home: 'Hore',
-    cluster: 'Kutla',                              // TODO: verify Somali translation
-    noResults: 'Wax sheeko ah oo la jaanqaadi kara shaandhooyinkaaga lama helin.',
-    loading: 'Sheekooyinka waa la raraya…'
+    home: 'Hore'
   }
 };
 

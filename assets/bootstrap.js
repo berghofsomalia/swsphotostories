@@ -7,6 +7,7 @@ import {
   hasActiveFilters,
   pickRandomRelatedStory,
   savePersistentState,
+  updateUrlForStory,
   isSaved,
   resolveSlug
 } from './story-data.js';
@@ -17,58 +18,9 @@ let actionMessageTimerId = null;
 let touchStartX = null;
 let listenersAttached = false;
 
-// ── URL sync ─────────────────────────────────────────────────────────────────
-
-/**
- * Writes the full application state into the URL search params so that
- * filters and the current story are bookmarkable and shareable.
- * Hash is managed separately via state.urlHash.
- */
-function syncUrl(state) {
-  const url = new URL(window.location.href);
-  url.pathname = url.pathname.replace(/index\.html$/, '');
-  if (!url.pathname.endsWith('/')) url.pathname += '/';
-  url.searchParams.delete('random');
-
-  const story = currentStory(state);
-  setOrDelete(url.searchParams, 'code', story?.id ?? '');
-  setOrDelete(url.searchParams, 'district', state.filters.district);
-  setOrDelete(url.searchParams, 'cluster', state.filters.cluster);
-  setOrDelete(url.searchParams, 'primary', state.filters.primaryTheme);
-  setOrDelete(url.searchParams, 'secondary', state.filters.secondaryThemes.join(','));
-  setOrDelete(url.searchParams, 'people', state.filters.people.join(','));
-
-  url.hash = state.urlHash;
-  history.replaceState({}, '', url);
-}
-
-function setOrDelete(params, key, value) {
-  if (value) params.set(key, value);
-  else params.delete(key);
-}
-
-/**
- * Reads filter values from URL search params on initial load.
- * This lets users share filtered views via URL.
- */
-function readFiltersFromUrl(params) {
-  return {
-    district: params.get('district') || '',
-    cluster: params.get('cluster') || '',
-    primaryTheme: params.get('primary') || '',
-    secondaryThemes: params.get('secondary')
-      ? params.get('secondary').split(',').filter(Boolean)
-      : [],
-    people: params.get('people')
-      ? params.get('people').split(',').filter(Boolean)
-      : []
-  };
-}
-
 // ── Rendering ─────────────────────────────────────────────────────────────────
 
 function renderSite() {
-  syncUrl(state);
   renderApp(state);
   startAutoplay();
   requestAnimationFrame(syncGalleryCardHeights);
@@ -122,7 +74,7 @@ function setCurrentStory(id, options = {}) {
   state.menuOpen = false;
   state.storyVisible = options.storyVisible ?? true;
   state.galleryVisible = options.galleryVisible ?? false;
-  state.urlHash = options.hash || '';
+  updateUrlForStory(story, { hash: options.hash || '' });
   renderSite();
 
   if (options.scrollTop) scrollStoryTop();
@@ -135,7 +87,7 @@ function setGalleryModeFromFilters() {
 function toggleSaved(storyId) {
   const t = getUiText(state.language);
   if (isSaved(state, storyId)) {
-    state.savedIds = state.savedIds.filter((savedId) => savedId !== storyId);
+    state.savedIds = state.savedIds.filter((id) => id !== storyId);
     state.actionMessage = t.removedMessage;
   } else {
     state.savedIds = [...state.savedIds, storyId];
@@ -146,13 +98,13 @@ function toggleSaved(storyId) {
   clearActionMessageSoon();
 }
 
-async function writeToClipboard(textToCopy) {
+async function writeToClipboard(text) {
   if (navigator.clipboard && window.isSecureContext) {
-    await navigator.clipboard.writeText(textToCopy);
+    await navigator.clipboard.writeText(text);
     return;
   }
   const textarea = document.createElement('textarea');
-  textarea.value = textToCopy;
+  textarea.value = text;
   textarea.setAttribute('readonly', '');
   textarea.style.position = 'absolute';
   textarea.style.left = '-9999px';
@@ -261,8 +213,7 @@ const ACTIONS = {
   'share-x': async ({ story }) => {
     if (!story) return;
     const shareUrl = buildShareUrl(story);
-    const text = currentStoryLabel(story);
-    openUrlInNewTab(`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(text)}`);
+    openUrlInNewTab(`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(currentStoryLabel(story))}`);
     state.shareOpen = false;
     renderSite();
   },
@@ -288,13 +239,13 @@ const ACTIONS = {
       district: story.district.slug,
       cluster: resolveSlug(story.cluster),
       primaryTheme: story.primaryTheme.slug,
-      secondaryThemes: story.secondaryThemes.map((theme) => theme.slug),
-      people: [...story.actors]
+      secondaryThemes: story.secondaryThemes.map((t) => t.slug),
+      people: [...story.actors],
+      searchQuery: ''
     };
     state.galleryMode = 'related';
     state.storyVisible = true;
     state.galleryVisible = true;
-    state.urlHash = '#gallery';
     renderSite();
     scrollGallery();
   },
@@ -303,7 +254,6 @@ const ACTIONS = {
     state.galleryMode = 'total';
     state.storyVisible = true;
     state.galleryVisible = true;
-    state.urlHash = '#gallery';
     renderSite();
     scrollGallery();
   },
@@ -322,7 +272,6 @@ const ACTIONS = {
     setGalleryModeFromFilters();
     renderSite();
   },
-  // ── Cluster filter (new) ──────────────────────────────────────────────────
   'filter-cluster': async ({ value }) => {
     state.filters.cluster = state.filters.cluster === value ? '' : value;
     setGalleryModeFromFilters();
@@ -333,7 +282,6 @@ const ACTIONS = {
     setGalleryModeFromFilters();
     renderSite();
   },
-  // ── Theme filters ─────────────────────────────────────────────────────────
   'filter-primary': async ({ value }) => {
     state.filters.primaryTheme = state.filters.primaryTheme === value ? '' : value;
     setGalleryModeFromFilters();
@@ -358,7 +306,7 @@ const ACTIONS = {
   },
   'filter-people': async ({ value }) => {
     state.filters.people = state.filters.people.includes(value)
-      ? state.filters.people.filter((person) => person !== value)
+      ? state.filters.people.filter((p) => p !== value)
       : [...state.filters.people, value];
     setGalleryModeFromFilters();
     renderSite();
@@ -371,15 +319,9 @@ const ACTIONS = {
   'open-story': async ({ value }) => {
     setCurrentStory(value, { scrollTop: true });
   },
-  'prev-image': async () => {
-    moveToPreviousImage();
-  },
-  'next-image': async () => {
-    moveToNextImage();
-  },
-  'go-image': async ({ value }) => {
-    setCurrentImage(value);
-  }
+  'prev-image': async () => { moveToPreviousImage(); },
+  'next-image': async () => { moveToNextImage(); },
+  'go-image': async ({ value }) => { setCurrentImage(value); }
 };
 
 async function handleAction(action, value = '') {
@@ -394,9 +336,7 @@ function handleAppClick(event) {
   const target = event.target.closest('[data-action]');
   if (!target) return;
   event.preventDefault();
-  handleAction(target.dataset.action, target.dataset.value || '').catch((error) => {
-    console.error(error);
-  });
+  handleAction(target.dataset.action, target.dataset.value || '').catch(console.error);
 }
 
 function handleTouchStart(event) {
@@ -407,10 +347,8 @@ function handleTouchStart(event) {
 function handleTouchEnd(event) {
   if (!event.target.closest('.story-slides') || touchStartX == null) return;
   const story = currentStory(state);
-  if (!story) {
-    touchStartX = null;
-    return;
-  }
+  if (!story) { touchStartX = null; return; }
+
   const diff = touchStartX - event.changedTouches[0].clientX;
   if (Math.abs(diff) > 40) {
     state.currentImageIndex = diff > 0
@@ -422,11 +360,34 @@ function handleTouchEnd(event) {
   touchStartX = null;
 }
 
+/**
+ * Search input handler.
+ * After re-rendering we restore focus and cursor position so typing feels
+ * uninterrupted despite the full DOM rebuild.
+ */
+function handleSearchInput(event) {
+  const input = event.target.closest('[data-search-input]');
+  if (!input) return;
+
+  state.filters.searchQuery = input.value;
+  setGalleryModeFromFilters();
+  renderSite();
+
+  // Restore focus and cursor after re-render
+  const restored = qs('[data-search-input]');
+  if (restored) {
+    restored.focus();
+    const len = restored.value.length;
+    restored.setSelectionRange(len, len);
+  }
+}
+
 function attachGlobalListeners() {
   if (listenersAttached) return;
 
   const app = qs('#app');
   app?.addEventListener('click', handleAppClick);
+  app?.addEventListener('input', handleSearchInput);
   app?.addEventListener('touchstart', handleTouchStart, { passive: true });
   app?.addEventListener('touchend', handleTouchEnd, { passive: true });
 
@@ -449,16 +410,10 @@ function attachGlobalListeners() {
       renderSite();
       return;
     }
-
-    // Keyboard image navigation (only when no overlay is open and story is visible)
+    // Arrow key image navigation (only when no overlay is open and story visible)
     if (state.storyVisible && !state.menuOpen && !state.shareOpen && !state.savedOpen) {
-      if (event.key === 'ArrowLeft') {
-        moveToPreviousImage();
-        return;
-      }
-      if (event.key === 'ArrowRight') {
-        moveToNextImage();
-      }
+      if (event.key === 'ArrowLeft') { moveToPreviousImage(); return; }
+      if (event.key === 'ArrowRight') { moveToNextImage(); }
     }
   });
 
@@ -483,8 +438,8 @@ function startAutoplay() {
 
   state.autoplayId = setInterval(() => {
     state.currentImageIndex = (state.currentImageIndex + 1) % story.images.length;
-    qsa('.story-slide').forEach((slide, index) => slide.classList.toggle('is-active', index === state.currentImageIndex));
-    qsa('.stage-dot').forEach((dot, index) => dot.classList.toggle('is-active', index === state.currentImageIndex));
+    qsa('.story-slide').forEach((slide, i) => slide.classList.toggle('is-active', i === state.currentImageIndex));
+    qsa('.stage-dot').forEach((dot, i) => dot.classList.toggle('is-active', i === state.currentImageIndex));
   }, 5000);
 }
 
@@ -499,16 +454,9 @@ export async function initialiseApp() {
   attachGlobalListeners();
   renderLoading();
 
-  // Fetch all stories through the data access layer (api.js)
   state.stories = await fetchStories();
 
   const params = new URLSearchParams(window.location.search);
-
-  // Restore filter state from URL so shared/bookmarked filtered views work
-  const urlFilters = readFiltersFromUrl(params);
-  state.filters = urlFilters;
-  if (hasActiveFilters(state.filters)) state.galleryMode = 'filtered';
-
   const code = params.get('code');
   const existing = getStoryById(state.stories, code);
   const randomStory = state.stories[Math.floor(Math.random() * state.stories.length)] || null;
@@ -516,8 +464,7 @@ export async function initialiseApp() {
 
   state.currentStoryId = existing?.id || randomStory?.id || null;
   state.storyVisible = !startInGallery;
-  state.galleryVisible = startInGallery || hasActiveFilters(state.filters);
-  state.urlHash = window.location.hash || '';
+  state.galleryVisible = startInGallery;
 
   savePersistentState(state);
   renderSite();
