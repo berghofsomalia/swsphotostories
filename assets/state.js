@@ -1,5 +1,7 @@
 import { STORAGE_KEYS } from './content.js';
 
+export const PAGE_SIZE = 24;
+
 export function createEmptyFilters() {
   return {
     district: '',
@@ -30,6 +32,7 @@ export function createInitialState() {
     currentStoryId: null,
     currentImageIndex: 0,
     filters: createEmptyFilters(),
+    galleryPage: 1,
     galleryMode: 'total',
     storyVisible: true,
     galleryVisible: false,

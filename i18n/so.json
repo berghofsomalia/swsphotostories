@@ -1,0 +1,106 @@
+{
+  "ui": {
+    "siteTitle": "Sheeko-sawirro ka socda Koonfur Galbeed",
+    "dark": "Madow",
+    "light": "Iftiin",
+    "shortSo": "SO",
+    "shortEn": "EN",
+    "saved": "Kaydsan",
+    "save": "Kaydi",
+    "share": "La wadaag",
+    "relatedRandom": "Arag sheeko la xidhiidha oo aan kala sooc lahayn",
+    "related": "Arag sheekooyin la xidhiidha",
+    "explore": "Ku sahamin sheekooyinka shaandhooyinka",
+    "communityReflections": "ARAGTIYO BULSHO",
+    "reset": "Nadiifi shaandhooyinka",
+    "district": "Degmo",
+    "cluster": "Kutla",
+    "primaryTheme": "Mawduuca koowaad",
+    "secondaryThemes": "Mawduucyo kale",
+    "people": "Dadka",
+    "searchPlaceholder": "Raadi sheekooyinka…",
+    "noResults": "Wax sheeko ah oo la jaanqaadi kara shaandhooyinkaaga lama helin.",
+    "loading": "Sheekooyinka waa la raraya…",
+    "loadMore": "Wax badan soo geli",
+    "all": "Dhammaan",
+    "copyLink": "Koobiyee xidhiidhka",
+    "facebook": "Facebook",
+    "instagram": "Instagram",
+    "x": "X",
+    "email": "Iimayl",
+    "shareThisStory": "La wadaag sheekadan",
+    "copied": "Xidhiidhka waa la koobiyey",
+    "instagramHint": "Xidhiidhka ayaa loo koobiyey Instagram",
+    "savedMessage": "Sheekada waa la keydiyey",
+    "removedMessage": "Sheekada waa laga saaray kaydka",
+    "noSaved": "Wali ma kaydin wax sheeko ah.",
+    "relatedStory": "sheeko la xidhiidha",
+    "relatedStories": "sheekooyin la xidhiidha",
+    "filteredStory": "sheeko la shaandheeyey",
+    "filteredStories": "sheekooyin la shaandheeyey",
+    "totalStory": "sheeko guud ahaan",
+    "totalStories": "sheekooyin guud ahaan",
+    "story": "sheeko",
+    "stories": "sheekooyin",
+    "close": "Xir",
+    "imageLabel": "U gudub sawirka",
+    "previousImage": "Sawirkii hore",
+    "nextImage": "Sawirka xiga",
+    "openSaved": "Fur sheekooyinka la kaydiyey",
+    "savedPhotostories": "Sheeko-sawirro la kaydiyey",
+    "photographerStoryteller": "Sawir-qaade Sheeko-wadaage:",
+    "language": "Luqad",
+    "theme": "Muuqaal",
+    "menu": "Fur liiska",
+    "home": "Hore",
+    "about": "Ku saabsan",
+    "readStory": "Akhri sheekada",
+    "anotherStory": "Arag sheeko kale",
+    "exploreFilters": "Ku sahamin sheekooyinka shaandhooyinka"
+  },
+  "landing": {
+    "section1NexusLines": [
+      "Xiriirka ka dhexeeya",
+      "(isbeddelka) cimilada",
+      "(nabaad-guurka) deegaanka",
+      "khilaafka",
+      "iyo nabadda"
+    ],
+    "section1TitleLines": [
+      "Sheeko-muuqaal",
+      "ka yimid Koonfur Galbeed, Soomaaliya"
+    ],
+    "section2Body": "Dabayaaqadii 2025, 42 xubnood oo bulshada ka kala socday Baydhabo, Baraawe iyo Xudur, kana kala tirsanaa jiilal iyo jinsiyo kala duwan, ayaa qaaday sawirro muujinaya dhinacyo kala duwan oo ka mid ah xiriirka cimilada (isbeddelka), deegaanka (nabaad-guurka), khilaafka, iyo nabadda, waxayna ka sheekeeyeen sheekooyinka bini'aadannimo ee ka dambeeya sawirrada.",
+    "section3Lead": "Waxay isweydiiyeen...",
+    "questions": [
+      "Maxaan u doortay in aan sawirradan qaado? Xusuuso ama shucuur noocee ah ayay sawirradani igu kicinayaan?",
+      "Maxaan rabaa in dadka kale ay ka dareemaan oo ka fahmaan sawirradan? Arrimahee ama xoogaggee bulshada ka jira ayaan rabaa in aan sawirradan ku muujiyo?",
+      "Haddii aan qiyaaso in arrimahani la xallinayo ama xoogagga wanaagsani sii xoogaysanayaan saddexda sano ee soo socota, sawirradani sidee bay markaas u ekaan lahaayeen?",
+      "Waa maxay waxyaabaha dhaqanka iyo diinta ee (a) sharrixi kara sawirrada hadda jira, isla markaana (b) nagu dhiirrigelin kara in aan ka shaqayno sidii sawirrada la qiyaasay ay dhab u noqon lahaayeen?"
+    ],
+    "section4Lines": [
+      "Sawirrada waxaa lagu wadaagay goobaha bulshadu ku kulanto ee sheeko-wadaagga iyo wada-hadalka.",
+      "Dadku waxay doorteen sawirradii ay la xiriireen, dabadeedna waxay ka dhiibteen milicsiyadooda ku saabsan sheekooyinka."
+    ],
+    "section5Body": "Hadda waxaa jira 350 sheeko, 1000 sawir iyo 150 milicsi bulsho. Maxaad jeclaan lahayd in aad samayso?",
+    "surprise": "I tus sheeko-sawir - yaab i geli!",
+    "explore": "Aan anigu is baadho",
+    "shareOwn": "Aan wadaago sheeko-sawirkayga"
+  },
+  "guidance": {
+    "intro": "Sheekooyinka iyo milicsiyada bulshadu ka bixisay sawirrada waxay raacayaan hannaan su'aalo ah oo sidan u dhisan:",
+    "questions": [
+      "Maxaan u doortay in aan sawirradan qaado ama u xusho? Xusuuso ama shucuur noocee ah ayay sawirradani igu kicinayaan?",
+      "Maxaan rabaa in dadka kale ay ka dareemaan oo ka fahmaan sawirradan? Arrimahee ama xoogaggee bulshada ka jira ayaan rabaa in aan ku muujiyo?",
+      "Haddii aan qiyaaso in saddexda sano ee soo socota arrimahani la xallinayo ama xoogagga wanaagsani sii xoogaysanayaan, sawirradani markaas sidee bay u ekaan lahaayeen?",
+      "Waa maxay waxyaabaha dhaqanka iyo diinta ee, sida gabayo, heeso, maahmaahyo, iyo casharro ka imanaya Qur'aanka iyo Xadiiska, kuwaas oo sharrixi kara sawirrada hadda jira, isla markaana nagu dhiirrigelin kara in aan ka shaqayno sidii sawirrada la qiyaasay ay dhab u noqon lahaayeen?"
+    ]
+  },
+  "actors": {
+    "Children": "Carruur",
+    "Women/Girls": "Haween/Gabdho",
+    "Men/Boys": "Rag/Wiilal",
+    "Youth": "Dhallinyaro",
+    "Elders": "Waayeel"
+  }
+}

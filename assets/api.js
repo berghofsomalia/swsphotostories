@@ -1,12 +1,9 @@
 /**
  * Data access layer.
  *
- * All story data flows through this single module. To switch from the flat
- * JSON file to a database or REST API, replace the body of fetchStories()
- * below — nothing else in the codebase needs to change.
- *
- * Expected return shape: an array of story objects matching the schema in
- * data/stories.json.
+ * All story data and i18n content flows through this module.
+ * To switch from flat JSON files to a database or REST API, replace the
+ * function bodies below — nothing else in the codebase needs to change.
  */
 
 export async function fetchStories() {

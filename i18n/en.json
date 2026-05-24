@@ -1,0 +1,106 @@
+{
+  "ui": {
+    "siteTitle": "Photostories from Southwest State",
+    "dark": "Dark",
+    "light": "Light",
+    "shortSo": "SO",
+    "shortEn": "EN",
+    "saved": "Saved",
+    "save": "Save",
+    "share": "Share",
+    "relatedRandom": "See a random related story",
+    "related": "See related stories",
+    "explore": "Explore stories through filters",
+    "communityReflections": "COMMUNITY REFLECTIONS",
+    "reset": "Reset all filters",
+    "district": "District",
+    "cluster": "Cluster",
+    "primaryTheme": "Primary theme",
+    "secondaryThemes": "Secondary themes",
+    "people": "People",
+    "searchPlaceholder": "Search stories…",
+    "noResults": "No stories match these filters.",
+    "loading": "Loading stories…",
+    "loadMore": "Load more",
+    "all": "All",
+    "copyLink": "Copy link",
+    "facebook": "Facebook",
+    "instagram": "Instagram",
+    "x": "X",
+    "email": "Email",
+    "shareThisStory": "Share this story",
+    "copied": "Link copied to clipboard",
+    "instagramHint": "Link copied for Instagram",
+    "savedMessage": "Story saved",
+    "removedMessage": "Story removed from saved list",
+    "noSaved": "You have not saved any stories yet.",
+    "relatedStory": "related story",
+    "relatedStories": "related stories",
+    "filteredStory": "filtered story",
+    "filteredStories": "filtered stories",
+    "totalStory": "story in total",
+    "totalStories": "stories in total",
+    "story": "story",
+    "stories": "stories",
+    "close": "Close",
+    "imageLabel": "Go to image",
+    "previousImage": "Previous image",
+    "nextImage": "Next image",
+    "openSaved": "Open saved stories",
+    "savedPhotostories": "Saved photostories",
+    "photographerStoryteller": "Photographer-Storyteller:",
+    "language": "Language",
+    "theme": "Theme",
+    "menu": "Open menu",
+    "home": "Home",
+    "about": "About",
+    "readStory": "Read story",
+    "anotherStory": "See another story",
+    "exploreFilters": "Explore stories through filters"
+  },
+  "landing": {
+    "section1NexusLines": [
+      "The nexus of",
+      "climate (change)",
+      "environment (degradation)",
+      "conflict",
+      "& peace"
+    ],
+    "section1TitleLines": [
+      "Visual storytelling",
+      "from Southwest State, Somalia"
+    ],
+    "section2Body": "In late 2025, 42 community members across Baidoa, Barawe and Hudur, across generations and genders, took photos capturing various aspects of the nexus of climate (change), environment (degradation), conflict, and peace and told the human stories behind the photos.",
+    "section3Lead": "They pondered...",
+    "questions": [
+      "Why did I choose to take these photos? What memories or emotions do these photos invoke in me?",
+      "What do I want others to feel and understand from these photos? What community issues or strengths do I want to illustrate?",
+      "If I imagine that the issues are getting resolved or the strengths are getting amplified over the next three years, what would these photos look like?",
+      "What cultural and religious elements (a) describe the current photos and (b) could inspire us to work towards turning the imagined photos into reality?"
+    ],
+    "section4Lines": [
+      "The photos were shared in community spaces of storytelling and dialogue.",
+      "People picked photos they connected to and shared their own reflections on the stories."
+    ],
+    "section5Body": "There are currently 350 stories, 1000 photos and 150 community reflections. What would you like to do?",
+    "surprise": "See a photostory - surprise me!",
+    "explore": "Let me explore them myself",
+    "shareOwn": "Share my own photostory"
+  },
+  "guidance": {
+    "intro": "The stories and community reflections on the photos follow this pattern of questions:",
+    "questions": [
+      "Why did I choose to take or pick these photos? What memories or emotions do these photos invoke in me?",
+      "What do I want others to feel and understand from these photos? What community issues or strengths do I want to illustrate?",
+      "If I imagine that the issues are getting resolved or the strengths are getting amplified over the next three years, what would these photos look like?",
+      "What cultural and religious elements such as poems, songs, proverbs, and teachings from the Quran or Hadith can describe the current photos and inspire us to work towards turning the imagined photos into reality?"
+    ]
+  },
+  "actors": {
+    "Children": "Children",
+    "Women/Girls": "Women/Girls",
+    "Men/Boys": "Men/Boys",
+    "Youth": "Youth",
+    "Elders": "Elders"
+  }
+}

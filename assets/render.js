@@ -14,7 +14,9 @@ import {
   currentStory,
   filteredStories,
   hasActiveFilters,
+  hasMoreStories,
   isSaved,
+  pagedStories,
   resolveSlug,
   storyCountLabel
 } from './story-data.js';
@@ -334,7 +336,9 @@ export function renderApp(state) {
   if (!app || !story) return;
 
   const t = getUiText(state.language);
-  const galleryStories = filteredStories(state);
+  const visibleStories = pagedStories(state);
+  const totalFiltered = filteredStories(state).length;
+  const moreAvailable = hasMoreStories(state);
 
   const districtItems  = allDistricts(state).map((d) => ({ value: d.slug,              label: labelFor(d, state.language) }));
   const clusterItems   = allClusters(state).map((c)  => ({ value: resolveSlug(c),       label: labelFor(c, state.language) }));
@@ -394,13 +398,13 @@ export function renderApp(state) {
     </section>
   ` : '';
 
-  // Empty state shown when filters produce no results
-  const galleryGridMarkup = galleryStories.length === 0
+  // Empty state when filters produce no results
+  const galleryGridMarkup = visibleStories.length === 0
     ? `<div class="gallery-empty">
         <p>${escapeHtml(t.noResults)}</p>
         <button type="button" class="action-button" data-action="reset-filters">${escapeHtml(t.reset)}</button>
       </div>`
-    : galleryStories.map((item) => `
+    : visibleStories.map((item) => `
         <button type="button" class="gallery-card" data-action="open-story" data-value="${item.id}">
           <div class="gallery-image-frame">
             <img class="gallery-image-cover" src="${item.images[0]}" alt="${escapeHtml(item.storyteller)}" loading="lazy">
@@ -418,6 +422,14 @@ export function renderApp(state) {
           </div>
         </button>
       `).join('');
+
+  const loadMoreMarkup = moreAvailable
+    ? `<div class="load-more-row">
+        <button type="button" class="load-more-button" data-action="load-more">
+          ${escapeHtml(t.loadMore)} <span class="load-more-count">${visibleStories.length} / ${totalFiltered}</span>
+        </button>
+      </div>`
+    : '';
 
   const galleryMarkup = state.galleryVisible ? `
     <section id="gallery" class="gallery-band gallery-band--entry">
@@ -441,6 +453,7 @@ export function renderApp(state) {
             ${galleryGridMarkup}
           </div>
         </div>
+        ${loadMoreMarkup}
       </div>
     </section>
   ` : '';

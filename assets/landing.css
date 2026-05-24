@@ -324,12 +324,12 @@ html[data-theme="light"] .landing-switcher button {
   background: rgba(255, 255, 255, 0.16);
 }
 html[data-theme="light"] .landing-button {
-  border-color: rgba(31, 29, 26, 0.12);
-  background: rgba(31, 29, 26, 0.06);
-  color: #1f1d1a;
+  border-color: rgba(31, 29, 26, 0.25);
+  background: rgba(31, 29, 26, 0.1);
+  color: #1a1410;
 }
 html[data-theme="light"] .landing-button:hover {
-  background: rgba(31, 29, 26, 0.1);
+  background: rgba(31, 29, 26, 0.18);
 }
 @media (max-width: 760px) {
   .intro-modal {
@@ -380,8 +380,8 @@ html[data-theme="light"] .landing-button:hover {
   color: #f4eadf;
 }
 html[data-theme="light"] .intro-modal--pdfstyle {
-  background: #d7d2cc;
-  color: #2b2622;
+  background: #bfb8af;
+  color: #1a1410;
 }
 .intro-scroll--pdfstyle {
   height: 100svh;
@@ -397,7 +397,7 @@ html[data-theme="light"] .intro-modal--pdfstyle {
   position: relative;
 }
 html[data-theme="light"] .landing-pdf-section {
-  background: #d7d2cc;
+  background: #b8b0a6;
 }
 .landing-pdf-grid {
   min-height: 100svh;
@@ -509,10 +509,10 @@ html[data-theme="light"]
   text-wrap: balance;
 }
 html[data-theme="light"] .landing-copy-card--nexus {
-  background: rgba(163, 92, 18, 0.74);
+  background: rgba(140, 75, 10, 0.92);
 }
 html[data-theme="light"] .landing-copy-card--title {
-  background: rgba(128, 123, 118, 0.76);
+  background: rgba(90, 86, 82, 0.92);
 }
 .landing-pdf-grid--two-col {
   grid-template-columns: 0.6fr 1fr;

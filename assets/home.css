@@ -1,0 +1,289 @@
+/* ── Home page shell ────────────────────────────────────────── */
+.home-shell {
+  min-height: 100svh;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative circles — echoes the /about page motif */
+.home-circle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+.home-circle--tl {
+  width: clamp(260px, 36vw, 520px);
+  height: clamp(260px, 36vw, 520px);
+  top: -10%;
+  left: -8%;
+  background: rgba(141, 82, 15, 0.18);
+}
+.home-circle--br {
+  width: clamp(220px, 30vw, 440px);
+  height: clamp(220px, 30vw, 440px);
+  bottom: -8%;
+  right: -6%;
+  background: rgba(104, 103, 101, 0.14);
+}
+html[data-theme="light"] .home-circle--tl {
+  background: rgba(163, 92, 18, 0.13);
+}
+html[data-theme="light"] .home-circle--br {
+  background: rgba(80, 78, 75, 0.1);
+}
+
+/* ── Header ─────────────────────────────────────────────────── */
+.home-header {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: clamp(1.2rem, 3vw, 2rem) clamp(1.2rem, 4vw, 3rem);
+}
+
+.home-nexus-lines {
+  margin: 0;
+  font-size: clamp(0.7rem, 1.1vw, 0.9rem);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  line-height: 1.5;
+  color: var(--accent);
+  opacity: 0.85;
+}
+
+.home-header-nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.home-nav-link {
+  font-size: 0.82rem;
+  color: inherit;
+  opacity: 0.6;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  padding: 0.3rem 0.1rem;
+  border-bottom: 1px solid transparent;
+  transition: opacity 150ms, border-color 150ms;
+}
+.home-nav-link:hover {
+  opacity: 1;
+  border-color: currentColor;
+}
+
+.home-switchers {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.home-switcher-group {
+  display: flex;
+  border-radius: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+}
+html[data-theme="light"] .home-switcher-group {
+  border-color: rgba(43, 33, 21, 0.15);
+}
+.home-switcher-group button {
+  background: transparent;
+  border: none;
+  color: inherit;
+  opacity: 0.5;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  transition: opacity 140ms, background 140ms;
+}
+.home-switcher-group button.is-active {
+  background: var(--accent);
+  color: #fff;
+  opacity: 1;
+}
+.home-switcher-group button:hover:not(.is-active) {
+  opacity: 0.8;
+}
+
+/* ── Main content ───────────────────────────────────────────── */
+.home-main {
+  position: relative;
+  z-index: 10;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1.5rem, 4vw, 3rem) clamp(1.2rem, 4vw, 3rem);
+  gap: clamp(2rem, 4vw, 3.5rem);
+}
+
+.home-visual-title {
+  text-align: center;
+}
+.home-visual-title p {
+  margin: 0;
+  font-size: clamp(2rem, 4.5vw, 4.5rem);
+  font-weight: 300;
+  line-height: 1.18;
+  color: #c48514;
+}
+
+/* ── Story card ─────────────────────────────────────────────── */
+.home-story-card {
+  display: flex;
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+  align-items: center;
+  max-width: 860px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1.2rem;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+html[data-theme="light"] .home-story-card {
+  background: rgba(255, 255, 255, 0.65);
+  border-color: rgba(43, 33, 21, 0.1);
+}
+
+.home-story-image-wrap {
+  flex-shrink: 0;
+  width: clamp(180px, 28vw, 320px);
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+.home-story-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.home-story-body {
+  padding: clamp(1.2rem, 2.5vw, 2rem);
+  padding-left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.home-story-name {
+  margin: 0;
+  font-size: clamp(0.8rem, 1.1vw, 0.95rem);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
+
+.home-story-teaser {
+  margin: 0;
+  font-size: clamp(1rem, 1.5vw, 1.25rem);
+  font-weight: 300;
+  line-height: 1.45;
+  opacity: 0.9;
+}
+
+/* ── CTA buttons ────────────────────────────────────────────── */
+.home-story-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.4rem;
+}
+
+.home-cta-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 1.2rem;
+  border-radius: 2rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 160ms ease, border-color 160ms ease, opacity 160ms ease;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.home-cta-button--primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.home-cta-button--primary:hover {
+  opacity: 0.88;
+}
+
+.home-cta-button--secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+.home-cta-button--secondary:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+html[data-theme="light"] .home-cta-button--secondary {
+  background: rgba(43, 33, 21, 0.06);
+  border-color: rgba(43, 33, 21, 0.14);
+}
+html[data-theme="light"] .home-cta-button--secondary:hover {
+  background: rgba(43, 33, 21, 0.1);
+}
+
+.home-cta-button--ghost {
+  background: transparent;
+  color: inherit;
+  border-color: rgba(255, 255, 255, 0.12);
+  opacity: 0.65;
+}
+.home-cta-button--ghost:hover {
+  opacity: 1;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+html[data-theme="light"] .home-cta-button--ghost {
+  border-color: rgba(43, 33, 21, 0.12);
+}
+html[data-theme="light"] .home-cta-button--ghost:hover {
+  border-color: rgba(43, 33, 21, 0.25);
+}
+
+.home-story-loading {
+  color: var(--muted, rgba(255,255,255,0.4));
+  font-size: 0.95rem;
+}
+
+/* ── Mobile ─────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .home-story-card {
+    flex-direction: column;
+    gap: 0;
+  }
+  .home-story-image-wrap {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+  }
+  .home-story-body {
+    padding: 1.2rem;
+  }
+  .home-header {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  .home-header-nav {
+    align-self: flex-end;
+  }
+}

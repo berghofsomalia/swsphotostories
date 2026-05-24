@@ -5,13 +5,14 @@ import {
   currentStory,
   getStoryById,
   hasActiveFilters,
+  hasMoreStories,
   pickRandomRelatedStory,
   savePersistentState,
   updateUrlForStory,
   isSaved,
   resolveSlug
 } from './story-data.js';
-import { getUiText, labelFor } from './content.js';
+import { getUiText, labelFor, initialiseI18n } from './content.js';
 import { fetchStories } from './api.js';
 
 let actionMessageTimerId = null;
@@ -80,8 +81,13 @@ function setCurrentStory(id, options = {}) {
   if (options.scrollTop) scrollStoryTop();
 }
 
+function resetPage() {
+  state.galleryPage = 1;
+}
+
 function setGalleryModeFromFilters() {
   state.galleryMode = hasActiveFilters(state.filters) ? 'filtered' : 'total';
+  resetPage();
 }
 
 function toggleSaved(storyId) {
@@ -149,6 +155,7 @@ function currentStoryLabel(story) {
 const ACTIONS = {
   'set-language': async ({ value }) => {
     state.language = value === 'so' ? 'so' : 'en';
+    await initialiseI18n(state.language);
     savePersistentState(state);
     renderSite();
   },
@@ -244,14 +251,22 @@ const ACTIONS = {
       searchQuery: ''
     };
     state.galleryMode = 'related';
+    resetPage();
     state.storyVisible = true;
     state.galleryVisible = true;
     renderSite();
     scrollGallery();
   },
+  'load-more': async () => {
+    if (hasMoreStories(state)) {
+      state.galleryPage += 1;
+      renderSite();
+    }
+  },
   'explore-all': async () => {
     state.filters = createEmptyFilters();
     state.galleryMode = 'total';
+    resetPage();
     state.storyVisible = true;
     state.galleryVisible = true;
     renderSite();
@@ -260,6 +275,7 @@ const ACTIONS = {
   'reset-filters': async () => {
     state.filters = createEmptyFilters();
     state.galleryMode = 'total';
+    resetPage();
     renderSite();
   },
   'filter-district': async ({ value }) => {
@@ -454,7 +470,11 @@ export async function initialiseApp() {
   attachGlobalListeners();
   renderLoading();
 
-  state.stories = await fetchStories();
+  // Load i18n and stories in parallel
+  await Promise.all([
+    initialiseI18n(state.language),
+    fetchStories().then((stories) => { state.stories = stories; })
+  ]);
 
   const params = new URLSearchParams(window.location.search);
   const code = params.get('code');

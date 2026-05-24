@@ -1,4 +1,5 @@
 import { STORAGE_KEYS } from './content.js';
+import { PAGE_SIZE } from './state.js';
 
 export function getStoryById(stories, id) {
   return stories.find((story) => story.id === id) || null;
@@ -106,6 +107,18 @@ export function storyMatchesFilters(story, filters) {
 
 export function filteredStories(state, filters = state.filters) {
   return state.stories.filter((story) => storyMatchesFilters(story, filters));
+}
+
+/**
+ * Returns only the slice of filtered stories visible up to the current page.
+ * Used by the gallery grid — call filteredStories() for the total count.
+ */
+export function pagedStories(state) {
+  return filteredStories(state).slice(0, state.galleryPage * PAGE_SIZE);
+}
+
+export function hasMoreStories(state) {
+  return filteredStories(state).length > state.galleryPage * PAGE_SIZE;
 }
 
 function scoreRelated(base, candidate) {
