@@ -99,7 +99,6 @@ function renderMenu(t) {
           </div>
 
           <div class="utility-menu-group">
-            <div class="utility-menu-group-label">${escapeHtml(t.language)}</div>
             <div class="utility-menu-pill utility-menu-switchers" role="group" aria-label="Language selector">
               <button type="button" class="utility-menu-control ${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">${escapeHtml(t.shortSo)}</button>
               <button type="button" class="utility-menu-control ${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">${escapeHtml(t.shortEn)}</button>
@@ -107,7 +106,6 @@ function renderMenu(t) {
           </div>
 
           <div class="utility-menu-group">
-            <div class="utility-menu-group-label">${escapeHtml(t.theme)}</div>
             <div class="utility-menu-pill utility-menu-switchers" role="group" aria-label="Theme selector">
               <button type="button" class="utility-menu-control ${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${escapeHtml(t.dark)}</button>
               <button type="button" class="utility-menu-control ${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${escapeHtml(t.light)}</button>

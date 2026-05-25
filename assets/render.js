@@ -1,6 +1,7 @@
 import {
   actorLabel,
   getGuidanceText,
+  getLandingText,
   getUiText,
   labelFor
 } from './content.js';
@@ -140,14 +141,12 @@ function renderUtilityMenu(state) {
             </button>
           </div>
           <div class="utility-menu-group">
-            <div class="utility-menu-group-label">${escapeHtml(t.language)}</div>
             <div class="utility-menu-pill utility-menu-switchers" role="group" aria-label="Language selector">
               <button type="button" class="utility-menu-control ${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">${escapeHtml(t.shortSo)}</button>
               <button type="button" class="utility-menu-control ${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">${escapeHtml(t.shortEn)}</button>
             </div>
           </div>
           <div class="utility-menu-group">
-            <div class="utility-menu-group-label">${escapeHtml(t.theme)}</div>
             <div class="utility-menu-pill utility-menu-switchers" role="group" aria-label="Theme selector">
               <button type="button" class="utility-menu-control ${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${escapeHtml(t.dark)}</button>
               <button type="button" class="utility-menu-control ${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${escapeHtml(t.light)}</button>
@@ -345,6 +344,7 @@ export function renderApp(state) {
   if (!app || !story) return;
 
   const t = getUiText(state.language);
+  const landing = getLandingText(state.language);
   const visibleStories = pagedStories(state);
   const totalFiltered = filteredStories(state).length;
   const moreAvailable = hasMoreStories(state);
@@ -356,6 +356,14 @@ export function renderApp(state) {
   const peopleItems    = allPeople(state).map((p) => ({ value: p,                        label: actorLabel(p, state.language) }));
 
   document.title = t.siteTitle;
+
+  // Flat one-liner context strips — always visible in /stories
+  const nexusOneliner = (landing.section1NexusLines || []).slice(1).join(' · ');
+  const titleOneliner = (landing.section1TitleLines || []).join(' · ');
+  const contextStrips = `
+    <div class="context-strip context-strip--top" aria-hidden="true">${escapeHtml(nexusOneliner)}</div>
+    <div class="context-strip context-strip--bottom" aria-hidden="true">${escapeHtml(titleOneliner)}</div>
+  `;
 
   const storySlides = story.images.map((src, i) => `
     <div class="story-slide ${i === state.currentImageIndex ? 'is-active' : ''}">
@@ -469,6 +477,7 @@ export function renderApp(state) {
 
   app.innerHTML = `
     <div class="site-shell ${!state.storyVisible ? 'is-gallery-only' : ''}">
+      ${contextStrips}
       ${renderUtilityMenu(state)}
       <main>
         ${storyMarkup}
