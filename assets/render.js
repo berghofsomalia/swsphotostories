@@ -46,6 +46,7 @@ const icon = {
   close:        () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>',
   menu:         () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/></svg>',
   home:         () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 12 5l8 6.5"/><path d="M6.5 10.5V20h11V10.5"/></svg>',
+  about:        () => '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01"/><path d="M11 12h1v4h1"/></svg>',
   search:       () => '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>'
 };
 
@@ -117,6 +118,14 @@ function renderUtilityMenu(state) {
               <span class="utility-menu-control-copy">
                 <span class="utility-menu-control-icon" aria-hidden="true">${icon.home()}</span>
                 <span>${escapeHtml(t.home)}</span>
+              </span>
+            </a>
+          </div>
+          <div class="utility-menu-pill utility-menu-pill--single">
+            <a class="utility-menu-control utility-menu-control--single" href="../about/">
+              <span class="utility-menu-control-copy">
+                <span class="utility-menu-control-icon" aria-hidden="true">${icon.about()}</span>
+                <span>${escapeHtml(t.about)}</span>
               </span>
             </a>
           </div>

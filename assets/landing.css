@@ -2338,3 +2338,12 @@ html[data-theme="light"] .landing-copy-card--title p {
   overflow: visible;
   min-height: 100vh;
 }
+
+/* Position the utility-menu in the top-right of the /about shell,
+   same visual placement as in /stories */
+.landing-page-shell .utility-menu-shell {
+  position: fixed;
+  top: 1.2rem;
+  right: 1.2rem;
+  z-index: 200;
+}

@@ -5,7 +5,8 @@ const state = {
   language: localStorage.getItem(STORAGE_KEYS.language) || 'en',
   theme: localStorage.getItem(STORAGE_KEYS.theme) || 'dark',
   stories: [],
-  landingMap: 'images/landing/map 2.png',
+  menuOpen: false,
+  landingMap: '',
   landingSectionImages: {}
 };
 
@@ -40,24 +41,83 @@ async function imageExists(src) {
 
 async function loadSectionImage(sectionNumber) {
   const probes = [];
-  const extensions = ['jpg', 'png'];
-  for (let index = 1; index <= 6; index += 1) {
-    extensions.forEach((ext) => probes.push(`../images/landing/${sectionNumber} (${index}).${ext}`));
+  for (let i = 1; i <= 6; i++) {
+    ['jpg', 'png'].forEach((ext) => probes.push(`../images/landing/${sectionNumber} (${i}).${ext}`));
   }
-  const existing = (await Promise.all(probes.map((src) => imageExists(src)))).filter(Boolean);
-  const shuffled = existing.sort(() => Math.random() - 0.5);
-  if (shuffled.length > 0) return shuffled[0];
-  const fallbackStory = state.stories[Math.floor(Math.random() * state.stories.length)];
-  return fallbackStory?.images?.[0] || '';
+  const found = (await Promise.all(probes.map(imageExists))).filter(Boolean);
+  const shuffled = found.sort(() => Math.random() - 0.5);
+  if (shuffled.length) return shuffled[0];
+  const fallback = state.stories[Math.floor(Math.random() * state.stories.length)];
+  return fallback?.images?.[0] || '';
 }
 
 async function loadLandingAssets() {
   const primaryMap = await imageExists('../images/landing/map 2.png');
   const fallbackMap = await imageExists('../images/landing/sws on somalia map_wrinkle.png');
-  state.landingMap = primaryMap || fallbackMap || '../assets/sws-map-wrinkle.png';
+  state.landingMap = primaryMap || fallbackMap || '';
   const sections = [1, 3, 4, 5];
   const resolved = await Promise.all(sections.map((s) => loadSectionImage(s)));
   state.landingSectionImages = Object.fromEntries(sections.map((s, i) => [s, resolved[i]]));
+}
+
+// ── Utility menu (same pattern as /stories) ───────────────────────────────────
+
+const menuIcon  = () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/></svg>';
+const closeIcon = () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+const homeIcon  = () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 12 5l8 6.5"/><path d="M6.5 10.5V20h11V10.5"/></svg>';
+const aboutIcon = () => '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01"/><path d="M11 12h1v4h1"/></svg>';
+
+function renderMenu(t) {
+  return `
+    <div class="utility-menu-shell">
+      ${state.menuOpen
+        ? `<button type="button" class="utility-menu-backdrop" data-action="close-menu" aria-label="${escapeHtml(t.close)}"></button>`
+        : ''}
+      <div class="utility-menu ${state.menuOpen ? 'is-open' : ''}">
+        <button type="button" class="utility-menu-toggle" data-action="toggle-menu"
+          aria-label="${escapeHtml(t.menu)}" aria-expanded="${state.menuOpen}">
+          ${menuIcon()}
+        </button>
+        <div class="utility-menu-panel" aria-hidden="${!state.menuOpen}">
+
+          <div class="utility-menu-pill utility-menu-pill--single">
+            <a class="utility-menu-control utility-menu-control--single" href="../">
+              <span class="utility-menu-control-copy">
+                <span class="utility-menu-control-icon" aria-hidden="true">${homeIcon()}</span>
+                <span>${escapeHtml(t.home)}</span>
+              </span>
+            </a>
+          </div>
+
+          <div class="utility-menu-pill utility-menu-pill--single">
+            <a class="utility-menu-control utility-menu-control--single" href="../about/">
+              <span class="utility-menu-control-copy">
+                <span class="utility-menu-control-icon" aria-hidden="true">${aboutIcon()}</span>
+                <span>${escapeHtml(t.about)}</span>
+              </span>
+            </a>
+          </div>
+
+          <div class="utility-menu-group">
+            <div class="utility-menu-group-label">${escapeHtml(t.language)}</div>
+            <div class="utility-menu-pill utility-menu-switchers" role="group" aria-label="Language selector">
+              <button type="button" class="utility-menu-control ${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">${escapeHtml(t.shortSo)}</button>
+              <button type="button" class="utility-menu-control ${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">${escapeHtml(t.shortEn)}</button>
+            </div>
+          </div>
+
+          <div class="utility-menu-group">
+            <div class="utility-menu-group-label">${escapeHtml(t.theme)}</div>
+            <div class="utility-menu-pill utility-menu-switchers" role="group" aria-label="Theme selector">
+              <button type="button" class="utility-menu-control ${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${escapeHtml(t.dark)}</button>
+              <button type="button" class="utility-menu-control ${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${escapeHtml(t.light)}</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 function renderLandingPage() {
@@ -69,25 +129,15 @@ function renderLandingPage() {
   const t = getUiText(state.language);
   const si = state.landingSectionImages;
 
-  document.title = `About — ${t.siteTitle}`;
+  document.title = `${escapeHtml(t.about)} — ${escapeHtml(t.siteTitle)}`;
 
   app.innerHTML = `
     <div class="intro-modal intro-modal--pdfstyle landing-page-shell">
+      ${renderMenu(t)}
       <div class="intro-scroll intro-scroll--pdfstyle">
+
         <section class="landing-pdf-section landing-pdf-section--1">
           <div class="landing-pdf-grid landing-pdf-grid--hero">
-            <div class="landing-switch-row landing-switch-row--top">
-              <div class="landing-switch-stack">
-                <div class="landing-switcher" role="group" aria-label="Language selector">
-                  <button type="button" class="${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">SO</button>
-                  <button type="button" class="${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">EN</button>
-                </div>
-                <div class="landing-switcher" role="group" aria-label="Theme selector">
-                  <button type="button" class="${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${escapeHtml(t.dark)}</button>
-                  <button type="button" class="${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${escapeHtml(t.light)}</button>
-                </div>
-              </div>
-            </div>
             <div class="landing-photo-pane landing-photo-pane--hero">
               <img src="${si[1] || ''}" alt="" loading="eager" aria-hidden="true">
             </div>
@@ -119,7 +169,10 @@ function renderLandingPage() {
             <div class="landing-copy-card landing-copy-card--pondered">
               <p>${escapeHtml(landing.section3Lead)}</p>
             </div>
-            ${landing.questions.map((q, i) => `<div class="landing-question-card landing-question-card--${i + 1}"><p>${escapeHtml(q)}</p></div>`).join('')}
+            ${landing.questions.map((q, i) => `
+              <div class="landing-question-card landing-question-card--${i + 1}">
+                <p>${escapeHtml(q)}</p>
+              </div>`).join('')}
           </div>
         </section>
 
@@ -150,6 +203,7 @@ function renderLandingPage() {
             </div>
           </div>
         </section>
+
       </div>
     </div>
   `;
@@ -159,13 +213,34 @@ function attachListeners() {
   document.addEventListener('click', async (event) => {
     const target = event.target.closest('[data-action]');
     if (!target) return;
+
+    if (target.dataset.action === 'toggle-menu') {
+      state.menuOpen = !state.menuOpen;
+      renderLandingPage();
+      return;
+    }
+    if (target.dataset.action === 'close-menu') {
+      state.menuOpen = false;
+      renderLandingPage();
+      return;
+    }
     if (target.dataset.action === 'set-language') {
       state.language = target.dataset.value === 'so' ? 'so' : 'en';
+      state.menuOpen = false;
       await initialiseI18n(state.language);
       renderLandingPage();
+      return;
     }
     if (target.dataset.action === 'set-theme') {
       state.theme = target.dataset.value === 'light' ? 'light' : 'dark';
+      state.menuOpen = false;
+      renderLandingPage();
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && state.menuOpen) {
+      state.menuOpen = false;
       renderLandingPage();
     }
   });
