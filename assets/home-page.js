@@ -2,17 +2,22 @@ import { getUiText, getLandingText, STORAGE_KEYS, initialiseI18n } from './conte
 import { fetchStories } from './api.js';
 
 const state = {
-  language: localStorage.getItem(STORAGE_KEYS.language) || 'en',
-  theme:    localStorage.getItem(STORAGE_KEYS.theme)    || 'dark',
-  stories:  [],
+  language:     localStorage.getItem(STORAGE_KEYS.language) || 'en',
+  theme:        localStorage.getItem(STORAGE_KEYS.theme)    || 'dark',
+  stories:      [],
   currentStory: null,
-  menuOpen: false
+  menuOpen:     false,
+  savedOpen:    false,
+  savedIds:     []
 };
 
-function saveState() {
+// Load saved IDs from localStorage
+try { state.savedIds = JSON.parse(localStorage.getItem(STORAGE_KEYS.saved) || '[]'); } catch {}
+
+function savePrefs() {
   localStorage.setItem(STORAGE_KEYS.language, state.language);
   localStorage.setItem(STORAGE_KEYS.theme,    state.theme);
-  document.documentElement.lang         = state.language === 'so' ? 'so' : 'en';
+  document.documentElement.lang          = state.language === 'so' ? 'so' : 'en';
   document.documentElement.dataset.theme = state.theme;
 }
 
@@ -36,7 +41,7 @@ function pickRandom(stories, excludeId = null) {
   return pool[Math.floor(Math.random() * pool.length)] || stories[0] || null;
 }
 
-// ── SVG icons (reused from /stories) ─────────────────────────────────────────
+// ── SVG icons ─────────────────────────────────────────────────────────────────
 const icon = {
   chevronRight: () => '<svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>',
   shuffle:      () => '<svg viewBox="0 0 24 24"><path d="M16 3h5v5"/><path d="M4 20 20 4"/><path d="M21 16v5h-5"/><path d="M15 15 21 21"/><path d="M4 4l5 5"/></svg>',
@@ -48,10 +53,107 @@ const icon = {
   about:        () => '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01"/><path d="M11 12h1v4h1"/></svg>'
 };
 
-// ── Render ────────────────────────────────────────────────────────────────────
+// ── Saved drawer (same logic as /stories renderSavedDrawer) ───────────────────
+function renderSavedDrawer(t) {
+  const savedStories = state.stories.filter((s) => state.savedIds.includes(s.id));
+  return `
+    ${state.savedOpen
+      ? `<button type="button" class="saved-drawer-backdrop is-open" data-action="close-saved" aria-label="${esc(t.close)}"></button>`
+      : ''}
+    <aside class="saved-drawer ${state.savedOpen ? 'is-open' : ''}" aria-hidden="${!state.savedOpen}">
+      <div class="drawer-header drawer-header--inline">
+        <div class="drawer-title-row">
+          <button type="button" class="icon-button drawer-close-button" data-action="close-saved" aria-label="${esc(t.close)}">${icon.close()}</button>
+          <div class="drawer-title">${esc(t.savedPhotostories)}</div>
+        </div>
+      </div>
+      <div class="drawer-body">
+        ${savedStories.length === 0
+          ? `<div class="drawer-empty">${esc(t.noSaved)}</div>`
+          : savedStories.map((s) => `
+            <a class="saved-item" href="stories/?code=${esc(s.id)}">
+              <div class="saved-thumb">
+                <img src="stories/${esc(s.images?.[0] || '')}" alt="${esc(s.storyteller)}" style="width:100%;height:100%;object-fit:cover;">
+              </div>
+              <div class="saved-copy">
+                <div class="saved-name">${esc(s.storyteller)}</div>
+                <div class="saved-summary">${esc(labelFor(s.summary, state.language))}</div>
+              </div>
+            </a>
+          `).join('')}
+      </div>
+    </aside>
+  `;
+}
 
+// ── Unified menu (always contains the switchers) ──────────────────────────────
+function renderMenu(t) {
+  // When menu is closed: show only the toggle button
+  // When menu is open: show full panel (with switchers inside)
+  const savedCount = state.savedIds.length;
+  return `
+    <div class="utility-menu-shell home-menu-shell">
+      ${state.menuOpen
+        ? `<button type="button" class="utility-menu-backdrop" data-action="close-menu" aria-label="${esc(t.close)}"></button>`
+        : ''}
+      <div class="utility-menu ${state.menuOpen ? 'is-open' : ''}">
+        <button type="button" class="utility-menu-toggle" data-action="toggle-menu"
+          aria-label="${esc(t.menu)}" aria-expanded="${state.menuOpen}">
+          ${icon.menu()}
+        </button>
+        <div class="utility-menu-panel" aria-hidden="${!state.menuOpen}">
+
+          <div class="utility-menu-pill utility-menu-pill--single">
+            <a class="utility-menu-control utility-menu-control--single" href="./">
+              <span class="utility-menu-control-copy">
+                <span class="utility-menu-control-icon">${icon.home()}</span>
+                <span>${esc(t.home)}</span>
+              </span>
+            </a>
+          </div>
+
+          <div class="utility-menu-pill utility-menu-pill--single">
+            <a class="utility-menu-control utility-menu-control--single" href="about/">
+              <span class="utility-menu-control-copy">
+                <span class="utility-menu-control-icon">${icon.about()}</span>
+                <span>${esc(t.about)}</span>
+              </span>
+            </a>
+          </div>
+
+          <div class="utility-menu-pill utility-menu-pill--single">
+            <button type="button" class="utility-menu-control utility-menu-control--single" data-action="open-saved">
+              <span class="utility-menu-control-copy">
+                <span class="utility-menu-control-icon">${icon.bookmark()}</span>
+                <span>${esc(t.saved)}</span>
+              </span>
+              ${savedCount > 0 ? `<span class="utility-menu-badge">${savedCount}</span>` : ''}
+            </button>
+          </div>
+
+          <div class="utility-menu-group">
+            <div class="utility-menu-pill utility-menu-switchers" role="group" aria-label="Language">
+              <button type="button" class="utility-menu-control ${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">${esc(t.shortSo)}</button>
+              <button type="button" class="utility-menu-control ${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">${esc(t.shortEn)}</button>
+            </div>
+          </div>
+
+          <div class="utility-menu-group">
+            <div class="utility-menu-pill utility-menu-switchers" role="group" aria-label="Theme">
+              <button type="button" class="utility-menu-control ${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${esc(t.dark)}</button>
+              <button type="button" class="utility-menu-control ${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${esc(t.light)}</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
 function renderPage() {
-  saveState();
+  savePrefs();
   const app = document.querySelector('#app');
   if (!app) return;
 
@@ -61,16 +163,8 @@ function renderPage() {
 
   document.title = t.siteTitle;
 
-  // Flat context strips — same as /stories
-  const nexusLine = (landing.section1NexusLines || []).slice(1).join(' · ');
-  const titleLine = (landing.section1TitleLines || []).join(' · ');
-
-  // Lead image: story images are stored relative to /stories/
+  // Lead image: prefix with stories/ since paths are relative to that subfolder
   const leadSrc = story ? `stories/${story.images?.[0] || ''}` : '';
-
-  // Saved count from localStorage
-  let savedCount = 0;
-  try { savedCount = JSON.parse(localStorage.getItem(STORAGE_KEYS.saved) || '[]').length; } catch {}
 
   const storyCard = story ? `
     <div class="home-card">
@@ -90,91 +184,38 @@ function renderPage() {
           <a class="action-button" href="stories/#gallery">
             ${icon.sliders()}<span>${esc(t.exploreFilters)}</span>
           </a>
-          <a class="action-button" href="stories/?saved=1">
-            ${icon.bookmark()}<span>${esc(t.saved)}${savedCount > 0 ? ` (${savedCount})` : ''}</span>
-          </a>
         </div>
       </div>
     </div>
   ` : `<div class="home-loading">${esc(t.loading)}</div>`;
 
-  // Menu panel — shown/hidden; contains the same switchers for returning users
-  const menuPanel = state.menuOpen ? `
-    <div class="home-menu-backdrop" data-action="close-menu"></div>
-    <div class="home-menu-panel">
-      <div class="utility-menu-pill utility-menu-pill--single">
-        <a class="utility-menu-control utility-menu-control--single" href="./">
-          <span class="utility-menu-control-copy">
-            <span class="utility-menu-control-icon">${icon.home()}</span>
-            <span>${esc(t.home)}</span>
-          </span>
-        </a>
-      </div>
-      <div class="utility-menu-pill utility-menu-pill--single">
-        <a class="utility-menu-control utility-menu-control--single" href="about/">
-          <span class="utility-menu-control-copy">
-            <span class="utility-menu-control-icon">${icon.about()}</span>
-            <span>${esc(t.about)}</span>
-          </span>
-        </a>
-      </div>
-      <div class="utility-menu-pill utility-menu-pill--single">
-        <a class="utility-menu-control utility-menu-control--single" href="stories/?saved=1">
-          <span class="utility-menu-control-copy">
-            <span class="utility-menu-control-icon">${icon.bookmark()}</span>
-            <span>${esc(t.saved)}</span>
-          </span>
-          ${savedCount > 0 ? `<span class="utility-menu-badge">${savedCount}</span>` : ''}
-        </a>
-      </div>
-      <div class="utility-menu-group">
-        <div class="utility-menu-pill utility-menu-switchers" role="group" aria-label="Language">
-          <button type="button" class="utility-menu-control ${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">${esc(t.shortSo)}</button>
-          <button type="button" class="utility-menu-control ${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">${esc(t.shortEn)}</button>
-        </div>
-      </div>
-      <div class="utility-menu-group">
-        <div class="utility-menu-pill utility-menu-switchers" role="group" aria-label="Theme">
-          <button type="button" class="utility-menu-control ${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${esc(t.dark)}</button>
-          <button type="button" class="utility-menu-control ${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${esc(t.light)}</button>
-        </div>
-      </div>
-    </div>
-  ` : '';
+  // /about-style badges: nexus (top-left) and title (bottom-right)
+  const nexusLines = (landing.section1NexusLines || []).map((l) => `<span>${esc(l)}</span>`).join('<br>');
+  const titleLines = (landing.section1TitleLines || []).map((l) => `<span>${esc(l)}</span>`).join('<br>');
 
   app.innerHTML = `
     <div class="home-shell">
 
-      <div class="context-strip context-strip--top">${esc(nexusLine)}</div>
-      <div class="context-strip context-strip--bottom">${esc(titleLine)}</div>
-
-      <!-- Always-visible switchers + menu toggle in top-right -->
-      <div class="home-controls">
-        <div class="home-switchers">
-          <div class="home-switcher-row" role="group" aria-label="Language">
-            <button type="button" class="${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">${esc(t.shortSo)}</button>
-            <button type="button" class="${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">${esc(t.shortEn)}</button>
-          </div>
-          <div class="home-switcher-row" role="group" aria-label="Theme">
-            <button type="button" class="${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${esc(t.dark)}</button>
-            <button type="button" class="${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${esc(t.light)}</button>
-          </div>
-        </div>
-        <button type="button" class="home-menu-toggle" data-action="toggle-menu"
-          aria-label="${esc(t.menu)}" aria-expanded="${state.menuOpen}">
-          ${state.menuOpen ? icon.close() : icon.menu()}
-        </button>
-        ${menuPanel}
+      <!-- /about-style position badges -->
+      <div class="home-badge home-badge--nexus">
+        <p>${nexusLines}</p>
       </div>
+      <div class="home-badge home-badge--title">
+        <p>${titleLines}</p>
+      </div>
+
+      ${renderMenu(t)}
 
       <main class="home-main">
         ${storyCard}
       </main>
 
+      ${renderSavedDrawer(t)}
     </div>
   `;
 }
 
+// ── Listeners ─────────────────────────────────────────────────────────────────
 function attachListeners() {
   document.addEventListener('click', async (e) => {
     const target = e.target.closest('[data-action]');
@@ -191,6 +232,17 @@ function attachListeners() {
       renderPage();
       return;
     }
+    if (action === 'open-saved') {
+      state.menuOpen  = false;
+      state.savedOpen = true;
+      renderPage();
+      return;
+    }
+    if (action === 'close-saved') {
+      state.savedOpen = false;
+      renderPage();
+      return;
+    }
     if (action === 'set-language') {
       state.language = value === 'so' ? 'so' : 'en';
       state.menuOpen = false;
@@ -199,7 +251,7 @@ function attachListeners() {
       return;
     }
     if (action === 'set-theme') {
-      state.theme = value === 'light' ? 'light' : 'dark';
+      state.theme    = value === 'light' ? 'light' : 'dark';
       state.menuOpen = false;
       renderPage();
       return;
@@ -211,19 +263,20 @@ function attachListeners() {
   });
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && state.menuOpen) {
-      state.menuOpen = false;
-      renderPage();
+    if (e.key === 'Escape') {
+      if (state.savedOpen) { state.savedOpen = false; renderPage(); }
+      else if (state.menuOpen) { state.menuOpen = false; renderPage(); }
     }
   });
 }
 
+// ── Init ──────────────────────────────────────────────────────────────────────
 async function init() {
   attachListeners();
   await Promise.all([
     initialiseI18n(state.language),
     fetchStories().then((stories) => {
-      state.stories = stories;
+      state.stories      = stories;
       state.currentStory = pickRandom(stories);
     })
   ]);
