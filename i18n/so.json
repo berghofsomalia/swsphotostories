@@ -1,6 +1,6 @@
 {
   "ui": {
-    "siteTitle": "SSheeko-muuqaal - Koonfur Galbeed",
+    "siteTitle": "Sheeko-sawirro ka socda Koonfur Galbeed",
     "dark": "Madow",
     "light": "Iftiin",
     "shortSo": "SO",
@@ -60,8 +60,9 @@
   },
   "landing": {
     "section1NexusLines": [
-      "",
-      "CIMILADA · KHILAAFKA · DEEGAANKA · NABADDA"
+      "Xiriirka ka dhexeeya",
+      "CIMILADA · KHILAAFKA",
+      "DEEGAANKA · NABADDA"
     ],
     "section1TitleLines": [
       "Sheeko-muuqaal",
