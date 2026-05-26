@@ -36,6 +36,7 @@ export function createInitialState() {
     storyVisible: true,
     galleryVisible: false,
     shareOpen: false,
+    guidanceOpen: false,
     savedOpen: false,
     menuOpen: false,
     actionMessage: '',

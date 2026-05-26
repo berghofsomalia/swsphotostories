@@ -71,8 +71,8 @@
 .story-meta-name {
   margin: 0;
   color: var(--warm);
-  font-size: clamp(1.25rem, 2vw, 1.62rem);
-  line-height: 1.18;
+  font-size: 1.02rem;
+  line-height: 1.72;
   font-weight: 700;
 }
 .story-meta-teaser {
@@ -162,6 +162,7 @@ button.chip:hover { background: rgba(255,255,255,0.1); }
 body, button, input, textarea, select,
 .storyteller-name, .section-kicker, .drawer-title, .gallery-header,
 .story-copy p, .reflection-copy p, .story-guidance-box,
+.guidance-flow-button, .guidance-modal,
 .saved-copy, .saved-summary, .chip, .filter-group h3,
 .share-title, .share-option, .action-button {
   font-family: "PT Sans Narrow", "Arial Narrow", Inter, system-ui, sans-serif !important;
@@ -492,6 +493,45 @@ body, button, input, textarea, select,
 }
 .share-option:hover { background: rgba(255,255,255,0.1); }
 
+/* ── Guidance modal ──────────────────────────────────────────── */
+.guidance-flow-button {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--cool);
+  font-size: 0.96rem;
+  font-weight: 700;
+  line-height: 1.45;
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+  cursor: pointer;
+  transition: color 160ms ease, opacity 160ms ease;
+}
+.guidance-flow-button:hover { color: #fff; }
+.guidance-modal {
+  position: fixed;
+  inset: 50% auto auto 50%;
+  z-index: 55;
+  width: min(100% - 2rem, 780px);
+  max-height: min(86dvh, 720px);
+  overflow-y: auto;
+  padding: 3.2rem 1.3rem 1.35rem;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: var(--actions);
+  box-shadow: var(--shadow-soft);
+  transform: translate(-50%, -48%) scale(0.96);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+.guidance-modal.is-open { opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: auto; }
+.guidance-modal-close { position: absolute; top: 0.82rem; right: 0.82rem; }
+.guidance-modal .story-guidance-intro { padding-right: 3rem; color: #e7ded4; font-weight: 700; }
+.guidance-modal .story-guidance-grid { gap: 0.75rem; }
+
 /* ── Guidance box ───────────────────────────────────────────── */
 .story-guidance-box {
   margin: 0; padding: 0; border: 0;
@@ -577,6 +617,7 @@ html[data-theme="light"] .utility-menu-control:hover { background: rgba(31,29,26
 html[data-theme="light"] .utility-menu-control.is-active { background: var(--accent); color: #fff; }
 html[data-theme="light"] .story-meta-name  { color: #4a3024; }
 html[data-theme="light"] .story-meta-teaser,
+html[data-theme="light"] .guidance-flow-button,
 html[data-theme="light"] .story-guidance-box--plain,
 html[data-theme="light"] .story-guidance-intro { color: #433d35; }
 html[data-theme="light"] .story-meta-divider { background: rgba(31,29,26,0.12); }
@@ -600,6 +641,7 @@ html[data-theme="light"] .filter-panel,
 html[data-theme="light"] .gallery-card,
 html[data-theme="light"] .saved-item,
 html[data-theme="light"] .share-modal,
+html[data-theme="light"] .guidance-modal,
 html[data-theme="light"] .share-option,
 html[data-theme="light"] .drawer-empty { border-color: rgba(31,29,26,0.1); background: rgba(255,255,255,0.74); }
 html[data-theme="light"] .saved-drawer { border-color: rgba(31,29,26,0.1); background: var(--stage); }
@@ -608,10 +650,12 @@ html[data-theme="light"] .saved-item:hover,
 html[data-theme="light"] .share-option:hover,
 html[data-theme="light"] .action-button:hover,
 html[data-theme="light"] .filter-reset.is-visible:hover { background: rgba(255,255,255,0.92); }
+html[data-theme="light"] .guidance-flow-button:hover { color: var(--accent); background: transparent; }
 html[data-theme="light"] .gallery-card:hover { border-color: rgba(184,92,56,0.2); box-shadow: var(--shadow-glow); }
 html[data-theme="light"] .action-button,
 html[data-theme="light"] .filter-reset.is-visible { border-color: rgba(31,29,26,0.1); background: rgba(255,255,255,0.72); color: #2b2825; }
 html[data-theme="light"] .share-title,
+html[data-theme="light"] .guidance-modal .story-guidance-intro,
 html[data-theme="light"] .drawer-title,
 html[data-theme="light"] .gallery-header,
 html[data-theme="light"] .section-kicker,
@@ -628,6 +672,11 @@ html[data-theme="light"] .search-input:focus { border-color: var(--accent); back
 html[data-theme="light"] .search-icon { color: rgba(43,33,21,0.4); }
 
 /* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 720px) {
+  .guidance-modal { width: min(100% - 1rem, 780px); padding: 3rem 0.9rem 1rem; }
+  .guidance-modal .story-guidance-intro { padding-right: 2.7rem; }
+}
+
 @media (max-width: 1080px) {
   .gallery-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
 }

@@ -71,6 +71,7 @@ function setCurrentStory(id, options = {}) {
   state.currentStoryId = story.id;
   state.currentImageIndex = 0;
   state.shareOpen = false;
+  state.guidanceOpen = false;
   state.menuOpen = false;
   state.storyVisible = options.storyVisible ?? true;
   state.galleryVisible = options.galleryVisible ?? false;
@@ -186,11 +187,22 @@ const ACTIONS = {
   },
   'open-share': async () => {
     state.menuOpen = false;
+    state.guidanceOpen = false;
     state.shareOpen = true;
     renderSite();
   },
   'close-share': async () => {
     state.shareOpen = false;
+    renderSite();
+  },
+  'open-guidance': async () => {
+    state.menuOpen = false;
+    state.shareOpen = false;
+    state.guidanceOpen = true;
+    renderSite();
+  },
+  'close-guidance': async () => {
+    state.guidanceOpen = false;
     renderSite();
   },
   'share-copy': async ({ story }) => {
@@ -404,15 +416,16 @@ function attachGlobalListeners() {
   window.addEventListener('keydown', (event) => {
     // Close overlays
     if (event.key === 'Escape') {
-      if (!state.menuOpen && !state.shareOpen && !state.savedOpen) return;
+      if (!state.menuOpen && !state.shareOpen && !state.guidanceOpen && !state.savedOpen) return;
       state.menuOpen = false;
       state.shareOpen = false;
+      state.guidanceOpen = false;
       state.savedOpen = false;
       renderSite();
       return;
     }
     // Arrow key image navigation (only when no overlay is open and story visible)
-    if (state.storyVisible && !state.menuOpen && !state.shareOpen && !state.savedOpen) {
+    if (state.storyVisible && !state.menuOpen && !state.shareOpen && !state.guidanceOpen && !state.savedOpen) {
       if (event.key === 'ArrowLeft') { moveToPreviousImage(); return; }
       if (event.key === 'ArrowRight') { moveToNextImage(); }
     }

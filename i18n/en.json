@@ -56,11 +56,12 @@
     "about": "About",
     "readStory": "Read story",
     "anotherStory": "See another story",
-    "exploreFilters": "Explore stories through filters"
+    "exploreFilters": "Explore stories through filters",
+    "storyFlow": "How the stories flow"
   },
   "landing": {
     "section1NexusLines": [
-      "CLIMATE \u00B7 CONFLICT \u00B7 ENVIRONMENT \u00B7 PEACE"
+      "CLIMATE · CONFLICT · ENVIRONMENT · PEACE"
     ],
     "section1TitleLines": [
       "Visual storytelling",

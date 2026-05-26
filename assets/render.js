@@ -118,6 +118,7 @@ function renderStageControls(state, story) {
 }
 
 function renderStoryMetaPanel(state, story) {
+  const t = getUiText(state.language);
   return `
     <aside class="story-meta-panel">
       <div class="story-meta-header">
@@ -126,7 +127,7 @@ function renderStoryMetaPanel(state, story) {
       </div>
       <div class="tag-row story-meta-tags">${tagChips(state, story)}</div>
       <div class="story-meta-divider" aria-hidden="true"></div>
-      ${renderGuidanceBox(state, { compact: true, plain: true })}
+      <button type="button" class="guidance-flow-button" data-action="open-guidance">${escapeHtml(t.storyFlow)}</button>
     </aside>
   `;
 }
@@ -189,6 +190,7 @@ function renderGuidanceBox(state, options = {}) {
   const classes = ['story-guidance-box'];
   if (options.compact) classes.push('is-compact');
   if (options.plain) classes.push('story-guidance-box--plain');
+  if (options.modal) classes.push('story-guidance-box--modal');
   return `
     <div class="${classes.join(' ')}">
       <p class="story-guidance-intro">${escapeHtml(guidance.intro)}</p>
@@ -199,6 +201,17 @@ function renderGuidanceBox(state, options = {}) {
           </div>
         `).join('')}
       </div>
+    </div>
+  `;
+}
+
+function renderGuidanceModal(state) {
+  const t = getUiText(state.language);
+  return `
+    <div class="modal-backdrop ${state.guidanceOpen ? 'is-open' : ''}" data-action="close-guidance"></div>
+    <div class="guidance-modal ${state.guidanceOpen ? 'is-open' : ''}" role="dialog" aria-modal="true" aria-hidden="${!state.guidanceOpen}">
+      <button type="button" class="icon-button guidance-modal-close" data-action="close-guidance" aria-label="${escapeHtml(t.close)}">${icon.close()}</button>
+      ${renderGuidanceBox(state, { modal: true })}
     </div>
   `;
 }
@@ -439,6 +452,7 @@ export function renderApp(state) {
       </main>
       ${renderSavedDrawer(state)}
       ${renderShareModal(state)}
+      ${renderGuidanceModal(state)}
     </div>
   `;
 }

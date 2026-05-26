@@ -56,11 +56,12 @@
     "about": "Ku saabsan",
     "readStory": "Akhri sheekada",
     "anotherStory": "Arag sheeko kale",
-    "exploreFilters": "Ku sahamin sheekooyinka shaandhooyinka"
+    "exploreFilters": "Ku sahamin sheekooyinka shaandhooyinka",
+    "storyFlow": "Sida sheekooyinku u socdaan"
   },
   "landing": {
     "section1NexusLines": [
-      "CIMILADA \u00B7 KHILAAFKA \u00B7 DEEGAANKA \u00B7 NABADDA"
+      "CIMILADA · KHILAAFKA · DEEGAANKA · NABADDA"
     ],
     "section1TitleLines": [
       "Sheeko-muuqaal",
