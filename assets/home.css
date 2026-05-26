@@ -10,53 +10,16 @@
   overflow: hidden;
 }
 
-/* ── /about-style position badges ──────────────────────────── */
-/* Same colours, font treatment, and corner placement as
-   landing-copy-card--nexus / --title in the /about hero panel  */
-.home-badge {
+/* ── /about badge classes reused on home — positioning only ── */
+/* landing-copy-card--nexus and --title supply colours/fonts via landing.css */
+.home-shell .landing-copy-card--nexus,
+.home-shell .landing-copy-card--title {
   position: fixed;
   z-index: 90;
-  padding: clamp(0.9rem, 1.8vw, 1.6rem) clamp(1rem, 2vw, 1.8rem);
-  max-width: min(34vw, 260px);
-  font-weight: 300;
-  line-height: 1.22;
-  pointer-events: none;
-}
-.home-badge p {
   margin: 0;
-  display: flex;
-  flex-direction: column;
 }
-.home-badge p span {
-  display: block;
-}
-
-.home-badge--nexus {
-  top: 0;
-  left: 0;
-  border-radius: 0 0 1rem 0;
-  background: rgba(141, 82, 15, 0.82);
-  color: #f8efe5;
-  font-size: clamp(0.6rem, 1vw, 0.88rem);
-}
-.home-badge--title {
-  bottom: 0;
-  right: 0;
-  border-radius: 1rem 0 0 0;
-  background: rgba(104, 103, 101, 0.82);
-  color: #c48514;
-  font-size: clamp(0.6rem, 0.9vw, 0.82rem);
-  text-align: right;
-}
-html[data-theme="light"] .home-badge--nexus {
-  background: rgba(140, 75, 10, 0.92);
-}
-html[data-theme="light"] .home-badge--title {
-  background: rgba(90, 86, 82, 0.92);
-  color: #e8a020;
-}
-
-/* ── Menu — same position as /stories and /about ─────────────── */
+.home-shell .landing-copy-card--nexus { top: 0;    left: 0;  }
+.home-shell .landing-copy-card--title { bottom: 0; right: 0; }
 /* .utility-menu-shell from styles.css handles the anchor;
    we just need to place the shell in the top-right */
 .home-menu-shell {
@@ -155,13 +118,6 @@ html[data-theme="light"] .home-card {
 
 /* ── Mobile ─────────────────────────────────────────────────── */
 @media (max-width: 600px) {
-  .home-badge {
-    max-width: 44vw;
-    padding: 0.6rem 0.8rem;
-  }
-  .home-badge--nexus { font-size: 0.58rem; }
-  .home-badge--title { font-size: 0.55rem; }
-
   .home-card {
     flex-direction: column;
     max-height: calc(100svh - 5rem);

@@ -189,19 +189,15 @@ function renderPage() {
     </div>
   ` : `<div class="home-loading">${esc(t.loading)}</div>`;
 
-  // /about-style badges: nexus (top-left) and title (bottom-right)
-  const nexusLines = (landing.section1NexusLines || []).map((l) => `<span>${esc(l)}</span>`).join('<br>');
-  const titleLines = (landing.section1TitleLines || []).map((l) => `<span>${esc(l)}</span>`).join('<br>');
-
   app.innerHTML = `
     <div class="home-shell">
 
-      <!-- /about-style position badges -->
-      <div class="home-badge home-badge--nexus">
-        <p>${nexusLines}</p>
+      <!-- badges: reuse exact /about classes for identical look -->
+      <div class="landing-copy-card landing-copy-card--nexus home-badge-nexus">
+        <p>${(landing.section1NexusLines || []).map((l) => `<span>${esc(l)}</span>`).join('<br>')}</p>
       </div>
-      <div class="home-badge home-badge--title">
-        <p>${titleLines}</p>
+      <div class="landing-copy-card landing-copy-card--title home-badge-title">
+        <p>${(landing.section1TitleLines || []).map((l) => `<span>${esc(l)}</span>`).join('<br>')}</p>
       </div>
 
       ${renderMenu(t)}
