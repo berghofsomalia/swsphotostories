@@ -1,14 +1,19 @@
 import { getLandingText, getUiText, STORAGE_KEYS, initialiseI18n } from './content.js';
 import { fetchStories } from './api.js';
+import { renderMenu } from './menu.js';
 
 const state = {
-  language: localStorage.getItem(STORAGE_KEYS.language) || 'en',
-  theme: localStorage.getItem(STORAGE_KEYS.theme) || 'dark',
-  stories: [],
-  menuOpen: false,
+  language:   localStorage.getItem(STORAGE_KEYS.language) || 'en',
+  theme:      localStorage.getItem(STORAGE_KEYS.theme)    || 'dark',
+  stories:    [],
+  menuOpen:   false,
+  savedOpen:  false,
+  savedIds:   [],
   landingMap: '',
   landingSectionImages: {}
 };
+
+try { state.savedIds = JSON.parse(localStorage.getItem(STORAGE_KEYS.saved) || '[]'); } catch {}
 
 function saveState() {
   localStorage.setItem(STORAGE_KEYS.language, state.language);
@@ -60,62 +65,49 @@ async function loadLandingAssets() {
   state.landingSectionImages = Object.fromEntries(sections.map((s, i) => [s, resolved[i]]));
 }
 
-// ── Utility menu (same pattern as /stories) ───────────────────────────────────
-
-const menuIcon  = () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/></svg>';
+// ── Icons ─────────────────────────────────────────────────────────────────────
 const closeIcon = () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>';
-const homeIcon  = () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 12 5l8 6.5"/><path d="M6.5 10.5V20h11V10.5"/></svg>';
-const aboutIcon = () => '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01"/><path d="M11 12h1v4h1"/></svg>';
 
-function renderMenu(t) {
+// ── Saved drawer ──────────────────────────────────────────────────────────────
+function renderSavedDrawer(t) {
+  const savedStories = state.stories.filter((s) => state.savedIds.includes(s.id));
   return `
-    <div class="utility-menu-shell">
-      ${state.menuOpen
-        ? `<button type="button" class="utility-menu-backdrop" data-action="close-menu" aria-label="${escapeHtml(t.close)}"></button>`
-        : ''}
-      <div class="utility-menu ${state.menuOpen ? 'is-open' : ''}">
-        <button type="button" class="utility-menu-toggle" data-action="toggle-menu"
-          aria-label="${escapeHtml(t.menu)}" aria-expanded="${state.menuOpen}">
-          ${menuIcon()}
-        </button>
-        <div class="utility-menu-panel" aria-hidden="${!state.menuOpen}">
-
-          <div class="utility-menu-pill utility-menu-pill--single">
-            <a class="utility-menu-control utility-menu-control--single" href="../">
-              <span class="utility-menu-control-copy">
-                <span class="utility-menu-control-icon" aria-hidden="true">${homeIcon()}</span>
-                <span>${escapeHtml(t.home)}</span>
-              </span>
-            </a>
-          </div>
-
-          <div class="utility-menu-pill utility-menu-pill--single">
-            <a class="utility-menu-control utility-menu-control--single" href="../about/">
-              <span class="utility-menu-control-copy">
-                <span class="utility-menu-control-icon" aria-hidden="true">${aboutIcon()}</span>
-                <span>${escapeHtml(t.about)}</span>
-              </span>
-            </a>
-          </div>
-
-          <div class="utility-menu-group">
-            <div class="utility-menu-pill utility-menu-switchers" role="group" aria-label="Language selector">
-              <button type="button" class="utility-menu-control ${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">${escapeHtml(t.shortSo)}</button>
-              <button type="button" class="utility-menu-control ${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">${escapeHtml(t.shortEn)}</button>
-            </div>
-          </div>
-
-          <div class="utility-menu-group">
-            <div class="utility-menu-pill utility-menu-switchers" role="group" aria-label="Theme selector">
-              <button type="button" class="utility-menu-control ${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${escapeHtml(t.dark)}</button>
-              <button type="button" class="utility-menu-control ${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${escapeHtml(t.light)}</button>
-            </div>
-          </div>
-
+    ${state.savedOpen
+      ? `<button type="button" class="saved-drawer-backdrop is-open" data-action="close-saved" aria-label="${escapeHtml(t.close)}"></button>`
+      : ''}
+    <aside class="saved-drawer ${state.savedOpen ? 'is-open' : ''}" aria-hidden="${!state.savedOpen}">
+      <div class="drawer-header drawer-header--inline">
+        <div class="drawer-title-row">
+          <button type="button" class="icon-button drawer-close-button" data-action="close-saved">${closeIcon()}</button>
+          <div class="drawer-title">${escapeHtml(t.savedPhotostories)}</div>
         </div>
       </div>
-    </div>
+      <div class="drawer-body">
+        ${savedStories.length === 0
+          ? `<div class="drawer-empty">${escapeHtml(t.noSaved)}</div>`
+          : savedStories.map((s) => `
+            <a class="saved-item" href="../stories/?code=${escapeHtml(s.id)}">
+              <div class="saved-thumb">
+                <img src="../stories/${escapeHtml(s.images?.[0] || '')}" alt="${escapeHtml(s.storyteller)}" style="width:100%;height:100%;object-fit:cover;">
+              </div>
+              <div class="saved-copy">
+                <div class="saved-name">${escapeHtml(s.storyteller)}</div>
+                <div class="saved-summary">${escapeHtml(s.summary?.en || '')}</div>
+              </div>
+            </a>`).join('')}
+      </div>
+    </aside>
   `;
+}
+
+function renderMenuForAbout(t) {
+  return renderMenu(state, {
+    esc: escapeHtml,
+    t,
+    basePaths: { home: '../', about: './', stories: '../stories/' },
+    savedCount:  state.savedIds.length,
+    savedAction: 'open-saved'
+  });
 }
 
 function renderLandingPage() {
@@ -127,17 +119,25 @@ function renderLandingPage() {
   const t = getUiText(state.language);
   const si = state.landingSectionImages;
 
-  document.title = `${escapeHtml(t.about)} — ${escapeHtml(t.siteTitle)}`;
+  document.title = `${t.about} — ${t.siteTitle}`;
+
+  // Images after section 1 use loading="lazy" + data-src for intersection
+  // observer deferred loading (avoids blocking on many images at once)
+  const lazyImg = (src, alt = '', eager = false) =>
+    eager
+      ? `<img src="${escapeHtml(src)}" alt="${escapeHtml(alt)}" loading="eager" aria-hidden="true">`
+      : `<img data-src="${escapeHtml(src)}" src="" alt="${escapeHtml(alt)}" loading="lazy" class="lazy-img" aria-hidden="true">`;
 
   app.innerHTML = `
     <div class="intro-modal intro-modal--pdfstyle landing-page-shell">
-      ${renderMenu(t)}
+      ${renderMenuForAbout(t)}
+      ${renderSavedDrawer(t)}
       <div class="intro-scroll intro-scroll--pdfstyle">
 
         <section class="landing-pdf-section landing-pdf-section--1">
           <div class="landing-pdf-grid landing-pdf-grid--hero">
             <div class="landing-photo-pane landing-photo-pane--hero">
-              <img src="${si[1] || ''}" alt="" loading="eager" aria-hidden="true">
+              ${lazyImg(si[1] || '', '', true)}
             </div>
             <div class="landing-copy-card landing-copy-card--nexus">
               <p>${renderLineBreakCopy(landing.section1NexusLines)}</p>
@@ -151,7 +151,7 @@ function renderLandingPage() {
         <section class="landing-pdf-section landing-pdf-section--2">
           <div class="landing-pdf-grid landing-pdf-grid--two-col">
             <div class="landing-map-pane">
-              <img src="${state.landingMap}" alt="" loading="eager" aria-hidden="true">
+              ${lazyImg(state.landingMap)}
             </div>
             <div class="landing-copy-card landing-copy-card--section2">
               <p>${escapeHtml(landing.section2Body)}</p>
@@ -162,7 +162,7 @@ function renderLandingPage() {
         <section class="landing-pdf-section landing-pdf-section--3">
           <div class="landing-pdf-grid landing-pdf-grid--questions">
             <div class="landing-photo-pane landing-photo-pane--questions">
-              <img src="${si[3] || ''}" alt="" loading="eager" aria-hidden="true">
+              ${lazyImg(si[3] || '')}
             </div>
             <div class="landing-copy-card landing-copy-card--pondered">
               <p>${escapeHtml(landing.section3Lead)}</p>
@@ -177,7 +177,7 @@ function renderLandingPage() {
         <section class="landing-pdf-section landing-pdf-section--4">
           <div class="landing-pdf-grid landing-pdf-grid--shared">
             <div class="landing-photo-pane landing-photo-pane--shared">
-              <img src="${si[4] || ''}" alt="" loading="eager" aria-hidden="true">
+              ${lazyImg(si[4] || '')}
             </div>
             <div class="landing-copy-card landing-copy-card--section4">
               <p>${renderLineBreakCopy(landing.section4Lines)}</p>
@@ -188,7 +188,7 @@ function renderLandingPage() {
         <section class="landing-pdf-section landing-pdf-section--5">
           <div class="landing-pdf-grid landing-pdf-grid--cta">
             <div class="landing-photo-pane landing-photo-pane--cta">
-              <img src="${si[5] || ''}" alt="" loading="eager" aria-hidden="true">
+              ${lazyImg(si[5] || '')}
             </div>
             <div class="landing-copy-card landing-copy-card--cta-spacer"></div>
             <div class="landing-copy-card landing-copy-card--section5">
@@ -205,6 +205,21 @@ function renderLandingPage() {
       </div>
     </div>
   `;
+
+  // Intersection observer: swap data-src → src as sections scroll into view
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      const img = entry.target;
+      if (img.dataset.src) {
+        img.src = img.dataset.src;
+        delete img.dataset.src;
+      }
+      observer.unobserve(img);
+    });
+  }, { rootMargin: '200px' });
+
+  document.querySelectorAll('.lazy-img').forEach((img) => observer.observe(img));
 }
 
 function attachListeners() {
@@ -219,6 +234,17 @@ function attachListeners() {
     }
     if (target.dataset.action === 'close-menu') {
       state.menuOpen = false;
+      renderLandingPage();
+      return;
+    }
+    if (target.dataset.action === 'open-saved') {
+      state.menuOpen  = false;
+      state.savedOpen = true;
+      renderLandingPage();
+      return;
+    }
+    if (target.dataset.action === 'close-saved') {
+      state.savedOpen = false;
       renderLandingPage();
       return;
     }
@@ -237,9 +263,9 @@ function attachListeners() {
   });
 
   document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && state.menuOpen) {
-      state.menuOpen = false;
-      renderLandingPage();
+    if (event.key === 'Escape') {
+      if (state.savedOpen) { state.savedOpen = false; renderLandingPage(); }
+      else if (state.menuOpen) { state.menuOpen = false; renderLandingPage(); }
     }
   });
 }

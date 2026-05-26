@@ -5,6 +5,7 @@ import {
   getUiText,
   labelFor
 } from './content.js';
+import { renderMenu } from './menu.js';
 import {
   allClusters,
   allDistricts,
@@ -105,57 +106,13 @@ function storyTagChips(state, story) {
 
 function renderUtilityMenu(state) {
   const t = getUiText(state.language);
-  return `
-    <div class="utility-menu-shell">
-      ${state.menuOpen ? `<button type="button" class="utility-menu-backdrop" data-action="close-menu" aria-label="${escapeHtml(t.close)}"></button>` : ''}
-      <div class="utility-menu ${state.menuOpen ? 'is-open' : ''}">
-        <button type="button" class="utility-menu-toggle" data-action="toggle-menu"
-          aria-label="${escapeHtml(t.menu)}" aria-expanded="${state.menuOpen}">
-          ${icon.menu()}
-        </button>
-        <div class="utility-menu-panel" aria-hidden="${!state.menuOpen}">
-          <div class="utility-menu-pill utility-menu-pill--single">
-            <a class="utility-menu-control utility-menu-control--single" href="../">
-              <span class="utility-menu-control-copy">
-                <span class="utility-menu-control-icon" aria-hidden="true">${icon.home()}</span>
-                <span>${escapeHtml(t.home)}</span>
-              </span>
-            </a>
-          </div>
-          <div class="utility-menu-pill utility-menu-pill--single">
-            <a class="utility-menu-control utility-menu-control--single" href="../about/">
-              <span class="utility-menu-control-copy">
-                <span class="utility-menu-control-icon" aria-hidden="true">${icon.about()}</span>
-                <span>${escapeHtml(t.about)}</span>
-              </span>
-            </a>
-          </div>
-          <div class="utility-menu-pill utility-menu-pill--single">
-            <button type="button" class="utility-menu-control utility-menu-control--single"
-              data-action="open-saved" aria-label="${escapeHtml(t.openSaved)}">
-              <span class="utility-menu-control-copy">
-                <span class="utility-menu-control-icon" aria-hidden="true">${icon.bookmark()}</span>
-                <span>${escapeHtml(t.saved)}</span>
-              </span>
-              <span class="utility-menu-badge">${state.savedIds.length}</span>
-            </button>
-          </div>
-          <div class="utility-menu-group">
-            <div class="utility-menu-pill utility-menu-switchers" role="group" aria-label="Language selector">
-              <button type="button" class="utility-menu-control ${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">${escapeHtml(t.shortSo)}</button>
-              <button type="button" class="utility-menu-control ${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">${escapeHtml(t.shortEn)}</button>
-            </div>
-          </div>
-          <div class="utility-menu-group">
-            <div class="utility-menu-pill utility-menu-switchers" role="group" aria-label="Theme selector">
-              <button type="button" class="utility-menu-control ${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${escapeHtml(t.dark)}</button>
-              <button type="button" class="utility-menu-control ${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${escapeHtml(t.light)}</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
+  return renderMenu(state, {
+    esc: escapeHtml,
+    t,
+    basePaths: { home: '../', about: '../about/', stories: './' },
+    savedCount:  state.savedIds.length,
+    savedAction: 'open-saved'
+  });
 }
 
 function renderStageControls(state, story) {
@@ -358,7 +315,7 @@ export function renderApp(state) {
   document.title = t.siteTitle;
 
   // Flat one-liner context strips — always visible in /stories
-  const nexusOneliner = (landing.section1NexusLines || []).slice(1).join(' · ');
+  const nexusOneliner = (landing.section1NexusLines || []).join(' ');
   const titleOneliner = (landing.section1TitleLines || []).join(' · ');
   const contextStrips = `
     <div class="context-strip context-strip--top" aria-hidden="true">${escapeHtml(nexusOneliner)}</div>
