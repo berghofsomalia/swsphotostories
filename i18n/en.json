@@ -1,6 +1,6 @@
 {
   "ui": {
-    "siteTitle": "Photostories from Southwest State",
+    "siteTitle": "Visual Storytelling from Southwest State",
     "dark": "Dark",
     "light": "Light",
     "shortSo": "SO",
@@ -60,9 +60,7 @@
   },
   "landing": {
     "section1NexusLines": [
-      "The nexus of",
-      "CLIMATE · CONFLICT",
-      "ENVIRONMENT · PEACE"
+      "CLIMATE · CONFLICT · "ENVIRONMENT · PEACE"
     ],
     "section1TitleLines": [
       "Visual storytelling",
