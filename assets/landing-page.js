@@ -5,7 +5,7 @@ const state = {
   language: localStorage.getItem(STORAGE_KEYS.language) || 'en',
   theme: localStorage.getItem(STORAGE_KEYS.theme) || 'dark',
   stories: [],
-  landingMap: 'images/landing/map 2.png',
+  landingMap: 'about/images/map 2.png',
   landingSectionImages: {}
 };
 
@@ -44,7 +44,7 @@ async function loadSectionImage(sectionNumber) {
 
   for (let index = 1; index <= 6; index += 1) {
     extensions.forEach((extension) => {
-      probes.push(`images/landing/${sectionNumber} (${index}).${extension}`);
+      probes.push(`about/images/${sectionNumber} (${index}).${extension}`);
     });
   }
 
@@ -58,9 +58,9 @@ async function loadSectionImage(sectionNumber) {
 }
 
 async function loadLandingAssets() {
-  const primaryMap = await imageExists('images/landing/map 2.png');
-  const fallbackMap = await imageExists('images/landing/sws on somalia map_wrinkle.png');
-  state.landingMap = primaryMap || fallbackMap || 'assets/sws-map-wrinkle.png';
+  const primaryMap = await imageExists('about/images/map 2.png');
+  const fallbackMap = await imageExists('about/images/sws on somalia map_wrinkle.png');
+  state.landingMap = primaryMap || fallbackMap || 'about/images/map 2.png';
 
   const sections = [1, 3, 4, 5];
   const resolved = await Promise.all(sections.map((section) => loadSectionImage(section)));
@@ -204,6 +204,6 @@ init().catch((error) => {
   console.error(error);
   const app = document.querySelector('#app');
   if (app) {
-    app.innerHTML = '<div class="error-state">Failed to load the landing page. Check the browser console and verify that data/stories.json and the images folder were published.</div>';
+    app.innerHTML = '<div class="error-state">Failed to load the landing page. Check the browser console and verify Supabase configuration.</div>';
   }
 });

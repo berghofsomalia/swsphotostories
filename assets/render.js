@@ -1,5 +1,4 @@
 import {
-  actorLabel,
   getGuidanceText,
   getLandingText,
   getUiText,
@@ -7,11 +6,9 @@ import {
 } from './content.js';
 import { renderMenu } from './menu.js';
 import {
-  allClusters,
   allDistricts,
   allPeople,
-  allPrimaryThemes,
-  allSecondaryThemes,
+  allTagClusters,
   countForFilters,
   currentStory,
   filteredStories,
@@ -19,17 +16,12 @@ import {
   hasMoreStories,
   isSaved,
   pagedStories,
-  resolveSlug,
   storyCountLabel
 } from './story-data.js';
-import { createEmptyFilters } from './state.js';
 
 export const qs = (selector, root = document) => root.querySelector(selector);
 export const qsa = (selector, root = document) => Array.from(root.querySelectorAll(selector));
 
-// syncGalleryCardHeights is no longer needed — gallery-grid now uses
-// CSS grid with align-items: stretch so cards fill their row naturally.
-// Kept as a no-op so any remaining callers don't break.
 export function syncGalleryCardHeights() {}
 
 const icon = {
@@ -46,9 +38,6 @@ const icon = {
   x:            () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 3H21l-4.6 5.3L22 21h-4.7l-3.7-4.9L9.4 21H7.3l4.9-5.6L2 3h4.8l3.4 4.6L18.9 3zm-1.6 16h1.3L6.1 4.9H4.7L17.3 19z"/></svg>',
   email:        () => '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg>',
   close:        () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>',
-  menu:         () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/></svg>',
-  home:         () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 12 5l8 6.5"/><path d="M6.5 10.5V20h11V10.5"/></svg>',
-  about:        () => '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01"/><path d="M11 12h1v4h1"/></svg>',
   search:       () => '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>'
 };
 
@@ -62,11 +51,12 @@ function escapeHtml(value = '') {
 }
 
 function adaptiveImageMarkup(src, alt, mode = 'contain', extraClass = '') {
+  const safeSrc = escapeHtml(src || '');
   return `
     <div class="adaptive-image ${mode === 'cover' ? 'is-cover' : 'is-contain'} ${extraClass}">
-      <img class="adaptive-image-bg" src="${src}" alt="" aria-hidden="true">
+      <img class="adaptive-image-bg" src="${safeSrc}" alt="" aria-hidden="true">
       <div class="adaptive-image-overlay"></div>
-      <img class="adaptive-image-fg" src="${src}" alt="${escapeHtml(alt)}" loading="lazy">
+      <img class="adaptive-image-fg" src="${safeSrc}" alt="${escapeHtml(alt)}" loading="lazy">
     </div>
   `;
 }
@@ -81,11 +71,11 @@ function renderChip(label, options = {}) {
   const content = `<span>${escapeHtml(label)}</span>${countMarkup}`;
 
   if (!options.onClick) return `<span class="${classes.join(' ')}">${content}</span>`;
-  return `<button type="button" class="${classes.join(' ')}" data-action="${options.onClick.action}" data-value="${escapeHtml(options.onClick.value)}">${content}</button>`;
+  return `<button type="button" class="${classes.join(' ')}" data-action="${escapeHtml(options.onClick.action)}" data-value="${escapeHtml(options.onClick.value)}">${content}</button>`;
 }
 
 function renderParagraphBlock(text) {
-  return text
+  return String(text || '')
     .split(/\n\s*\n/)
     .map((p) => p.trim())
     .filter(Boolean)
@@ -93,14 +83,9 @@ function renderParagraphBlock(text) {
     .join('') || '<p></p>';
 }
 
-function storyTagChips(state, story) {
-  const chips = [
-    renderChip(labelFor(story.district, state.language)),
-    renderChip(labelFor(story.cluster, state.language), { muted: true }),
-    renderChip(labelFor(story.primaryTheme, state.language))
-  ];
-  story.secondaryThemes.forEach((t) => chips.push(renderChip(labelFor(t, state.language), { muted: true })));
-  story.actors.forEach((p) => chips.push(renderChip(actorLabel(p, state.language), { muted: true })));
+function tagChips(state, story) {
+  const chips = [renderChip(labelFor(story.district, state.language))];
+  (story.tags || []).forEach((tag) => chips.push(renderChip(labelFor(tag, state.language), { muted: tag.clusterSlug === 'people' })));
   return chips.join('');
 }
 
@@ -110,13 +95,14 @@ function renderUtilityMenu(state) {
     esc: escapeHtml,
     t,
     basePaths: { home: '../', about: '../about/', stories: './' },
-    savedCount:  state.savedIds.length,
+    savedCount: state.savedIds.length,
     savedAction: 'open-saved'
   });
 }
 
 function renderStageControls(state, story) {
   const t = getUiText(state.language);
+  if ((story.images || []).length <= 1) return '';
   const dots = story.images.map((_, i) => `
     <button type="button" class="stage-dot ${i === state.currentImageIndex ? 'is-active' : ''}"
       data-action="go-image" data-value="${i}" aria-label="${escapeHtml(t.imageLabel)} ${i + 1}">
@@ -138,7 +124,7 @@ function renderStoryMetaPanel(state, story) {
         <h1 class="story-meta-name">${escapeHtml(story.storyteller)}</h1>
         <p class="story-meta-teaser">${escapeHtml(labelFor(story.summary, state.language))}</p>
       </div>
-      <div class="tag-row story-meta-tags">${storyTagChips(state, story)}</div>
+      <div class="tag-row story-meta-tags">${tagChips(state, story)}</div>
       <div class="story-meta-divider" aria-hidden="true"></div>
       ${renderGuidanceBox(state, { compact: true, plain: true })}
     </aside>
@@ -161,14 +147,14 @@ function renderSavedDrawer(state) {
         ${savedStories.length === 0
           ? `<div class="drawer-empty">${escapeHtml(t.noSaved)}</div>`
           : savedStories.map((s) => `
-            <button type="button" class="saved-item" data-action="open-saved-story" data-value="${s.id}">
-              <div class="saved-thumb">${adaptiveImageMarkup(s.images[0], s.storyteller, 'cover')}</div>
+            <button type="button" class="saved-item" data-action="open-saved-story" data-value="${escapeHtml(s.id)}">
+              <div class="saved-thumb">${adaptiveImageMarkup(s.images?.[0], s.storyteller, 'cover')}</div>
               <div class="saved-copy">
                 <div class="saved-name">${escapeHtml(s.storyteller)}</div>
                 <div class="saved-summary">${escapeHtml(labelFor(s.summary, state.language))}</div>
                 <div class="saved-tags">
                   ${renderChip(labelFor(s.district, state.language), { muted: true })}
-                  ${renderChip(labelFor(s.primaryTheme, state.language))}
+                  ${(s.topicTags || []).slice(0, 1).map((tag) => renderChip(labelFor(tag, state.language))).join('')}
                 </div>
               </div>
             </button>
@@ -178,7 +164,7 @@ function renderSavedDrawer(state) {
   `;
 }
 
-function renderShareModal(state, story) {
+function renderShareModal(state) {
   const t = getUiText(state.language);
   return `
     <div class="modal-backdrop ${state.shareOpen ? 'is-open' : ''}" data-action="close-share"></div>
@@ -217,45 +203,46 @@ function renderGuidanceBox(state, options = {}) {
   `;
 }
 
-/**
- * Renders a filter chip group.
- * The allCountFilters baseline clears only the group being rendered so the
- * "All" chip count reflects what you'd see after deselecting this filter.
- */
-function renderFilterGroup(state, title, allLabel, items, currentValue, action, isMulti = false) {
-  const base = {
-    district: state.filters.district,
-    cluster: state.filters.cluster,
-    primaryTheme: state.filters.primaryTheme,
-    secondaryThemes: [...state.filters.secondaryThemes],
-    people: [...state.filters.people],
-    searchQuery: state.filters.searchQuery
+function cloneFilters(filters) {
+  return {
+    district: filters.district,
+    people: [...filters.people],
+    tags: [...filters.tags],
+    searchQuery: filters.searchQuery
   };
-  const allCountFilters = { ...base };
-  if (action === 'filter-district')   allCountFilters.district = '';
-  if (action === 'filter-cluster')    allCountFilters.cluster = '';
-  if (action === 'filter-primary')    allCountFilters.primaryTheme = '';
-  if (action === 'filter-secondary')  allCountFilters.secondaryThemes = [];
-  if (action === 'filter-people')     allCountFilters.people = [];
+}
+
+function renderFilterGroup(state, title, allLabel, items, currentValue, action, options = {}) {
+  const isMulti = options.multi !== false;
+  const filterKey = options.filterKey;
+  const groupSlugs = items.map((item) => item.value);
+  const base = cloneFilters(state.filters);
+  const allCountFilters = cloneFilters(state.filters);
+
+  if (filterKey === 'district') allCountFilters.district = '';
+  if (filterKey === 'people') allCountFilters.people = [];
+  if (filterKey === 'tags') allCountFilters.tags = allCountFilters.tags.filter((slug) => !groupSlugs.includes(slug));
+
+  const groupHasActive = isMulti
+    ? currentValue.some((value) => groupSlugs.includes(value))
+    : Boolean(currentValue);
 
   return `
     <section class="filter-group">
       <h3>${escapeHtml(title)}</h3>
       <div class="chip-list">
         ${renderChip(allLabel, {
-          active: isMulti ? currentValue.length === 0 : !currentValue,
+          active: !groupHasActive,
           muted: true,
           count: countForFilters(state, allCountFilters),
-          onClick: { action: `${action}-all`, value: '' }
+          onClick: { action: `${action}-all`, value: options.groupValue || '' }
         })}
         ${items.map((item) => {
           const active = isMulti ? currentValue.includes(item.value) : currentValue === item.value;
-          const nextFilters = { ...base };
-          if (action === 'filter-district')  nextFilters.district = item.value;
-          if (action === 'filter-cluster')   nextFilters.cluster = item.value;
-          if (action === 'filter-primary')   nextFilters.primaryTheme = item.value;
-          if (action === 'filter-secondary' && !nextFilters.secondaryThemes.includes(item.value)) nextFilters.secondaryThemes.push(item.value);
-          if (action === 'filter-people'    && !nextFilters.people.includes(item.value))          nextFilters.people.push(item.value);
+          const nextFilters = cloneFilters(base);
+          if (filterKey === 'district') nextFilters.district = item.value;
+          if (filterKey === 'people' && !nextFilters.people.includes(item.value)) nextFilters.people.push(item.value);
+          if (filterKey === 'tags' && !nextFilters.tags.includes(item.value)) nextFilters.tags.push(item.value);
           return renderChip(item.label, {
             active,
             muted: !active,
@@ -290,9 +277,29 @@ function renderSearchBox(state) {
 function storyGalleryHeader(state) {
   const count = filteredStories(state).length;
   const t = getUiText(state.language);
-  if (state.galleryMode === 'related')  return storyCountLabel(count, t.relatedStory, t.relatedStories);
+  if (state.galleryMode === 'related') return storyCountLabel(count, t.relatedStory, t.relatedStories);
   if (state.galleryMode === 'filtered') return storyCountLabel(count, t.filteredStory, t.filteredStories);
   return storyCountLabel(count, t.totalStory, t.totalStories);
+}
+
+function renderGalleryCard(state, item) {
+  const t = getUiText(state.language);
+  const visibleTags = [...(item.topicTags || []), ...(item.people || [])];
+  return `
+    <button type="button" class="gallery-card" data-action="open-story" data-value="${escapeHtml(item.id)}">
+      <div class="gallery-image-frame">
+        <img class="gallery-image-cover" src="${escapeHtml(item.images?.[0] || '')}" alt="${escapeHtml(item.storyteller)}" loading="lazy">
+      </div>
+      <div class="gallery-card-body">
+        <p class="gallery-summary">${escapeHtml(labelFor(item.summary, state.language))}</p>
+        <div class="tag-row small">
+          ${renderChip(labelFor(item.district, state.language), { muted: true })}
+          ${visibleTags.map((tag) => renderChip(labelFor(tag, state.language), { muted: tag.clusterSlug === 'people' })).join('')}
+        </div>
+        ${isSaved(state, item.id) ? `<div class="saved-marker">${icon.bookmark()}<span>${escapeHtml(t.saved)}</span></div>` : ''}
+      </div>
+    </button>
+  `;
 }
 
 export function renderApp(state) {
@@ -306,15 +313,16 @@ export function renderApp(state) {
   const totalFiltered = filteredStories(state).length;
   const moreAvailable = hasMoreStories(state);
 
-  const districtItems  = allDistricts(state).map((d) => ({ value: d.slug,              label: labelFor(d, state.language) }));
-  const clusterItems   = allClusters(state).map((c)  => ({ value: resolveSlug(c),       label: labelFor(c, state.language) }));
-  const primaryItems   = allPrimaryThemes(state).map((th) => ({ value: th.slug,         label: labelFor(th, state.language) }));
-  const secondaryItems = allSecondaryThemes(state).map((th) => ({ value: th.slug,       label: labelFor(th, state.language) }));
-  const peopleItems    = allPeople(state).map((p) => ({ value: p,                        label: actorLabel(p, state.language) }));
+  const districtItems = allDistricts(state).map((d) => ({ value: d.slug, label: labelFor(d, state.language) }));
+  const peopleItems = allPeople(state).map((p) => ({ value: p.slug, label: labelFor(p, state.language) }));
+  const tagGroups = allTagClusters(state).map((cluster) => ({
+    ...cluster,
+    label: labelFor(cluster, state.language),
+    items: cluster.tags.map((tag) => ({ value: tag.slug, label: labelFor(tag, state.language) }))
+  }));
 
   document.title = t.siteTitle;
 
-  // Flat one-liner context strips — always visible in /stories
   const nexusOneliner = (landing.section1NexusLines || []).join(' ');
   const titleOneliner = (landing.section1TitleLines || []).join(' · ');
   const contextStrips = `
@@ -322,8 +330,9 @@ export function renderApp(state) {
     <div class="context-strip context-strip--bottom" aria-hidden="true">${escapeHtml(titleOneliner)}</div>
   `;
 
-  const storySlides = story.images.map((src, i) => `
-    <div class="story-slide ${i === state.currentImageIndex ? 'is-active' : ''}">
+  const imageIndex = Math.min(state.currentImageIndex, Math.max((story.images || []).length - 1, 0));
+  const storySlides = (story.images || []).map((src, i) => `
+    <div class="story-slide ${i === imageIndex ? 'is-active' : ''}">
       ${adaptiveImageMarkup(src, story.storyteller, 'contain', 'story-stage-image')}
     </div>
   `).join('');
@@ -372,30 +381,12 @@ export function renderApp(state) {
     </section>
   ` : '';
 
-  // Empty state when filters produce no results
   const galleryGridMarkup = visibleStories.length === 0
     ? `<div class="gallery-empty">
         <p>${escapeHtml(t.noResults)}</p>
         <button type="button" class="action-button" data-action="reset-filters">${escapeHtml(t.reset)}</button>
       </div>`
-    : visibleStories.map((item) => `
-        <button type="button" class="gallery-card" data-action="open-story" data-value="${item.id}">
-          <div class="gallery-image-frame">
-            <img class="gallery-image-cover" src="${item.images[0]}" alt="${escapeHtml(item.storyteller)}" loading="lazy">
-          </div>
-          <div class="gallery-card-body">
-            <p class="gallery-summary">${escapeHtml(labelFor(item.summary, state.language))}</p>
-            <div class="tag-row small">
-              ${renderChip(labelFor(item.district, state.language), { muted: true })}
-              ${renderChip(labelFor(item.cluster, state.language), { muted: true })}
-              ${renderChip(labelFor(item.primaryTheme, state.language))}
-              ${item.secondaryThemes.map((th) => renderChip(labelFor(th, state.language), { muted: true })).join('')}
-              ${item.actors.map((p) => renderChip(actorLabel(p, state.language), { muted: true })).join('')}
-            </div>
-            ${isSaved(state, item.id) ? `<div class="saved-marker">${icon.bookmark()}<span>${escapeHtml(t.saved)}</span></div>` : ''}
-          </div>
-        </button>
-      `).join('');
+    : visibleStories.map((item) => renderGalleryCard(state, item)).join('');
 
   const loadMoreMarkup = moreAvailable
     ? `<div class="load-more-row">
@@ -404,6 +395,16 @@ export function renderApp(state) {
         </button>
       </div>`
     : '';
+
+  const filterGroupsMarkup = [
+    renderFilterGroup(state, t.district, t.all, districtItems, state.filters.district, 'filter-district', { multi: false, filterKey: 'district' }),
+    renderFilterGroup(state, t.people, t.all, peopleItems, state.filters.people, 'filter-people', { multi: true, filterKey: 'people' }),
+    ...tagGroups.map((group) => renderFilterGroup(state, group.label, t.all, group.items, state.filters.tags, 'filter-tag', {
+      multi: true,
+      filterKey: 'tags',
+      groupValue: group.slug
+    }))
+  ].join('');
 
   const galleryMarkup = state.galleryVisible ? `
     <section id="gallery" class="gallery-band gallery-band--entry">
@@ -417,11 +418,7 @@ export function renderApp(state) {
               </button>
             </div>
             ${renderSearchBox(state)}
-            ${renderFilterGroup(state, t.district,        t.all, districtItems,  state.filters.district,       'filter-district')}
-            ${renderFilterGroup(state, t.cluster,         t.all, clusterItems,   state.filters.cluster,        'filter-cluster')}
-            ${renderFilterGroup(state, t.primaryTheme,    t.all, primaryItems,   state.filters.primaryTheme,   'filter-primary')}
-            ${renderFilterGroup(state, t.secondaryThemes, t.all, secondaryItems, state.filters.secondaryThemes,'filter-secondary', true)}
-            ${renderFilterGroup(state, t.people,          t.all, peopleItems,    state.filters.people,         'filter-people',    true)}
+            ${filterGroupsMarkup}
           </aside>
           <div class="gallery-grid">
             ${galleryGridMarkup}
@@ -441,7 +438,7 @@ export function renderApp(state) {
         ${galleryMarkup}
       </main>
       ${renderSavedDrawer(state)}
-      ${renderShareModal(state, story)}
+      ${renderShareModal(state)}
     </div>
   `;
 }

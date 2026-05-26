@@ -13,7 +13,7 @@ const state = {
   landingSectionImages: {}
 };
 
-try { state.savedIds = JSON.parse(localStorage.getItem(STORAGE_KEYS.saved) || '[]'); } catch {}
+try { state.savedIds = JSON.parse(localStorage.getItem(STORAGE_KEYS.saved) || '[]').map(String); } catch {}
 
 function saveState() {
   localStorage.setItem(STORAGE_KEYS.language, state.language);
@@ -47,7 +47,7 @@ async function imageExists(src) {
 async function loadSectionImage(sectionNumber) {
   const probes = [];
   for (let i = 1; i <= 6; i++) {
-    ['jpg', 'png'].forEach((ext) => probes.push(`../images/landing/${sectionNumber} (${i}).${ext}`));
+    ['jpg', 'png'].forEach((ext) => probes.push(`images/${sectionNumber} (${i}).${ext}`));
   }
   const found = (await Promise.all(probes.map(imageExists))).filter(Boolean);
   const shuffled = found.sort(() => Math.random() - 0.5);
@@ -57,8 +57,8 @@ async function loadSectionImage(sectionNumber) {
 }
 
 async function loadLandingAssets() {
-  const primaryMap = await imageExists('../images/landing/map 2.png');
-  const fallbackMap = await imageExists('../images/landing/sws on somalia map_wrinkle.png');
+  const primaryMap = await imageExists('images/map 2.png');
+  const fallbackMap = await imageExists('images/sws on somalia map_wrinkle.png');
   state.landingMap = primaryMap || fallbackMap || '';
   const sections = [1, 3, 4, 5];
   const resolved = await Promise.all(sections.map((s) => loadSectionImage(s)));
@@ -88,7 +88,7 @@ function renderSavedDrawer(t) {
           : savedStories.map((s) => `
             <a class="saved-item" href="../stories/?code=${escapeHtml(s.id)}">
               <div class="saved-thumb">
-                <img src="../stories/${escapeHtml(s.images?.[0] || '')}" alt="${escapeHtml(s.storyteller)}" style="width:100%;height:100%;object-fit:cover;">
+                <img src="${escapeHtml(s.images?.[0] || '')}" alt="${escapeHtml(s.storyteller)}" style="width:100%;height:100%;object-fit:cover;">
               </div>
               <div class="saved-copy">
                 <div class="saved-name">${escapeHtml(s.storyteller)}</div>
@@ -283,5 +283,5 @@ async function init() {
 init().catch((error) => {
   console.error(error);
   const app = document.querySelector('#app');
-  if (app) app.innerHTML = '<div class="error-state">Failed to load. Check the browser console.</div>';
+  if (app) app.innerHTML = '<div class="error-state">Failed to load. Check the browser console and verify Supabase configuration.</div>';
 });

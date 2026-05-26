@@ -2,7 +2,8 @@ import { STORAGE_KEYS } from './content.js';
 import { PAGE_SIZE } from './state.js';
 
 export function getStoryById(stories, id) {
-  return stories.find((story) => story.id === id) || null;
+  const target = String(id || '').trim();
+  return stories.find((story) => String(story.id) === target || String(story.code) === target) || null;
 }
 
 export function currentStory(state) {
@@ -10,12 +11,12 @@ export function currentStory(state) {
 }
 
 export function isSaved(state, id) {
-  return state.savedIds.includes(id);
+  return state.savedIds.map(String).includes(String(id));
 }
 
 export function savePersistentState(state) {
   localStorage.setItem(STORAGE_KEYS.language, state.language);
-  localStorage.setItem(STORAGE_KEYS.saved, JSON.stringify(state.savedIds));
+  localStorage.setItem(STORAGE_KEYS.saved, JSON.stringify(state.savedIds.map(String)));
   localStorage.setItem(STORAGE_KEYS.theme, state.theme);
   document.documentElement.lang = state.language === 'so' ? 'so' : 'en';
   document.documentElement.dataset.theme = state.theme;
@@ -30,18 +31,12 @@ export function shuffle(items) {
   return clone;
 }
 
-/**
- * Returns a URL-safe slug for a tagged object.
- * Uses the object's own .slug when the database provides one.
- * Falls back to deriving from the English label for test data without slugs.
- * Remove the fallback once every object in the database carries a slug.
- */
 export function resolveSlug(item) {
   if (!item) return '';
+  if (typeof item === 'string') return item;
   if (item.slug) return item.slug;
-  return item.en
-    ? item.en.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
-    : '';
+  const label = item.en || item.label_en || '';
+  return label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
 function storyAppUrl() {
@@ -56,13 +51,13 @@ export function buildShareUrl(story) {
   const url = storyAppUrl();
   url.search = '';
   url.hash = '';
-  url.searchParams.set('code', story.id);
+  url.searchParams.set('code', story.code || story.id);
   return url.toString();
 }
 
 export function updateUrlForStory(story, options = {}) {
   const url = storyAppUrl();
-  url.searchParams.set('code', story.id);
+  url.searchParams.set('code', story.code || story.id);
   url.hash = options.hash || '';
   history.replaceState({}, '', url);
 }
@@ -70,34 +65,37 @@ export function updateUrlForStory(story, options = {}) {
 export function hasActiveFilters(filters) {
   return Boolean(
     filters.district ||
-    filters.cluster ||
-    filters.primaryTheme ||
-    filters.secondaryThemes.length ||
     filters.people.length ||
+    filters.tags.length ||
     filters.searchQuery
   );
 }
 
+function storyContainsAny(storyItems = [], selectedSlugs = []) {
+  if (selectedSlugs.length === 0) return true;
+  const storySlugs = new Set(storyItems.map((item) => resolveSlug(item)).filter(Boolean));
+  return selectedSlugs.some((slug) => storySlugs.has(slug));
+}
+
 export function storyMatchesFilters(story, filters) {
-  if (filters.district && story.district.slug !== filters.district) return false;
-  if (filters.cluster && resolveSlug(story.cluster) !== filters.cluster) return false;
-  if (filters.primaryTheme && story.primaryTheme.slug !== filters.primaryTheme) return false;
+  if (filters.district && story.district?.slug !== filters.district) return false;
 
-  if (filters.secondaryThemes.length > 0) {
-    const storyThemeSlugs = [story.primaryTheme.slug, ...story.secondaryThemes.map((t) => t.slug)];
-    if (!filters.secondaryThemes.some((slug) => storyThemeSlugs.includes(slug))) return false;
-  }
+  const selectedTagSlugs = [...filters.people, ...filters.tags];
+  if (!storyContainsAny(story.tags || [], selectedTagSlugs)) return false;
 
-  if (filters.people.length > 0 && !filters.people.some((person) => story.actors.includes(person))) return false;
-
-  // Full-text search across storyteller name, location, and summary
   if (filters.searchQuery) {
-    const q = filters.searchQuery.toLowerCase();
+    const q = filters.searchQuery.toLowerCase().trim();
+    const tagLabels = (story.tags || []).flatMap((tag) => [tag.en, tag.so]).join(' ');
     const haystack = [
+      story.code,
       story.storyteller,
-      story.location || '',
-      story.summary?.en || '',
-      story.summary?.so || ''
+      story.district?.en,
+      story.district?.so,
+      story.summary?.en,
+      story.summary?.so,
+      story.story?.en,
+      story.story?.so,
+      tagLabels
     ].join(' ').toLowerCase();
     if (!haystack.includes(q)) return false;
   }
@@ -106,13 +104,13 @@ export function storyMatchesFilters(story, filters) {
 }
 
 export function filteredStories(state, filters = state.filters) {
-  return state.stories.filter((story) => storyMatchesFilters(story, filters));
+  const matches = state.stories.filter((story) => storyMatchesFilters(story, filters));
+  if (state.galleryMode === 'related' && state.currentStoryId) {
+    return matches.filter((story) => String(story.id) !== String(state.currentStoryId));
+  }
+  return matches;
 }
 
-/**
- * Returns only the slice of filtered stories visible up to the current page.
- * Used by the gallery grid — call filteredStories() for the total count.
- */
 export function pagedStories(state) {
   return filteredStories(state).slice(0, state.galleryPage * PAGE_SIZE);
 }
@@ -122,15 +120,17 @@ export function hasMoreStories(state) {
 }
 
 function scoreRelated(base, candidate) {
-  if (base.id === candidate.id) return -1;
+  if (!base || !candidate || base.id === candidate.id) return -1;
 
+  const baseTags = new Set((base.tags || []).map((tag) => tag.slug).filter(Boolean));
+  const candidateTags = new Set((candidate.tags || []).map((tag) => tag.slug).filter(Boolean));
   let score = 0;
-  if (base.primaryTheme.slug === candidate.primaryTheme.slug) score += 5;
-  score += base.secondaryThemes.filter((t) => candidate.secondaryThemes.some((o) => o.slug === t.slug)).length * 2;
-  score += candidate.secondaryThemes.some((t) => t.slug === base.primaryTheme.slug) ? 3 : 0;
-  score += base.actors.filter((actor) => candidate.actors.includes(actor)).length * 2;
-  if (base.district.slug === candidate.district.slug) score += 1;
-  if (resolveSlug(base.cluster) === resolveSlug(candidate.cluster)) score += 1;
+
+  baseTags.forEach((slug) => {
+    if (candidateTags.has(slug)) score += 4;
+  });
+
+  if (base.district?.slug && base.district.slug === candidate.district?.slug) score += 1;
   return score;
 }
 
@@ -147,7 +147,11 @@ export function pickRandomRelatedStory(state, base) {
 }
 
 export function countForFilters(state, nextFilters) {
-  return state.stories.filter((story) => storyMatchesFilters(story, nextFilters)).length;
+  let matches = state.stories.filter((story) => storyMatchesFilters(story, nextFilters));
+  if (state.galleryMode === 'related' && state.currentStoryId) {
+    matches = matches.filter((story) => String(story.id) !== String(state.currentStoryId));
+  }
+  return matches.length;
 }
 
 export function storyCountLabel(count, singular, plural) {
@@ -155,35 +159,73 @@ export function storyCountLabel(count, singular, plural) {
 }
 
 function uniqueBySlug(entries) {
-  return [...new Map(entries.map((entry) => [resolveSlug(entry), entry])).values()];
+  const map = new Map();
+  entries.filter(Boolean).forEach((entry) => {
+    const slug = resolveSlug(entry);
+    if (!slug || map.has(slug)) return;
+    map.set(slug, entry);
+  });
+  return [...map.values()].sort((a, b) => {
+    const order = (a.sort_order ?? a.sortOrder ?? 999) - (b.sort_order ?? b.sortOrder ?? 999);
+    if (order !== 0) return order;
+    return String(a.en || '').localeCompare(String(b.en || ''));
+  });
 }
 
 export function allDistricts(state) {
   return uniqueBySlug(state.stories.map((story) => story.district));
 }
 
-/**
- * Returns all clusters found across stories, each augmented with a .slug.
- * resolveSlug derives the slug from the English label when the DB hasn't
- * provided one yet — remove that fallback once slugs come from the backend.
- */
-export function allClusters(state) {
-  const seen = new Map();
-  for (const story of state.stories) {
-    const slug = resolveSlug(story.cluster);
-    if (!seen.has(slug)) seen.set(slug, { ...story.cluster, slug });
-  }
-  return [...seen.values()];
-}
-
-export function allPrimaryThemes(state) {
-  return uniqueBySlug(state.stories.map((story) => story.primaryTheme));
-}
-
-export function allSecondaryThemes(state) {
-  return uniqueBySlug(state.stories.flatMap((story) => story.secondaryThemes));
-}
-
 export function allPeople(state) {
-  return [...new Set(state.stories.flatMap((story) => story.actors))];
+  const cataloguePeople = (state.tagClusters || [])
+    .find((cluster) => cluster.slug === 'people')
+    ?.tags;
+
+  if (cataloguePeople?.length) return uniqueBySlug(cataloguePeople);
+  return uniqueBySlug(state.stories.flatMap((story) => story.people || []));
+}
+
+export function allTagClusters(state) {
+  const catalogueClusters = (state.tagClusters || [])
+    .filter((cluster) => cluster.slug !== 'people')
+    .map((cluster) => ({
+      ...cluster,
+      tags: uniqueBySlug(cluster.tags || [])
+    }))
+    .filter((cluster) => cluster.tags.length > 0);
+
+  if (catalogueClusters.length > 0) {
+    return catalogueClusters.sort((a, b) => {
+      const order = (a.sort_order ?? a.sortOrder ?? 999) - (b.sort_order ?? b.sortOrder ?? 999);
+      if (order !== 0) return order;
+      return String(a.en || '').localeCompare(String(b.en || ''));
+    });
+  }
+
+  const clusters = new Map();
+
+  state.stories.forEach((story) => {
+    (story.topicTags || []).forEach((tag) => {
+      if (!tag.cluster || !tag.clusterSlug) return;
+      if (!clusters.has(tag.clusterSlug)) {
+        clusters.set(tag.clusterSlug, {
+          ...tag.cluster,
+          slug: tag.clusterSlug,
+          tags: []
+        });
+      }
+      clusters.get(tag.clusterSlug).tags.push(tag);
+    });
+  });
+
+  return [...clusters.values()]
+    .map((cluster) => ({
+      ...cluster,
+      tags: uniqueBySlug(cluster.tags)
+    }))
+    .sort((a, b) => {
+      const order = (a.sort_order ?? a.sortOrder ?? 999) - (b.sort_order ?? b.sortOrder ?? 999);
+      if (order !== 0) return order;
+      return String(a.en || '').localeCompare(String(b.en || ''));
+    });
 }

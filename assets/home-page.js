@@ -12,7 +12,7 @@ const state = {
 };
 
 // Load saved IDs from localStorage
-try { state.savedIds = JSON.parse(localStorage.getItem(STORAGE_KEYS.saved) || '[]'); } catch {}
+try { state.savedIds = JSON.parse(localStorage.getItem(STORAGE_KEYS.saved) || '[]').map(String); } catch {}
 
 function savePrefs() {
   localStorage.setItem(STORAGE_KEYS.language, state.language);
@@ -73,7 +73,7 @@ function renderSavedDrawer(t) {
           : savedStories.map((s) => `
             <a class="saved-item" href="stories/?code=${esc(s.id)}">
               <div class="saved-thumb">
-                <img src="stories/${esc(s.images?.[0] || '')}" alt="${esc(s.storyteller)}" style="width:100%;height:100%;object-fit:cover;">
+                <img src="${esc(s.images?.[0] || '')}" alt="${esc(s.storyteller)}" style="width:100%;height:100%;object-fit:cover;">
               </div>
               <div class="saved-copy">
                 <div class="saved-name">${esc(s.storyteller)}</div>
@@ -163,8 +163,7 @@ function renderPage() {
 
   document.title = t.siteTitle;
 
-  // Lead image: prefix with stories/ since paths are relative to that subfolder
-  const leadSrc = story ? `stories/${story.images?.[0] || ''}` : '';
+  const leadSrc = story?.images?.[0] || '';
 
   const storyCard = story ? `
     <div class="home-card">
@@ -282,5 +281,5 @@ async function init() {
 init().catch((err) => {
   console.error(err);
   const app = document.querySelector('#app');
-  if (app) app.innerHTML = '<div class="error-state">Failed to load.</div>';
+  if (app) app.innerHTML = '<div class="error-state">Failed to load. Check the browser console and verify Supabase configuration.</div>';
 });

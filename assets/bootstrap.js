@@ -9,11 +9,10 @@ import {
   pickRandomRelatedStory,
   savePersistentState,
   updateUrlForStory,
-  isSaved,
-  resolveSlug
+  isSaved
 } from './story-data.js';
 import { getUiText, labelFor, initialiseI18n } from './content.js';
-import { fetchStories } from './api.js';
+import { fetchStories, fetchTagCatalogue } from './api.js';
 
 let actionMessageTimerId = null;
 let touchStartX = null;
@@ -93,10 +92,10 @@ function setGalleryModeFromFilters() {
 function toggleSaved(storyId) {
   const t = getUiText(state.language);
   if (isSaved(state, storyId)) {
-    state.savedIds = state.savedIds.filter((id) => id !== storyId);
+    state.savedIds = state.savedIds.filter((id) => String(id) !== String(storyId));
     state.actionMessage = t.removedMessage;
   } else {
-    state.savedIds = [...state.savedIds, storyId];
+    state.savedIds = [...state.savedIds, String(storyId)];
     state.actionMessage = t.savedMessage;
   }
   savePersistentState(state);
@@ -243,11 +242,9 @@ const ACTIONS = {
   'show-related': async ({ story }) => {
     if (!story) return;
     state.filters = {
-      district: story.district.slug,
-      cluster: resolveSlug(story.cluster),
-      primaryTheme: story.primaryTheme.slug,
-      secondaryThemes: story.secondaryThemes.map((t) => t.slug),
-      people: [...story.actors],
+      district: '',
+      people: (story.people || []).map((tag) => tag.slug).filter(Boolean),
+      tags: (story.topicTags || []).map((tag) => tag.slug).filter(Boolean),
       searchQuery: ''
     };
     state.galleryMode = 'related';
@@ -288,35 +285,23 @@ const ACTIONS = {
     setGalleryModeFromFilters();
     renderSite();
   },
-  'filter-cluster': async ({ value }) => {
-    state.filters.cluster = state.filters.cluster === value ? '' : value;
+  'filter-tag': async ({ value }) => {
+    state.filters.tags = state.filters.tags.includes(value)
+      ? state.filters.tags.filter((slug) => slug !== value)
+      : [...state.filters.tags, value];
     setGalleryModeFromFilters();
     renderSite();
   },
-  'filter-cluster-all': async () => {
-    state.filters.cluster = '';
-    setGalleryModeFromFilters();
-    renderSite();
-  },
-  'filter-primary': async ({ value }) => {
-    state.filters.primaryTheme = state.filters.primaryTheme === value ? '' : value;
-    setGalleryModeFromFilters();
-    renderSite();
-  },
-  'filter-primary-all': async () => {
-    state.filters.primaryTheme = '';
-    setGalleryModeFromFilters();
-    renderSite();
-  },
-  'filter-secondary': async ({ value }) => {
-    state.filters.secondaryThemes = state.filters.secondaryThemes.includes(value)
-      ? state.filters.secondaryThemes.filter((slug) => slug !== value)
-      : [...state.filters.secondaryThemes, value];
-    setGalleryModeFromFilters();
-    renderSite();
-  },
-  'filter-secondary-all': async () => {
-    state.filters.secondaryThemes = [];
+  'filter-tag-all': async ({ value }) => {
+    if (!value) {
+      state.filters.tags = [];
+    } else {
+      const activeCluster = state.stories
+        .flatMap((story) => story.topicTags || [])
+        .filter((tag) => tag.clusterSlug === value)
+        .map((tag) => tag.slug);
+      state.filters.tags = state.filters.tags.filter((slug) => !activeCluster.includes(slug));
+    }
     setGalleryModeFromFilters();
     renderSite();
   },
@@ -470,11 +455,10 @@ export async function initialiseApp() {
   attachGlobalListeners();
   renderLoading();
 
-  // Load i18n and stories in parallel
-  await Promise.all([
-    initialiseI18n(state.language),
-    fetchStories().then((stories) => { state.stories = stories; })
-  ]);
+  // Load i18n, stories and the full tag catalogue.
+  await initialiseI18n(state.language);
+  state.stories = await fetchStories();
+  state.tagClusters = await fetchTagCatalogue(state.stories);
 
   const params = new URLSearchParams(window.location.search);
   const code = params.get('code');

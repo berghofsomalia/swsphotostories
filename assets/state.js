@@ -5,10 +5,8 @@ export const PAGE_SIZE = 24;
 export function createEmptyFilters() {
   return {
     district: '',
-    cluster: '',
-    primaryTheme: '',
-    secondaryThemes: [],
     people: [],
+    tags: [],
     searchQuery: ''
   };
 }
@@ -17,7 +15,7 @@ function readSavedIds() {
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.saved) || '[]';
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    return Array.isArray(parsed) ? parsed.map(String) : [];
   } catch {
     return [];
   }
@@ -26,6 +24,7 @@ function readSavedIds() {
 export function createInitialState() {
   return {
     stories: [],
+    tagClusters: [],
     language: localStorage.getItem(STORAGE_KEYS.language) || 'en',
     theme: localStorage.getItem(STORAGE_KEYS.theme) || 'dark',
     savedIds: readSavedIds(),
