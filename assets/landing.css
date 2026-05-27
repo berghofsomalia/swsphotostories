@@ -2385,3 +2385,49 @@ html[data-theme="light"] .landing-copy-card--title { color: #5a3a20; }
   .landing-copy-card--nexus { font-size: 0.96rem; }
   .landing-copy-card--title { font-size: 0.92rem; }
 }
+
+.landing-copy-card--nexus br {
+  display: none !important;
+}
+
+.landing-copy-card--nexus,
+.landing-copy-card--nexus p,
+.landing-copy-card--nexus p span {
+  color: #fff !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="light"] .landing-copy-card--nexus,
+html[data-theme="light"] .landing-copy-card--nexus p,
+html[data-theme="light"] .landing-copy-card--nexus p span {
+  color: #fff !important;
+}
+
+.landing-copy-card--title,
+.landing-copy-card--title p,
+.landing-copy-card--title p span {
+  color: #f1c4bd !important;
+}
+
+.landing-copy-card--title p {
+  font-size: clamp(1.25rem, 2.2vw, 2.15rem) !important;
+}
+
+html[data-theme="light"] .landing-copy-card--title,
+html[data-theme="light"] .landing-copy-card--title p,
+html[data-theme="light"] .landing-copy-card--title p span {
+  color: #7d1b1b !important;
+}
+
+html[data-theme="light"] .landing-copy-card--title p {
+  font-size: clamp(1.42rem, calc(2.2vw + 0.17rem), 2.32rem) !important;
+}
+
+@media (max-width: 760px) {
+  .landing-copy-card--title p {
+    font-size: clamp(1.08rem, 4.8vw, 1.52rem) !important;
+  }
+  html[data-theme="light"] .landing-copy-card--title p {
+    font-size: clamp(1.25rem, calc(4.8vw + 0.17rem), 1.69rem) !important;
+  }
+}

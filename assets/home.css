@@ -193,18 +193,25 @@ html[data-theme="light"] .home-switch-button.is-active {
 
 /* ── Home badge and hero text refinements ─────────────────── */
 .home-shell .landing-copy-card--nexus,
-.home-shell .landing-copy-card--nexus p {
-  color: #2f271f !important;
+.home-shell .landing-copy-card--nexus p,
+.home-shell .landing-copy-card--nexus p span {
+  color: #fff !important;
+  opacity: 1 !important;
 }
 .home-shell .landing-copy-card--title,
-.home-shell .landing-copy-card--title p {
-  color: #332418 !important;
+.home-shell .landing-copy-card--title p,
+.home-shell .landing-copy-card--title p span {
+  color: #f1c4bd !important;
 }
 html[data-theme="light"] .home-shell .landing-copy-card--nexus,
 html[data-theme="light"] .home-shell .landing-copy-card--nexus p,
+html[data-theme="light"] .home-shell .landing-copy-card--nexus p span {
+  color: #fff !important;
+}
 html[data-theme="light"] .home-shell .landing-copy-card--title,
-html[data-theme="light"] .home-shell .landing-copy-card--title p {
-  color: #2b2117 !important;
+html[data-theme="light"] .home-shell .landing-copy-card--title p,
+html[data-theme="light"] .home-shell .landing-copy-card--title p span {
+  color: #7d1b1b !important;
 }
 .home-card-teaser {
   font-size: clamp(1.18rem, 2vw, 1.68rem);
