@@ -126,3 +126,29 @@ html[data-theme="light"] .loading-spinner {
   border-top-color: var(--accent);
 }
 @keyframes loading-spin { to { transform: rotate(360deg); } }
+
+/* ── Refinement: centred page loading marker ────────────────── */
+.loading-state--page {
+  display: grid;
+  grid-template-areas: "loader";
+  place-items: center;
+  gap: 0;
+  font-size: 1.1rem;
+  text-align: center;
+}
+.loading-state--page .loading-spinner {
+  grid-area: loader;
+  width: clamp(5.8rem, 12vw, 7.4rem);
+  height: clamp(5.8rem, 12vw, 7.4rem);
+  border-width: 3px;
+}
+.loading-state--page > span:not(.loading-spinner) {
+  grid-area: loader;
+  width: min(5.4rem, 56vw);
+  color: var(--text);
+  font-size: clamp(1rem, 2.4vw, 1.18rem);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: 0.045em;
+  opacity: 0.9;
+}

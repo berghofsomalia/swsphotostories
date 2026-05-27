@@ -964,3 +964,60 @@ html[data-theme="light"] .context-strip--title { color: #5a3a20; }
     letter-spacing: 0.055em;
   }
 }
+
+/* ── Refinement: compact stories badges and distinct flow button ─ */
+.context-strip {
+  gap: 0.34rem;
+  padding: 0.14rem 0.54rem;
+  line-height: 0.86;
+}
+.context-strip--nexus,
+.context-strip--title,
+.context-strip span {
+  line-height: 0.86;
+}
+.context-strip--nexus,
+.context-strip--title {
+  font-size: clamp(0.48rem, 0.66vw, 0.62rem);
+}
+.context-strip--bottom {
+  padding-top: 0.15rem;
+  padding-bottom: 0.16rem;
+}
+.guidance-flow-button {
+  color: #f0b56f;
+  border-color: rgba(240,181,111,0.3);
+  background: rgba(184,92,56,0.14);
+}
+.guidance-flow-button:hover {
+  color: #ffd3a1;
+  border-color: rgba(240,181,111,0.46);
+  background: rgba(184,92,56,0.22);
+}
+html[data-theme="light"] .guidance-flow-button {
+  color: #8d452b;
+  border-color: rgba(141,69,43,0.2);
+  background: rgba(184,92,56,0.09);
+}
+html[data-theme="light"] .guidance-flow-button:hover {
+  color: #6f321f;
+  border-color: rgba(141,69,43,0.34);
+  background: rgba(184,92,56,0.14);
+}
+
+@media (max-width: 560px) {
+  .context-strip {
+    gap: 0.25rem;
+    padding: 0.13rem 0.42rem;
+    line-height: 0.84;
+  }
+  .context-strip--nexus,
+  .context-strip--title,
+  .context-strip span {
+    line-height: 0.84;
+  }
+  .context-strip--nexus,
+  .context-strip--title {
+    font-size: 0.46rem;
+  }
+}
