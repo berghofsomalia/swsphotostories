@@ -1324,8 +1324,8 @@ html[data-theme="light"] .intro-scroll--pdfstyle {
 .landing-copy-card--nexus {
   top: 0;
   right: 0;
-  width: min(34vw, 430px);
-  min-height: min(46vh, 430px);
+  width: min(48vw, 780px);
+  min-height: min(35vh, 320px);
   padding: clamp(1.7rem, 3vw, 2.8rem);
   align-items: center;
   justify-content: flex-start;
