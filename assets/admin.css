@@ -688,3 +688,59 @@ textarea {
 .admin-image-hint.is-error {
   color: #f3a7a0;
 }
+
+.admin-image-card.is-selected {
+  outline: 2px solid rgba(244, 201, 125, 0.72);
+  outline-offset: 2px;
+}
+
+.admin-image-select {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.admin-image-select:focus-visible {
+  outline: 2px solid rgba(244, 201, 125, 0.72);
+  outline-offset: -2px;
+}
+
+.admin-image-card figcaption {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-image-card figcaption span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-image-delete-button,
+.admin-danger-button {
+  width: fit-content;
+  border: 1px solid rgba(238, 110, 92, 0.44);
+  border-radius: 999px;
+  background: rgba(238, 110, 92, 0.16);
+  color: #ffd6cc;
+  padding: 7px 11px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.admin-image-delete-button:hover,
+.admin-danger-button:hover {
+  background: rgba(238, 110, 92, 0.26);
+}
+
+.admin-danger-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}

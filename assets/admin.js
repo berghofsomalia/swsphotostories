@@ -45,7 +45,10 @@ const state = {
   pendingNavigation: null,
   storyImages: {},
   storyImageLoading: new Set(),
-  storyImageErrors: {}
+  storyImageErrors: {},
+  selectedImagePath: null,
+  pendingImageDelete: null,
+  sidebarScrollTop: 0
 };
 
 function escapeHtml(value = '') {
@@ -103,6 +106,7 @@ function startNewStory() {
   state.selectedTagIds = new Set();
   state.editorDistrictId = null;
   state.newCodeKind = 'standard';
+  state.selectedImagePath = null;
   resetEditorDraft();
   markClean();
 }
@@ -118,6 +122,7 @@ function setActiveStory(storyId) {
   state.selectedTagIds = storyTagIds(story);
   state.editorDistrictId = story.district_id ? Number(story.district_id) : null;
   state.newCodeKind = 'standard';
+  state.selectedImagePath = null;
   resetEditorDraft();
   markClean();
 }
@@ -260,6 +265,7 @@ async function loadStoryImages(code) {
     return {
       type: 'image',
       name: file.name,
+      path,
       url: urlData.publicUrl
     };
   });
@@ -308,6 +314,7 @@ function autoGrowAllTextareas() {
 
 function finishRender() {
   window.requestAnimationFrame(() => {
+    restoreSidebarScroll();
     autoGrowAllTextareas();
     ensureActiveStoryImages();
   });
@@ -328,6 +335,17 @@ function restoreFieldFocus(selector, selectionStart = null, selectionEnd = null)
       field.setSelectionRange(selectionStart, selectionEnd);
     }
   });
+}
+
+function captureSidebarScroll() {
+  const list = app.querySelector('.admin-story-list');
+  if (list) state.sidebarScrollTop = list.scrollTop;
+}
+
+function restoreSidebarScroll() {
+  const list = app.querySelector('.admin-story-list');
+  if (!list) return;
+  list.scrollTop = state.sidebarScrollTop || 0;
 }
 
 function renderAuthCard() {
@@ -535,17 +553,44 @@ function renderImageSlider(story = null) {
   return `
     <h3 class="admin-section-title">Images</h3>
     <div class="admin-image-slider" aria-label="Story images">
-      ${slides.map((slide) => slide.type === 'image' ? `
-        <figure class="admin-image-card">
-          <img src="${escapeHtml(slide.url)}" alt="${escapeHtml(`${code} ${slide.name}`)}" loading="lazy">
-          <figcaption>${escapeHtml(slide.name)}</figcaption>
-        </figure>
-      ` : `
-        <div class="admin-image-placeholder">
-          <div class="admin-image-placeholder-art">${escapeHtml(slide.code)}</div>
-          <div class="admin-image-placeholder-caption">${escapeHtml(slide.caption)}</div>
-        </div>
-      `).join('')}
+      ${slides.map((slide) => {
+        if (slide.type === 'image') {
+          const selected = slide.path && state.selectedImagePath === slide.path;
+          return `
+            <figure class="admin-image-card ${selected ? 'is-selected' : ''}">
+              <button
+                type="button"
+                class="admin-image-select"
+                data-action="select-image"
+                data-path="${escapeHtml(slide.path)}"
+                data-name="${escapeHtml(slide.name)}"
+                aria-pressed="${selected ? 'true' : 'false'}"
+              >
+                <img src="${escapeHtml(slide.url)}" alt="${escapeHtml(`${code} ${slide.name}`)}" loading="lazy">
+              </button>
+              <figcaption>
+                <span>${escapeHtml(slide.name)}</span>
+                ${selected ? `
+                  <button
+                    type="button"
+                    class="admin-image-delete-button"
+                    data-action="request-delete-image"
+                    data-path="${escapeHtml(slide.path)}"
+                    data-name="${escapeHtml(slide.name)}"
+                  >Delete</button>
+                ` : ''}
+              </figcaption>
+            </figure>
+          `;
+        }
+
+        return `
+          <div class="admin-image-placeholder">
+            <div class="admin-image-placeholder-art">${escapeHtml(slide.code)}</div>
+            <div class="admin-image-placeholder-caption">${escapeHtml(slide.caption)}</div>
+          </div>
+        `;
+      }).join('')}
     </div>
     <p class="admin-field-hint admin-image-hint ${loadError ? 'is-error' : ''}">${escapeHtml(hint)}</p>
   `;
@@ -720,6 +765,23 @@ function renderUnsavedModal() {
   `;
 }
 
+function renderImageDeleteModal() {
+  if (!state.pendingImageDelete) return '';
+
+  return `
+    <div class="admin-modal-backdrop" role="presentation">
+      <section class="admin-unsaved-modal" role="dialog" aria-modal="true" aria-labelledby="delete-image-title">
+        <h2 id="delete-image-title">Delete image?</h2>
+        <p>This will permanently delete <strong>${escapeHtml(state.pendingImageDelete.name || state.pendingImageDelete.path)}</strong> from the Supabase Storage bucket.</p>
+        <div class="admin-modal-actions">
+          <button type="button" class="admin-danger-button" data-action="confirm-delete-image" ${state.busy ? 'disabled' : ''}>${state.busy ? 'Deleting…' : 'Yes, delete'}</button>
+          <button type="button" class="admin-secondary-button" data-action="cancel-delete-image" ${state.busy ? 'disabled' : ''}>Cancel</button>
+        </div>
+      </section>
+    </div>
+  `;
+}
+
 function renderAdminApp() {
   return `
     <div class="admin-app-frame">
@@ -727,10 +789,13 @@ function renderAdminApp() {
       ${renderEditor()}
     </div>
     ${renderUnsavedModal()}
+    ${renderImageDeleteModal()}
   `;
 }
 
 function render() {
+  captureSidebarScroll();
+
   if (!isSupabaseConfigured) {
     app.innerHTML = renderConfigCard();
     finishRender();
@@ -1068,6 +1133,37 @@ async function saveStory(form) {
 }
 
 
+async function deletePendingImage() {
+  const pending = state.pendingImageDelete;
+  if (!pending?.path) return;
+
+  state.busy = true;
+  setMessage();
+  render();
+
+  const { error } = await state.supabase.storage
+    .from(SUPABASE_STORY_PHOTO_BUCKET)
+    .remove([pending.path]);
+
+  state.busy = false;
+
+  if (error) {
+    setMessage('', error.message || 'Could not delete image.');
+    state.pendingImageDelete = null;
+    render();
+    return;
+  }
+
+  const storyCode = pending.storyCode || pending.path.split('/')[0];
+  state.storyImages[storyCode] = (state.storyImages[storyCode] || [])
+    .filter((image) => image.path !== pending.path);
+  state.selectedImagePath = null;
+  state.pendingImageDelete = null;
+  setMessage(`Deleted ${pending.name || pending.path}.`);
+  render();
+}
+
+
 function performNavigation(request, discard = false) {
   if (!request) return;
 
@@ -1193,6 +1289,35 @@ app.addEventListener('click', async (event) => {
     return;
   }
 
+  if (action === 'select-image') {
+    const path = button.dataset.path || '';
+    state.selectedImagePath = state.selectedImagePath === path ? null : path;
+    render();
+    return;
+  }
+
+  if (action === 'request-delete-image') {
+    const story = getActiveStory();
+    state.pendingImageDelete = {
+      path: button.dataset.path || '',
+      name: button.dataset.name || button.dataset.path || '',
+      storyCode: story?.code || ''
+    };
+    render();
+    return;
+  }
+
+  if (action === 'cancel-delete-image') {
+    state.pendingImageDelete = null;
+    render();
+    return;
+  }
+
+  if (action === 'confirm-delete-image') {
+    await deletePendingImage();
+    return;
+  }
+
   if (action === 'toggle-tag') {
     captureFormDraft();
     markDirty();
@@ -1202,6 +1327,12 @@ app.addEventListener('click', async (event) => {
     render();
   }
 });
+
+app.addEventListener('scroll', (event) => {
+  if (event.target?.classList?.contains('admin-story-list')) {
+    state.sidebarScrollTop = event.target.scrollTop;
+  }
+}, true);
 
 app.addEventListener('input', (event) => {
   const field = event.target.closest('[data-field]');
