@@ -108,7 +108,7 @@ GRANT SELECT ON public.districts TO anon, authenticated;
 GRANT SELECT ON public.tag_clusters TO anon, authenticated;
 GRANT SELECT ON public.tags TO anon, authenticated;
 
-GRANT SELECT, UPDATE ON public.stories TO authenticated;
+GRANT SELECT, INSERT, UPDATE ON public.stories TO authenticated;
 GRANT SELECT, INSERT, UPDATE ON public.community_reflections TO authenticated;
 GRANT SELECT, INSERT, DELETE ON public.story_tags TO authenticated;
 
@@ -168,6 +168,13 @@ ON public.stories
 FOR UPDATE
 TO authenticated
 USING (public.is_admin())
+WITH CHECK (public.is_admin());
+
+DROP POLICY IF EXISTS "Admins can insert stories" ON public.stories;
+CREATE POLICY "Admins can insert stories"
+ON public.stories
+FOR INSERT
+TO authenticated
 WITH CHECK (public.is_admin());
 
 DROP POLICY IF EXISTS "Public can read story tags for published stories" ON public.story_tags;

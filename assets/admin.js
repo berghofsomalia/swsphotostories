@@ -2,6 +2,17 @@ import { getSupabaseClient, isSupabaseConfigured } from './supabase-client.js';
 
 const app = document.getElementById('admin-app');
 
+const DISTRICT_CODE_PREFIXES = {
+  baidoa: 'BD',
+  baydhabo: 'BD',
+  barawe: 'BW',
+  baraawe: 'BW',
+  barawy: 'BW',
+  hudur: 'HD',
+  xudur: 'HD',
+  xuddur: 'HD'
+};
+
 const state = {
   supabase: null,
   session: null,
@@ -12,6 +23,9 @@ const state = {
   clusters: [],
   activeStoryId: null,
   selectedTagIds: new Set(),
+  editorDistrictId: null,
+  newCodeKind: 'standard',
+  formDraft: {},
   searchQuery: '',
   statusFilter: 'all',
   districtFilter: 'all',
@@ -29,6 +43,10 @@ function escapeHtml(value = '') {
     .replaceAll("'", '&#39;');
 }
 
+function escapeRegExp(value = '') {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 function normaliseText(value) {
   const trimmed = String(value ?? '').trim();
   return trimmed || null;
@@ -44,29 +62,127 @@ function storyDistrict(story) {
   return state.districts.find((district) => Number(district.id) === Number(story.district_id)) || story.districts || null;
 }
 
-function storyReflection(story) {
-  return (story.community_reflections || [])
+function storyReflections(story) {
+  return (story?.community_reflections || [])
     .slice()
-    .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))[0] || null;
+    .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0) || Number(a.id) - Number(b.id));
 }
 
 function storyTagIds(story) {
-  return new Set((story.story_tags || []).map((row) => Number(row.tag_id)).filter(Boolean));
-}
-
-function setActiveStory(storyId) {
-  state.activeStoryId = storyId ? Number(storyId) : null;
-  const story = getActiveStory();
-  state.selectedTagIds = story ? storyTagIds(story) : new Set();
+  return new Set((story?.story_tags || []).map((row) => Number(row.tag_id)).filter(Boolean));
 }
 
 function getActiveStory() {
   return state.stories.find((story) => Number(story.id) === Number(state.activeStoryId)) || null;
 }
 
+function isCreatingStory() {
+  return !getActiveStory();
+}
+
+function resetEditorDraft() {
+  state.formDraft = {};
+}
+
+function startNewStory() {
+  state.activeStoryId = null;
+  state.selectedTagIds = new Set();
+  state.editorDistrictId = null;
+  state.newCodeKind = 'standard';
+  resetEditorDraft();
+}
+
+function setActiveStory(storyId) {
+  const story = state.stories.find((item) => Number(item.id) === Number(storyId));
+  if (!story) {
+    startNewStory();
+    return;
+  }
+
+  state.activeStoryId = Number(story.id);
+  state.selectedTagIds = storyTagIds(story);
+  state.editorDistrictId = story.district_id ? Number(story.district_id) : null;
+  state.newCodeKind = 'standard';
+  resetEditorDraft();
+}
+
 function setMessage(message = '', error = '') {
   state.message = message;
   state.error = error;
+}
+
+function captureFormDraft() {
+  const form = app.querySelector('form[data-form="story-editor"]');
+  if (!form) return;
+
+  const draft = {};
+  for (const [key, value] of new FormData(form).entries()) {
+    draft[key] = value;
+  }
+  state.formDraft = draft;
+}
+
+function draftValue(name, fallback = '') {
+  return Object.prototype.hasOwnProperty.call(state.formDraft, name)
+    ? state.formDraft[name]
+    : fallback;
+}
+
+function selectedDistrictId() {
+  const drafted = draftValue('district_id', state.editorDistrictId || '');
+  return drafted ? Number(drafted) : null;
+}
+
+function districtPrefix(district) {
+  if (!district) return '';
+  const candidates = [district.slug, district.label_en, district.label_so]
+    .map((value) => String(value || '').trim().toLowerCase())
+    .filter(Boolean);
+
+  for (const candidate of candidates) {
+    if (DISTRICT_CODE_PREFIXES[candidate]) return DISTRICT_CODE_PREFIXES[candidate];
+  }
+
+  return '';
+}
+
+function nextCodeForPrefix(prefix, community = false) {
+  if (!prefix) return '';
+  const escapedPrefix = escapeRegExp(prefix);
+  const pattern = community
+    ? new RegExp(`^${escapedPrefix}CM(\\d+)$`, 'i')
+    : new RegExp(`^${escapedPrefix}(\\d+)$`, 'i');
+
+  const maxNumber = state.stories.reduce((max, story) => {
+    const match = String(story.code || '').trim().match(pattern);
+    if (!match) return max;
+    const number = Number(match[1]);
+    return Number.isFinite(number) ? Math.max(max, number) : max;
+  }, 0);
+
+  const nextNumber = String(maxNumber + 1).padStart(2, '0');
+  return community ? `${prefix}CM${nextNumber}` : `${prefix}${nextNumber}`;
+}
+
+function getNewCodeOptions(districtId = selectedDistrictId()) {
+  const district = state.districts.find((item) => Number(item.id) === Number(districtId));
+  const prefix = districtPrefix(district);
+  if (!prefix) return [];
+
+  return [
+    {
+      kind: 'standard',
+      code: nextCodeForPrefix(prefix, false),
+      title: 'Story',
+      note: `${prefix}XX`
+    },
+    {
+      kind: 'community',
+      code: nextCodeForPrefix(prefix, true),
+      title: 'Community story',
+      note: `${prefix}CMXX`
+    }
+  ];
 }
 
 function filteredStories() {
@@ -90,6 +206,20 @@ function filteredStories() {
 
     return haystack.includes(query);
   });
+}
+
+function autoGrowTextarea(textarea) {
+  if (!textarea) return;
+  textarea.style.height = 'auto';
+  textarea.style.height = `${textarea.scrollHeight + 2}px`;
+}
+
+function autoGrowAllTextareas() {
+  app.querySelectorAll('textarea').forEach(autoGrowTextarea);
+}
+
+function finishRender() {
+  window.requestAnimationFrame(autoGrowAllTextareas);
 }
 
 function renderAuthCard() {
@@ -137,6 +267,7 @@ function renderDeniedCard() {
 
 function renderStoryList() {
   const stories = filteredStories();
+  const creating = isCreatingStory();
 
   return `
     <aside class="admin-sidebar">
@@ -149,6 +280,7 @@ function renderStoryList() {
           <button type="button" class="admin-secondary-button" data-action="sign-out">Sign out</button>
         </div>
         <div class="admin-user-line">Signed in as ${escapeHtml(state.user?.email || '')}</div>
+        <button type="button" class="admin-new-story-button ${creating ? 'is-active' : ''}" data-action="new-story">+ New story</button>
         <div class="admin-search">
           <input type="search" data-field="search" placeholder="Search code, name, text…" value="${escapeHtml(state.searchQuery)}">
           <div class="admin-filter-grid">
@@ -187,8 +319,170 @@ function renderStoryList() {
   `;
 }
 
+function renderDistrictButtons(currentDistrictId = selectedDistrictId()) {
+  return `
+    <div class="admin-district-buttons" role="radiogroup" aria-label="District">
+      ${state.districts.map((district) => {
+        const selected = Number(currentDistrictId) === Number(district.id);
+        const prefix = districtPrefix(district);
+        return `
+          <button
+            type="button"
+            class="admin-district-button ${selected ? 'is-selected' : ''}"
+            data-action="set-form-district"
+            data-id="${district.id}"
+            aria-pressed="${selected ? 'true' : 'false'}"
+          >
+            <span>${escapeHtml(labelFor(district))}</span>
+            ${prefix ? `<small>${escapeHtml(prefix)}</small>` : ''}
+          </button>
+        `;
+      }).join('')}
+    </div>
+    <input type="hidden" name="district_id" value="${currentDistrictId || ''}">
+  `;
+}
+
+function renderCodeSelector(story = null) {
+  if (story) {
+    return `
+      <div class="admin-field">
+        <label for="story-code">Code</label>
+        <input id="story-code" value="${escapeHtml(story.code)}" disabled>
+      </div>
+    `;
+  }
+
+  const districtId = selectedDistrictId();
+  const options = getNewCodeOptions(districtId);
+  const draftedCode = draftValue('code', '');
+  const selectedCode = draftedCode && options.some((option) => option.code === draftedCode)
+    ? draftedCode
+    : options.find((option) => option.kind === state.newCodeKind)?.code || options[0]?.code || '';
+
+  if (!districtId) {
+    return `
+      <div class="admin-field is-wide">
+        <label>Code</label>
+        <div class="admin-code-empty">Choose a district to generate the next story code.</div>
+      </div>
+    `;
+  }
+
+  if (!options.length) {
+    return `
+      <div class="admin-field is-wide">
+        <label>Code</label>
+        <div class="admin-code-empty">This district does not have a recognised code prefix yet.</div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="admin-field is-wide">
+      <label>Code</label>
+      <div class="admin-code-options">
+        ${options.map((option) => `
+          <label class="admin-code-option ${selectedCode === option.code ? 'is-selected' : ''}">
+            <input
+              type="radio"
+              name="code"
+              value="${escapeHtml(option.code)}"
+              data-code-kind="${escapeHtml(option.kind)}"
+              ${selectedCode === option.code ? 'checked' : ''}
+              required
+            >
+            <span class="admin-code-option-main">${escapeHtml(option.code)}</span>
+            <span class="admin-code-option-meta">${escapeHtml(option.title)} · ${escapeHtml(option.note)}</span>
+          </label>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderImageSlider(story = null) {
+  const code = story?.code || draftValue('code', '') || 'NEW';
+  const slides = [1, 2, 3, 4];
+
+  return `
+    <h3 class="admin-section-title">Images</h3>
+    <div class="admin-image-slider" aria-label="Story images">
+      ${slides.map((number) => `
+        <div class="admin-image-placeholder">
+          <div class="admin-image-placeholder-art">${escapeHtml(code)}</div>
+          <div class="admin-image-placeholder-caption">Placeholder ${number}</div>
+        </div>
+      `).join('')}
+    </div>
+    <p class="admin-field-hint admin-image-hint">Later, this can read images from the Supabase Storage folder for this story code.</p>
+  `;
+}
+
+function renderTextFields(story = null) {
+  return `
+    <h3 class="admin-section-title">Story text</h3>
+
+    <div class="admin-field">
+      <label for="teaser-en">Teaser English</label>
+      <textarea id="teaser-en" name="teaser_en">${escapeHtml(draftValue('teaser_en', story?.teaser_en || ''))}</textarea>
+    </div>
+
+    <div class="admin-field">
+      <label for="teaser-so">Teaser Somali</label>
+      <textarea id="teaser-so" name="teaser_so">${escapeHtml(draftValue('teaser_so', story?.teaser_so || ''))}</textarea>
+    </div>
+
+    <div class="admin-field">
+      <label for="story-en">Story English</label>
+      <textarea id="story-en" name="story_en" class="admin-story-textarea">${escapeHtml(draftValue('story_en', story?.story_en || ''))}</textarea>
+    </div>
+
+    <div class="admin-field">
+      <label for="story-so">Story Somali</label>
+      <textarea id="story-so" name="story_so" class="admin-story-textarea">${escapeHtml(draftValue('story_so', story?.story_so || ''))}</textarea>
+    </div>
+  `;
+}
+
+function renderReflectionsEditor(story = null) {
+  const existingReflections = storyReflections(story);
+  const rows = existingReflections.length
+    ? [...existingReflections, null]
+    : [null];
+
+  return `
+    <h3 class="admin-section-title">Community reflections</h3>
+    <div class="admin-reflection-groups">
+      ${rows.map((reflection, index) => {
+        const label = reflection ? `Community reflection ${index + 1}` : 'Add another community reflection';
+        const idValue = reflection?.id || '';
+        const enName = `reflection_en_${index}`;
+        const soName = `reflection_so_${index}`;
+        const idName = `reflection_id_${index}`;
+        return `
+          <div class="admin-reflection-block">
+            <h4>${escapeHtml(label)}</h4>
+            <input type="hidden" name="${idName}" value="${escapeHtml(idValue)}">
+            <div class="admin-field">
+              <label for="${enName}">Reflection English</label>
+              <textarea id="${enName}" name="${enName}">${escapeHtml(draftValue(enName, reflection?.reflection_en || ''))}</textarea>
+            </div>
+            <div class="admin-field">
+              <label for="${soName}">Reflection Somali</label>
+              <textarea id="${soName}" name="${soName}">${escapeHtml(draftValue(soName, reflection?.reflection_so || ''))}</textarea>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+    <input type="hidden" name="reflection_count" value="${rows.length}">
+  `;
+}
+
 function renderTagsEditor() {
   return `
+    <h3 class="admin-section-title">Tags</h3>
     <div class="admin-tag-groups">
       ${state.clusters.map((cluster) => `
         <div class="admin-tag-cluster">
@@ -215,109 +509,48 @@ function renderTagsEditor() {
 
 function renderEditor() {
   const story = getActiveStory();
-
-  if (!story) {
-    return `
-      <section class="admin-editor">
-        <div class="admin-empty-editor">
-          <div>
-            <h2>Select a story</h2>
-            <p>Choose a story from the list to edit text, community reflection and tags.</p>
-          </div>
-        </div>
-      </section>
-    `;
-  }
-
-  const reflection = storyReflection(story);
+  const mode = story ? 'edit' : 'create';
+  const currentDistrictId = selectedDistrictId();
+  const statusValue = draftValue('status', story?.status || 'draft');
 
   return `
     <section class="admin-editor">
       <div class="admin-editor-header">
         <div class="admin-editor-title">
-          <h2>${escapeHtml(story.code)}</h2>
-          <p>Changes save directly to Supabase. Public pages will show saved changes after refresh.</p>
+          <h2>${story ? escapeHtml(story.code) : 'Add new story'}</h2>
+          <p>${story ? 'Changes save directly to Supabase. Public pages will show saved changes after refresh.' : 'Start with the district, then choose the generated code before adding text and tags.'}</p>
         </div>
       </div>
 
       <form class="admin-editor-form" data-form="story-editor">
-        <input type="hidden" name="story_id" value="${story.id}">
-        <input type="hidden" name="reflection_id" value="${reflection?.id || ''}">
+        <input type="hidden" name="mode" value="${mode}">
+        ${story ? `<input type="hidden" name="story_id" value="${story.id}">` : ''}
 
         <div class="admin-editor-grid">
-          <div class="admin-field">
-            <label for="story-code">Code</label>
-            <input id="story-code" value="${escapeHtml(story.code)}" disabled>
+          <div class="admin-field is-wide">
+            <label>District</label>
+            ${renderDistrictButtons(currentDistrictId)}
           </div>
+
+          ${renderCodeSelector(story)}
 
           <div class="admin-field">
             <label for="story-status">Status</label>
             <select id="story-status" name="status">
               ${['draft', 'published', 'archived'].map((status) => `
-                <option value="${status}" ${story.status === status ? 'selected' : ''}>${status}</option>
+                <option value="${status}" ${statusValue === status ? 'selected' : ''}>${status}</option>
               `).join('')}
             </select>
           </div>
 
-          <div class="admin-field">
-            <label for="story-district">District</label>
-            <select id="story-district" name="district_id">
-              <option value="">No district</option>
-              ${state.districts.map((district) => `
-                <option value="${district.id}" ${Number(story.district_id) === Number(district.id) ? 'selected' : ''}>${escapeHtml(labelFor(district))}</option>
-              `).join('')}
-            </select>
-          </div>
-
-          <div class="admin-field">
-            <label for="story-sort">Sort order</label>
-            <input id="story-sort" name="sort_order" type="number" step="1" value="${Number(story.sort_order ?? 0)}">
-          </div>
-
-          <div class="admin-field is-wide">
+          <div class="admin-field ${story ? '' : 'is-wide'}">
             <label for="storyteller">Storyteller</label>
-            <input id="storyteller" name="storyteller" value="${escapeHtml(story.storyteller || '')}" placeholder="Anonymous">
+            <input id="storyteller" name="storyteller" value="${escapeHtml(draftValue('storyteller', story?.storyteller || ''))}" placeholder="Anonymous">
           </div>
 
-          <h3 class="admin-section-title">Story text</h3>
-
-          <div class="admin-field">
-            <label for="teaser-en">Teaser English</label>
-            <textarea id="teaser-en" name="teaser_en">${escapeHtml(story.teaser_en || '')}</textarea>
-          </div>
-
-          <div class="admin-field">
-            <label for="teaser-so">Teaser Somali</label>
-            <textarea id="teaser-so" name="teaser_so">${escapeHtml(story.teaser_so || '')}</textarea>
-          </div>
-
-          <div class="admin-field">
-            <label for="story-en">Story English</label>
-            <textarea id="story-en" name="story_en" class="admin-story-textarea">${escapeHtml(story.story_en || '')}</textarea>
-          </div>
-
-          <div class="admin-field">
-            <label for="story-so">Story Somali</label>
-            <textarea id="story-so" name="story_so" class="admin-story-textarea">${escapeHtml(story.story_so || '')}</textarea>
-          </div>
-
-          <h3 class="admin-section-title">Community reflection</h3>
-
-          <div class="admin-field is-wide">
-            <p class="admin-field-hint">This edits the first community reflection attached to the story. If none exists, saving non-empty reflection text creates one.</p>
-          </div>
-
-          <div class="admin-field">
-            <label for="reflection-en">Reflection English</label>
-            <textarea id="reflection-en" name="reflection_en">${escapeHtml(reflection?.reflection_en || '')}</textarea>
-          </div>
-
-          <div class="admin-field">
-            <label for="reflection-so">Reflection Somali</label>
-            <textarea id="reflection-so" name="reflection_so">${escapeHtml(reflection?.reflection_so || '')}</textarea>
-          </div>
-
-          <h3 class="admin-section-title">Tags</h3>
+          ${renderImageSlider(story)}
+          ${renderTextFields(story)}
+          ${renderReflectionsEditor(story)}
           ${renderTagsEditor()}
         </div>
 
@@ -326,7 +559,7 @@ function renderEditor() {
             ${state.error ? `<div class="admin-error">${escapeHtml(state.error)}</div>` : ''}
             ${state.message ? `<div class="admin-success">${escapeHtml(state.message)}</div>` : ''}
           </div>
-          <button class="admin-button" type="submit" ${state.busy ? 'disabled' : ''}>${state.busy ? 'Saving…' : 'Save story'}</button>
+          <button class="admin-button" type="submit" ${state.busy ? 'disabled' : ''}>${state.busy ? 'Saving…' : story ? 'Save story' : 'Create story'}</button>
         </div>
       </form>
     </section>
@@ -345,20 +578,24 @@ function renderAdminApp() {
 function render() {
   if (!isSupabaseConfigured) {
     app.innerHTML = renderConfigCard();
+    finishRender();
     return;
   }
 
   if (!state.session) {
     app.innerHTML = renderAuthCard();
+    finishRender();
     return;
   }
 
   if (!state.adminProfile) {
     app.innerHTML = renderDeniedCard();
+    finishRender();
     return;
   }
 
   app.innerHTML = renderAdminApp();
+  finishRender();
 }
 
 async function signIn(form) {
@@ -391,8 +628,7 @@ async function signOut() {
   state.user = null;
   state.adminProfile = null;
   state.stories = [];
-  state.activeStoryId = null;
-  state.selectedTagIds = new Set();
+  startNewStory();
   setMessage();
   render();
 }
@@ -440,7 +676,6 @@ async function loadData() {
         teaser_en,
         story_en,
         status,
-        sort_order,
         published_at,
         districts(id,slug,label_so,label_en,sort_order),
         story_tags(tag_id,tags(id,slug,label_so,label_en,sort_order,cluster_id)),
@@ -467,10 +702,10 @@ async function loadData() {
     .sort((a, b) => (a.sort_order ?? 999) - (b.sort_order ?? 999) || labelFor(a).localeCompare(labelFor(b)));
   state.stories = storyResult.data || [];
 
-  if (!state.activeStoryId && state.stories.length > 0) {
-    setActiveStory(state.stories[0].id);
-  } else if (state.activeStoryId) {
+  if (state.activeStoryId && state.stories.some((story) => Number(story.id) === Number(state.activeStoryId))) {
     setActiveStory(state.activeStoryId);
+  } else {
+    startNewStory();
   }
 
   render();
@@ -485,18 +720,9 @@ async function afterAuthChange() {
   await loadData();
 }
 
-async function saveStory(form) {
-  const story = getActiveStory();
-  if (!story) return;
-
-  const data = new FormData(form);
-  const selectedTagRows = [...state.selectedTagIds].map((tagId) => ({
-    story_id: story.id,
-    tag_id: tagId
-  }));
-
+function buildStoryPayload(data, story = null) {
   const nextStatus = String(data.get('status') || 'draft');
-  const storyPayload = {
+  const payload = {
     district_id: data.get('district_id') ? Number(data.get('district_id')) : null,
     storyteller: normaliseText(data.get('storyteller')),
     teaser_en: normaliseText(data.get('teaser_en')),
@@ -504,92 +730,154 @@ async function saveStory(form) {
     story_en: normaliseText(data.get('story_en')),
     story_so: normaliseText(data.get('story_so')),
     status: nextStatus,
-    sort_order: Number(data.get('sort_order') || 0),
     updated_at: new Date().toISOString()
   };
 
-  if (nextStatus === 'published' && !story.published_at) {
-    storyPayload.published_at = new Date().toISOString();
+  if (!story) {
+    payload.code = normaliseText(data.get('code'));
+    payload.created_at = new Date().toISOString();
   }
 
-  state.busy = true;
-  setMessage();
-  render();
-
-  const storyUpdate = await state.supabase
-    .from('stories')
-    .update(storyPayload)
-    .eq('id', story.id);
-
-  if (storyUpdate.error) {
-    state.busy = false;
-    setMessage('', storyUpdate.error.message || 'Could not save story.');
-    render();
-    return;
+  if (nextStatus === 'published' && !story?.published_at) {
+    payload.published_at = new Date().toISOString();
   }
 
-  const reflectionId = String(data.get('reflection_id') || '').trim();
-  const reflectionPayload = {
-    reflection_en: normaliseText(data.get('reflection_en')),
-    reflection_so: normaliseText(data.get('reflection_so')),
-    status: 'published',
-    sort_order: 0,
-    updated_at: new Date().toISOString()
-  };
-  const hasReflectionText = Boolean(reflectionPayload.reflection_en || reflectionPayload.reflection_so);
+  return payload;
+}
 
-  if (reflectionId) {
-    const reflectionUpdate = await state.supabase
-      .from('community_reflections')
-      .update(reflectionPayload)
-      .eq('id', Number(reflectionId));
+async function saveReflections(storyId, data) {
+  const count = Number(data.get('reflection_count') || 0);
 
-    if (reflectionUpdate.error) {
-      state.busy = false;
-      setMessage('', reflectionUpdate.error.message || 'Story saved, but reflection could not be saved.');
-      render();
-      return;
-    }
-  } else if (hasReflectionText) {
-    const reflectionInsert = await state.supabase
-      .from('community_reflections')
-      .insert({ ...reflectionPayload, story_id: story.id });
+  for (let index = 0; index < count; index += 1) {
+    const reflectionId = String(data.get(`reflection_id_${index}`) || '').trim();
+    const reflectionPayload = {
+      reflection_en: normaliseText(data.get(`reflection_en_${index}`)),
+      reflection_so: normaliseText(data.get(`reflection_so_${index}`)),
+      status: 'published',
+      sort_order: index,
+      updated_at: new Date().toISOString()
+    };
+    const hasReflectionText = Boolean(reflectionPayload.reflection_en || reflectionPayload.reflection_so);
 
-    if (reflectionInsert.error) {
-      state.busy = false;
-      setMessage('', reflectionInsert.error.message || 'Story saved, but reflection could not be created.');
-      render();
-      return;
+    if (reflectionId) {
+      const reflectionUpdate = await state.supabase
+        .from('community_reflections')
+        .update(reflectionPayload)
+        .eq('id', Number(reflectionId));
+
+      if (reflectionUpdate.error) return reflectionUpdate.error;
+    } else if (hasReflectionText) {
+      const reflectionInsert = await state.supabase
+        .from('community_reflections')
+        .insert({ ...reflectionPayload, story_id: storyId, created_at: new Date().toISOString() });
+
+      if (reflectionInsert.error) return reflectionInsert.error;
     }
   }
+
+  return null;
+}
+
+async function saveTags(storyId) {
+  const selectedTagRows = [...state.selectedTagIds].map((tagId) => ({
+    story_id: storyId,
+    tag_id: tagId
+  }));
 
   const deleteTags = await state.supabase
     .from('story_tags')
     .delete()
-    .eq('story_id', story.id);
+    .eq('story_id', storyId);
 
-  if (deleteTags.error) {
-    state.busy = false;
-    setMessage('', deleteTags.error.message || 'Story saved, but old tags could not be removed.');
-    render();
-    return;
-  }
+  if (deleteTags.error) return deleteTags.error;
 
   if (selectedTagRows.length > 0) {
     const insertTags = await state.supabase
       .from('story_tags')
       .insert(selectedTagRows);
 
-    if (insertTags.error) {
+    if (insertTags.error) return insertTags.error;
+  }
+
+  return null;
+}
+
+async function saveStory(form) {
+  const story = getActiveStory();
+  const data = new FormData(form);
+  const mode = String(data.get('mode') || (story ? 'edit' : 'create'));
+  const creating = mode === 'create' || !story;
+
+  if (creating && !data.get('district_id')) {
+    setMessage('', 'Choose a district before creating a story.');
+    render();
+    return;
+  }
+
+  if (creating && !normaliseText(data.get('code'))) {
+    setMessage('', 'Choose a generated code before creating a story.');
+    render();
+    return;
+  }
+
+  const storyPayload = buildStoryPayload(data, creating ? null : story);
+
+  state.busy = true;
+  setMessage();
+  render();
+
+  let savedStoryId = story?.id || null;
+  let savedStoryCode = story?.code || storyPayload.code;
+
+  if (creating) {
+    const storyInsert = await state.supabase
+      .from('stories')
+      .insert(storyPayload)
+      .select('id,code')
+      .single();
+
+    if (storyInsert.error) {
       state.busy = false;
-      setMessage('', insertTags.error.message || 'Story saved, but new tags could not be added.');
+      setMessage('', storyInsert.error.message || 'Could not create story.');
+      render();
+      return;
+    }
+
+    savedStoryId = storyInsert.data.id;
+    savedStoryCode = storyInsert.data.code;
+  } else {
+    const storyUpdate = await state.supabase
+      .from('stories')
+      .update(storyPayload)
+      .eq('id', story.id);
+
+    if (storyUpdate.error) {
+      state.busy = false;
+      setMessage('', storyUpdate.error.message || 'Could not save story.');
       render();
       return;
     }
   }
 
+  const reflectionError = await saveReflections(savedStoryId, data);
+  if (reflectionError) {
+    state.busy = false;
+    setMessage('', reflectionError.message || 'Story saved, but reflections could not be saved.');
+    render();
+    return;
+  }
+
+  const tagError = await saveTags(savedStoryId);
+  if (tagError) {
+    state.busy = false;
+    setMessage('', tagError.message || 'Story saved, but tags could not be saved.');
+    render();
+    return;
+  }
+
   state.busy = false;
-  setMessage(`Saved ${story.code}.`);
+  state.activeStoryId = savedStoryId;
+  setMessage(`${creating ? 'Created' : 'Saved'} ${savedStoryCode}.`);
   await loadData();
 }
 
@@ -619,6 +907,13 @@ app.addEventListener('click', async (event) => {
     return;
   }
 
+  if (action === 'new-story') {
+    startNewStory();
+    setMessage();
+    render();
+    return;
+  }
+
   if (action === 'select-story') {
     setActiveStory(button.dataset.id);
     setMessage();
@@ -626,7 +921,23 @@ app.addEventListener('click', async (event) => {
     return;
   }
 
+  if (action === 'set-form-district') {
+    captureFormDraft();
+    state.editorDistrictId = Number(button.dataset.id);
+    state.formDraft.district_id = String(button.dataset.id);
+
+    if (isCreatingStory()) {
+      const options = getNewCodeOptions(state.editorDistrictId);
+      const selectedOption = options.find((option) => option.kind === state.newCodeKind) || options[0];
+      state.formDraft.code = selectedOption?.code || '';
+    }
+
+    render();
+    return;
+  }
+
   if (action === 'toggle-tag') {
+    captureFormDraft();
     const tagId = Number(button.dataset.id);
     if (state.selectedTagIds.has(tagId)) state.selectedTagIds.delete(tagId);
     else state.selectedTagIds.add(tagId);
@@ -636,17 +947,32 @@ app.addEventListener('click', async (event) => {
 
 app.addEventListener('input', (event) => {
   const field = event.target.closest('[data-field]');
+
+  if (event.target.matches('textarea')) {
+    autoGrowTextarea(event.target);
+  }
+
   if (!field) return;
 
   if (field.dataset.field === 'search') {
+    captureFormDraft();
     state.searchQuery = field.value;
     render();
   }
 });
 
 app.addEventListener('change', (event) => {
+  const codeRadio = event.target.closest('input[name="code"][data-code-kind]');
+  if (codeRadio) {
+    state.newCodeKind = codeRadio.dataset.codeKind || 'standard';
+    state.formDraft.code = codeRadio.value;
+    return;
+  }
+
   const field = event.target.closest('[data-field]');
   if (!field) return;
+
+  captureFormDraft();
 
   if (field.dataset.field === 'status-filter') {
     state.statusFilter = field.value;
