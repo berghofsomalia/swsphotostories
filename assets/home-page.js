@@ -53,7 +53,8 @@ const icon = {
   menu:         () => '<svg viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/></svg>',
   close:        () => '<svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>',
   home:         () => '<svg viewBox="0 0 24 24"><path d="M4 11.5 12 5l8 6.5"/><path d="M6.5 10.5V20h11V10.5"/></svg>',
-  about:        () => '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01"/><path d="M11 12h1v4h1"/></svg>'
+  about:        () => '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01"/><path d="M11 12h1v4h1"/></svg>',
+  glasses:      () => '<svg viewBox="0 0 24 24"><circle cx="7.5" cy="14" r="3.2"/><circle cx="16.5" cy="14" r="3.2"/><path d="M10.7 13.5c.7-.5 1.9-.5 2.6 0"/><path d="M4.5 13.2 3 8.5"/><path d="M19.5 13.2 21 8.5"/></svg>'
 };
 
 // ── Saved drawer (same logic as /stories renderSavedDrawer) ───────────────────
@@ -203,18 +204,22 @@ function renderPage() {
         <p class="home-card-name">${esc(story.storyteller)}</p>
         <p class="home-card-teaser">${esc(labelFor(story.summary, state.language))}</p>
         <div class="home-card-actions">
-          <a class="action-button" href="stories/?code=${esc(story.id)}">
-            ${icon.chevronRight()}<span>${esc(t.readStory)}</span>
-          </a>
-          <button type="button" class="action-button home-random-nav" data-action="previous-home-story" aria-label="Previous story">
-            ${icon.chevronLeft()}<span>${esc(t.previousStory || 'Previous')}</span>
-          </button>
-          <button type="button" class="action-button home-random-nav" data-action="next-home-story" aria-label="Next random story">
-            ${icon.chevronRight()}<span>${esc(t.nextStory || 'Next random')}</span>
-          </button>
-          <a class="action-button" href="stories/#gallery">
-            ${icon.sliders()}<span>${esc(t.exploreFilters)}</span>
-          </a>
+          <div class="home-card-action-row home-card-action-row--primary">
+            <a class="action-button" href="stories/?code=${esc(story.id)}">
+              ${icon.glasses()}<span>${esc(t.readStory)}</span>
+            </a>
+            <a class="action-button" href="stories/#gallery">
+              ${icon.sliders()}<span>${esc(t.exploreFilters)}</span>
+            </a>
+          </div>
+          <div class="home-card-action-row home-card-action-row--nav">
+            <button type="button" class="action-button home-random-nav ${state.trailIndex <= 0 ? 'is-disabled' : ''}" data-action="previous-home-story" aria-label="Previous story" ${state.trailIndex <= 0 ? 'disabled' : ''}>
+              ${icon.chevronLeft()}<span>${esc(t.previousStory || 'Previous')}</span>
+            </button>
+            <button type="button" class="action-button home-random-nav" data-action="next-home-story" aria-label="Next random story">
+              ${icon.chevronRight()}<span>${esc(t.nextStory || 'Next random')}</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
