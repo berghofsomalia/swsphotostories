@@ -1,6 +1,12 @@
 import { getSupabaseClient, isSupabaseConfigured } from './supabase-client.js';
+import {
+  SUPABASE_STORY_PHOTO_BUCKET,
+  USE_SUPABASE_IMAGES
+} from './supabase-config.js';
 
 const app = document.getElementById('admin-app');
+
+const ADMIN_IMAGE_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'webp', 'gif', 'avif']);
 
 const DISTRICT_CODE_PREFIXES = {
   baidoa: 'BD',
@@ -36,7 +42,10 @@ const state = {
   adminAccessLoading: false,
   authCheckVersion: 0,
   hasUnsavedChanges: false,
-  pendingNavigation: null
+  pendingNavigation: null,
+  storyImages: {},
+  storyImageLoading: new Set(),
+  storyImageErrors: {}
 };
 
 function escapeHtml(value = '') {
@@ -200,6 +209,70 @@ function getNewCodeOptions(districtId = selectedDistrictId()) {
   ];
 }
 
+function cleanStorageFiles(files = []) {
+  return files
+    .filter((file) => file?.name && !file.name.startsWith('.'))
+    .filter((file) => {
+      const ext = file.name.split('.').pop()?.toLowerCase();
+      return ADMIN_IMAGE_EXTENSIONS.has(ext);
+    })
+    .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
+}
+
+function buildPlaceholderSlides(code = 'NEW') {
+  return [1, 2, 3, 4].map((number) => ({
+    type: 'placeholder',
+    code,
+    caption: `Placeholder ${number}`
+  }));
+}
+
+async function loadStoryImages(code) {
+  if (!USE_SUPABASE_IMAGES || !state.supabase || !code) return;
+  if (Array.isArray(state.storyImages[code]) || state.storyImageLoading.has(code)) return;
+
+  state.storyImageLoading.add(code);
+  delete state.storyImageErrors[code];
+
+  const { data, error } = await state.supabase.storage
+    .from(SUPABASE_STORY_PHOTO_BUCKET)
+    .list(code, {
+      limit: 100,
+      sortBy: { column: 'name', order: 'asc' }
+    });
+
+  state.storyImageLoading.delete(code);
+
+  if (error) {
+    console.warn(`Could not load admin photos for ${code}`, error);
+    state.storyImages[code] = [];
+    state.storyImageErrors[code] = error.message || 'Could not load photos.';
+    render();
+    return;
+  }
+
+  state.storyImages[code] = cleanStorageFiles(data).map((file) => {
+    const path = `${code}/${file.name}`;
+    const { data: urlData } = state.supabase.storage
+      .from(SUPABASE_STORY_PHOTO_BUCKET)
+      .getPublicUrl(path);
+
+    return {
+      type: 'image',
+      name: file.name,
+      url: urlData.publicUrl
+    };
+  });
+
+  render();
+}
+
+function ensureActiveStoryImages() {
+  const story = getActiveStory();
+  if (!story?.code || !USE_SUPABASE_IMAGES) return;
+  loadStoryImages(story.code);
+}
+
 function filteredStories() {
   const query = state.searchQuery.trim().toLowerCase();
 
@@ -234,7 +307,10 @@ function autoGrowAllTextareas() {
 }
 
 function finishRender() {
-  window.requestAnimationFrame(autoGrowAllTextareas);
+  window.requestAnimationFrame(() => {
+    autoGrowAllTextareas();
+    ensureActiveStoryImages();
+  });
 }
 
 function restoreFieldFocus(selector, selectionStart = null, selectionEnd = null) {
@@ -440,19 +516,38 @@ function renderCodeSelector(story = null) {
 
 function renderImageSlider(story = null) {
   const code = story?.code || draftValue('code', '') || 'NEW';
-  const slides = [1, 2, 3, 4];
+  const storageImages = story?.code ? state.storyImages[story.code] : null;
+  const isLoading = story?.code && state.storyImageLoading.has(story.code);
+  const loadError = story?.code ? state.storyImageErrors[story.code] : '';
+  const hasStorageImages = Array.isArray(storageImages) && storageImages.length > 0;
+  const slides = hasStorageImages ? storageImages : buildPlaceholderSlides(code);
+
+  const hint = story?.code
+    ? isLoading
+      ? `Loading photos from ${SUPABASE_STORY_PHOTO_BUCKET}/${story.code}/…`
+      : hasStorageImages
+        ? `${storageImages.length} photo${storageImages.length === 1 ? '' : 's'} loaded from ${SUPABASE_STORY_PHOTO_BUCKET}/${story.code}/.`
+        : USE_SUPABASE_IMAGES
+          ? loadError || `No photos found in ${SUPABASE_STORY_PHOTO_BUCKET}/${story.code}/ yet.`
+          : 'Supabase images are disabled in assets/supabase-config.js, so placeholders are shown.'
+    : 'Save the story first, then upload images to the matching story-code folder.';
 
   return `
     <h3 class="admin-section-title">Images</h3>
     <div class="admin-image-slider" aria-label="Story images">
-      ${slides.map((number) => `
+      ${slides.map((slide) => slide.type === 'image' ? `
+        <figure class="admin-image-card">
+          <img src="${escapeHtml(slide.url)}" alt="${escapeHtml(`${code} ${slide.name}`)}" loading="lazy">
+          <figcaption>${escapeHtml(slide.name)}</figcaption>
+        </figure>
+      ` : `
         <div class="admin-image-placeholder">
-          <div class="admin-image-placeholder-art">${escapeHtml(code)}</div>
-          <div class="admin-image-placeholder-caption">Placeholder ${number}</div>
+          <div class="admin-image-placeholder-art">${escapeHtml(slide.code)}</div>
+          <div class="admin-image-placeholder-caption">${escapeHtml(slide.caption)}</div>
         </div>
       `).join('')}
     </div>
-    <p class="admin-field-hint admin-image-hint">Later, this can read images from the Supabase Storage folder for this story code.</p>
+    <p class="admin-field-hint admin-image-hint ${loadError ? 'is-error' : ''}">${escapeHtml(hint)}</p>
   `;
 }
 
