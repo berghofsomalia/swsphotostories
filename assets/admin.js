@@ -31,7 +31,12 @@ const state = {
   districtFilter: 'all',
   busy: false,
   message: '',
-  error: ''
+  error: '',
+  adminAccessChecked: false,
+  adminAccessLoading: false,
+  authCheckVersion: 0,
+  hasUnsavedChanges: false,
+  pendingNavigation: null
 };
 
 function escapeHtml(value = '') {
@@ -90,6 +95,7 @@ function startNewStory() {
   state.editorDistrictId = null;
   state.newCodeKind = 'standard';
   resetEditorDraft();
+  markClean();
 }
 
 function setActiveStory(storyId) {
@@ -104,11 +110,20 @@ function setActiveStory(storyId) {
   state.editorDistrictId = story.district_id ? Number(story.district_id) : null;
   state.newCodeKind = 'standard';
   resetEditorDraft();
+  markClean();
 }
 
 function setMessage(message = '', error = '') {
   state.message = message;
   state.error = error;
+}
+
+function markDirty() {
+  state.hasUnsavedChanges = true;
+}
+
+function markClean() {
+  state.hasUnsavedChanges = false;
 }
 
 function captureFormDraft() {
@@ -252,6 +267,14 @@ function renderConfigCard() {
   `;
 }
 
+function renderLoadingCard(message = 'Loading admin interface…') {
+  return `
+    <section class="admin-loading-card">
+      <p>${escapeHtml(message)}</p>
+    </section>
+  `;
+}
+
 function renderDeniedCard() {
   return `
     <section class="admin-denied-card">
@@ -355,10 +378,8 @@ function renderCodeSelector(story = null) {
 
   const districtId = selectedDistrictId();
   const options = getNewCodeOptions(districtId);
-  const draftedCode = draftValue('code', '');
-  const selectedCode = draftedCode && options.some((option) => option.code === draftedCode)
-    ? draftedCode
-    : options.find((option) => option.kind === state.newCodeKind)?.code || options[0]?.code || '';
+  const selectedOption = options.find((option) => option.kind === state.newCodeKind) || options[0] || null;
+  const selectedCode = selectedOption?.code || '';
 
   if (!districtId) {
     return `
@@ -381,20 +402,19 @@ function renderCodeSelector(story = null) {
   return `
     <div class="admin-field is-wide">
       <label>Code</label>
-      <div class="admin-code-options">
+      <input type="hidden" name="code" value="${escapeHtml(selectedCode)}" required>
+      <div class="admin-code-options" role="radiogroup" aria-label="New story code">
         ${options.map((option) => `
-          <label class="admin-code-option ${selectedCode === option.code ? 'is-selected' : ''}">
-            <input
-              type="radio"
-              name="code"
-              value="${escapeHtml(option.code)}"
-              data-code-kind="${escapeHtml(option.kind)}"
-              ${selectedCode === option.code ? 'checked' : ''}
-              required
-            >
-            <span class="admin-code-option-main">${escapeHtml(option.code)}</span>
-            <span class="admin-code-option-meta">${escapeHtml(option.title)} · ${escapeHtml(option.note)}</span>
-          </label>
+          <button
+            type="button"
+            class="admin-code-option ${selectedOption?.kind === option.kind ? 'is-selected' : ''}"
+            data-action="set-code-kind"
+            data-kind="${escapeHtml(option.kind)}"
+            aria-pressed="${selectedOption?.kind === option.kind ? 'true' : 'false'}"
+          >
+            <span>${escapeHtml(option.code)}</span>
+            <small>${escapeHtml(option.note)}</small>
+          </button>
         `).join('')}
       </div>
     </div>
@@ -455,7 +475,11 @@ function renderReflectionsEditor(story = null) {
     <h3 class="admin-section-title">Community reflections</h3>
     <div class="admin-reflection-groups">
       ${rows.map((reflection, index) => {
-        const label = reflection ? `Community reflection ${index + 1}` : 'Add another community reflection';
+        const label = reflection
+          ? `Community reflection ${index + 1}`
+          : existingReflections.length
+            ? 'Add another community reflection'
+            : 'Add a community reflection';
         const idValue = reflection?.id || '';
         const enName = `reflection_en_${index}`;
         const soName = `reflection_so_${index}`;
@@ -566,12 +590,31 @@ function renderEditor() {
   `;
 }
 
+function renderUnsavedModal() {
+  if (!state.pendingNavigation) return '';
+
+  return `
+    <div class="admin-modal-backdrop" role="presentation">
+      <section class="admin-unsaved-modal" role="dialog" aria-modal="true" aria-labelledby="unsaved-title">
+        <h2 id="unsaved-title">Unsaved changes</h2>
+        <p>You have changes that have not been saved yet.</p>
+        <div class="admin-modal-actions">
+          <button type="button" class="admin-secondary-button" data-action="discard-changes">Discard changes</button>
+          <button type="button" class="admin-button" data-action="save-before-navigation">Save changes</button>
+          <button type="button" class="admin-secondary-button" data-action="cancel-navigation">Cancel</button>
+        </div>
+      </section>
+    </div>
+  `;
+}
+
 function renderAdminApp() {
   return `
     <div class="admin-app-frame">
       ${renderStoryList()}
       ${renderEditor()}
     </div>
+    ${renderUnsavedModal()}
   `;
 }
 
@@ -584,6 +627,12 @@ function render() {
 
   if (!state.session) {
     app.innerHTML = renderAuthCard();
+    finishRender();
+    return;
+  }
+
+  if (state.adminAccessLoading || !state.adminAccessChecked) {
+    app.innerHTML = renderLoadingCard('Checking admin access…');
     finishRender();
     return;
   }
@@ -627,6 +676,8 @@ async function signOut() {
   state.session = null;
   state.user = null;
   state.adminProfile = null;
+  state.adminAccessChecked = false;
+  state.adminAccessLoading = false;
   state.stories = [];
   startNewStory();
   setMessage();
@@ -712,11 +763,32 @@ async function loadData() {
 }
 
 async function afterAuthChange() {
-  state.adminProfile = await checkAdminAccess();
+  if (!state.user) {
+    state.adminProfile = null;
+    state.adminAccessChecked = false;
+    state.adminAccessLoading = false;
+    render();
+    return;
+  }
+
+  const checkVersion = state.authCheckVersion + 1;
+  state.authCheckVersion = checkVersion;
+  state.adminAccessLoading = true;
+  state.adminAccessChecked = false;
+  render();
+
+  const profile = await checkAdminAccess();
+  if (checkVersion !== state.authCheckVersion) return;
+
+  state.adminProfile = profile;
+  state.adminAccessChecked = true;
+  state.adminAccessLoading = false;
+
   if (!state.adminProfile) {
     render();
     return;
   }
+
   await loadData();
 }
 
@@ -811,13 +883,13 @@ async function saveStory(form) {
   if (creating && !data.get('district_id')) {
     setMessage('', 'Choose a district before creating a story.');
     render();
-    return;
+    return false;
   }
 
   if (creating && !normaliseText(data.get('code'))) {
     setMessage('', 'Choose a generated code before creating a story.');
     render();
-    return;
+    return false;
   }
 
   const storyPayload = buildStoryPayload(data, creating ? null : story);
@@ -840,7 +912,7 @@ async function saveStory(form) {
       state.busy = false;
       setMessage('', storyInsert.error.message || 'Could not create story.');
       render();
-      return;
+      return false;
     }
 
     savedStoryId = storyInsert.data.id;
@@ -855,7 +927,7 @@ async function saveStory(form) {
       state.busy = false;
       setMessage('', storyUpdate.error.message || 'Could not save story.');
       render();
-      return;
+      return false;
     }
   }
 
@@ -864,7 +936,7 @@ async function saveStory(form) {
     state.busy = false;
     setMessage('', reflectionError.message || 'Story saved, but reflections could not be saved.');
     render();
-    return;
+    return false;
   }
 
   const tagError = await saveTags(savedStoryId);
@@ -872,13 +944,51 @@ async function saveStory(form) {
     state.busy = false;
     setMessage('', tagError.message || 'Story saved, but tags could not be saved.');
     render();
-    return;
+    return false;
   }
 
   state.busy = false;
   state.activeStoryId = savedStoryId;
+  markClean();
   setMessage(`${creating ? 'Created' : 'Saved'} ${savedStoryCode}.`);
   await loadData();
+  return true;
+}
+
+
+function performNavigation(request, discard = false) {
+  if (!request) return;
+
+  if (discard) markClean();
+  state.pendingNavigation = null;
+  setMessage();
+
+  if (request.type === 'sign-out') {
+    signOut();
+    return;
+  }
+
+  if (request.type === 'new-story') {
+    startNewStory();
+    render();
+    return;
+  }
+
+  if (request.type === 'select-story') {
+    setActiveStory(request.id);
+    render();
+  }
+}
+
+function requestNavigation(request) {
+  if (!state.hasUnsavedChanges) {
+    performNavigation(request);
+    return;
+  }
+
+  captureFormDraft();
+  state.pendingNavigation = request;
+  render();
 }
 
 app.addEventListener('submit', async (event) => {
@@ -903,26 +1013,50 @@ app.addEventListener('click', async (event) => {
   const action = button.dataset.action;
 
   if (action === 'sign-out') {
-    await signOut();
+    requestNavigation({ type: 'sign-out' });
     return;
   }
 
   if (action === 'new-story') {
-    startNewStory();
-    setMessage();
-    render();
+    requestNavigation({ type: 'new-story' });
     return;
   }
 
   if (action === 'select-story') {
-    setActiveStory(button.dataset.id);
-    setMessage();
+    requestNavigation({ type: 'select-story', id: button.dataset.id });
+    return;
+  }
+
+  if (action === 'discard-changes') {
+    performNavigation(state.pendingNavigation, true);
+    return;
+  }
+
+  if (action === 'cancel-navigation') {
+    state.pendingNavigation = null;
     render();
+    return;
+  }
+
+  if (action === 'save-before-navigation') {
+    const form = app.querySelector('form[data-form="story-editor"]');
+    if (!form) {
+      performNavigation(state.pendingNavigation, true);
+      return;
+    }
+
+    const pending = state.pendingNavigation;
+    const saved = await saveStory(form);
+    if (saved) {
+      state.pendingNavigation = pending;
+      performNavigation(pending, false);
+    }
     return;
   }
 
   if (action === 'set-form-district') {
     captureFormDraft();
+    markDirty();
     state.editorDistrictId = Number(button.dataset.id);
     state.formDraft.district_id = String(button.dataset.id);
 
@@ -936,8 +1070,20 @@ app.addEventListener('click', async (event) => {
     return;
   }
 
+  if (action === 'set-code-kind') {
+    captureFormDraft();
+    markDirty();
+    state.newCodeKind = button.dataset.kind || 'standard';
+    const options = getNewCodeOptions(selectedDistrictId());
+    const selectedOption = options.find((option) => option.kind === state.newCodeKind) || options[0];
+    state.formDraft.code = selectedOption?.code || '';
+    render();
+    return;
+  }
+
   if (action === 'toggle-tag') {
     captureFormDraft();
+    markDirty();
     const tagId = Number(button.dataset.id);
     if (state.selectedTagIds.has(tagId)) state.selectedTagIds.delete(tagId);
     else state.selectedTagIds.add(tagId);
@@ -947,6 +1093,10 @@ app.addEventListener('click', async (event) => {
 
 app.addEventListener('input', (event) => {
   const field = event.target.closest('[data-field]');
+
+  if (event.target.closest('form[data-form="story-editor"]')) {
+    markDirty();
+  }
 
   if (event.target.matches('textarea')) {
     autoGrowTextarea(event.target);
@@ -962,11 +1112,9 @@ app.addEventListener('input', (event) => {
 });
 
 app.addEventListener('change', (event) => {
-  const codeRadio = event.target.closest('input[name="code"][data-code-kind]');
-  if (codeRadio) {
-    state.newCodeKind = codeRadio.dataset.codeKind || 'standard';
-    state.formDraft.code = codeRadio.value;
-    return;
+  if (event.target.closest('form[data-form="story-editor"]')) {
+    captureFormDraft();
+    markDirty();
   }
 
   const field = event.target.closest('[data-field]');
@@ -1004,16 +1152,36 @@ async function init() {
   state.user = data.session?.user || null;
 
   state.supabase.auth.onAuthStateChange(async (_event, session) => {
+    const previousUserId = state.user?.id || null;
+    const nextUserId = session?.user?.id || null;
+
     state.session = session;
     state.user = session?.user || null;
+
+    if (!state.user) {
+      state.adminProfile = null;
+      state.adminAccessChecked = false;
+      state.adminAccessLoading = false;
+      render();
+      return;
+    }
+
+    if (previousUserId === nextUserId && state.adminProfile) return;
+
     state.adminProfile = null;
-    if (state.user) await afterAuthChange();
-    else render();
+    state.adminAccessChecked = false;
+    await afterAuthChange();
   });
 
   if (state.user) await afterAuthChange();
   else render();
 }
+
+window.addEventListener('beforeunload', (event) => {
+  if (!state.hasUnsavedChanges) return;
+  event.preventDefault();
+  event.returnValue = '';
+});
 
 init().catch((error) => {
   console.error(error);
