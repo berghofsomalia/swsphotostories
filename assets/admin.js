@@ -237,6 +237,23 @@ function finishRender() {
   window.requestAnimationFrame(autoGrowAllTextareas);
 }
 
+function restoreFieldFocus(selector, selectionStart = null, selectionEnd = null) {
+  window.requestAnimationFrame(() => {
+    const field = app.querySelector(selector);
+    if (!field) return;
+
+    field.focus({ preventScroll: true });
+
+    if (
+      selectionStart !== null
+      && selectionEnd !== null
+      && typeof field.setSelectionRange === 'function'
+    ) {
+      field.setSelectionRange(selectionStart, selectionEnd);
+    }
+  });
+}
+
 function renderAuthCard() {
   return `
     <section class="admin-login-card">
@@ -1105,9 +1122,12 @@ app.addEventListener('input', (event) => {
   if (!field) return;
 
   if (field.dataset.field === 'search') {
-    captureFormDraft();
+    const selectionStart = field.selectionStart;
+    const selectionEnd = field.selectionEnd;
+
     state.searchQuery = field.value;
     render();
+    restoreFieldFocus('[data-field=\"search\"]', selectionStart, selectionEnd);
   }
 });
 
