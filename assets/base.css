@@ -105,3 +105,24 @@ svg {
   color: var(--muted);
 }
 .gallery-empty p { margin: 0; font-size: 0.95rem; }
+
+/* ── Lightweight loading states ─────────────────────────────── */
+.loading-state--page {
+  min-height: 100svh;
+  gap: 0.8rem;
+  font-size: 1.05rem;
+  opacity: 0.9;
+}
+.loading-spinner {
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 999px;
+  border: 2px solid rgba(255,255,255,0.18);
+  border-top-color: var(--accent);
+  animation: loading-spin 820ms linear infinite;
+}
+html[data-theme="light"] .loading-spinner {
+  border-color: rgba(31,29,26,0.14);
+  border-top-color: var(--accent);
+}
+@keyframes loading-spin { to { transform: rotate(360deg); } }

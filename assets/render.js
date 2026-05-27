@@ -31,6 +31,7 @@ const icon = {
   share:        () => '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.7 15.4 6.3M8.6 13.3l6.8 4.4"/></svg>',
   shuffle:      () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 3h5v5"/><path d="M4 20 20 4"/><path d="M21 16v5h-5"/><path d="M15 15 21 21"/><path d="M4 4l5 5"/></svg>',
   related:      () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 13.5 7 17a3 3 0 0 1-4.24-4.24l3.54-3.54A3 3 0 0 1 10.5 9"/><path d="M13.5 10.5 17 7a3 3 0 0 1 4.24 4.24L17.7 14.8A3 3 0 0 1 13.5 15"/><path d="m8.5 15.5 7-7"/></svg>',
+  flow:         () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h7a4 4 0 0 1 4 4v6"/><path d="M8 3 4 7l4 4"/><path d="M20 17h-5"/><path d="m17 14 3 3-3 3"/></svg>',
   sliders:      () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21v-7"/><path d="M4 10V3"/><path d="M12 21v-9"/><path d="M12 8V3"/><path d="M20 21v-5"/><path d="M20 12V3"/><path d="M1 14h6"/><path d="M9 8h6"/><path d="M17 16h6"/></svg>',
   copy:         () => '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><rect x="4" y="4" width="11" height="11" rx="2"/></svg>',
   facebook:     () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 21v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.6 1.7-1.6H16.7V3.8c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4V10H8v3h2.5v8h3z"/></svg>',
@@ -127,7 +128,7 @@ function renderStoryMetaPanel(state, story) {
       </div>
       <div class="tag-row story-meta-tags">${tagChips(state, story)}</div>
       <div class="story-meta-divider" aria-hidden="true"></div>
-      <button type="button" class="guidance-flow-button" data-action="open-guidance">${escapeHtml(t.storyFlow)}</button>
+      <button type="button" class="guidance-flow-button" data-action="open-guidance"><span class="guidance-flow-icon">${icon.flow()}</span><span>${escapeHtml(t.storyFlow)}</span></button>
     </aside>
   `;
 }
@@ -148,17 +149,20 @@ function renderSavedDrawer(state) {
         ${savedStories.length === 0
           ? `<div class="drawer-empty">${escapeHtml(t.noSaved)}</div>`
           : savedStories.map((s) => `
-            <button type="button" class="saved-item" data-action="open-saved-story" data-value="${escapeHtml(s.id)}">
-              <div class="saved-thumb">${adaptiveImageMarkup(s.images?.[0], s.storyteller, 'cover')}</div>
-              <div class="saved-copy">
-                <div class="saved-name">${escapeHtml(s.storyteller)}</div>
-                <div class="saved-summary">${escapeHtml(labelFor(s.summary, state.language))}</div>
-                <div class="saved-tags">
-                  ${renderChip(labelFor(s.district, state.language), { muted: true })}
-                  ${(s.topicTags || []).slice(0, 1).map((tag) => renderChip(labelFor(tag, state.language))).join('')}
+            <div class="saved-item">
+              <button type="button" class="saved-item-main" data-action="open-saved-story" data-value="${escapeHtml(s.id)}">
+                <div class="saved-thumb">${adaptiveImageMarkup(s.images?.[0], s.storyteller, 'cover')}</div>
+                <div class="saved-copy">
+                  <div class="saved-name">${escapeHtml(s.storyteller)}</div>
+                  <div class="saved-summary">${escapeHtml(labelFor(s.summary, state.language))}</div>
+                  <div class="saved-tags">
+                    ${renderChip(labelFor(s.district, state.language), { muted: true })}
+                    ${(s.topicTags || []).slice(0, 1).map((tag) => renderChip(labelFor(tag, state.language))).join('')}
+                  </div>
                 </div>
-              </div>
-            </button>
+              </button>
+              <button type="button" class="saved-remove-button" data-action="remove-saved" data-value="${escapeHtml(s.id)}" aria-label="${escapeHtml(t.close)}">${icon.close()}</button>
+            </div>
           `).join('')}
       </div>
     </aside>
@@ -336,11 +340,11 @@ export function renderApp(state) {
 
   document.title = t.siteTitle;
 
-  const nexusOneliner = (landing.section1NexusLines || []).join(' ');
-  const titleOneliner = (landing.section1TitleLines || []).join(' · ');
+  const nexusLines = landing.section1NexusLines || [];
+  const titleLines = landing.section1TitleLines || [];
   const contextStrips = `
-    <div class="context-strip context-strip--top" aria-hidden="true">${escapeHtml(nexusOneliner)}</div>
-    <div class="context-strip context-strip--bottom" aria-hidden="true">${escapeHtml(titleOneliner)}</div>
+    <div class="context-strip context-strip--top context-strip--nexus" aria-hidden="true">${nexusLines.map((line) => `<span>${escapeHtml(line)}</span>`).join('')}</div>
+    <div class="context-strip context-strip--bottom context-strip--title" aria-hidden="true">${titleLines.map((line) => `<span>${escapeHtml(line)}</span>`).join('')}</div>
   `;
 
   const imageIndex = Math.min(state.currentImageIndex, Math.max((story.images || []).length - 1, 0));
@@ -422,9 +426,13 @@ export function renderApp(state) {
   const galleryMarkup = state.galleryVisible ? `
     <section id="gallery" class="gallery-band gallery-band--entry">
       <div class="content-wrap">
-        <div class="gallery-header">${escapeHtml(storyGalleryHeader(state))}</div>
-        <div class="gallery-layout">
-          <aside class="filter-panel">
+        <button type="button" class="mobile-filter-toggle ${state.filterDrawerOpen ? 'is-open' : ''}" data-action="toggle-filter-drawer">
+          <span>${escapeHtml(state.filterDrawerOpen ? t.hideFilters : t.showFilters)}</span>
+          <span class="mobile-filter-toggle-icon" aria-hidden="true">${state.filterDrawerOpen ? '⌄' : '⌃'}</span>
+        </button>
+        <div class="gallery-layout ${state.filterDrawerOpen ? 'is-filter-open' : ''}">
+          <aside class="filter-panel ${state.filterDrawerOpen ? 'is-open' : ''}">
+            <div class="gallery-header gallery-header--filter">${escapeHtml(storyGalleryHeader(state))}</div>
             <div class="filter-reset-slot">
               <button type="button" class="filter-reset ${hasActiveFilters(state.filters) ? 'is-visible' : ''}" data-action="reset-filters">
                 ${escapeHtml(t.reset)}

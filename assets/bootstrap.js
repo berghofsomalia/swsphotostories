@@ -6,17 +6,20 @@ import {
   getStoryById,
   hasActiveFilters,
   hasMoreStories,
+  pagedStories,
   pickRandomRelatedStory,
   savePersistentState,
   updateUrlForStory,
   isSaved
 } from './story-data.js';
 import { getUiText, labelFor, initialiseI18n } from './content.js';
-import { fetchStories, fetchTagCatalogue } from './api.js';
+import { ensureStoryImages, fetchStories, fetchTagCatalogue } from './api.js';
 
 let actionMessageTimerId = null;
 let touchStartX = null;
 let listenersAttached = false;
+let imageHydrationRun = 0;
+let imageHydrationScheduled = false;
 
 // ── Rendering ─────────────────────────────────────────────────────────────────
 
@@ -24,13 +27,37 @@ function renderSite() {
   renderApp(state);
   startAutoplay();
   requestAnimationFrame(syncGalleryCardHeights);
+  scheduleVisibleImageHydration();
 }
 
 function renderLoading() {
   const app = qs('#app');
   if (!app) return;
-  const t = getUiText(state.language);
-  app.innerHTML = `<div class="loading-state">${t.loading}</div>`;
+  const loadingText = state.language === 'so' ? 'Sheekooyinka waa la raraya…' : 'Loading stories…';
+  app.innerHTML = `<div class="loading-state loading-state--page"><span class="loading-spinner" aria-hidden="true"></span><span>${loadingText}</span></div>`;
+}
+
+function visibleStoriesForImages() {
+  const visible = new Map();
+  const story = currentStory(state);
+  if (state.storyVisible && story) visible.set(story.id, story);
+  if (state.galleryVisible) {
+    pagedStories(state).forEach((item) => visible.set(item.id, item));
+  }
+  return [...visible.values()].filter((item) => item && !item.imagesLoaded && !item.imagesLoading);
+}
+
+function scheduleVisibleImageHydration() {
+  if (imageHydrationScheduled) return;
+  imageHydrationScheduled = true;
+  window.setTimeout(async () => {
+    imageHydrationScheduled = false;
+    const batch = visibleStoriesForImages().slice(0, 8);
+    if (!batch.length) return;
+    const runId = ++imageHydrationRun;
+    await Promise.all(batch.map((story) => ensureStoryImages(story)));
+    if (runId === imageHydrationRun) renderSite();
+  }, 60);
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -64,6 +91,81 @@ function scrollFromHash(options = {}) {
   }
 }
 
+function cloneFilters(filters) {
+  return {
+    district: filters?.district || '',
+    people: Array.isArray(filters?.people) ? [...filters.people] : [],
+    tags: Array.isArray(filters?.tags) ? [...filters.tags] : [],
+    searchQuery: filters?.searchQuery || ''
+  };
+}
+
+function makeHistoryState(kind = 'story') {
+  return {
+    swsPhotostories: true,
+    kind,
+    currentStoryId: state.currentStoryId,
+    currentImageIndex: state.currentImageIndex,
+    filters: cloneFilters(state.filters),
+    galleryPage: state.galleryPage,
+    galleryMode: state.galleryMode,
+    storyVisible: state.storyVisible,
+    galleryVisible: state.galleryVisible,
+    filterDrawerOpen: state.filterDrawerOpen
+  };
+}
+
+function replaceCurrentHistoryState(kind = 'gallery') {
+  history.replaceState(makeHistoryState(kind), '', window.location.href);
+}
+
+function pushStoryHistory(story) {
+  const url = buildShareUrl(story);
+  history.pushState(makeHistoryState('story'), '', url);
+}
+
+async function restoreHistoryState(snapshot) {
+  if (!snapshot || !snapshot.swsPhotostories) {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    const story = getStoryById(state.stories, code);
+    if (story) {
+      setCurrentStory(story.id, { skipUrl: true, scrollTop: true });
+      return;
+    }
+    return;
+  }
+
+  state.currentStoryId = snapshot.currentStoryId || state.currentStoryId;
+  state.currentImageIndex = Number(snapshot.currentImageIndex) || 0;
+  state.filters = cloneFilters(snapshot.filters);
+  state.galleryPage = Number(snapshot.galleryPage) || 1;
+  state.galleryMode = snapshot.galleryMode || 'total';
+  state.storyVisible = Boolean(snapshot.storyVisible);
+  state.galleryVisible = Boolean(snapshot.galleryVisible);
+  state.filterDrawerOpen = Boolean(snapshot.filterDrawerOpen);
+  state.menuOpen = false;
+  state.shareOpen = false;
+  state.guidanceOpen = false;
+  state.savedOpen = false;
+
+  renderSite();
+
+  const story = currentStory(state);
+  if (story) {
+    await ensureStoryImages(story);
+    renderSite();
+  }
+
+  requestAnimationFrame(() => {
+    if (state.galleryVisible && !state.storyVisible) {
+      qs('#gallery')?.scrollIntoView({ behavior: 'auto', block: 'start' });
+    } else if (state.storyVisible) {
+      qs('#story-top')?.scrollIntoView({ behavior: 'auto', block: 'start' });
+    }
+  });
+}
+
 function setCurrentStory(id, options = {}) {
   const story = getStoryById(state.stories, id);
   if (!story) return;
@@ -73,9 +175,16 @@ function setCurrentStory(id, options = {}) {
   state.shareOpen = false;
   state.guidanceOpen = false;
   state.menuOpen = false;
+  state.filterDrawerOpen = false;
   state.storyVisible = options.storyVisible ?? true;
   state.galleryVisible = options.galleryVisible ?? false;
-  updateUrlForStory(story, { hash: options.hash || '' });
+  if (!options.skipUrl) {
+    if (options.pushHistory) {
+      pushStoryHistory(story);
+    } else {
+      updateUrlForStory(story, { hash: options.hash || '', state: makeHistoryState('story') });
+    }
+  }
   renderSite();
 
   if (options.scrollTop) scrollStoryTop();
@@ -181,6 +290,11 @@ const ACTIONS = {
     state.savedOpen = false;
     renderSite();
   },
+  'remove-saved': async ({ value }) => {
+    state.savedIds = state.savedIds.filter((id) => String(id) !== String(value));
+    savePersistentState(state);
+    renderSite();
+  },
   'open-saved-story': async ({ value }) => {
     state.savedOpen = false;
     setCurrentStory(value, { scrollTop: true });
@@ -263,6 +377,7 @@ const ACTIONS = {
     resetPage();
     state.storyVisible = true;
     state.galleryVisible = true;
+    state.filterDrawerOpen = false;
     renderSite();
     scrollGallery();
   },
@@ -278,6 +393,7 @@ const ACTIONS = {
     resetPage();
     state.storyVisible = true;
     state.galleryVisible = true;
+    state.filterDrawerOpen = true;
     renderSite();
     scrollGallery();
   },
@@ -330,11 +446,30 @@ const ACTIONS = {
     renderSite();
   },
   'open-story': async ({ value }) => {
-    setCurrentStory(value, { scrollTop: true });
+    const story = getStoryById(state.stories, value);
+    if (!story) return;
+    if (state.galleryVisible) {
+      replaceCurrentHistoryState('gallery');
+      setCurrentStory(story.id, { scrollTop: true, pushHistory: true });
+      return;
+    }
+    setCurrentStory(story.id, { scrollTop: true });
   },
   'prev-image': async () => { moveToPreviousImage(); },
   'next-image': async () => { moveToNextImage(); },
-  'go-image': async ({ value }) => { setCurrentImage(value); }
+  'go-image': async ({ value }) => { setCurrentImage(value); },
+  'toggle-filter-drawer': async () => {
+    state.filterDrawerOpen = !state.filterDrawerOpen;
+    renderSite();
+  },
+  'open-filter-drawer': async () => {
+    state.filterDrawerOpen = true;
+    renderSite();
+  },
+  'close-filter-drawer': async () => {
+    state.filterDrawerOpen = false;
+    renderSite();
+  }
 };
 
 async function handleAction(action, value = '') {
@@ -413,6 +548,10 @@ function attachGlobalListeners() {
     requestAnimationFrame(() => scrollFromHash());
   });
 
+  window.addEventListener('popstate', (event) => {
+    restoreHistoryState(event.state).catch(console.error);
+  });
+
   window.addEventListener('keydown', (event) => {
     // Close overlays
     if (event.key === 'Escape') {
@@ -482,6 +621,8 @@ export async function initialiseApp() {
   state.currentStoryId = existing?.id || randomStory?.id || null;
   state.storyVisible = !startInGallery;
   state.galleryVisible = startInGallery;
+
+  history.replaceState(makeHistoryState(startInGallery ? 'gallery' : 'story'), '', window.location.href);
 
   savePersistentState(state);
   renderSite();

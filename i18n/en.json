@@ -57,11 +57,18 @@
     "readStory": "Read story",
     "anotherStory": "See another story",
     "exploreFilters": "Explore stories through filters",
-    "storyFlow": "How the stories flow"
+    "storyFlow": "How the stories flow",
+    "showFilters": "Show filters",
+    "hideFilters": "Hide filters",
+    "previousStory": "Previous",
+    "nextStory": "Next random"
   },
   "landing": {
     "section1NexusLines": [
-      "CLIMATE · CONFLICT · ENVIRONMENT · PEACE"
+      "ENVIRONMENT",
+      "CONFLICT",
+      "CLIMATE",
+      "PEACE"
     ],
     "section1TitleLines": [
       "Visual storytelling",

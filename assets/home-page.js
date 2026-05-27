@@ -1,5 +1,5 @@
 import { getUiText, getLandingText, STORAGE_KEYS, initialiseI18n } from './content.js';
-import { fetchStories } from './api.js';
+import { ensureStoryImages, fetchStories } from './api.js';
 
 const state = {
   language:     localStorage.getItem(STORAGE_KEYS.language) || 'en',
@@ -8,7 +8,9 @@ const state = {
   currentStory: null,
   menuOpen:     false,
   savedOpen:    false,
-  savedIds:     []
+  savedIds:     [],
+  storyTrail:   [],
+  trailIndex:   -1
 };
 
 // Load saved IDs from localStorage
@@ -43,6 +45,7 @@ function pickRandom(stories, excludeId = null) {
 
 // ── SVG icons ─────────────────────────────────────────────────────────────────
 const icon = {
+  chevronLeft:  () => '<svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg>',
   chevronRight: () => '<svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>',
   shuffle:      () => '<svg viewBox="0 0 24 24"><path d="M16 3h5v5"/><path d="M4 20 20 4"/><path d="M21 16v5h-5"/><path d="M15 15 21 21"/><path d="M4 4l5 5"/></svg>',
   sliders:      () => '<svg viewBox="0 0 24 24"><path d="M4 21v-7"/><path d="M4 10V3"/><path d="M12 21v-9"/><path d="M12 8V3"/><path d="M20 21v-5"/><path d="M20 12V3"/><path d="M1 14h6"/><path d="M9 8h6"/><path d="M17 16h6"/></svg>',
@@ -71,15 +74,18 @@ function renderSavedDrawer(t) {
         ${savedStories.length === 0
           ? `<div class="drawer-empty">${esc(t.noSaved)}</div>`
           : savedStories.map((s) => `
-            <a class="saved-item" href="stories/?code=${esc(s.id)}">
-              <div class="saved-thumb">
-                <img src="${esc(s.images?.[0] || '')}" alt="${esc(s.storyteller)}" style="width:100%;height:100%;object-fit:cover;">
-              </div>
-              <div class="saved-copy">
-                <div class="saved-name">${esc(s.storyteller)}</div>
-                <div class="saved-summary">${esc(labelFor(s.summary, state.language))}</div>
-              </div>
-            </a>
+            <div class="saved-item">
+              <a class="saved-item-main" href="stories/?code=${esc(s.id)}">
+                <div class="saved-thumb">
+                  <img src="${esc(s.images?.[0] || '')}" alt="${esc(s.storyteller)}" style="width:100%;height:100%;object-fit:cover;">
+                </div>
+                <div class="saved-copy">
+                  <div class="saved-name">${esc(s.storyteller)}</div>
+                  <div class="saved-summary">${esc(labelFor(s.summary, state.language))}</div>
+                </div>
+              </a>
+              <button type="button" class="saved-remove-button" data-action="remove-saved" data-value="${esc(s.id)}" aria-label="${esc(t.close)}">${icon.close()}</button>
+            </div>
           `).join('')}
       </div>
     </aside>
@@ -131,24 +137,47 @@ function renderMenu(t) {
             </button>
           </div>
 
-          <div class="utility-menu-group">
-            <div class="utility-menu-pill utility-menu-switchers" role="group" aria-label="Language">
-              <button type="button" class="utility-menu-control ${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">${esc(t.shortSo)}</button>
-              <button type="button" class="utility-menu-control ${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">${esc(t.shortEn)}</button>
-            </div>
-          </div>
-
-          <div class="utility-menu-group">
-            <div class="utility-menu-pill utility-menu-switchers" role="group" aria-label="Theme">
-              <button type="button" class="utility-menu-control ${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${esc(t.dark)}</button>
-              <button type="button" class="utility-menu-control ${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${esc(t.light)}</button>
-            </div>
-          </div>
 
         </div>
       </div>
     </div>
   `;
+}
+
+function renderHomeSwitchers(t) {
+  return `
+    <div class="home-inline-switchers" aria-label="Display options">
+      <div class="home-inline-switcher" role="group" aria-label="Language">
+        <button type="button" class="home-switch-button ${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">Somali</button>
+        <button type="button" class="home-switch-button ${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">English</button>
+      </div>
+      <div class="home-inline-switcher" role="group" aria-label="Theme">
+        <button type="button" class="home-switch-button ${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">Light</button>
+        <button type="button" class="home-switch-button ${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">Dark</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderLoading() {
+  savePrefs();
+  const app = document.querySelector('#app');
+  if (!app) return;
+  const loadingText = state.language === 'so' ? 'Bogga waa la raraya…' : 'Loading…';
+  app.innerHTML = `<div class="home-shell"><div class="loading-state loading-state--page"><span class="loading-spinner" aria-hidden="true"></span><span>${esc(loadingText)}</span></div></div>`;
+}
+
+async function setHomeStory(story, options = {}) {
+  if (!story) return;
+  state.currentStory = story;
+  if (options.push !== false) {
+    state.storyTrail = state.storyTrail.slice(0, state.trailIndex + 1);
+    state.storyTrail.push(story.id);
+    state.trailIndex = state.storyTrail.length - 1;
+  }
+  renderPage();
+  await ensureStoryImages(story);
+  renderPage();
 }
 
 // ── Render ────────────────────────────────────────────────────────────────────
@@ -177,8 +206,11 @@ function renderPage() {
           <a class="action-button" href="stories/?code=${esc(story.id)}">
             ${icon.chevronRight()}<span>${esc(t.readStory)}</span>
           </a>
-          <button type="button" class="action-button" data-action="another-story">
-            ${icon.shuffle()}<span>${esc(t.anotherStory)}</span>
+          <button type="button" class="action-button home-random-nav" data-action="previous-home-story" aria-label="Previous story">
+            ${icon.chevronLeft()}<span>${esc(t.previousStory || 'Previous')}</span>
+          </button>
+          <button type="button" class="action-button home-random-nav" data-action="next-home-story" aria-label="Next random story">
+            ${icon.chevronRight()}<span>${esc(t.nextStory || 'Next random')}</span>
           </button>
           <a class="action-button" href="stories/#gallery">
             ${icon.sliders()}<span>${esc(t.exploreFilters)}</span>
@@ -203,6 +235,7 @@ function renderPage() {
 
       <main class="home-main">
         ${storyCard}
+        ${renderHomeSwitchers(t)}
       </main>
 
       ${renderSavedDrawer(t)}
@@ -251,9 +284,24 @@ function attachListeners() {
       renderPage();
       return;
     }
-    if (action === 'another-story') {
-      state.currentStory = pickRandom(state.stories, state.currentStory?.id);
+    if (action === 'remove-saved') {
+      state.savedIds = state.savedIds.filter((id) => String(id) !== String(value));
+      localStorage.setItem(STORAGE_KEYS.saved, JSON.stringify(state.savedIds.map(String)));
       renderPage();
+      return;
+    }
+    if (action === 'previous-home-story') {
+      if (state.trailIndex > 0) {
+        state.trailIndex -= 1;
+        const previousId = state.storyTrail[state.trailIndex];
+        const previous = state.stories.find((story) => String(story.id) === String(previousId));
+        await setHomeStory(previous, { push: false });
+      }
+      return;
+    }
+    if (action === 'next-home-story') {
+      await setHomeStory(pickRandom(state.stories, state.currentStory?.id));
+      return;
     }
   });
 
@@ -268,14 +316,23 @@ function attachListeners() {
 // ── Init ──────────────────────────────────────────────────────────────────────
 async function init() {
   attachListeners();
+  renderLoading();
   await Promise.all([
     initialiseI18n(state.language),
     fetchStories().then((stories) => {
       state.stories      = stories;
       state.currentStory = pickRandom(stories);
+      if (state.currentStory) {
+        state.storyTrail = [state.currentStory.id];
+        state.trailIndex = 0;
+      }
     })
   ]);
   renderPage();
+  if (state.currentStory) {
+    await ensureStoryImages(state.currentStory);
+    renderPage();
+  }
 }
 
 init().catch((err) => {

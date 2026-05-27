@@ -86,15 +86,18 @@ function renderSavedDrawer(t) {
         ${savedStories.length === 0
           ? `<div class="drawer-empty">${escapeHtml(t.noSaved)}</div>`
           : savedStories.map((s) => `
-            <a class="saved-item" href="../stories/?code=${escapeHtml(s.id)}">
-              <div class="saved-thumb">
-                <img src="${escapeHtml(s.images?.[0] || '')}" alt="${escapeHtml(s.storyteller)}" style="width:100%;height:100%;object-fit:cover;">
-              </div>
-              <div class="saved-copy">
-                <div class="saved-name">${escapeHtml(s.storyteller)}</div>
-                <div class="saved-summary">${escapeHtml(s.summary?.en || '')}</div>
-              </div>
-            </a>`).join('')}
+            <div class="saved-item">
+              <a class="saved-item-main" href="../stories/?code=${escapeHtml(s.id)}">
+                <div class="saved-thumb">
+                  <img src="${escapeHtml(s.images?.[0] || '')}" alt="${escapeHtml(s.storyteller)}" style="width:100%;height:100%;object-fit:cover;">
+                </div>
+                <div class="saved-copy">
+                  <div class="saved-name">${escapeHtml(s.storyteller)}</div>
+                  <div class="saved-summary">${escapeHtml(s.summary?.en || '')}</div>
+                </div>
+              </a>
+              <button type="button" class="saved-remove-button" data-action="remove-saved" data-value="${escapeHtml(s.id)}" aria-label="${escapeHtml(t.close)}">${closeIcon()}</button>
+            </div>`).join('')}
       </div>
     </aside>
   `;
@@ -108,6 +111,14 @@ function renderMenuForAbout(t) {
     savedCount:  state.savedIds.length,
     savedAction: 'open-saved'
   });
+}
+
+function renderLoading() {
+  saveState();
+  const app = document.querySelector('#app');
+  if (!app) return;
+  const loadingText = state.language === 'so' ? 'Bogga waa la raraya…' : 'Loading…';
+  app.innerHTML = `<div class="intro-modal landing-page-shell"><div class="loading-state loading-state--page"><span class="loading-spinner" aria-hidden="true"></span><span>${escapeHtml(loadingText)}</span></div></div>`;
 }
 
 function renderLandingPage() {
@@ -248,6 +259,12 @@ function attachListeners() {
       renderLandingPage();
       return;
     }
+    if (target.dataset.action === 'remove-saved') {
+      state.savedIds = state.savedIds.filter((id) => String(id) !== String(target.dataset.value));
+      localStorage.setItem(STORAGE_KEYS.saved, JSON.stringify(state.savedIds.map(String)));
+      renderLandingPage();
+      return;
+    }
     if (target.dataset.action === 'set-language') {
       state.language = target.dataset.value === 'so' ? 'so' : 'en';
       state.menuOpen = false;
@@ -272,6 +289,7 @@ function attachListeners() {
 
 async function init() {
   attachListeners();
+  renderLoading();
   await Promise.all([
     initialiseI18n(state.language),
     fetchStories().then((stories) => { state.stories = stories; })

@@ -59,7 +59,7 @@ export function updateUrlForStory(story, options = {}) {
   const url = storyAppUrl();
   url.searchParams.set('code', story.code || story.id);
   url.hash = options.hash || '';
-  history.replaceState({}, '', url);
+  history.replaceState(options.state || {}, '', url);
 }
 
 export function hasActiveFilters(filters) {

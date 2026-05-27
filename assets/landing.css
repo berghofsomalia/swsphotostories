@@ -1324,8 +1324,8 @@ html[data-theme="light"] .intro-scroll--pdfstyle {
 .landing-copy-card--nexus {
   top: 0;
   right: 0;
-  width: min(48vw, 780px);
-  min-height: min(35vh, 320px);
+  width: min(34vw, 430px);
+  min-height: min(46vh, 430px);
   padding: clamp(1.7rem, 3vw, 2.8rem);
   align-items: center;
   justify-content: flex-start;
@@ -2346,4 +2346,42 @@ html[data-theme="light"] .landing-copy-card--title p {
   top: 1.2rem;
   right: 1.2rem;
   z-index: 200;
+}
+
+/* ── Shared corner card refinements ─────────────────────────── */
+.landing-copy-card--nexus,
+.landing-copy-card--title {
+  width: 16.5rem;
+  min-height: 7.4rem;
+}
+.landing-copy-card--nexus {
+  font-size: clamp(1.15rem, 1.8vw, 1.55rem);
+  line-height: 1.02;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+}
+.landing-copy-card--nexus p,
+.landing-copy-card--title p {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+}
+.landing-copy-card--nexus p span:nth-child(1) { opacity: 1; }
+.landing-copy-card--nexus p span:nth-child(2) { opacity: 0.86; }
+.landing-copy-card--nexus p span:nth-child(3) { opacity: 0.72; }
+.landing-copy-card--nexus p span:nth-child(4) { opacity: 0.58; }
+.landing-copy-card--title {
+  font-size: clamp(1.05rem, 1.55vw, 1.38rem);
+  line-height: 1.05;
+}
+html[data-theme="light"] .landing-copy-card--title { color: #5a3a20; }
+
+@media (max-width: 760px) {
+  .landing-copy-card--nexus,
+  .landing-copy-card--title {
+    width: auto;
+    min-height: 5.6rem;
+  }
+  .landing-copy-card--nexus { font-size: 0.96rem; }
+  .landing-copy-card--title { font-size: 0.92rem; }
 }

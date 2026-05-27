@@ -25,6 +25,32 @@ async function getSupabase() {
   return supabaseClientPromise;
 }
 
+const imageCache = new Map();
+const IMAGE_CACHE_PREFIX = 'photostory_images_';
+
+function readCachedImages(code) {
+  if (!code) return null;
+  if (imageCache.has(code)) return imageCache.get(code);
+  try {
+    const cached = sessionStorage.getItem(`${IMAGE_CACHE_PREFIX}${code}`);
+    if (!cached) return null;
+    const parsed = JSON.parse(cached);
+    if (!Array.isArray(parsed) || parsed.length === 0) return null;
+    imageCache.set(code, parsed);
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function writeCachedImages(code, urls) {
+  if (!code || !Array.isArray(urls) || urls.length === 0) return;
+  imageCache.set(code, urls);
+  try {
+    sessionStorage.setItem(`${IMAGE_CACHE_PREFIX}${code}`, JSON.stringify(urls));
+  } catch {}
+}
+
 
 function labelObject(en = '', so = '', extras = {}) {
   return {
@@ -115,6 +141,7 @@ function normaliseLegacyStory(story) {
     code: story.code || story.id,
     storyteller: story.storyteller || 'Anonymous',
     images: (story.images || []).map(localStoryImage).filter(Boolean),
+    imagesLoaded: true,
     tags,
     people,
     topicTags,
@@ -145,6 +172,9 @@ async function fetchImagesForStory(story) {
     return [placeholderImage(story)];
   }
 
+  const cached = readCachedImages(story.code);
+  if (cached?.length) return cached;
+
   const supabase = await getSupabase();
   const { data, error } = await supabase.storage
     .from(SUPABASE_STORY_PHOTO_BUCKET)
@@ -166,7 +196,29 @@ async function fetchImagesForStory(story) {
     return urlData.publicUrl;
   });
 
-  return urls.length > 0 ? urls : [placeholderImage(story)];
+  const resolved = urls.length > 0 ? urls : [placeholderImage(story)];
+  writeCachedImages(story.code, resolved);
+  return resolved;
+}
+
+export function getPlaceholderImage(story) {
+  return placeholderImage(story);
+}
+
+export async function ensureStoryImages(story) {
+  if (!story || story.imagesLoaded || story.imagesLoading) return story;
+  story.imagesLoading = true;
+  try {
+    story.images = await fetchImagesForStory(story);
+    story.imagesLoaded = true;
+  } catch (error) {
+    console.warn(`Could not hydrate photos for ${story.code || story.id}`, error);
+    story.images = story.images?.length ? story.images : [placeholderImage(story)];
+    story.imagesLoaded = true;
+  } finally {
+    story.imagesLoading = false;
+  }
+  return story;
 }
 
 function mapTag(rawTag) {
@@ -255,10 +307,19 @@ async function mapSupabaseStory(row) {
     cluster: firstTopic.cluster || labelObject('', '', { slug: '' }),
     publishedAt: row.published_at,
     sortOrder: row.sort_order ?? 0,
-    images: []
+    images: [],
+    imagesLoaded: false,
+    imagesLoading: false
   };
 
-  story.images = await fetchImagesForStory(story);
+  const cachedImages = readCachedImages(story.code);
+  if (cachedImages?.length) {
+    story.images = cachedImages;
+    story.imagesLoaded = true;
+  } else {
+    story.images = [placeholderImage(story)];
+  }
+
   return story;
 }
 

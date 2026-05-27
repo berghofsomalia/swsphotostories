@@ -39,6 +39,7 @@ export function createInitialState() {
     guidanceOpen: false,
     savedOpen: false,
     menuOpen: false,
+    filterDrawerOpen: false,
     actionMessage: '',
     autoplayId: null
   };

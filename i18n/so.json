@@ -57,11 +57,18 @@
     "readStory": "Akhri sheekada",
     "anotherStory": "Arag sheeko kale",
     "exploreFilters": "Ku sahamin sheekooyinka shaandhooyinka",
-    "storyFlow": "Sida sheekooyinku u socdaan"
+    "storyFlow": "Sida sheekooyinku u socdaan",
+    "showFilters": "Muuji shaandhooyinka",
+    "hideFilters": "Qari shaandhooyinka",
+    "previousStory": "Hore",
+    "nextStory": "Mid kale"
   },
   "landing": {
     "section1NexusLines": [
-      "CIMILADA · KHILAAFKA · DEEGAANKA · NABADDA"
+      "DEEGAANKA",
+      "KHILAAFKA",
+      "CIMILADA",
+      "NABADDA"
     ],
     "section1TitleLines": [
       "Sheeko-muuqaal",
