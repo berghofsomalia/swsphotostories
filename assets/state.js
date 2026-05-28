@@ -40,6 +40,7 @@ export function createInitialState() {
     savedOpen: false,
     menuOpen: false,
     filterDrawerOpen: false,
+    gallerySplitPercent: 50,
     actionMessage: '',
     autoplayId: null
   };

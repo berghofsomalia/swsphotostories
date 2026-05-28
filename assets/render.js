@@ -39,6 +39,7 @@ const icon = {
   x:            () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 3H21l-4.6 5.3L22 21h-4.7l-3.7-4.9L9.4 21H7.3l4.9-5.6L2 3h4.8l3.4 4.6L18.9 3zm-1.6 16h1.3L6.1 4.9H4.7L17.3 19z"/></svg>',
   email:        () => '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg>',
   close:        () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>',
+  resizeY:      () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 7 4-4 4 4"/><path d="m8 17 4 4 4-4"/><path d="M12 3v18"/></svg>',
   search:       () => '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>'
 };
 
@@ -307,11 +308,15 @@ function storyFilterSummaryMarkup(state) {
   const isFiltered = visible !== total || hasActiveFilters(state.filters) || state.galleryMode === 'related';
 
   if (!isFiltered) {
-    return `<span class="filter-summary-text">${total} ${escapeHtml(label)}</span>`;
+    return `
+      <span class="filter-summary-text">${total} ${escapeHtml(label)}</span>
+      <span class="filter-resize-grip" aria-hidden="true">${icon.resizeY()}</span>
+    `;
   }
 
   return `
     <span class="filter-summary-text">${visible}/${total} ${escapeHtml(label)}</span>
+    <span class="filter-resize-grip" aria-hidden="true">${icon.resizeY()}</span>
     <button type="button" class="filter-summary-reset" data-action="reset-filters">${escapeHtml(t.resetFilters || 'Reset filters')}</button>
   `;
 }
@@ -451,9 +456,9 @@ export function renderApp(state) {
           <span>${escapeHtml(state.filterDrawerOpen ? t.hideFilters : t.showFilters)}</span>
           <span class="mobile-filter-toggle-icon" aria-hidden="true">${state.filterDrawerOpen ? '⌄' : '⌃'}</span>
         </button>
-        <div class="gallery-layout ${state.filterDrawerOpen ? 'is-filter-open' : ''}">
+        <div class="gallery-layout ${state.filterDrawerOpen ? 'is-filter-open' : ''}" style="--gallery-split: ${Number(state.gallerySplitPercent || 50)}%;">
           <aside class="filter-panel ${state.filterDrawerOpen ? 'is-open' : ''}">
-            <div class="filter-panel-sticky gallery-header gallery-header--filter">${storyFilterSummaryMarkup(state)}</div>
+            <div class="filter-panel-sticky gallery-header gallery-header--filter" data-filter-resize-handle>${storyFilterSummaryMarkup(state)}</div>
             ${renderSearchBox(state)}
             <div class="filter-panel-scroll-body">${filterGroupsMarkup}</div>
           </aside>

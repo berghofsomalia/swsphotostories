@@ -20,6 +20,7 @@ let touchStartX = null;
 let listenersAttached = false;
 let imageHydrationRun = 0;
 let imageHydrationScheduled = false;
+let filterResizeDrag = null;
 
 // ── Rendering ─────────────────────────────────────────────────────────────────
 
@@ -91,6 +92,23 @@ function scrollFromHash(options = {}) {
   }
 }
 
+function clampGallerySplit(value) {
+  if (!Number.isFinite(value)) return 50;
+  return Math.max(28, Math.min(72, value));
+}
+
+function setGallerySplitFromPointer(clientY) {
+  const layout = qs('.site-shell.is-filter-split .gallery-layout');
+  if (!layout) return;
+
+  const bounds = layout.getBoundingClientRect();
+  if (!bounds.height) return;
+
+  const percent = ((clientY - bounds.top) / bounds.height) * 100;
+  state.gallerySplitPercent = clampGallerySplit(percent);
+  layout.style.setProperty('--gallery-split', `${state.gallerySplitPercent}%`);
+}
+
 function cloneFilters(filters) {
   return {
     district: filters?.district || '',
@@ -111,7 +129,8 @@ function makeHistoryState(kind = 'story') {
     galleryMode: state.galleryMode,
     storyVisible: state.storyVisible,
     galleryVisible: state.galleryVisible,
-    filterDrawerOpen: state.filterDrawerOpen
+    filterDrawerOpen: state.filterDrawerOpen,
+    gallerySplitPercent: state.gallerySplitPercent
   };
 }
 
@@ -144,6 +163,7 @@ async function restoreHistoryState(snapshot) {
   state.storyVisible = Boolean(snapshot.storyVisible);
   state.galleryVisible = Boolean(snapshot.galleryVisible);
   state.filterDrawerOpen = Boolean(snapshot.filterDrawerOpen);
+  state.gallerySplitPercent = clampGallerySplit(Number(snapshot.gallerySplitPercent) || state.gallerySplitPercent || 50);
   state.menuOpen = false;
   state.shareOpen = false;
   state.guidanceOpen = false;
@@ -508,6 +528,31 @@ function handleTouchEnd(event) {
   touchStartX = null;
 }
 
+function handleFilterResizeStart(event) {
+  const handle = event.target.closest('[data-filter-resize-handle]');
+  if (!handle || !qs('.site-shell.is-filter-split')) return;
+  if (event.target.closest('button, a, input, textarea, select')) return;
+
+  event.preventDefault();
+  filterResizeDrag = { pointerId: event.pointerId };
+  document.documentElement.classList.add('is-filter-resizing');
+  handle.setPointerCapture?.(event.pointerId);
+  setGallerySplitFromPointer(event.clientY);
+}
+
+function handleFilterResizeMove(event) {
+  if (!filterResizeDrag) return;
+  event.preventDefault();
+  setGallerySplitFromPointer(event.clientY);
+}
+
+function handleFilterResizeEnd(event) {
+  if (!filterResizeDrag) return;
+  filterResizeDrag = null;
+  document.documentElement.classList.remove('is-filter-resizing');
+  replaceCurrentHistoryState(state.galleryVisible ? 'gallery' : 'story');
+}
+
 /**
  * Search input handler.
  * After re-rendering we restore focus and cursor position so typing feels
@@ -536,8 +581,13 @@ function attachGlobalListeners() {
   const app = qs('#app');
   app?.addEventListener('click', handleAppClick);
   app?.addEventListener('input', handleSearchInput);
+  app?.addEventListener('pointerdown', handleFilterResizeStart);
   app?.addEventListener('touchstart', handleTouchStart, { passive: true });
   app?.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+  window.addEventListener('pointermove', handleFilterResizeMove);
+  window.addEventListener('pointerup', handleFilterResizeEnd);
+  window.addEventListener('pointercancel', handleFilterResizeEnd);
 
   window.addEventListener('resize', () => {
     window.clearTimeout(window.__photostoryResizeTimer);
