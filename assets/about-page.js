@@ -16,6 +16,12 @@ const state = {
 
 try { state.savedIds = JSON.parse(localStorage.getItem(STORAGE_KEYS.saved) || '[]').map(String); } catch {}
 
+function randomStoryLink(basePath = '../stories/') {
+  const story = state.stories[Math.floor(Math.random() * state.stories.length)];
+  if (!story) return `${basePath}#gallery`;
+  return `${basePath}?code=${encodeURIComponent(story.code || story.id)}`;
+}
+
 function saveState() {
   localStorage.setItem(STORAGE_KEYS.language, state.language);
   localStorage.setItem(STORAGE_KEYS.theme, state.theme);
@@ -237,7 +243,7 @@ function renderLandingPage() {
             <div class="landing-copy-card landing-copy-card--section5">
               <p class="landing-cta-copy">${renderCountedCopy(landing.section5Body)}</p>
               <div class="landing-button-row landing-button-row--pdf">
-                <a class="landing-button" href="../stories/?random=1">${escapeHtml(landing.surprise)}</a>
+                <a class="landing-button" href="${randomStoryLink('../stories/')}">${escapeHtml(landing.surprise)}</a>
                 <a class="landing-button" href="../stories/#gallery">${escapeHtml(landing.explore)}</a>
                 <a class="landing-button" href="mailto:?subject=Photostory submission">${escapeHtml(landing.shareOwn)}</a>
               </div>

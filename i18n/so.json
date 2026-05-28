@@ -62,7 +62,9 @@
     "hideFilters": "Qari shaandhooyinka",
     "previousStory": "Hore",
     "nextStory": "Mid kale",
-    "filteredShort": "la shaandheeyey"
+    "filteredShort": "la shaandheeyey",
+    "photostories": "sheeko-sawirro",
+    "resetFilters": "Nadiifi shaandhooyinka"
   },
   "landing": {
     "section1NexusLines": [

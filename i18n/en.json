@@ -62,7 +62,9 @@
     "hideFilters": "Hide filters",
     "previousStory": "Previous",
     "nextStory": "Next random",
-    "filteredShort": "filtered"
+    "filteredShort": "filtered",
+    "photostories": "photostories",
+    "resetFilters": "Reset filters"
   },
   "landing": {
     "section1NexusLines": [

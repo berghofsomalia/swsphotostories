@@ -299,11 +299,21 @@ function storyGalleryHeader(state) {
   return storyCountLabel(count, t.totalStory, t.totalStories);
 }
 
-function storyFilterSummary(state) {
+function storyFilterSummaryMarkup(state) {
   const t = getUiText(state.language);
   const total = state.stories.length;
   const visible = filteredStories(state).length;
-  return `${total} ${t.stories} / ${visible} ${t.stories} (${t.filteredShort || 'filtered'})`;
+  const label = t.photostories || t.stories || 'photostories';
+  const isFiltered = visible !== total || hasActiveFilters(state.filters) || state.galleryMode === 'related';
+
+  if (!isFiltered) {
+    return `<span class="filter-summary-text">${total} ${escapeHtml(label)}</span>`;
+  }
+
+  return `
+    <span class="filter-summary-text">${visible}/${total} ${escapeHtml(label)}</span>
+    <button type="button" class="filter-summary-reset" data-action="reset-filters">${escapeHtml(t.resetFilters || 'Reset filters')}</button>
+  `;
 }
 
 function renderGalleryCard(state, item) {
@@ -437,16 +447,10 @@ export function renderApp(state) {
           <span>${escapeHtml(state.filterDrawerOpen ? t.hideFilters : t.showFilters)}</span>
           <span class="mobile-filter-toggle-icon" aria-hidden="true">${state.filterDrawerOpen ? '⌄' : '⌃'}</span>
         </button>
-        <div class="mobile-filter-separator" aria-hidden="true">${escapeHtml(storyFilterSummary(state))}</div>
         <div class="gallery-layout ${state.filterDrawerOpen ? 'is-filter-open' : ''}">
           <aside class="filter-panel ${state.filterDrawerOpen ? 'is-open' : ''}">
             <div class="filter-panel-sticky">
-              <div class="gallery-header gallery-header--filter">${escapeHtml(storyFilterSummary(state))}</div>
-              <div class="filter-reset-slot">
-                <button type="button" class="filter-reset ${hasActiveFilters(state.filters) ? 'is-visible' : ''}" data-action="reset-filters">
-                  ${escapeHtml(t.reset)}
-                </button>
-              </div>
+              <div class="gallery-header gallery-header--filter">${storyFilterSummaryMarkup(state)}</div>
             </div>
             ${renderSearchBox(state)}
             <div class="filter-panel-scroll-body">${filterGroupsMarkup}</div>

@@ -29,6 +29,12 @@ function renderLineBreakCopy(lines, lineClass = '') {
   return lines.map((line) => `<span class="${lineClass}">${escapeHtml(line)}</span>`).join('<br>');
 }
 
+function randomStoryLink(basePath = './stories/') {
+  const story = state.stories[Math.floor(Math.random() * state.stories.length)];
+  if (!story) return `${basePath}#gallery`;
+  return `${basePath}?code=${encodeURIComponent(story.code || story.id)}`;
+}
+
 async function imageExists(src) {
   return new Promise((resolve) => {
     const img = new Image();
@@ -149,7 +155,7 @@ function renderLandingPage() {
             <div class="landing-copy-card landing-copy-card--section5">
               <p class="landing-cta-copy">${escapeHtml(landing.section5Body)}</p>
               <div class="landing-button-row landing-button-row--pdf">
-                <a class="landing-button" href="./stories/?random=1">${escapeHtml(landing.surprise)}</a>
+                <a class="landing-button" href="${randomStoryLink('./stories/')}">${escapeHtml(landing.surprise)}</a>
                 <a class="landing-button" href="./stories/#gallery">${escapeHtml(landing.explore)}</a>
                 <a class="landing-button" href="mailto:?subject=Photostory submission">${escapeHtml(landing.shareOwn)}</a>
               </div>

@@ -614,16 +614,21 @@ export async function initialiseApp() {
 
   const params = new URLSearchParams(window.location.search);
   const code = params.get('code');
+  const shouldRandomise = params.has('random') && !code;
   const existing = getStoryById(state.stories, code);
   const randomStory = state.stories[Math.floor(Math.random() * state.stories.length)] || null;
-  const startInGallery = window.location.hash === '#gallery' && !code && !params.has('random');
+  const selectedStory = existing || randomStory;
+  const startInGallery = window.location.hash === '#gallery' && !code && !shouldRandomise;
 
-  state.currentStoryId = existing?.id || randomStory?.id || null;
+  state.currentStoryId = selectedStory?.id || null;
   state.storyVisible = !startInGallery;
   state.galleryVisible = startInGallery;
   state.filterDrawerOpen = startInGallery;
 
-  history.replaceState(makeHistoryState(startInGallery ? 'gallery' : 'story'), '', window.location.href);
+  const initialUrl = shouldRandomise && randomStory
+    ? buildShareUrl(randomStory)
+    : window.location.href;
+  history.replaceState(makeHistoryState(startInGallery ? 'gallery' : 'story'), '', initialUrl);
 
   savePersistentState(state);
   renderSite();
