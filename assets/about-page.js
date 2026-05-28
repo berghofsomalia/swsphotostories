@@ -1,5 +1,5 @@
 import { getLandingText, getUiText, STORAGE_KEYS, initialiseI18n } from './content.js';
-import { ensureStoryImages, fetchStories } from './api.js';
+import { fetchStories } from './api.js';
 import { renderMenu } from './menu.js';
 
 const state = {
@@ -11,11 +11,8 @@ const state = {
   savedIds:   [],
   landingMap: '',
   landingSectionImages: {},
-  siteStats: { stories: 0, photos: null, reflections: 0 }
+  siteStats: { stories: 0, reflections: 0 }
 };
-
-const PHOTO_COUNT_CACHE_KEY = 'sws_about_photo_count_v1';
-const PHOTO_COUNT_CACHE_MS = 24 * 60 * 60 * 1000;
 
 
 try { state.savedIds = JSON.parse(localStorage.getItem(STORAGE_KEYS.saved) || '[]').map(String); } catch {}
@@ -63,54 +60,10 @@ function formatStat(value) {
   return value == null ? '…' : String(value);
 }
 
-function readCachedPhotoCount() {
-  try {
-    const cached = JSON.parse(sessionStorage.getItem(PHOTO_COUNT_CACHE_KEY) || 'null');
-    if (!cached || typeof cached.photos !== 'number' || !cached.timestamp) return null;
-    if (Date.now() - cached.timestamp > PHOTO_COUNT_CACHE_MS) return null;
-    return cached.photos;
-  } catch {
-    return null;
-  }
-}
-
-function writeCachedPhotoCount(photos) {
-  if (typeof photos !== 'number') return;
-  try {
-    sessionStorage.setItem(PHOTO_COUNT_CACHE_KEY, JSON.stringify({ photos, timestamp: Date.now() }));
-  } catch {}
-}
-
-function scheduleIdleWork(task) {
-  if ('requestIdleCallback' in window) {
-    window.requestIdleCallback(task, { timeout: 4000 });
-  } else {
-    window.setTimeout(task, 350);
-  }
-}
-
 function renderCountedCopy(template = '') {
   return escapeHtml(template)
     .replaceAll('{stories}', formatStat(state.siteStats.stories))
-    .replaceAll('{photos}', formatStat(state.siteStats.photos))
     .replaceAll('{reflections}', formatStat(state.siteStats.reflections));
-}
-
-function realImageCount(story) {
-  return (story.images || []).filter((src) => src && !String(src).startsWith('data:image/svg+xml')).length;
-}
-
-async function refreshPhotoCount() {
-  const batchSize = 8;
-  let photos = 0;
-  for (let i = 0; i < state.stories.length; i += batchSize) {
-    const batch = state.stories.slice(i, i + batchSize);
-    await Promise.all(batch.map((story) => ensureStoryImages(story)));
-    photos += batch.reduce((sum, story) => sum + realImageCount(story), 0);
-  }
-  state.siteStats.photos = photos;
-  writeCachedPhotoCount(photos);
-  renderLandingPage();
 }
 
 async function imageExists(src) {
@@ -369,7 +322,6 @@ async function init() {
       state.stories = stories;
       state.siteStats = {
         stories: stories.length,
-        photos: readCachedPhotoCount(),
         reflections: countReflections(stories)
       };
     })
@@ -380,12 +332,6 @@ async function init() {
   loadLandingAssets()
     .then(() => renderLandingPage())
     .catch((error) => console.warn('Could not load about images', error));
-
-  if (state.siteStats.photos == null) {
-    scheduleIdleWork(() => {
-      refreshPhotoCount().catch((error) => console.warn('Could not count photos', error));
-    });
-  }
 }
 
 init().catch((error) => {

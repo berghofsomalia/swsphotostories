@@ -89,7 +89,7 @@
       "They shared the photos in community spaces of storytelling and dialogue.",
       "Community members picked photos that resonated, and shared their own stories."
     ],
-    "section5Body": "There are currently {stories} stories, {photos} photos and {reflections} community reflections. What would you like to do?",
+    "section5Body": "There are currently {stories} stories and {reflections} community reflections. What would you like to do?",
     "surprise": "See a random photostory",
     "explore": "Explore photostories",
     "shareOwn": "Share own photostory"
