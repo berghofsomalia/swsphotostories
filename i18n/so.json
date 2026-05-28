@@ -8,9 +8,9 @@
     "saved": "Kaydsan",
     "save": "Kaydi",
     "share": "La wadaag",
-    "relatedRandom": "Arag sheeko la xidhiidha oo aan kala sooc lahayn",
-    "related": "Arag sheekooyin la xidhiidha",
-    "explore": "Ku sahamin sheekooyinka shaandhooyinka",
+    "relatedRandom": "Sheeko-sawir la xidhiidha oo nasiib ah",
+    "related": "Sheeko-sawirro la xidhiidha",
+    "explore": "Dhammaan sheeko-sawirrada",
     "communityReflections": "ARAGTIYO BULSHO",
     "reset": "Nadiifi shaandhooyinka",
     "district": "Degmo",
@@ -56,12 +56,13 @@
     "about": "Ku saabsan",
     "readStory": "Akhri sheekada",
     "anotherStory": "Arag sheeko kale",
-    "exploreFilters": "Ku sahamin sheekooyinka shaandhooyinka",
+    "exploreFilters": "Sahami sheeko-sawirrada",
     "storyFlow": "Sida sheekooyinku u socdaan",
     "showFilters": "Muuji shaandhooyinka",
     "hideFilters": "Qari shaandhooyinka",
     "previousStory": "Hore",
-    "nextStory": "Mid kale"
+    "nextStory": "Mid kale",
+    "filteredShort": "la shaandheeyey"
   },
   "landing": {
     "section1NexusLines": [
@@ -83,13 +84,13 @@
       "Waa maxay waxyaabaha dhaqanka iyo diinta ee (a) sharrixi kara sawirrada hadda jira, isla markaana (b) nagu dhiirrigelin kara in aan ka shaqayno sidii sawirrada la qiyaasay ay dhab u noqon lahaayeen?"
     ],
     "section4Lines": [
-      "Sawirrada waxaa lagu wadaagay goobaha bulshadu ku kulanto ee sheeko-wadaagga iyo wada-hadalka.",
-      "Dadku waxay doorteen sawirradii ay la xiriireen, dabadeedna waxay ka dhiibteen milicsiyadooda ku saabsan sheekooyinka."
+      "Waxay sawirrada ku wadaageen goobo bulsho oo sheeko-wadaag iyo wadahadal ah.",
+      "Xubnaha bulshadu waxay doorteen sawirro dareen ku abuuray, waxayna wadaageen sheekooyinkooda."
     ],
-    "section5Body": "Hadda waxaa jira 350 sheeko, 1000 sawir iyo 150 milicsi bulsho. Maxaad jeclaan lahayd in aad samayso?",
-    "surprise": "I tus sheeko-sawir - yaab i geli!",
-    "explore": "Aan anigu is baadho",
-    "shareOwn": "Aan wadaago sheeko-sawirkayga"
+    "section5Body": "Hadda waxaa jira {stories} sheeko, {photos} sawir iyo {reflections} milicsi bulsho. Maxaad jeclaan lahayd in aad samayso?",
+    "surprise": "Arag sheeko-sawir nasiib ah",
+    "explore": "Sahami sheeko-sawirrada",
+    "shareOwn": "Wadaag sheeko-sawirkaaga"
   },
   "guidance": {
     "intro": "Sheekooyinka iyo milicsiyada bulshadu ka bixisay sawirrada waxay raacayaan hannaan su'aalo ah oo sidan u dhisan:",

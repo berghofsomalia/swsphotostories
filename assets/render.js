@@ -299,6 +299,13 @@ function storyGalleryHeader(state) {
   return storyCountLabel(count, t.totalStory, t.totalStories);
 }
 
+function storyFilterSummary(state) {
+  const t = getUiText(state.language);
+  const total = state.stories.length;
+  const visible = filteredStories(state).length;
+  return `${total} ${t.stories} / ${visible} ${t.stories} (${t.filteredShort || 'filtered'})`;
+}
+
 function renderGalleryCard(state, item) {
   const t = getUiText(state.language);
   const visibleTags = [...(item.topicTags || []), ...(item.people || [])];
@@ -430,28 +437,39 @@ export function renderApp(state) {
           <span>${escapeHtml(state.filterDrawerOpen ? t.hideFilters : t.showFilters)}</span>
           <span class="mobile-filter-toggle-icon" aria-hidden="true">${state.filterDrawerOpen ? '⌄' : '⌃'}</span>
         </button>
+        <div class="mobile-filter-separator" aria-hidden="true">${escapeHtml(storyFilterSummary(state))}</div>
         <div class="gallery-layout ${state.filterDrawerOpen ? 'is-filter-open' : ''}">
           <aside class="filter-panel ${state.filterDrawerOpen ? 'is-open' : ''}">
-            <div class="gallery-header gallery-header--filter">${escapeHtml(storyGalleryHeader(state))}</div>
-            <div class="filter-reset-slot">
-              <button type="button" class="filter-reset ${hasActiveFilters(state.filters) ? 'is-visible' : ''}" data-action="reset-filters">
-                ${escapeHtml(t.reset)}
-              </button>
+            <div class="filter-panel-sticky">
+              <div class="gallery-header gallery-header--filter">${escapeHtml(storyFilterSummary(state))}</div>
+              <div class="filter-reset-slot">
+                <button type="button" class="filter-reset ${hasActiveFilters(state.filters) ? 'is-visible' : ''}" data-action="reset-filters">
+                  ${escapeHtml(t.reset)}
+                </button>
+              </div>
             </div>
             ${renderSearchBox(state)}
-            ${filterGroupsMarkup}
+            <div class="filter-panel-scroll-body">${filterGroupsMarkup}</div>
           </aside>
-          <div class="gallery-grid">
-            ${galleryGridMarkup}
+          <div class="gallery-results-pane">
+            <div class="gallery-grid">
+              ${galleryGridMarkup}
+            </div>
+            ${loadMoreMarkup}
           </div>
         </div>
-        ${loadMoreMarkup}
       </div>
     </section>
   ` : '';
 
+  const shellClasses = [
+    'site-shell',
+    !state.storyVisible ? 'is-gallery-only' : '',
+    state.galleryVisible && state.filterDrawerOpen ? 'is-filter-split' : ''
+  ].filter(Boolean).join(' ');
+
   app.innerHTML = `
-    <div class="site-shell ${!state.storyVisible ? 'is-gallery-only' : ''}">
+    <div class="${shellClasses}">
       ${contextStrips}
       ${renderUtilityMenu(state)}
       <main>

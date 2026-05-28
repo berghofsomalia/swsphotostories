@@ -377,7 +377,7 @@ const ACTIONS = {
     resetPage();
     state.storyVisible = true;
     state.galleryVisible = true;
-    state.filterDrawerOpen = false;
+    state.filterDrawerOpen = true;
     renderSite();
     scrollGallery();
   },
@@ -621,6 +621,7 @@ export async function initialiseApp() {
   state.currentStoryId = existing?.id || randomStory?.id || null;
   state.storyVisible = !startInGallery;
   state.galleryVisible = startInGallery;
+  state.filterDrawerOpen = startInGallery;
 
   history.replaceState(makeHistoryState(startInGallery ? 'gallery' : 'story'), '', window.location.href);
 

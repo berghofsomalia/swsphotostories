@@ -1,5 +1,5 @@
 import { getLandingText, getUiText, STORAGE_KEYS, initialiseI18n } from './content.js';
-import { fetchStories } from './api.js';
+import { ensureStoryImages, fetchStories } from './api.js';
 import { renderMenu } from './menu.js';
 
 const state = {
@@ -10,7 +10,8 @@ const state = {
   savedOpen:  false,
   savedIds:   [],
   landingMap: '',
-  landingSectionImages: {}
+  landingSectionImages: {},
+  siteStats: { stories: 0, photos: null, reflections: 0 }
 };
 
 try { state.savedIds = JSON.parse(localStorage.getItem(STORAGE_KEYS.saved) || '[]').map(String); } catch {}
@@ -33,6 +34,37 @@ function escapeHtml(value = '') {
 
 function renderLineBreakCopy(lines) {
   return lines.map((line) => `<span>${escapeHtml(line)}</span>`).join('<br>');
+}
+
+function countReflections(stories = []) {
+  return stories.reduce((total, story) => total + Number(story.reflectionCount || (story.reflection?.en || story.reflection?.so ? 1 : 0)), 0);
+}
+
+function formatStat(value) {
+  return value == null ? '…' : String(value);
+}
+
+function renderCountedCopy(template = '') {
+  return escapeHtml(template)
+    .replaceAll('{stories}', formatStat(state.siteStats.stories))
+    .replaceAll('{photos}', formatStat(state.siteStats.photos))
+    .replaceAll('{reflections}', formatStat(state.siteStats.reflections));
+}
+
+function realImageCount(story) {
+  return (story.images || []).filter((src) => src && !String(src).startsWith('data:image/svg+xml')).length;
+}
+
+async function refreshPhotoCount() {
+  const batchSize = 8;
+  let photos = 0;
+  for (let i = 0; i < state.stories.length; i += batchSize) {
+    const batch = state.stories.slice(i, i + batchSize);
+    await Promise.all(batch.map((story) => ensureStoryImages(story)));
+    photos += batch.reduce((sum, story) => sum + realImageCount(story), 0);
+  }
+  state.siteStats.photos = photos;
+  renderLandingPage();
 }
 
 async function imageExists(src) {
@@ -146,9 +178,12 @@ function renderLandingPage() {
       <div class="intro-scroll intro-scroll--pdfstyle">
 
         <section class="landing-pdf-section landing-pdf-section--1">
-          <div class="landing-pdf-grid landing-pdf-grid--hero">
-            <div class="landing-photo-pane landing-photo-pane--hero">
-              ${lazyImg(si[1] || '', '', true)}
+          <div class="landing-pdf-grid landing-pdf-grid--two-col landing-pdf-grid--intro-with-badges">
+            <div class="landing-map-pane">
+              ${lazyImg(state.landingMap, '', true)}
+            </div>
+            <div class="landing-copy-card landing-copy-card--section2">
+              <p>${escapeHtml(landing.section2Body)}</p>
             </div>
             <div class="landing-copy-card landing-copy-card--nexus">
               <p>${renderLineBreakCopy(landing.section1NexusLines)}</p>
@@ -160,12 +195,9 @@ function renderLandingPage() {
         </section>
 
         <section class="landing-pdf-section landing-pdf-section--2">
-          <div class="landing-pdf-grid landing-pdf-grid--two-col">
-            <div class="landing-map-pane">
-              ${lazyImg(state.landingMap)}
-            </div>
-            <div class="landing-copy-card landing-copy-card--section2">
-              <p>${escapeHtml(landing.section2Body)}</p>
+          <div class="landing-pdf-grid landing-pdf-grid--hero landing-pdf-grid--photo-only">
+            <div class="landing-photo-pane landing-photo-pane--hero">
+              ${lazyImg(si[1] || '')}
             </div>
           </div>
         </section>
@@ -203,7 +235,7 @@ function renderLandingPage() {
             </div>
             <div class="landing-copy-card landing-copy-card--cta-spacer"></div>
             <div class="landing-copy-card landing-copy-card--section5">
-              <p class="landing-cta-copy">${escapeHtml(landing.section5Body)}</p>
+              <p class="landing-cta-copy">${renderCountedCopy(landing.section5Body)}</p>
               <div class="landing-button-row landing-button-row--pdf">
                 <a class="landing-button" href="../stories/?random=1">${escapeHtml(landing.surprise)}</a>
                 <a class="landing-button" href="../stories/#gallery">${escapeHtml(landing.explore)}</a>
@@ -292,10 +324,18 @@ async function init() {
   renderLoading();
   await Promise.all([
     initialiseI18n(state.language),
-    fetchStories().then((stories) => { state.stories = stories; })
+    fetchStories().then((stories) => {
+      state.stories = stories;
+      state.siteStats = {
+        stories: stories.length,
+        photos: null,
+        reflections: countReflections(stories)
+      };
+    })
   ]);
   await loadLandingAssets();
   renderLandingPage();
+  refreshPhotoCount().catch((error) => console.warn('Could not count photos', error));
 }
 
 init().catch((error) => {

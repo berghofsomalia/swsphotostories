@@ -2431,3 +2431,58 @@ html[data-theme="light"] .landing-copy-card--title p {
     font-size: clamp(1.25rem, calc(4.8vw + 0.17rem), 1.69rem) !important;
   }
 }
+
+/* ── Requested UI iteration: about page order, alignment and copy ─ */
+.landing-pdf-grid--intro-with-badges {
+  position: relative;
+}
+.landing-pdf-grid--intro-with-badges .landing-copy-card--nexus,
+.landing-pdf-grid--intro-with-badges .landing-copy-card--title {
+  position: absolute;
+  z-index: 4;
+  width: clamp(14rem, 22vw, 20rem);
+  min-height: clamp(7rem, 16vh, 12rem);
+}
+.landing-pdf-grid--intro-with-badges .landing-copy-card--nexus {
+  top: 0;
+  left: 0;
+}
+.landing-pdf-grid--intro-with-badges .landing-copy-card--title {
+  right: 0;
+  bottom: 0;
+}
+.landing-pdf-grid--photo-only {
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+}
+.landing-pdf-grid--photo-only .landing-photo-pane--hero {
+  grid-column: 1;
+  grid-row: 1;
+}
+.landing-copy-card--section2,
+.landing-question-card {
+  text-align: left;
+  justify-content: flex-start;
+}
+.landing-question-card {
+  align-items: flex-start;
+}
+.landing-copy-card--pondered {
+  text-align: center;
+  justify-content: center;
+}
+.landing-copy-card--section4 {
+  text-align: left;
+  align-items: flex-start;
+}
+
+@media (max-width: 760px) {
+  .landing-pdf-grid--intro-with-badges .landing-copy-card--nexus,
+  .landing-pdf-grid--intro-with-badges .landing-copy-card--title {
+    width: min(50vw, 11rem);
+    min-height: 7rem;
+  }
+  .landing-pdf-grid--photo-only {
+    padding-top: 0;
+  }
+}

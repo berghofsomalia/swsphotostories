@@ -145,7 +145,8 @@ function normaliseLegacyStory(story) {
     tags,
     people,
     topicTags,
-    tagSlugs: tags.map((tag) => tag.slug).filter(Boolean)
+    tagSlugs: tags.map((tag) => tag.slug).filter(Boolean),
+    reflectionCount: story.reflection ? 1 : 0
   };
 }
 
@@ -255,10 +256,14 @@ function mapCatalogueCluster(rawCluster = {}) {
   return { ...cluster, tags };
 }
 
-function mapReflection(reflections = []) {
-  const published = reflections
+function publishedReflections(reflections = []) {
+  return reflections
     .filter((reflection) => !reflection.status || reflection.status === 'published')
     .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+}
+
+function mapReflection(reflections = []) {
+  const published = publishedReflections(reflections);
 
   return labelObject(
     published.map((reflection) => reflection.reflection_en).filter(Boolean).join('\n\n'),
@@ -297,6 +302,7 @@ async function mapSupabaseStory(row) {
     summary: labelObject(row.teaser_en, row.teaser_so),
     story: labelObject(row.story_en, row.story_so),
     reflection: mapReflection(row.community_reflections || []),
+    reflectionCount: publishedReflections(row.community_reflections || []).length,
     tags,
     people,
     topicTags,

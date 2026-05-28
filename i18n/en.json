@@ -8,9 +8,9 @@
     "saved": "Saved",
     "save": "Save",
     "share": "Share",
-    "relatedRandom": "See a random related story",
-    "related": "See related stories",
-    "explore": "Explore stories through filters",
+    "relatedRandom": "Random related photostory",
+    "related": "Related photostories",
+    "explore": "All photostories",
     "communityReflections": "COMMUNITY REFLECTIONS",
     "reset": "Reset all filters",
     "district": "District",
@@ -56,12 +56,13 @@
     "about": "About",
     "readStory": "Read story",
     "anotherStory": "See another story",
-    "exploreFilters": "Explore stories through filters",
+    "exploreFilters": "Explore photostories",
     "storyFlow": "How the stories flow",
     "showFilters": "Show filters",
     "hideFilters": "Hide filters",
     "previousStory": "Previous",
-    "nextStory": "Next random"
+    "nextStory": "Next random",
+    "filteredShort": "filtered"
   },
   "landing": {
     "section1NexusLines": [
@@ -83,13 +84,13 @@
       "What cultural and religious elements (a) describe the current photos and (b) could inspire us to work towards turning the imagined photos into reality?"
     ],
     "section4Lines": [
-      "The photos were shared in community spaces of storytelling and dialogue.",
-      "People picked photos they connected to and shared their own reflections on the stories."
+      "They shared the photos in community spaces of storytelling and dialogue.",
+      "Community members picked photos that resonated, and shared their own stories."
     ],
-    "section5Body": "There are currently 350 stories, 1000 photos and 150 community reflections. What would you like to do?",
-    "surprise": "See a photostory - surprise me!",
-    "explore": "Let me explore them myself",
-    "shareOwn": "Share my own photostory"
+    "section5Body": "There are currently {stories} stories, {photos} photos and {reflections} community reflections. What would you like to do?",
+    "surprise": "See a random photostory",
+    "explore": "Explore photostories",
+    "shareOwn": "Share own photostory"
   },
   "guidance": {
     "intro": "The stories and community reflections on the photos follow this pattern of questions:",

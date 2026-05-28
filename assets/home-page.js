@@ -201,7 +201,6 @@ function renderPage() {
         <img src="${esc(leadSrc)}" alt="${esc(story.storyteller)}" loading="eager">
       </div>
       <div class="home-card-body">
-        <p class="home-card-name">${esc(story.storyteller)}</p>
         <p class="home-card-teaser">${esc(labelFor(story.summary, state.language))}</p>
         <div class="home-card-actions">
           <div class="home-card-action-row home-card-action-row--primary">
@@ -228,18 +227,18 @@ function renderPage() {
   app.innerHTML = `
     <div class="home-shell">
 
-      <!-- badges: reuse exact /about classes for identical look -->
-      <div class="landing-copy-card landing-copy-card--nexus home-badge-nexus">
-        <p>${(landing.section1NexusLines || []).map((l) => `<span>${esc(l)}</span>`).join('<br>')}</p>
-      </div>
-      <div class="landing-copy-card landing-copy-card--title home-badge-title">
-        <p>${(landing.section1TitleLines || []).map((l) => `<span>${esc(l)}</span>`).join('<br>')}</p>
-      </div>
-
       ${renderMenu(t)}
 
       <main class="home-main">
-        ${storyCard}
+        <div class="home-hero-grid">
+          <div class="landing-copy-card landing-copy-card--nexus home-badge-nexus" aria-hidden="true">
+            <p>${(landing.section1NexusLines || []).map((l) => `<span>${esc(l)}</span>`).join('<br>')}</p>
+          </div>
+          ${storyCard}
+          <div class="landing-copy-card landing-copy-card--title home-badge-title" aria-hidden="true">
+            <p>${(landing.section1TitleLines || []).map((l) => `<span>${esc(l)}</span>`).join('<br>')}</p>
+          </div>
+        </div>
         ${renderHomeSwitchers(t)}
       </main>
 
