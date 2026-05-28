@@ -232,11 +232,11 @@ function renderPage() {
       <main class="home-main">
         <div class="home-hero-grid">
           <div class="landing-copy-card landing-copy-card--nexus home-badge-nexus" aria-hidden="true">
-            <p>${(landing.section1NexusLines || []).map((l) => `<span>${esc(l)}</span>`).join('<br>')}</p>
+            <p>${(landing.section1NexusLines || []).map((l) => `<span>${esc(l)}</span>`).join('')}</p>
           </div>
           ${storyCard}
           <div class="landing-copy-card landing-copy-card--title home-badge-title" aria-hidden="true">
-            <p>${(landing.section1TitleLines || []).map((l) => `<span>${esc(l)}</span>`).join('<br>')}</p>
+            <p>${(landing.section1TitleLines || []).map((l) => `<span>${esc(l)}</span>`).join('')}</p>
           </div>
         </div>
         ${renderHomeSwitchers(t)}

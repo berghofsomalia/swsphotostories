@@ -575,3 +575,41 @@ html[data-theme] .home-hero-grid > .home-badge-title p {
     padding: 0.7rem 0.72rem 0.78rem calc(var(--home-grid-overlap) + 0.42rem) !important;
   }
 }
+
+/* Final home flap pass: larger text, no injected blank lines. */
+.home-hero-grid {
+  --home-grid-badge: clamp(10.5rem, 19vw, 16.5rem);
+  --home-grid-overlap: clamp(2.6rem, 4.8vw, 4.2rem);
+  --home-grid-outer: calc(var(--home-grid-badge) - var(--home-grid-overlap));
+  --home-grid-font: clamp(0.96rem, 1.24vw, 1.28rem);
+}
+.home-hero-grid > .home-badge-nexus br,
+.home-hero-grid > .home-badge-title br {
+  display: none !important;
+}
+.home-hero-grid > .home-badge-nexus p,
+.home-hero-grid > .home-badge-title p,
+html[data-theme] .home-hero-grid > .home-badge-nexus p,
+html[data-theme] .home-hero-grid > .home-badge-title p {
+  font-size: var(--home-grid-font) !important;
+  font-weight: 600 !important;
+  line-height: 1.04 !important;
+  gap: 0.08rem !important;
+}
+.home-hero-grid > .home-badge-title p {
+  padding: 0.85rem 0.9rem 1rem calc(var(--home-grid-overlap) + 0.25rem) !important;
+}
+
+@media (max-width: 700px) {
+  .home-hero-grid {
+    --home-grid-badge: clamp(7.8rem, 40vw, 9rem);
+    --home-grid-overlap: clamp(1.55rem, 8.8vw, 2.25rem);
+    --home-grid-font: clamp(0.78rem, 3.7vw, 0.95rem);
+  }
+  .home-hero-grid > .home-badge-nexus p {
+    padding: 0.58rem calc(var(--home-grid-overlap) + 0.38rem) 0.5rem 0.58rem !important;
+  }
+  .home-hero-grid > .home-badge-title p {
+    padding: 0.54rem 0.56rem 0.62rem calc(var(--home-grid-overlap) + 0.28rem) !important;
+  }
+}

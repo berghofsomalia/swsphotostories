@@ -370,6 +370,15 @@ export function renderApp(state) {
       ${adaptiveImageMarkup(src, story.storyteller, 'contain', 'story-stage-image')}
     </div>
   `).join('');
+  const reflectionCopy = String(labelFor(story.reflection, state.language) || '').trim();
+  const reflectionMarkup = reflectionCopy ? `
+    <section class="reflection-band">
+      <div class="content-wrap narrow">
+        <div class="section-kicker">${escapeHtml(t.communityReflections)}</div>
+        <div class="reflection-copy">${renderParagraphBlock(reflectionCopy)}</div>
+      </div>
+    </section>
+  ` : '';
 
   const storyMarkup = state.storyVisible ? `
     <section id="story-top" class="story-stage-shell">
@@ -392,12 +401,7 @@ export function renderApp(state) {
       </div>
     </section>
 
-    <section class="reflection-band">
-      <div class="content-wrap narrow">
-        <div class="section-kicker">${escapeHtml(t.communityReflections)}</div>
-        <div class="reflection-copy">${renderParagraphBlock(labelFor(story.reflection, state.language))}</div>
-      </div>
-    </section>
+    ${reflectionMarkup}
 
     <section class="actions-band">
       <div class="content-wrap">
@@ -449,9 +453,7 @@ export function renderApp(state) {
         </button>
         <div class="gallery-layout ${state.filterDrawerOpen ? 'is-filter-open' : ''}">
           <aside class="filter-panel ${state.filterDrawerOpen ? 'is-open' : ''}">
-            <div class="filter-panel-sticky">
-              <div class="gallery-header gallery-header--filter">${storyFilterSummaryMarkup(state)}</div>
-            </div>
+            <div class="filter-panel-sticky gallery-header gallery-header--filter">${storyFilterSummaryMarkup(state)}</div>
             ${renderSearchBox(state)}
             <div class="filter-panel-scroll-body">${filterGroupsMarkup}</div>
           </aside>

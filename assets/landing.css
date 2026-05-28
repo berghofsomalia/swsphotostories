@@ -2389,6 +2389,9 @@ html[data-theme="light"] .landing-copy-card--title { color: #5a3a20; }
 .landing-copy-card--nexus br {
   display: none !important;
 }
+.landing-copy-card--title br {
+  display: none !important;
+}
 
 .landing-copy-card--nexus,
 .landing-copy-card--nexus p,

@@ -46,6 +46,15 @@ function renderLineBreakCopy(lines) {
   return lines.map((line) => `<span>${escapeHtml(line)}</span>`).join('<br>');
 }
 
+function renderContextStrips(landing) {
+  const nexusLines = landing.section1NexusLines || [];
+  const titleLines = landing.section1TitleLines || [];
+  return `
+    <div class="context-strip context-strip--top context-strip--nexus" aria-hidden="true">${nexusLines.map((line) => `<span>${escapeHtml(line)}</span>`).join('')}</div>
+    <div class="context-strip context-strip--bottom context-strip--title" aria-hidden="true">${titleLines.map((line) => `<span>${escapeHtml(line)}</span>`).join('')}</div>
+  `;
+}
+
 function countReflections(stories = []) {
   return stories.reduce((total, story) => total + Number(story.reflectionCount || (story.reflection?.en || story.reflection?.so ? 1 : 0)), 0);
 }
@@ -222,12 +231,7 @@ function renderLandingPage() {
             <div class="landing-copy-card landing-copy-card--section2">
               <p>${escapeHtml(landing.section2Body)}</p>
             </div>
-            <div class="landing-copy-card landing-copy-card--nexus">
-              <p>${renderLineBreakCopy(landing.section1NexusLines)}</p>
-            </div>
-            <div class="landing-copy-card landing-copy-card--title">
-              <p>${renderLineBreakCopy(landing.section1TitleLines)}</p>
-            </div>
+            ${renderContextStrips(landing)}
           </div>
         </section>
 
