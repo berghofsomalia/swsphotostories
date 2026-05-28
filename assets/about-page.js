@@ -14,6 +14,10 @@ const state = {
   siteStats: { stories: 0, photos: null, reflections: 0 }
 };
 
+const PHOTO_COUNT_CACHE_KEY = 'sws_about_photo_count_v1';
+const PHOTO_COUNT_CACHE_MS = 24 * 60 * 60 * 1000;
+
+
 try { state.savedIds = JSON.parse(localStorage.getItem(STORAGE_KEYS.saved) || '[]').map(String); } catch {}
 
 function randomStoryLink(basePath = '../stories/') {
@@ -50,6 +54,32 @@ function formatStat(value) {
   return value == null ? '…' : String(value);
 }
 
+function readCachedPhotoCount() {
+  try {
+    const cached = JSON.parse(sessionStorage.getItem(PHOTO_COUNT_CACHE_KEY) || 'null');
+    if (!cached || typeof cached.photos !== 'number' || !cached.timestamp) return null;
+    if (Date.now() - cached.timestamp > PHOTO_COUNT_CACHE_MS) return null;
+    return cached.photos;
+  } catch {
+    return null;
+  }
+}
+
+function writeCachedPhotoCount(photos) {
+  if (typeof photos !== 'number') return;
+  try {
+    sessionStorage.setItem(PHOTO_COUNT_CACHE_KEY, JSON.stringify({ photos, timestamp: Date.now() }));
+  } catch {}
+}
+
+function scheduleIdleWork(task) {
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(task, { timeout: 4000 });
+  } else {
+    window.setTimeout(task, 350);
+  }
+}
+
 function renderCountedCopy(template = '') {
   return escapeHtml(template)
     .replaceAll('{stories}', formatStat(state.siteStats.stories))
@@ -70,6 +100,7 @@ async function refreshPhotoCount() {
     photos += batch.reduce((sum, story) => sum + realImageCount(story), 0);
   }
   state.siteStats.photos = photos;
+  writeCachedPhotoCount(photos);
   renderLandingPage();
 }
 
@@ -334,14 +365,23 @@ async function init() {
       state.stories = stories;
       state.siteStats = {
         stories: stories.length,
-        photos: null,
+        photos: readCachedPhotoCount(),
         reflections: countReflections(stories)
       };
     })
   ]);
-  await loadLandingAssets();
+
   renderLandingPage();
-  refreshPhotoCount().catch((error) => console.warn('Could not count photos', error));
+
+  loadLandingAssets()
+    .then(() => renderLandingPage())
+    .catch((error) => console.warn('Could not load about images', error));
+
+  if (state.siteStats.photos == null) {
+    scheduleIdleWork(() => {
+      refreshPhotoCount().catch((error) => console.warn('Could not count photos', error));
+    });
+  }
 }
 
 init().catch((error) => {

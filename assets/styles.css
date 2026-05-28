@@ -1361,3 +1361,51 @@ html[data-theme="light"] .filter-summary-reset {
     grid-template-rows: 50svh 50svh;
   }
 }
+
+/* ── Current tweak pass: filterheader sizing and contrast ─ */
+@media (min-width: 901px) {
+  .gallery-layout {
+    grid-template-columns: minmax(285px, 300px) minmax(0, 1fr);
+    gap: 1.7rem;
+  }
+}
+.gallery-header--filter {
+  padding: 0 !important;
+  background: rgba(255, 255, 255, 0.105) !important;
+  border-radius: 0.55rem;
+  font-size: 0.86rem;
+  font-weight: 600;
+  letter-spacing: normal !important;
+  gap: 0.42rem;
+  white-space: nowrap;
+}
+.filter-summary-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: nowrap;
+}
+.filter-summary-reset {
+  white-space: nowrap;
+  font-size: 0.86rem;
+  color: #b33a2d !important;
+}
+.filter-panel-sticky {
+  background: rgba(42, 50, 58, 0.98) !important;
+}
+html[data-theme="light"] .gallery-header--filter {
+  background: rgba(145, 72, 43, 0.12) !important;
+}
+html[data-theme="light"] .filter-panel-sticky {
+  background: rgba(246, 239, 230, 0.98) !important;
+}
+
+@media (max-width: 900px) {
+  .site-shell.is-filter-split .gallery-header--filter {
+    padding: 0 !important;
+  }
+  .site-shell.is-filter-split .filter-panel-sticky {
+    padding-bottom: 0.74rem !important;
+  }
+}
