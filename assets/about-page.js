@@ -190,7 +190,7 @@ function renderLandingPage() {
     if (!src) return '';
     return eager
       ? `<img src="${escapeHtml(src)}" alt="${escapeHtml(alt)}" loading="eager" fetchpriority="high" decoding="async" aria-hidden="true">`
-      : `<img data-src="${escapeHtml(src)}" src="" alt="${escapeHtml(alt)}" loading="lazy" decoding="async" class="lazy-img" aria-hidden="true">`;
+      : `<img src="${escapeHtml(src)}" alt="${escapeHtml(alt)}" loading="lazy" decoding="async" aria-hidden="true">`;
   };
 
   app.innerHTML = `
@@ -266,20 +266,6 @@ function renderLandingPage() {
     </div>
   `;
 
-  // Load deferred section images when they approach the viewport.
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (!entry.isIntersecting) return;
-      const img = entry.target;
-      if (img.dataset.src) {
-        img.src = img.dataset.src;
-        delete img.dataset.src;
-      }
-      observer.unobserve(img);
-    });
-  }, { rootMargin: '200px' });
-
-  document.querySelectorAll('.lazy-img').forEach((img) => observer.observe(img));
 }
 
 function attachListeners() {

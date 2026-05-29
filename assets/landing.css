@@ -2589,3 +2589,107 @@ html[data-theme="light"] .landing-pdf-section--1 .landing-copy-card--section2 {
     background: linear-gradient(to bottom, rgba(141, 82, 15, 0), var(--section2-bg));
   }
 }
+
+/* About natural-flow pass: sections are content-height, not forced screens. */
+.landing-page-shell .intro-scroll--pdfstyle {
+  scroll-snap-type: none !important;
+}
+
+.landing-page-shell .landing-pdf-section,
+.landing-page-shell .landing-pdf-grid {
+  min-height: 0 !important;
+  height: auto !important;
+}
+
+.landing-page-shell .landing-pdf-section {
+  scroll-snap-align: none !important;
+  scroll-snap-stop: normal !important;
+}
+
+.landing-page-shell .landing-photo-pane,
+.landing-page-shell .landing-map-pane {
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+.landing-page-shell .landing-photo-pane img,
+.landing-page-shell .landing-map-pane img {
+  width: 100% !important;
+  height: auto !important;
+  display: block !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+}
+
+.landing-pdf-section--1 .landing-pdf-grid--intro-with-badges {
+  grid-template-columns: minmax(18rem, min(38vw, 32rem)) minmax(0, 1fr) !important;
+  align-items: start !important;
+  overflow: visible !important;
+}
+
+.landing-pdf-section--1 .landing-map-pane {
+  align-self: start !important;
+}
+
+.landing-pdf-grid--photo-only,
+.landing-pdf-grid--shared {
+  display: block !important;
+  overflow: visible !important;
+}
+
+.landing-pdf-grid--photo-only .landing-photo-pane--hero,
+.landing-photo-pane--shared {
+  position: relative !important;
+  inset: auto !important;
+}
+
+.landing-pdf-grid--questions {
+  grid-template-rows: auto auto !important;
+  align-items: start !important;
+}
+
+.landing-photo-pane--questions {
+  align-self: start !important;
+}
+
+.landing-pdf-grid--shared {
+  position: relative !important;
+}
+
+.landing-copy-card--section4 {
+  bottom: 0 !important;
+}
+
+.landing-pdf-grid--cta {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.72fr) !important;
+  grid-template-rows: auto !important;
+  align-items: start !important;
+  overflow: visible !important;
+}
+
+.landing-photo-pane--cta {
+  position: relative !important;
+  inset: auto !important;
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+}
+
+.landing-copy-card--section5 {
+  position: relative !important;
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  padding: clamp(1.6rem, 4vw, 3.4rem) !important;
+}
+
+@media (max-width: 760px) {
+  .landing-pdf-section--1 .landing-pdf-grid--intro-with-badges,
+  .landing-pdf-grid--cta {
+    grid-template-columns: 1fr !important;
+  }
+
+  .landing-copy-card--section5 {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+  }
+}
