@@ -146,15 +146,17 @@ function renderMenu(t) {
 }
 
 function renderHomeSwitchers(t) {
+  const soLabel = 'Soomali';
+  const enLabel = 'English';
   return `
     <div class="home-inline-switchers" aria-label="Display options">
       <div class="home-inline-switcher" role="group" aria-label="Language">
-        <button type="button" class="home-switch-button ${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">Somali</button>
-        <button type="button" class="home-switch-button ${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">English</button>
+        <button type="button" class="home-switch-button ${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">${esc(soLabel)}</button>
+        <button type="button" class="home-switch-button ${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">${esc(enLabel)}</button>
       </div>
       <div class="home-inline-switcher" role="group" aria-label="Theme">
-        <button type="button" class="home-switch-button ${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">Light</button>
-        <button type="button" class="home-switch-button ${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">Dark</button>
+        <button type="button" class="home-switch-button ${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${esc(t.light)}</button>
+        <button type="button" class="home-switch-button ${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${esc(t.dark)}</button>
       </div>
     </div>
   `;
@@ -220,6 +222,7 @@ function renderPage() {
             </button>
           </div>
         </div>
+        ${renderHomeSwitchers(t)}
       </div>
     </div>
   ` : `<div class="home-loading">${esc(t.loading)}</div>`;
@@ -239,7 +242,6 @@ function renderPage() {
             <p>${(landing.section1TitleLines || []).map((l) => `<span>${esc(l)}</span>`).join('')}</p>
           </div>
         </div>
-        ${renderHomeSwitchers(t)}
       </main>
 
       ${renderSavedDrawer(t)}

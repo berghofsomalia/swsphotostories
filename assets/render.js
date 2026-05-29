@@ -67,13 +67,25 @@ function renderChip(label, options = {}) {
   const classes = ['chip'];
   if (options.muted) classes.push('chip-muted');
   if (options.active) classes.push('chip-active');
+  if (options.clusterTone) classes.push(options.clusterTone);
   const countMarkup = typeof options.count === 'number'
     ? `<span class="chip-count">${options.count}</span>`
     : '';
   const content = `<span>${escapeHtml(label)}</span>${countMarkup}`;
+  const clusterAttr = options.clusterSlug ? ` data-cluster="${escapeHtml(options.clusterSlug)}"` : '';
 
-  if (!options.onClick) return `<span class="${classes.join(' ')}">${content}</span>`;
-  return `<button type="button" class="${classes.join(' ')}" data-action="${escapeHtml(options.onClick.action)}" data-value="${escapeHtml(options.onClick.value)}">${content}</button>`;
+  if (!options.onClick) return `<span class="${classes.join(' ')}"${clusterAttr}>${content}</span>`;
+  return `<button type="button" class="${classes.join(' ')}"${clusterAttr} data-action="${escapeHtml(options.onClick.action)}" data-value="${escapeHtml(options.onClick.value)}">${content}</button>`;
+}
+
+function clusterToneClass(state, clusterSlug) {
+  const slug = String(clusterSlug || '').trim();
+  if (slug === 'people') return 'cluster-tone-people';
+  if (!slug) return '';
+  const clusters = (state.tagClusters || []).filter((cluster) => cluster?.slug && cluster.slug !== 'people');
+  const index = clusters.findIndex((cluster) => cluster.slug === slug);
+  if (index < 0) return '';
+  return `cluster-tone-${(index % 6) + 1}`;
 }
 
 function renderParagraphBlock(text) {
@@ -87,7 +99,11 @@ function renderParagraphBlock(text) {
 
 function tagChips(state, story) {
   const chips = [renderChip(labelFor(story.district, state.language))];
-  (story.tags || []).forEach((tag) => chips.push(renderChip(labelFor(tag, state.language), { muted: tag.clusterSlug === 'people' })));
+  (story.tags || []).forEach((tag) => chips.push(renderChip(labelFor(tag, state.language), {
+    muted: tag.clusterSlug === 'people',
+    clusterTone: clusterToneClass(state, tag.clusterSlug),
+    clusterSlug: tag.clusterSlug
+  })));
   return chips.join('');
 }
 
@@ -234,6 +250,14 @@ function renderFilterGroup(state, title, allLabel, items, currentValue, action, 
   const isMulti = options.multi !== false;
   const filterKey = options.filterKey;
   const groupSlugs = items.map((item) => item.value);
+  const clusterTone = filterKey === 'people'
+    ? clusterToneClass(state, 'people')
+    : filterKey === 'tags'
+      ? clusterToneClass(state, options.groupValue)
+      : '';
+  const clusterSlug = filterKey === 'people' ? 'people' : options.groupValue || '';
+  const groupClasses = ['filter-group'];
+  if (clusterTone) groupClasses.push(clusterTone);
   const base = cloneFilters(state.filters);
   const allCountFilters = cloneFilters(state.filters);
 
@@ -246,12 +270,14 @@ function renderFilterGroup(state, title, allLabel, items, currentValue, action, 
     : Boolean(currentValue);
 
   return `
-    <section class="filter-group">
+    <section class="${groupClasses.join(' ')}">
       <h3>${escapeHtml(title)}</h3>
       <div class="chip-list">
         ${renderChip(allLabel, {
           active: !groupHasActive,
           muted: true,
+          clusterTone,
+          clusterSlug,
           count: countForFilters(state, allCountFilters),
           onClick: { action: `${action}-all`, value: options.groupValue || '' }
         })}
@@ -264,6 +290,8 @@ function renderFilterGroup(state, title, allLabel, items, currentValue, action, 
           return renderChip(item.label, {
             active,
             muted: !active,
+            clusterTone,
+            clusterSlug,
             count: countForFilters(state, nextFilters),
             onClick: { action, value: item.value }
           });
@@ -323,7 +351,7 @@ function storyFilterSummaryMarkup(state) {
 
 function renderGalleryCard(state, item) {
   const t = getUiText(state.language);
-  const visibleTags = [...(item.topicTags || []), ...(item.people || [])];
+  const visibleTags = [...(item.people || []), ...(item.topicTags || [])];
   return `
     <button type="button" class="gallery-card" data-action="open-story" data-value="${escapeHtml(item.id)}">
       <div class="gallery-image-frame">
@@ -333,7 +361,11 @@ function renderGalleryCard(state, item) {
         <p class="gallery-summary">${escapeHtml(labelFor(item.summary, state.language))}</p>
         <div class="tag-row small">
           ${renderChip(labelFor(item.district, state.language), { muted: true })}
-          ${visibleTags.map((tag) => renderChip(labelFor(tag, state.language), { muted: tag.clusterSlug === 'people' })).join('')}
+          ${visibleTags.map((tag) => renderChip(labelFor(tag, state.language), {
+            muted: tag.clusterSlug === 'people',
+            clusterTone: clusterToneClass(state, tag.clusterSlug),
+            clusterSlug: tag.clusterSlug
+          })).join('')}
         </div>
         ${isSaved(state, item.id) ? `<div class="saved-marker">${icon.bookmark()}<span>${escapeHtml(t.saved)}</span></div>` : ''}
       </div>

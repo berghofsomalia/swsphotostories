@@ -2,6 +2,49 @@ import { getLandingText, getUiText, STORAGE_KEYS, initialiseI18n } from './conte
 import { fetchStories } from './api.js';
 import { renderMenu } from './menu.js';
 
+const LANDING_MAP_IMAGE = 'images/1.png';
+
+const LANDING_SECTION_IMAGE_SETS = {
+  2: [
+    'images/2 (1).jpg',
+    'images/2 (2).jpg',
+    'images/2 (3).jpg',
+    'images/2 (4).jpg',
+    'images/2 (5).jpg'
+  ],
+  3: [
+    'images/3 (1).jpg',
+    'images/3 (2).jpg',
+    'images/3 (3).jpg',
+    'images/3 (4).jpg',
+    'images/3 (5).jpg',
+    'images/3 (6).jpg',
+    'images/3 (7).jpg'
+  ],
+  4: [
+    'images/4 (1).JPG',
+    'images/4 (2).jpg',
+    'images/4 (3).jpg',
+    'images/4 (4).JPG',
+    'images/4 (5).JPG',
+    'images/4 (6).JPG',
+    'images/4 (7).JPG',
+    'images/4 (8).JPG',
+    'images/4 (9).JPG',
+    'images/4 (10).JPG'
+  ],
+  5: [
+    'images/5 (1).JPG',
+    'images/5 (2).jpg',
+    'images/5 (3).jpg',
+    'images/5 (4).JPG',
+    'images/5 (5).JPG',
+    'images/5 (6).JPG',
+    'images/5 (7).jpg',
+    'images/5 (8).JPG'
+  ]
+};
+
 const state = {
   language:   localStorage.getItem(STORAGE_KEYS.language) || 'en',
   theme:      localStorage.getItem(STORAGE_KEYS.theme)    || 'dark',
@@ -9,9 +52,9 @@ const state = {
   menuOpen:   false,
   savedOpen:  false,
   savedIds:   [],
-  landingMap: '',
+  landingMap: LANDING_MAP_IMAGE,
   landingSectionImages: {},
-  siteStats: { stories: 0, reflections: 0 }
+  siteStats: { stories: null, reflections: null }
 };
 
 
@@ -66,40 +109,20 @@ function renderCountedCopy(template = '') {
     .replaceAll('{reflections}', formatStat(state.siteStats.reflections));
 }
 
-async function imageExists(src) {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => resolve(src);
-    img.onerror = () => resolve(null);
-    img.src = src;
-  });
+function randomItem(items = []) {
+  return items[Math.floor(Math.random() * items.length)] || '';
 }
 
-async function loadSectionImage(sectionNumber) {
-  const probes = [];
-  for (let i = 1; i <= 6; i++) {
-    ['jpg', 'png'].forEach((ext) => probes.push(`images/${sectionNumber} (${i}).${ext}`));
-  }
-  const found = (await Promise.all(probes.map(imageExists))).filter(Boolean);
-  const shuffled = found.sort(() => Math.random() - 0.5);
-  if (shuffled.length) return shuffled[0];
-  const fallback = state.stories[Math.floor(Math.random() * state.stories.length)];
-  return fallback?.images?.[0] || '';
+function pickLandingSectionImages() {
+  return Object.fromEntries(
+    Object.entries(LANDING_SECTION_IMAGE_SETS).map(([section, images]) => [section, randomItem(images)])
+  );
 }
 
-async function loadLandingAssets() {
-  const primaryMap = await imageExists('images/map 2.png');
-  const fallbackMap = await imageExists('images/sws on somalia map_wrinkle.png');
-  state.landingMap = primaryMap || fallbackMap || '';
-  const sections = [1, 3, 4, 5];
-  const resolved = await Promise.all(sections.map((s) => loadSectionImage(s)));
-  state.landingSectionImages = Object.fromEntries(sections.map((s, i) => [s, resolved[i]]));
-}
-
-// ── Icons ─────────────────────────────────────────────────────────────────────
+// Icons
 const closeIcon = () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>';
 
-// ── Saved drawer ──────────────────────────────────────────────────────────────
+// Saved drawer
 function renderSavedDrawer(t) {
   const savedStories = state.stories.filter((s) => state.savedIds.includes(s.id));
   return `
@@ -163,12 +186,12 @@ function renderLandingPage() {
 
   document.title = `${t.about} — ${t.siteTitle}`;
 
-  // Images after section 1 use loading="lazy" + data-src for intersection
-  // observer deferred loading (avoids blocking on many images at once)
-  const lazyImg = (src, alt = '', eager = false) =>
-    eager
-      ? `<img src="${escapeHtml(src)}" alt="${escapeHtml(alt)}" loading="eager" aria-hidden="true">`
-      : `<img data-src="${escapeHtml(src)}" src="" alt="${escapeHtml(alt)}" loading="lazy" class="lazy-img" aria-hidden="true">`;
+  const pageImage = (src, alt = '', eager = false) => {
+    if (!src) return '';
+    return eager
+      ? `<img src="${escapeHtml(src)}" alt="${escapeHtml(alt)}" loading="eager" fetchpriority="high" decoding="async" aria-hidden="true">`
+      : `<img data-src="${escapeHtml(src)}" src="" alt="${escapeHtml(alt)}" loading="lazy" decoding="async" class="lazy-img" aria-hidden="true">`;
+  };
 
   app.innerHTML = `
     <div class="intro-modal intro-modal--pdfstyle landing-page-shell">
@@ -179,7 +202,7 @@ function renderLandingPage() {
         <section class="landing-pdf-section landing-pdf-section--1">
           <div class="landing-pdf-grid landing-pdf-grid--two-col landing-pdf-grid--intro-with-badges">
             <div class="landing-map-pane">
-              ${lazyImg(state.landingMap, '', true)}
+              ${pageImage(state.landingMap, '', true)}
             </div>
             <div class="landing-copy-card landing-copy-card--section2">
               <p>${escapeHtml(landing.section2Body)}</p>
@@ -191,7 +214,7 @@ function renderLandingPage() {
         <section class="landing-pdf-section landing-pdf-section--2">
           <div class="landing-pdf-grid landing-pdf-grid--hero landing-pdf-grid--photo-only">
             <div class="landing-photo-pane landing-photo-pane--hero">
-              ${lazyImg(si[1] || '')}
+              ${pageImage(si[2] || '')}
             </div>
           </div>
         </section>
@@ -199,7 +222,7 @@ function renderLandingPage() {
         <section class="landing-pdf-section landing-pdf-section--3">
           <div class="landing-pdf-grid landing-pdf-grid--questions">
             <div class="landing-photo-pane landing-photo-pane--questions">
-              ${lazyImg(si[3] || '')}
+              ${pageImage(si[3] || '')}
             </div>
             <div class="landing-copy-card landing-copy-card--pondered">
               <p>${escapeHtml(landing.section3Lead)}</p>
@@ -214,7 +237,7 @@ function renderLandingPage() {
         <section class="landing-pdf-section landing-pdf-section--4">
           <div class="landing-pdf-grid landing-pdf-grid--shared">
             <div class="landing-photo-pane landing-photo-pane--shared">
-              ${lazyImg(si[4] || '')}
+              ${pageImage(si[4] || '')}
             </div>
             <div class="landing-copy-card landing-copy-card--section4">
               <p>${renderLineBreakCopy(landing.section4Lines)}</p>
@@ -225,7 +248,7 @@ function renderLandingPage() {
         <section class="landing-pdf-section landing-pdf-section--5">
           <div class="landing-pdf-grid landing-pdf-grid--cta">
             <div class="landing-photo-pane landing-photo-pane--cta">
-              ${lazyImg(si[5] || '')}
+              ${pageImage(si[5] || '')}
             </div>
             <div class="landing-copy-card landing-copy-card--cta-spacer"></div>
             <div class="landing-copy-card landing-copy-card--section5">
@@ -243,7 +266,7 @@ function renderLandingPage() {
     </div>
   `;
 
-  // Intersection observer: swap data-src → src as sections scroll into view
+  // Load deferred section images when they approach the viewport.
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (!entry.isIntersecting) return;
@@ -316,22 +339,20 @@ function attachListeners() {
 async function init() {
   attachListeners();
   renderLoading();
-  await Promise.all([
-    initialiseI18n(state.language),
-    fetchStories().then((stories) => {
+  state.landingSectionImages = pickLandingSectionImages();
+  await initialiseI18n(state.language);
+  renderLandingPage();
+
+  fetchStories()
+    .then((stories) => {
       state.stories = stories;
       state.siteStats = {
         stories: stories.length,
         reflections: countReflections(stories)
       };
+      renderLandingPage();
     })
-  ]);
-
-  renderLandingPage();
-
-  loadLandingAssets()
-    .then(() => renderLandingPage())
-    .catch((error) => console.warn('Could not load about images', error));
+    .catch((error) => console.warn('Could not load story stats', error));
 }
 
 init().catch((error) => {

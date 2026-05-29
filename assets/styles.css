@@ -1650,3 +1650,264 @@ html[data-theme="light"] .filter-panel-scroll-body {
     margin-right: -1rem;
   }
 }
+
+/* Final shared flap lock: theme switches should not change size or text color. */
+.context-strip,
+html[data-theme="light"] .context-strip {
+  width: clamp(15.5rem, 22vw, 18rem);
+  height: clamp(1.55rem, 2.3vw, 1.9rem);
+}
+
+.context-strip--nexus,
+.context-strip--title,
+html[data-theme="light"] .context-strip--nexus,
+html[data-theme="light"] .context-strip--title {
+  color: #fff !important;
+}
+
+.context-strip--nexus span,
+.context-strip--title span,
+html[data-theme="light"] .context-strip--nexus span,
+html[data-theme="light"] .context-strip--title span {
+  color: #fff !important;
+}
+
+.context-strip--title {
+  background: rgba(141, 82, 15, 0.72) !important;
+}
+
+html[data-theme="light"] .context-strip--title {
+  background: rgba(141, 82, 15, 0.56) !important;
+}
+
+html[data-theme="light"] .context-strip--nexus {
+  background: rgba(141, 82, 15, 0.56) !important;
+}
+
+html[data-theme="light"] .context-strip--title {
+  font-size: clamp(0.64rem, 0.9vw, 0.82rem) !important;
+}
+
+@media (max-width: 560px) {
+  .context-strip,
+  html[data-theme="light"] .context-strip {
+    width: min(calc(100vw - 2rem), 15rem);
+    height: 1.65rem;
+  }
+
+  html[data-theme="light"] .context-strip--title {
+    font-size: 0.6rem !important;
+  }
+}
+
+/* Cluster tone system for filter groups and topic chips. */
+.cluster-tone-1 {
+  --cluster-panel: rgba(82, 143, 136, 0.11);
+  --cluster-soft: rgba(82, 143, 136, 0.16);
+  --cluster-hover: rgba(82, 143, 136, 0.24);
+  --cluster-active: rgba(82, 143, 136, 0.62);
+  --cluster-border: rgba(135, 197, 188, 0.28);
+  --cluster-text: #a8d8d2;
+}
+
+.cluster-tone-2 {
+  --cluster-panel: rgba(183, 128, 62, 0.11);
+  --cluster-soft: rgba(183, 128, 62, 0.16);
+  --cluster-hover: rgba(183, 128, 62, 0.24);
+  --cluster-active: rgba(183, 128, 62, 0.66);
+  --cluster-border: rgba(223, 173, 102, 0.3);
+  --cluster-text: #e1b26d;
+}
+
+.cluster-tone-3 {
+  --cluster-panel: rgba(126, 151, 86, 0.11);
+  --cluster-soft: rgba(126, 151, 86, 0.16);
+  --cluster-hover: rgba(126, 151, 86, 0.24);
+  --cluster-active: rgba(126, 151, 86, 0.64);
+  --cluster-border: rgba(190, 210, 124, 0.28);
+  --cluster-text: #c8d58b;
+}
+
+.cluster-tone-4 {
+  --cluster-panel: rgba(168, 101, 124, 0.11);
+  --cluster-soft: rgba(168, 101, 124, 0.16);
+  --cluster-hover: rgba(168, 101, 124, 0.24);
+  --cluster-active: rgba(168, 101, 124, 0.64);
+  --cluster-border: rgba(224, 154, 178, 0.28);
+  --cluster-text: #e4a6b9;
+}
+
+.cluster-tone-5 {
+  --cluster-panel: rgba(91, 131, 178, 0.11);
+  --cluster-soft: rgba(91, 131, 178, 0.16);
+  --cluster-hover: rgba(91, 131, 178, 0.24);
+  --cluster-active: rgba(91, 131, 178, 0.64);
+  --cluster-border: rgba(155, 190, 229, 0.3);
+  --cluster-text: #a9c7e8;
+}
+
+.cluster-tone-6 {
+  --cluster-panel: rgba(137, 122, 166, 0.11);
+  --cluster-soft: rgba(137, 122, 166, 0.16);
+  --cluster-hover: rgba(137, 122, 166, 0.24);
+  --cluster-active: rgba(137, 122, 166, 0.64);
+  --cluster-border: rgba(195, 180, 224, 0.28);
+  --cluster-text: #c1b3e0;
+}
+
+html[data-theme="light"] .cluster-tone-1 {
+  --cluster-panel: rgba(82, 143, 136, 0.12);
+  --cluster-soft: rgba(82, 143, 136, 0.15);
+  --cluster-hover: rgba(82, 143, 136, 0.22);
+  --cluster-active: rgba(55, 122, 115, 0.76);
+  --cluster-border: rgba(55, 122, 115, 0.25);
+  --cluster-text: #2d625d;
+}
+
+html[data-theme="light"] .cluster-tone-2 {
+  --cluster-panel: rgba(183, 128, 62, 0.13);
+  --cluster-soft: rgba(183, 128, 62, 0.16);
+  --cluster-hover: rgba(183, 128, 62, 0.24);
+  --cluster-active: rgba(143, 91, 33, 0.78);
+  --cluster-border: rgba(143, 91, 33, 0.25);
+  --cluster-text: #75501f;
+}
+
+html[data-theme="light"] .cluster-tone-3 {
+  --cluster-panel: rgba(126, 151, 86, 0.13);
+  --cluster-soft: rgba(126, 151, 86, 0.16);
+  --cluster-hover: rgba(126, 151, 86, 0.24);
+  --cluster-active: rgba(91, 113, 48, 0.78);
+  --cluster-border: rgba(91, 113, 48, 0.25);
+  --cluster-text: #50611f;
+}
+
+html[data-theme="light"] .cluster-tone-4 {
+  --cluster-panel: rgba(168, 101, 124, 0.12);
+  --cluster-soft: rgba(168, 101, 124, 0.15);
+  --cluster-hover: rgba(168, 101, 124, 0.23);
+  --cluster-active: rgba(135, 65, 89, 0.78);
+  --cluster-border: rgba(135, 65, 89, 0.24);
+  --cluster-text: #75384d;
+}
+
+html[data-theme="light"] .cluster-tone-5 {
+  --cluster-panel: rgba(91, 131, 178, 0.12);
+  --cluster-soft: rgba(91, 131, 178, 0.15);
+  --cluster-hover: rgba(91, 131, 178, 0.23);
+  --cluster-active: rgba(55, 92, 137, 0.78);
+  --cluster-border: rgba(55, 92, 137, 0.25);
+  --cluster-text: #355c88;
+}
+
+html[data-theme="light"] .cluster-tone-6 {
+  --cluster-panel: rgba(137, 122, 166, 0.12);
+  --cluster-soft: rgba(137, 122, 166, 0.15);
+  --cluster-hover: rgba(137, 122, 166, 0.23);
+  --cluster-active: rgba(96, 75, 133, 0.78);
+  --cluster-border: rgba(96, 75, 133, 0.25);
+  --cluster-text: #54437b;
+}
+
+.filter-group.cluster-tone-1,
+.filter-group.cluster-tone-2,
+.filter-group.cluster-tone-3,
+.filter-group.cluster-tone-4,
+.filter-group.cluster-tone-5,
+.filter-group.cluster-tone-6 {
+  padding: 0.76rem;
+  border-radius: 0.72rem;
+  border: 1px solid var(--cluster-border);
+  background: var(--cluster-panel);
+}
+
+.filter-group.cluster-tone-1 h3,
+.filter-group.cluster-tone-2 h3,
+.filter-group.cluster-tone-3 h3,
+.filter-group.cluster-tone-4 h3,
+.filter-group.cluster-tone-5 h3,
+.filter-group.cluster-tone-6 h3 {
+  color: var(--cluster-text) !important;
+}
+
+.chip.cluster-tone-1,
+.chip.cluster-tone-2,
+.chip.cluster-tone-3,
+.chip.cluster-tone-4,
+.chip.cluster-tone-5,
+.chip.cluster-tone-6 {
+  color: var(--cluster-text) !important;
+  border-color: var(--cluster-border) !important;
+  background: var(--cluster-soft) !important;
+}
+
+button.chip.cluster-tone-1:hover,
+button.chip.cluster-tone-2:hover,
+button.chip.cluster-tone-3:hover,
+button.chip.cluster-tone-4:hover,
+button.chip.cluster-tone-5:hover,
+button.chip.cluster-tone-6:hover {
+  background: var(--cluster-hover) !important;
+}
+
+.chip.cluster-tone-1.chip-active,
+.chip.cluster-tone-2.chip-active,
+.chip.cluster-tone-3.chip-active,
+.chip.cluster-tone-4.chip-active,
+.chip.cluster-tone-5.chip-active,
+.chip.cluster-tone-6.chip-active {
+  color: #fff !important;
+  border-color: transparent !important;
+  background: var(--cluster-active) !important;
+}
+
+/* People gets its own quiet identity, and colored filter bands stack flat. */
+.cluster-tone-people {
+  --cluster-panel: rgba(154, 118, 83, 0.12);
+  --cluster-soft: rgba(154, 118, 83, 0.17);
+  --cluster-hover: rgba(154, 118, 83, 0.25);
+  --cluster-active: rgba(154, 118, 83, 0.66);
+  --cluster-border: rgba(213, 174, 128, 0.28);
+  --cluster-text: #d9b184;
+}
+
+html[data-theme="light"] .cluster-tone-people {
+  --cluster-panel: rgba(154, 118, 83, 0.13);
+  --cluster-soft: rgba(154, 118, 83, 0.17);
+  --cluster-hover: rgba(154, 118, 83, 0.25);
+  --cluster-active: rgba(119, 83, 51, 0.78);
+  --cluster-border: rgba(119, 83, 51, 0.24);
+  --cluster-text: #684628;
+}
+
+.filter-group[class*="cluster-tone-"] {
+  padding: 0.78rem !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: var(--cluster-panel) !important;
+}
+
+.filter-group[class*="cluster-tone-"] + .filter-group[class*="cluster-tone-"] {
+  margin-top: 0 !important;
+}
+
+.filter-group[class*="cluster-tone-"] h3 {
+  color: var(--cluster-text) !important;
+  letter-spacing: 0 !important;
+}
+
+.chip.cluster-tone-people {
+  color: var(--cluster-text) !important;
+  border-color: var(--cluster-border) !important;
+  background: var(--cluster-soft) !important;
+}
+
+button.chip.cluster-tone-people:hover {
+  background: var(--cluster-hover) !important;
+}
+
+.chip.cluster-tone-people.chip-active {
+  color: #fff !important;
+  border-color: transparent !important;
+  background: var(--cluster-active) !important;
+}

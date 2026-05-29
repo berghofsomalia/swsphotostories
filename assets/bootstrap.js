@@ -92,6 +92,20 @@ function scrollFromHash(options = {}) {
   }
 }
 
+function galleryUrl() {
+  const url = new URL(window.location.href);
+  url.search = '';
+  url.hash = 'gallery';
+  return url.href;
+}
+
+function showGalleryOnly() {
+  state.currentStoryId = null;
+  state.storyVisible = false;
+  state.galleryVisible = true;
+  state.filterDrawerOpen = true;
+}
+
 function clampGallerySplit(value) {
   if (!Number.isFinite(value)) return 50;
   return Math.max(28, Math.min(72, value));
@@ -152,6 +166,10 @@ async function restoreHistoryState(snapshot) {
       setCurrentStory(story.id, { skipUrl: true, scrollTop: true });
       return;
     }
+    showGalleryOnly();
+    history.replaceState(makeHistoryState('gallery'), '', galleryUrl());
+    renderSite();
+    requestAnimationFrame(() => qs('#gallery')?.scrollIntoView({ behavior: 'auto', block: 'start' }));
     return;
   }
 
@@ -667,15 +685,21 @@ export async function initialiseApp() {
   const shouldRandomise = params.has('random') && !code;
   const existing = getStoryById(state.stories, code);
   const randomStory = state.stories[Math.floor(Math.random() * state.stories.length)] || null;
-  const selectedStory = existing || randomStory;
-  const startInGallery = window.location.hash === '#gallery' && !code && !shouldRandomise;
+  const selectedStory = shouldRandomise ? randomStory : existing;
+  const startInGallery = !selectedStory;
 
-  state.currentStoryId = selectedStory?.id || null;
-  state.storyVisible = !startInGallery;
-  state.galleryVisible = startInGallery;
-  state.filterDrawerOpen = startInGallery;
+  if (startInGallery) {
+    showGalleryOnly();
+  } else {
+    state.currentStoryId = selectedStory.id;
+    state.storyVisible = true;
+    state.galleryVisible = false;
+    state.filterDrawerOpen = false;
+  }
 
-  const initialUrl = shouldRandomise && randomStory
+  const initialUrl = startInGallery
+    ? galleryUrl()
+    : shouldRandomise && randomStory
     ? buildShareUrl(randomStory)
     : window.location.href;
   history.replaceState(makeHistoryState(startInGallery ? 'gallery' : 'story'), '', initialUrl);

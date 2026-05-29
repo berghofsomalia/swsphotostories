@@ -60,6 +60,10 @@ function labelObject(en = '', so = '', extras = {}) {
   };
 }
 
+function isPublishedStory(story, fallbackStatus = 'draft') {
+  return String(story?.status || fallbackStatus).trim().toLowerCase() === 'published';
+}
+
 function slugify(value = '') {
   return String(value)
     .toLowerCase()
@@ -139,6 +143,7 @@ function normaliseLegacyStory(story) {
     ...story,
     id: story.code || story.id,
     code: story.code || story.id,
+    status: story.status || 'published',
     storyteller: story.storyteller || 'Anonymous',
     images: (story.images || []).map(localStoryImage).filter(Boolean),
     imagesLoaded: true,
@@ -155,7 +160,9 @@ async function fetchStoriesFromJson() {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`Failed to load fallback stories (HTTP ${response.status})`);
   const payload = await response.json();
-  return (payload.stories || []).map(normaliseLegacyStory);
+  return (payload.stories || [])
+    .filter((story) => isPublishedStory(story, 'published'))
+    .map(normaliseLegacyStory);
 }
 
 function cleanStorageFiles(files = []) {
@@ -298,6 +305,7 @@ async function mapSupabaseStory(row) {
     code: row.code,
     dbId: row.id,
     district,
+    status: row.status || 'draft',
     storyteller: row.storyteller || 'Anonymous',
     summary: labelObject(row.teaser_en, row.teaser_so),
     story: labelObject(row.story_en, row.story_so),
@@ -382,7 +390,7 @@ async function fetchStoriesFromSupabase() {
   if (error) throw error;
 
   const mapped = await Promise.all((data || []).map(mapSupabaseStory));
-  return mapped.filter((story) => story.code);
+  return mapped.filter((story) => story.code && isPublishedStory(story));
 }
 
 

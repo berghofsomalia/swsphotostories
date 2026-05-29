@@ -2513,3 +2513,79 @@ html[data-theme="light"] .landing-copy-card--title p {
   visibility: visible !important;
   opacity: 1 !important;
 }
+
+/* About section 1: keep the map fully visible and let the text column flex. */
+.landing-pdf-section--1 .landing-pdf-grid--intro-with-badges {
+  grid-template-columns: 81.3svh minmax(0, 1fr) !important;
+  overflow: hidden !important;
+}
+
+.landing-pdf-section--1 .landing-map-pane {
+  z-index: 1;
+  height: 100svh !important;
+  min-height: 100svh !important;
+  background: #c9e0ea !important;
+}
+
+.landing-pdf-section--1 .landing-map-pane img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  background: #c9e0ea !important;
+}
+
+.landing-pdf-section--1 .landing-copy-card--section2 {
+  --section2-bg: #8d520f;
+  position: relative !important;
+  z-index: 2;
+  overflow: visible !important;
+  background: var(--section2-bg) !important;
+  padding-inline: clamp(2.2rem, 7vw, 8rem) !important;
+}
+
+html[data-theme="light"] .landing-pdf-section--1 .landing-copy-card--section2 {
+  --section2-bg: #a9662d;
+}
+
+.landing-pdf-section--1 .landing-copy-card--section2::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -7rem;
+  width: 7rem;
+  pointer-events: none;
+  background: linear-gradient(to right, rgba(141, 82, 15, 0), var(--section2-bg));
+}
+
+.landing-pdf-section--1 .landing-copy-card--section2 > * {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 900px) {
+  .landing-pdf-section--1 .landing-pdf-grid--intro-with-badges {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto auto !important;
+  }
+
+  .landing-pdf-section--1 .landing-map-pane {
+    height: auto !important;
+    min-height: 0 !important;
+    aspect-ratio: 320 / 394;
+  }
+
+  .landing-pdf-section--1 .landing-copy-card--section2 {
+    padding: clamp(2rem, 9vw, 3.5rem) clamp(1.3rem, 6vw, 2.4rem) !important;
+  }
+
+  .landing-pdf-section--1 .landing-copy-card--section2::before {
+    top: -5rem;
+    bottom: auto;
+    left: 0;
+    width: 100%;
+    height: 5rem;
+    background: linear-gradient(to bottom, rgba(141, 82, 15, 0), var(--section2-bg));
+  }
+}
