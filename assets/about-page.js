@@ -211,18 +211,10 @@ function renderLandingPage() {
           </div>
         </section>
 
-        <section class="landing-pdf-section landing-pdf-section--2">
-          <div class="landing-pdf-grid landing-pdf-grid--hero landing-pdf-grid--photo-only">
-            <div class="landing-photo-pane landing-photo-pane--hero">
-              ${pageImage(si[2] || '')}
-            </div>
-          </div>
-        </section>
-
         <section class="landing-pdf-section landing-pdf-section--3">
           <div class="landing-pdf-grid landing-pdf-grid--questions">
             <div class="landing-photo-pane landing-photo-pane--questions">
-              ${pageImage(si[3] || '')}
+              ${pageImage(si[2] || '')}
             </div>
             <div class="landing-copy-card landing-copy-card--pondered">
               <p>${escapeHtml(landing.section3Lead)}</p>
@@ -258,6 +250,14 @@ function renderLandingPage() {
                 <a class="landing-button" href="../stories/#gallery">${escapeHtml(landing.explore)}</a>
                 <a class="landing-button" href="mailto:?subject=Photostory submission">${escapeHtml(landing.shareOwn)}</a>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="landing-pdf-section landing-pdf-section--2">
+          <div class="landing-pdf-grid landing-pdf-grid--hero landing-pdf-grid--photo-only">
+            <div class="landing-photo-pane landing-photo-pane--hero">
+              ${pageImage(si[3] || '')}
             </div>
           </div>
         </section>

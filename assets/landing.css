@@ -2539,6 +2539,9 @@ html[data-theme="light"] .landing-copy-card--title p {
   --section2-bg: #8d520f;
   position: relative !important;
   z-index: 2;
+  align-self: stretch !important;
+  height: 100% !important;
+  min-height: 100% !important;
   overflow: visible !important;
   background: var(--section2-bg) !important;
   padding-inline: clamp(2.2rem, 7vw, 8rem) !important;
@@ -2657,7 +2660,20 @@ html[data-theme="light"] .landing-pdf-section--1 .landing-copy-card--section2 {
 }
 
 .landing-copy-card--section4 {
-  bottom: 0 !important;
+  position: relative !important;
+  inset: auto !important;
+  bottom: auto !important;
+  width: 100% !important;
+  min-height: 0 !important;
+  padding: clamp(1.5rem, 4vw, 3.2rem) clamp(1.35rem, 6vw, 4rem) !important;
+  background: #4c321d !important;
+  text-align: center !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+html[data-theme="light"] .landing-copy-card--section4 {
+  background: #745032 !important;
 }
 
 .landing-pdf-grid--cta {
