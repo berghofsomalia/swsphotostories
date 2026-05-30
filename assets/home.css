@@ -748,3 +748,375 @@ html:not([data-theme="light"]) .home-card {
     margin-top: 0;
   }
 }
+
+/* Home responsive hero fit pass. */
+.home-shell {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.home-main {
+  min-height: 100svh;
+  height: auto;
+}
+
+.home-hero-grid {
+  --home-grid-badge: clamp(9rem, min(15vw, 26svh), 15.5rem);
+  --home-grid-overlap: clamp(2.3rem, min(4vw, 7svh), 4rem);
+  --home-grid-outer: calc(var(--home-grid-badge) - var(--home-grid-overlap));
+  min-height: 100svh;
+  height: auto;
+  grid-template-rows:
+    var(--home-grid-outer)
+    var(--home-grid-overlap)
+    minmax(min-content, 1fr)
+    var(--home-grid-overlap)
+    var(--home-grid-outer);
+}
+
+.home-hero-grid .home-card {
+  height: auto !important;
+  max-height: none !important;
+}
+
+@media (min-width: 701px) {
+  .home-hero-grid .home-card {
+    display: grid !important;
+    grid-template-columns: minmax(0, 2fr) minmax(18rem, 0.95fr);
+    min-height: clamp(30rem, 58svh, 44rem);
+  }
+
+  .home-card-image {
+    width: auto !important;
+    min-width: 0;
+    height: 100%;
+    min-height: 0;
+  }
+
+  .home-card-image img {
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .home-card-body {
+    width: auto !important;
+    max-width: none !important;
+    min-width: 0;
+    min-height: 0;
+    justify-content: center;
+    gap: clamp(0.55rem, 1.2vh, 1rem);
+    padding: clamp(1rem, 2vw, 2rem);
+  }
+
+  .home-card-teaser {
+    font-size: clamp(0.96rem, 1.1vw, 1.2rem);
+  }
+
+  .home-card-body .home-inline-switchers {
+    margin-top: clamp(0.5rem, 1.2vh, 0.9rem);
+  }
+}
+
+@media (min-width: 701px) and (max-height: 760px) {
+  .home-hero-grid {
+    --home-grid-badge: clamp(8.3rem, min(13vw, 24svh), 13rem);
+    --home-grid-overlap: clamp(2rem, min(3.6vw, 6.6svh), 3.6rem);
+  }
+
+  .home-hero-grid .home-card {
+    min-height: clamp(28rem, 64svh, 36rem);
+  }
+
+  .home-card-actions .action-button {
+    min-height: 2.28rem;
+    padding-block: 0.42rem;
+  }
+
+  .home-card-body .home-inline-switchers {
+    margin-top: 0.45rem;
+  }
+}
+
+@media (max-width: 700px) {
+  .home-hero-grid {
+    --home-grid-badge: clamp(7rem, min(36vw, 22svh), 9rem);
+    --home-grid-overlap: clamp(1.45rem, min(8vw, 6svh), 2.25rem);
+  }
+
+  .home-hero-grid .home-card {
+    align-self: start;
+    min-height: 0;
+  }
+}
+
+/* Home curved flap text safety. */
+.home-hero-grid > .home-badge-nexus,
+.home-hero-grid > .home-badge-title {
+  display: flex !important;
+  overflow: hidden !important;
+}
+
+.home-hero-grid > .home-badge-nexus {
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+}
+
+.home-hero-grid > .home-badge-title {
+  align-items: flex-end !important;
+  justify-content: flex-end !important;
+}
+
+.home-hero-grid > .home-badge-nexus p,
+.home-hero-grid > .home-badge-title p {
+  line-height: 1.12 !important;
+}
+
+.home-hero-grid > .home-badge-nexus p {
+  padding-top: clamp(0.72rem, 1.4vw, 1.05rem) !important;
+  padding-bottom: clamp(0.72rem, 1.4vw, 1.05rem) !important;
+}
+
+.home-hero-grid > .home-badge-title p {
+  padding-top: clamp(0.78rem, 1.5vw, 1.15rem) !important;
+  padding-bottom: clamp(0.78rem, 1.5vw, 1.15rem) !important;
+}
+
+/* Home viewport-defined flaps: the hero adapts, flap text never clips. */
+.home-hero-grid {
+  --home-grid-font: clamp(0.5rem, min(1.08vw, 2.55svh), 1.18rem);
+  --home-grid-badge: clamp(7.6rem, min(19vw, 32svh), 16rem);
+  --home-grid-overlap: clamp(1.55rem, min(4.7vw, 8svh), 4rem);
+  --home-grid-outer: calc(var(--home-grid-badge) - var(--home-grid-overlap));
+  min-height: max(100svh, calc((var(--home-grid-badge) * 2) + 23rem));
+}
+
+.home-hero-grid > .home-badge-nexus,
+.home-hero-grid > .home-badge-title {
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  font-size: var(--home-grid-font) !important;
+}
+
+.home-hero-grid > .home-badge-nexus p,
+.home-hero-grid > .home-badge-title p {
+  box-sizing: border-box;
+  height: 100% !important;
+  min-height: 0 !important;
+  font-size: var(--home-grid-font) !important;
+  line-height: 1.18 !important;
+  gap: 0.04em !important;
+  justify-content: center !important;
+}
+
+.home-hero-grid > .home-badge-nexus p {
+  padding:
+    max(0.7rem, calc(var(--home-grid-font) * 0.95))
+    calc(var(--home-grid-overlap) + max(0.58rem, calc(var(--home-grid-font) * 0.8)))
+    max(0.7rem, calc(var(--home-grid-font) * 0.95))
+    max(0.62rem, calc(var(--home-grid-font) * 0.82)) !important;
+}
+
+.home-hero-grid > .home-badge-title p {
+  padding:
+    max(0.7rem, calc(var(--home-grid-font) * 0.95))
+    max(0.62rem, calc(var(--home-grid-font) * 0.82))
+    max(0.7rem, calc(var(--home-grid-font) * 0.95))
+    calc(var(--home-grid-overlap) + max(0.58rem, calc(var(--home-grid-font) * 0.8))) !important;
+}
+
+@media (min-width: 701px) {
+  .home-hero-grid .home-card {
+    min-height: clamp(24rem, min(56svh, 34rem), 42rem);
+  }
+}
+
+@media (max-width: 700px) {
+  .home-hero-grid {
+    --home-grid-font: clamp(0.46rem, min(2.8vw, 2.3svh), 0.88rem);
+    --home-grid-badge: clamp(6.5rem, min(40vw, 25svh), 9rem);
+    --home-grid-overlap: clamp(1.25rem, min(8vw, 6.5svh), 2.2rem);
+    min-height: max(100svh, calc((var(--home-grid-badge) * 2) + 32rem));
+  }
+}
+
+/* Flaps are viewport anchors; the hero resizes/scrolls around them. */
+.home-shell {
+  align-items: flex-start;
+}
+
+.home-hero-grid > .home-badge-nexus,
+.home-hero-grid > .home-badge-title {
+  position: fixed !important;
+  width: var(--home-grid-badge) !important;
+  height: var(--home-grid-badge) !important;
+  z-index: 120 !important;
+}
+
+.home-hero-grid > .home-badge-nexus {
+  top: 0 !important;
+  left: 0 !important;
+  right: auto !important;
+  bottom: auto !important;
+}
+
+.home-hero-grid > .home-badge-title {
+  right: 0 !important;
+  bottom: 0 !important;
+  top: auto !important;
+  left: auto !important;
+}
+
+/* Fixed viewport holder layout: flaps define the corners, hero scales inside. */
+.home-shell {
+  align-items: center !important;
+  overflow: hidden !important;
+}
+
+.home-main {
+  width: 100vw !important;
+  height: 100svh !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+.home-hero-grid {
+  --home-grid-badge: clamp(6rem, min(16vw, 26svh), 15rem);
+  --home-grid-overlap: clamp(1.2rem, min(4.2vw, 7svh), 4rem);
+  --home-grid-outer: max(0rem, calc(var(--home-grid-badge) - var(--home-grid-overlap)));
+  --home-grid-font: clamp(0.45rem, calc(var(--home-grid-badge) * 0.072), 1.1rem);
+  width: 100vw !important;
+  height: 100svh !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  grid-template-columns:
+    var(--home-grid-outer)
+    var(--home-grid-overlap)
+    minmax(0, 1fr)
+    var(--home-grid-overlap)
+    var(--home-grid-outer) !important;
+  grid-template-rows:
+    var(--home-grid-outer)
+    var(--home-grid-overlap)
+    minmax(0, 1fr)
+    var(--home-grid-overlap)
+    var(--home-grid-outer) !important;
+}
+
+.home-hero-grid > .home-badge-nexus,
+.home-hero-grid > .home-badge-title {
+  position: relative !important;
+  width: var(--home-grid-badge) !important;
+  height: var(--home-grid-badge) !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  z-index: 6 !important;
+}
+
+.home-hero-grid > .home-badge-nexus {
+  grid-column: 1 / 3 !important;
+  grid-row: 1 / 3 !important;
+  align-self: start !important;
+  justify-self: start !important;
+}
+
+.home-hero-grid > .home-badge-title {
+  grid-column: 4 / 6 !important;
+  grid-row: 4 / 6 !important;
+  align-self: end !important;
+  justify-self: end !important;
+}
+
+.home-hero-grid .home-card {
+  grid-column: 2 / 5 !important;
+  grid-row: 2 / 5 !important;
+  align-self: stretch !important;
+  justify-self: stretch !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: hidden !important;
+}
+
+.home-hero-grid > .home-badge-nexus p,
+.home-hero-grid > .home-badge-title p {
+  height: 100% !important;
+  font-size: var(--home-grid-font) !important;
+  line-height: 1.16 !important;
+  gap: 0.03em !important;
+}
+
+.home-hero-grid > .home-badge-nexus p {
+  padding:
+    clamp(0.48rem, calc(var(--home-grid-badge) * 0.075), 1rem)
+    calc(var(--home-grid-overlap) + clamp(0.34rem, calc(var(--home-grid-badge) * 0.045), 0.9rem))
+    clamp(0.48rem, calc(var(--home-grid-badge) * 0.075), 1rem)
+    clamp(0.42rem, calc(var(--home-grid-badge) * 0.055), 0.9rem) !important;
+}
+
+.home-hero-grid > .home-badge-title p {
+  padding:
+    clamp(0.48rem, calc(var(--home-grid-badge) * 0.075), 1rem)
+    clamp(0.42rem, calc(var(--home-grid-badge) * 0.055), 0.9rem)
+    clamp(0.48rem, calc(var(--home-grid-badge) * 0.075), 1rem)
+    calc(var(--home-grid-overlap) + clamp(0.34rem, calc(var(--home-grid-badge) * 0.045), 0.9rem)) !important;
+}
+
+@media (min-width: 701px) {
+  .home-hero-grid .home-card {
+    min-height: 0 !important;
+  }
+
+  .home-card-body {
+    gap: clamp(0.35rem, 1svh, 0.8rem);
+    padding: clamp(0.7rem, 1.55vw, 1.7rem);
+  }
+
+  .home-card-teaser {
+    font-size: clamp(0.78rem, min(1vw, 2svh), 1.14rem);
+    line-height: 1.2;
+  }
+
+  .home-card-actions .action-button {
+    min-height: clamp(2rem, 5.4svh, 2.42rem);
+    padding-block: clamp(0.32rem, 0.8svh, 0.48rem);
+  }
+}
+
+@media (max-width: 700px) {
+  .home-hero-grid {
+    --home-grid-badge: clamp(5.9rem, min(38vw, 25svh), 9rem);
+    --home-grid-overlap: clamp(1.05rem, min(7vw, 6svh), 2rem);
+    --home-grid-outer: 0rem;
+    --home-grid-font: clamp(0.42rem, calc(var(--home-grid-badge) * 0.072), 0.9rem);
+  }
+
+  .home-hero-grid .home-card {
+    min-height: 0 !important;
+  }
+
+  .home-card-image {
+    height: clamp(8.2rem, 34svh, 15rem) !important;
+    max-height: none !important;
+  }
+
+  .home-hero-grid .home-card-body {
+    gap: clamp(0.32rem, 1svh, 0.58rem);
+    padding: clamp(0.56rem, 2.5vw, 0.86rem);
+    padding-top: clamp(0.56rem, 2.5vw, 0.82rem);
+    padding-bottom: clamp(0.76rem, 3vw, 1rem);
+  }
+
+  .home-card-teaser {
+    font-size: clamp(0.78rem, min(3.6vw, 2.5svh), 1.05rem);
+    line-height: 1.16;
+    min-height: calc(1.16em * 6);
+    max-height: calc(1.16em * 6);
+  }
+
+  .home-card-actions .action-button {
+    min-height: clamp(1.9rem, 6svh, 2.28rem);
+    padding-block: clamp(0.28rem, 1svh, 0.42rem);
+  }
+}

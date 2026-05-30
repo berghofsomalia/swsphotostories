@@ -347,11 +347,14 @@ textarea {
 .admin-editor-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
   gap: 16px;
 }
 
 .admin-field {
   display: grid;
+  align-self: start;
+  align-content: start;
   gap: 8px;
 }
 
@@ -599,6 +602,7 @@ textarea {
 .admin-reflection-block {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
   gap: 14px;
   border: 1px solid var(--admin-border);
   border-radius: 22px;

@@ -2709,3 +2709,29 @@ html[data-theme="light"] .landing-copy-card--section4 {
     grid-row: 2 !important;
   }
 }
+
+/* Shared curved flap text safety. */
+.landing-copy-card--nexus,
+.landing-copy-card--title {
+  display: flex !important;
+  overflow: hidden !important;
+}
+
+.landing-copy-card--nexus {
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  padding-top: clamp(1rem, 1.8vw, 1.35rem) !important;
+  padding-bottom: clamp(1rem, 1.8vw, 1.35rem) !important;
+}
+
+.landing-copy-card--title {
+  align-items: flex-end !important;
+  justify-content: flex-end !important;
+  padding-top: clamp(1rem, 1.8vw, 1.45rem) !important;
+  padding-bottom: clamp(1rem, 1.8vw, 1.45rem) !important;
+}
+
+.landing-copy-card--nexus p,
+.landing-copy-card--title p {
+  line-height: 1.14 !important;
+}
