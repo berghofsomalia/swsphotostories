@@ -19,6 +19,11 @@ const DISTRICT_CODE_PREFIXES = {
   xuddur: 'HD'
 };
 
+const REFLECTION_TYPES = [
+  { value: 'direct', label: 'Direct' },
+  { value: 'indirect', label: 'Indirect' }
+];
+
 const state = {
   supabase: null,
   session: null,
@@ -67,6 +72,11 @@ function escapeRegExp(value = '') {
 function normaliseText(value) {
   const trimmed = String(value ?? '').trim();
   return trimmed || null;
+}
+
+function normaliseReflectionType(value) {
+  const type = String(value || '').trim().toLowerCase();
+  return REFLECTION_TYPES.some((option) => option.value === type) ? type : null;
 }
 
 function labelFor(record, language = 'en') {
@@ -641,9 +651,26 @@ function renderReflectionsEditor(story = null) {
         const enName = `reflection_en_${index}`;
         const soName = `reflection_so_${index}`;
         const idName = `reflection_id_${index}`;
+        const typeName = `reflection_type_${index}`;
+        const typeValue = normaliseReflectionType(draftValue(typeName, reflection?.reflection_type || '')) || '';
         return `
           <div class="admin-reflection-block">
-            <h4>${escapeHtml(label)}</h4>
+            <div class="admin-reflection-heading">
+              <h4>${escapeHtml(label)}</h4>
+              <fieldset class="admin-reflection-type-options" aria-label="${escapeHtml(`${label} type`)}">
+                ${REFLECTION_TYPES.map((option) => `
+                  <label class="admin-radio-pill">
+                    <input
+                      type="radio"
+                      name="${typeName}"
+                      value="${escapeHtml(option.value)}"
+                      ${typeValue === option.value ? 'checked' : ''}
+                    >
+                    <span>${escapeHtml(option.label)}</span>
+                  </label>
+                `).join('')}
+              </fieldset>
+            </div>
             <input type="hidden" name="${idName}" value="${escapeHtml(idValue)}">
             <div class="admin-field">
               <label for="${enName}">Reflection English</label>
@@ -907,7 +934,7 @@ async function loadData() {
         published_at,
         districts(id,slug,label_so,label_en,sort_order),
         story_tags(tag_id,tags(id,slug,label_so,label_en,sort_order,cluster_id)),
-        community_reflections(id,reflection_so,reflection_en,status,sort_order)
+        community_reflections(id,reflection_so,reflection_en,reflection_type,status,sort_order)
       `)
       .order('code', { ascending: true })
   ]);
@@ -994,19 +1021,44 @@ function buildStoryPayload(data, story = null) {
   return payload;
 }
 
-async function saveReflections(storyId, data) {
+function reflectionRowsFromForm(data) {
   const count = Number(data.get('reflection_count') || 0);
+  return Array.from({ length: count }, (_, index) => {
+    const id = String(data.get(`reflection_id_${index}`) || '').trim();
+    const reflection_en = normaliseText(data.get(`reflection_en_${index}`));
+    const reflection_so = normaliseText(data.get(`reflection_so_${index}`));
+    const reflection_type = normaliseReflectionType(data.get(`reflection_type_${index}`));
+    return {
+      index,
+      id,
+      reflection_en,
+      reflection_so,
+      reflection_type,
+      hasText: Boolean(reflection_en || reflection_so),
+      isExisting: Boolean(id)
+    };
+  });
+}
 
-  for (let index = 0; index < count; index += 1) {
-    const reflectionId = String(data.get(`reflection_id_${index}`) || '').trim();
+function validateReflectionRows(data) {
+  const missingType = reflectionRowsFromForm(data)
+    .find((row) => (row.hasText || row.isExisting) && !row.reflection_type);
+
+  if (!missingType) return '';
+  return 'Choose Direct or Indirect for each community reflection before saving.';
+}
+
+async function saveReflections(storyId, data) {
+  for (const row of reflectionRowsFromForm(data)) {
+    const reflectionId = row.id;
     const reflectionPayload = {
-      reflection_en: normaliseText(data.get(`reflection_en_${index}`)),
-      reflection_so: normaliseText(data.get(`reflection_so_${index}`)),
+      reflection_en: row.reflection_en,
+      reflection_so: row.reflection_so,
+      reflection_type: row.reflection_type,
       status: 'published',
-      sort_order: index,
+      sort_order: row.index,
       updated_at: new Date().toISOString()
     };
-    const hasReflectionText = Boolean(reflectionPayload.reflection_en || reflectionPayload.reflection_so);
 
     if (reflectionId) {
       const reflectionUpdate = await state.supabase
@@ -1015,7 +1067,7 @@ async function saveReflections(storyId, data) {
         .eq('id', Number(reflectionId));
 
       if (reflectionUpdate.error) return reflectionUpdate.error;
-    } else if (hasReflectionText) {
+    } else if (row.hasText) {
       const reflectionInsert = await state.supabase
         .from('community_reflections')
         .insert({ ...reflectionPayload, story_id: storyId, created_at: new Date().toISOString() });
@@ -1065,6 +1117,14 @@ async function saveStory(form) {
 
   if (creating && !normaliseText(data.get('code'))) {
     setMessage('', 'Choose a generated code before creating a story.');
+    render();
+    return false;
+  }
+
+  const reflectionValidationError = validateReflectionRows(data);
+  if (reflectionValidationError) {
+    state.formDraft = Object.fromEntries(data.entries());
+    setMessage('', reflectionValidationError);
     render();
     return false;
   }

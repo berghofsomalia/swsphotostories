@@ -64,6 +64,11 @@ function isPublishedStory(story, fallbackStatus = 'draft') {
   return String(story?.status || fallbackStatus).trim().toLowerCase() === 'published';
 }
 
+function normaliseReflectionType(value) {
+  const type = String(value || '').trim().toLowerCase();
+  return type === 'direct' || type === 'indirect' ? type : '';
+}
+
 function slugify(value = '') {
   return String(value)
     .toLowerCase()
@@ -151,6 +156,9 @@ function normaliseLegacyStory(story) {
     people,
     topicTags,
     tagSlugs: tags.map((tag) => tag.slug).filter(Boolean),
+    reflections: story.reflection
+      ? [{ type: normaliseReflectionType(story.reflection_type || story.reflectionType), text: story.reflection }]
+      : [],
     reflectionCount: story.reflection ? 1 : 0
   };
 }
@@ -278,6 +286,16 @@ function mapReflection(reflections = []) {
   );
 }
 
+function mapReflections(reflections = []) {
+  return publishedReflections(reflections)
+    .map((reflection) => ({
+      id: reflection.id,
+      type: normaliseReflectionType(reflection.reflection_type),
+      text: labelObject(reflection.reflection_en, reflection.reflection_so)
+    }))
+    .filter((reflection) => reflection.text.en || reflection.text.so);
+}
+
 async function mapSupabaseStory(row) {
   const district = row.districts
     ? labelObject(row.districts.label_en, row.districts.label_so, {
@@ -310,6 +328,7 @@ async function mapSupabaseStory(row) {
     summary: labelObject(row.teaser_en, row.teaser_so),
     story: labelObject(row.story_en, row.story_so),
     reflection: mapReflection(row.community_reflections || []),
+    reflections: mapReflections(row.community_reflections || []),
     reflectionCount: publishedReflections(row.community_reflections || []).length,
     tags,
     people,
@@ -379,6 +398,7 @@ async function fetchStoriesFromSupabase() {
         id,
         reflection_so,
         reflection_en,
+        reflection_type,
         sort_order,
         status
       )

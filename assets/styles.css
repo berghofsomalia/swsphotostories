@@ -180,6 +180,26 @@ body, button, input, textarea, select,
 .story-copy p, .reflection-copy p { margin: 0; font-size: 1.01rem; line-height: 1.92; }
 .story-copy       { color: #e7ded4; }
 .reflection-copy  { color: #dce4ea; }
+.reflection-list {
+  display: grid;
+  gap: 1.55rem;
+}
+.reflection-entry {
+  display: grid;
+  gap: 0.9rem;
+}
+.reflection-entry + .reflection-entry {
+  border-top: 1px solid rgba(255,255,255,0.18);
+  padding-top: 1.55rem;
+}
+.reflection-type-label {
+  width: fit-content;
+  color: var(--warm);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
 
 /* ── Action buttons ─────────────────────────────────────────── */
 .actions-row {
@@ -629,6 +649,8 @@ html[data-theme="light"] .share-option,
 html[data-theme="light"] .drawer-empty,
 html[data-theme="light"] .action-message { color: #2a2825; }
 html[data-theme="light"] .reflection-copy { color: var(--muted); }
+html[data-theme="light"] .reflection-entry + .reflection-entry { border-top-color: rgba(43,33,21,0.16); }
+html[data-theme="light"] .reflection-type-label { color: #8e241d; }
 html[data-theme="light"] .story-guidance-box  { color: #2a2825; }
 html[data-theme="light"] .story-guidance-card--1 { background: #987352; }
 html[data-theme="light"] .story-guidance-card--2 { background: #a87648; }

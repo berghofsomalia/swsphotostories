@@ -97,6 +97,38 @@ function renderParagraphBlock(text) {
     .join('') || '<p></p>';
 }
 
+function reflectionTypeLabel(type, t) {
+  if (type === 'direct') return t.direct || 'Direct';
+  if (type === 'indirect') return t.indirect || 'Indirect';
+  return '';
+}
+
+function renderReflectionEntry(reflection, state, t) {
+  const reflectionText = String(labelFor(reflection?.text || reflection, state.language) || '').trim();
+  if (!reflectionText) return '';
+  const typeLabel = reflectionTypeLabel(reflection?.type, t);
+
+  return `
+    <article class="reflection-entry">
+      ${typeLabel ? `<div class="reflection-type-label">${escapeHtml(typeLabel)}</div>` : ''}
+      <div class="reflection-copy">${renderParagraphBlock(reflectionText)}</div>
+    </article>
+  `;
+}
+
+function renderReflectionEntries(story, state, t) {
+  const entries = Array.isArray(story.reflections) ? story.reflections : [];
+  const entryMarkup = entries
+    .map((reflection) => renderReflectionEntry(reflection, state, t))
+    .filter(Boolean)
+    .join('');
+
+  if (entryMarkup) return entryMarkup;
+
+  const reflectionCopy = String(labelFor(story.reflection, state.language) || '').trim();
+  return reflectionCopy ? `<div class="reflection-copy">${renderParagraphBlock(reflectionCopy)}</div>` : '';
+}
+
 function tagChips(state, story) {
   const chips = [renderChip(labelFor(story.district, state.language))];
   (story.tags || []).forEach((tag) => chips.push(renderChip(labelFor(tag, state.language), {
@@ -407,12 +439,12 @@ export function renderApp(state) {
       ${adaptiveImageMarkup(src, story.storyteller, 'contain', 'story-stage-image')}
     </div>
   `).join('');
-  const reflectionCopy = String(labelFor(story.reflection, state.language) || '').trim();
-  const reflectionMarkup = reflectionCopy ? `
+  const reflectionEntries = renderReflectionEntries(story, state, t);
+  const reflectionMarkup = reflectionEntries ? `
     <section class="reflection-band">
       <div class="content-wrap narrow">
         <div class="section-kicker">${escapeHtml(t.communityReflections)}</div>
-        <div class="reflection-copy">${renderParagraphBlock(reflectionCopy)}</div>
+        <div class="reflection-list">${reflectionEntries}</div>
       </div>
     </section>
   ` : '';
