@@ -596,15 +596,6 @@ function recentEditRows() {
     }
 
     storyReflections(story).forEach((reflection) => {
-      if (isAfterActivityCutoff(reflection.created_at)) {
-        rows.push({
-          story,
-          kind: 'Added community reflection',
-          created: reflection.created_at,
-          updated: reflection.updated_at || reflection.created_at
-        });
-      }
-
       if (isAfterActivityCutoff(reflection.updated_at) && !datesAreSameMinute(reflection.created_at, reflection.updated_at)) {
         rows.push({
           story,
