@@ -106,6 +106,13 @@ function getActiveStory() {
   return state.stories.find((story) => Number(story.id) === Number(state.activeStoryId)) || null;
 }
 
+function findStoryByIdentifier(identifier) {
+  return state.stories.find((item) => (
+    Number(item.id) === Number(identifier)
+    || String(item.code || '').toLowerCase() === String(identifier || '').toLowerCase()
+  )) || null;
+}
+
 function isCreatingStory() {
   return state.editorMode === 'create';
 }
@@ -137,7 +144,7 @@ function startNewStory() {
 }
 
 function setActiveStory(storyId) {
-  const story = state.stories.find((item) => Number(item.id) === Number(storyId));
+  const story = findStoryByIdentifier(storyId);
   if (!story) {
     showOverview();
     return;
@@ -151,6 +158,58 @@ function setActiveStory(storyId) {
   state.selectedImagePath = null;
   resetEditorDraft();
   markClean();
+}
+
+function normaliseNavigationRequest(request = {}) {
+  if (request.type === 'new-story') return { type: 'new-story' };
+  if (request.type === 'select-story') {
+    const story = findStoryByIdentifier(request.id || request.code);
+    if (story) return { type: 'select-story', id: story.id, code: story.code };
+    if (request.id || request.code) return { type: 'select-story', id: request.id || request.code, code: request.code || request.id };
+    return { type: 'overview' };
+  }
+  return { type: 'overview' };
+}
+
+function navigationRequestFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const story = params.get('story');
+  if (story) return normaliseNavigationRequest({ type: 'select-story', id: story });
+  if (params.get('new') === 'story') return { type: 'new-story' };
+  return { type: 'overview' };
+}
+
+function navigationRequestFromState() {
+  if (state.editorMode === 'create') return { type: 'new-story' };
+  if (state.editorMode === 'edit') {
+    const story = getActiveStory();
+    if (story) return { type: 'select-story', id: story.id, code: story.code };
+  }
+  return { type: 'overview' };
+}
+
+function adminUrlForNavigation(request = {}) {
+  const route = normaliseNavigationRequest(request);
+  const url = new URL(window.location.href);
+  url.search = '';
+  url.hash = '';
+
+  if (route.type === 'new-story') {
+    url.searchParams.set('new', 'story');
+  } else if (route.type === 'select-story') {
+    url.searchParams.set('story', route.code || route.id);
+  }
+
+  return url;
+}
+
+function syncAdminHistory(request = navigationRequestFromState(), mode = 'push') {
+  const route = normaliseNavigationRequest(request);
+  const url = adminUrlForNavigation(route);
+  const nextHref = `${url.pathname}${url.search}${url.hash}`;
+  const currentHref = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+  const method = mode === 'replace' || nextHref === currentHref ? 'replaceState' : 'pushState';
+  window.history[method]({ adminRoute: route }, '', url);
 }
 
 function setMessage(message = '', error = '') {
@@ -386,16 +445,6 @@ function imageAuditForStories(stories = []) {
   }, { without: 0, unknown: 0, total: 0, enabled: true });
 }
 
-function renderImageAuditValue(stories = []) {
-  const audit = imageAuditForStories(stories);
-  if (!audit.enabled) return '<span class="admin-overview-muted">Off</span>';
-
-  return `
-    <span>${audit.without}</span>
-    ${audit.unknown ? `<small>${state.overviewImageAuditLoading ? 'checking' : 'unknown'} ${audit.unknown}</small>` : ''}
-  `;
-}
-
 function reflectionRowsForStories(stories = []) {
   return stories.flatMap((story) => storyReflections(story));
 }
@@ -414,6 +463,7 @@ function overviewRows() {
       activeStories,
       published: stories.filter((story) => story.status === 'published').length,
       draft: stories.filter((story) => story.status === 'draft').length,
+      archived: stories.filter((story) => story.status === 'archived').length,
       reflections: reflectionRowsForStories(stories).length
     };
   });
@@ -427,6 +477,7 @@ function overviewRows() {
       activeStories: activeStoriesForOverview(unassignedStories),
       published: unassignedStories.filter((story) => story.status === 'published').length,
       draft: unassignedStories.filter((story) => story.status === 'draft').length,
+      archived: unassignedStories.filter((story) => story.status === 'archived').length,
       reflections: reflectionRowsForStories(unassignedStories).length
     });
   }
@@ -442,41 +493,40 @@ function overviewTotals() {
     activeStories: activeStoriesForOverview(stories),
     published: stories.filter((story) => story.status === 'published').length,
     draft: stories.filter((story) => story.status === 'draft').length,
+    archived: stories.filter((story) => story.status === 'archived').length,
     reflections: reflectionRowsForStories(stories).length
   };
 }
 
 function overviewChecks() {
   const activeStories = activeStoriesForOverview();
-  const reflections = reflectionRowsForStories(state.stories);
   const imageAudit = imageAuditForStories(activeStories);
+  const missingImages = imageAudit.enabled
+    ? activeStories.filter((story) => {
+        const images = state.storyImages[String(story.code || '').trim()];
+        return Array.isArray(images) && images.length === 0;
+      })
+    : [];
 
   return [
     {
       label: 'Missing tags',
-      value: activeStories.filter((story) => !(story.story_tags || []).length).length,
+      stories: activeStories.filter((story) => !(story.story_tags || []).length),
       detail: 'published or draft stories'
     },
     {
       label: 'Missing text',
-      value: activeStories.filter((story) => isTextMissing(story, ['teaser_en', 'teaser_so', 'story_en', 'story_so'])).length,
+      stories: activeStories.filter((story) => isTextMissing(story, ['teaser_en', 'teaser_so', 'story_en', 'story_so'])),
       detail: 'teaser or story fields'
     },
     {
-      label: 'Reflection type gaps',
-      value: reflections.filter((reflection) => !normaliseReflectionType(reflection.reflection_type)).length,
-      detail: 'direct/indirect unset'
-    },
-    {
-      label: 'Image audit',
-      value: imageAudit.enabled
-        ? state.overviewImageAuditLoading
-          ? 'Checking'
-          : imageAudit.unknown
-            ? `${imageAudit.unknown} unknown`
-            : 'Complete'
-        : 'Off',
-      detail: imageAudit.enabled ? `${imageAudit.without} without images` : 'storage image checks disabled'
+      label: 'Missing images',
+      stories: missingImages,
+      detail: imageAudit.enabled
+        ? imageAudit.unknown
+          ? `${state.overviewImageAuditLoading ? 'checking' : 'unknown'} ${imageAudit.unknown}`
+          : 'storage folders checked'
+        : 'storage image checks disabled'
     }
   ];
 }
@@ -583,6 +633,12 @@ function renderStoryList() {
   const stories = filteredStories();
   const creating = isCreatingStory();
   const overviewActive = state.editorMode === 'overview';
+  const statusOptions = [
+    { value: 'all', label: 'All statuses' },
+    { value: 'draft', label: 'Draft' },
+    { value: 'published', label: 'Published' },
+    { value: 'archived', label: 'Archived' }
+  ];
 
   return `
     <aside class="admin-sidebar">
@@ -599,18 +655,42 @@ function renderStoryList() {
         <button type="button" class="admin-new-story-button ${creating ? 'is-active' : ''}" data-action="new-story">+ New story</button>
         <div class="admin-search">
           <input type="search" data-field="search" placeholder="Search code, name, text…" value="${escapeHtml(state.searchQuery)}">
-          <div class="admin-filter-grid">
-            <select class="admin-filter-select" data-field="status-filter" aria-label="Filter by status">
-              ${['all', 'draft', 'published', 'archived'].map((status) => `
-                <option value="${status}" ${state.statusFilter === status ? 'selected' : ''}>${status === 'all' ? 'All statuses' : status}</option>
-              `).join('')}
-            </select>
-            <select class="admin-filter-select" data-field="district-filter" aria-label="Filter by district">
-              <option value="all" ${state.districtFilter === 'all' ? 'selected' : ''}>All districts</option>
-              ${state.districts.map((district) => `
-                <option value="${district.id}" ${String(state.districtFilter) === String(district.id) ? 'selected' : ''}>${escapeHtml(labelFor(district))}</option>
-              `).join('')}
-            </select>
+          <div class="admin-filter-stack">
+            <div class="admin-filter-section">
+              <div class="admin-filter-label">Status</div>
+              <div class="admin-filter-button-set" role="radiogroup" aria-label="Filter by status">
+                ${statusOptions.map((option) => `
+                  <button
+                    type="button"
+                    class="admin-filter-button ${state.statusFilter === option.value ? 'is-selected' : ''}"
+                    data-action="set-status-filter"
+                    data-value="${escapeHtml(option.value)}"
+                    aria-pressed="${state.statusFilter === option.value ? 'true' : 'false'}"
+                  >${escapeHtml(option.label)}</button>
+                `).join('')}
+              </div>
+            </div>
+            <div class="admin-filter-section">
+              <div class="admin-filter-label">District</div>
+              <div class="admin-filter-button-set" role="radiogroup" aria-label="Filter by district">
+                <button
+                  type="button"
+                  class="admin-filter-button ${state.districtFilter === 'all' ? 'is-selected' : ''}"
+                  data-action="set-district-filter"
+                  data-value="all"
+                  aria-pressed="${state.districtFilter === 'all' ? 'true' : 'false'}"
+                >All districts</button>
+                ${state.districts.map((district) => `
+                  <button
+                    type="button"
+                    class="admin-filter-button ${String(state.districtFilter) === String(district.id) ? 'is-selected' : ''}"
+                    data-action="set-district-filter"
+                    data-value="${district.id}"
+                    aria-pressed="${String(state.districtFilter) === String(district.id) ? 'true' : 'false'}"
+                  >${escapeHtml(labelFor(district))}</button>
+                `).join('')}
+              </div>
+            </div>
           </div>
         </div>
         <div class="admin-story-count">${stories.length} of ${state.stories.length} stories shown</div>
@@ -891,12 +971,27 @@ function renderOverview() {
   const rows = overviewRows();
   const totals = overviewTotals();
   const checks = overviewChecks();
+  const renderStoryCodeList = (stories = []) => {
+    if (!stories.length) return '<div class="admin-overview-empty-list">None</div>';
+    return `
+      <div class="admin-overview-code-list">
+        ${stories.map((story) => `
+          <button
+            type="button"
+            class="admin-overview-code-link"
+            data-action="select-story"
+            data-id="${story.id}"
+          >${escapeHtml(story.code || `#${story.id}`)}</button>
+        `).join('')}
+      </div>
+    `;
+  };
   const renderRow = (row, extraClass = '') => `
     <tr class="${extraClass}">
       <th scope="row">${escapeHtml(row.label)}</th>
       <td>${row.published}</td>
       <td>${row.draft}</td>
-      <td class="admin-overview-image-cell">${renderImageAuditValue(row.activeStories)}</td>
+      <td>${row.archived}</td>
       <td>${row.reflections}</td>
     </tr>
   `;
@@ -918,7 +1013,7 @@ function renderOverview() {
                 <th scope="col">District</th>
                 <th scope="col">Published</th>
                 <th scope="col">Draft</th>
-                <th scope="col">Without images</th>
+                <th scope="col">Archived</th>
                 <th scope="col">Community reflections</th>
               </tr>
             </thead>
@@ -937,7 +1032,8 @@ function renderOverview() {
           ${checks.map((check) => `
             <div class="admin-overview-check">
               <span>${escapeHtml(check.label)}</span>
-              <strong>${escapeHtml(check.value)}</strong>
+              <strong>${check.stories.length}</strong>
+              ${renderStoryCodeList(check.stories)}
               <small>${escapeHtml(check.detail)}</small>
             </div>
           `).join('')}
@@ -1195,12 +1291,17 @@ async function loadData() {
     .sort((a, b) => (a.sort_order ?? 999) - (b.sort_order ?? 999) || labelFor(a).localeCompare(labelFor(b)));
   state.stories = storyResult.data || [];
 
-  if (state.activeStoryId && state.stories.some((story) => Number(story.id) === Number(state.activeStoryId))) {
-    setActiveStory(state.activeStoryId);
+  const route = navigationRequestFromUrl();
+  const routedStory = route.type === 'select-story' ? findStoryByIdentifier(route.id || route.code) : null;
+  if (routedStory) {
+    setActiveStory(routedStory.id);
+  } else if (route.type === 'new-story') {
+    startNewStory();
   } else {
     showOverview();
   }
 
+  syncAdminHistory(navigationRequestFromState(), 'replace');
   render();
 }
 
@@ -1423,9 +1524,11 @@ async function saveStory(form) {
   }
 
   state.busy = false;
+  state.editorMode = 'edit';
   state.activeStoryId = savedStoryId;
   markClean();
   setMessage(`${creating ? 'Created' : 'Saved'} ${savedStoryCode}.`);
+  syncAdminHistory({ type: 'select-story', id: savedStoryId, code: savedStoryCode }, creating ? 'replace' : 'replace');
   await loadData();
   return true;
 }
@@ -1462,7 +1565,7 @@ async function deletePendingImage() {
 }
 
 
-function performNavigation(request, discard = false) {
+function performNavigation(request, discard = false, historyMode = 'push') {
   if (!request) return;
 
   if (discard) markClean();
@@ -1476,18 +1579,21 @@ function performNavigation(request, discard = false) {
 
   if (request.type === 'new-story') {
     startNewStory();
+    if (historyMode !== 'none') syncAdminHistory({ type: 'new-story' }, historyMode);
     render();
     return;
   }
 
   if (request.type === 'overview') {
     showOverview();
+    if (historyMode !== 'none') syncAdminHistory({ type: 'overview' }, historyMode);
     render();
     return;
   }
 
   if (request.type === 'select-story') {
     setActiveStory(request.id);
+    if (historyMode !== 'none') syncAdminHistory(navigationRequestFromState(), historyMode);
     render();
   }
 }
@@ -1536,6 +1642,20 @@ app.addEventListener('click', async (event) => {
 
   if (action === 'show-overview') {
     requestNavigation({ type: 'overview' });
+    return;
+  }
+
+  if (action === 'set-status-filter') {
+    captureFormDraft();
+    state.statusFilter = button.dataset.value || 'all';
+    render();
+    return;
+  }
+
+  if (action === 'set-district-filter') {
+    captureFormDraft();
+    state.districtFilter = button.dataset.value || 'all';
+    render();
     return;
   }
 
@@ -1686,6 +1806,21 @@ app.addEventListener('change', (event) => {
     state.districtFilter = field.value;
     render();
   }
+});
+
+window.addEventListener('popstate', () => {
+  if (!state.adminProfile || !state.stories.length) return;
+
+  const route = navigationRequestFromUrl();
+  if (state.hasUnsavedChanges) {
+    const discard = window.confirm('Discard unsaved changes and go back?');
+    if (!discard) {
+      syncAdminHistory(navigationRequestFromState(), 'push');
+      return;
+    }
+  }
+
+  performNavigation(route, state.hasUnsavedChanges, 'none');
 });
 
 async function init() {

@@ -254,6 +254,52 @@ textarea {
   gap: 10px;
 }
 
+.admin-filter-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-filter-section {
+  display: grid;
+  gap: 7px;
+}
+
+.admin-filter-label {
+  color: var(--admin-faint);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-filter-button-set {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.admin-filter-button {
+  border: 1px solid var(--admin-border);
+  border-radius: 999px;
+  background: rgba(255, 244, 223, 0.06);
+  color: var(--admin-muted);
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 800;
+  padding: 7px 10px;
+}
+
+.admin-filter-button:hover {
+  border-color: rgba(244, 201, 125, 0.45);
+  color: var(--admin-text);
+}
+
+.admin-filter-button.is-selected {
+  border-color: rgba(244, 201, 125, 0.82);
+  background: rgba(216, 166, 99, 0.2);
+  color: var(--admin-text);
+}
+
 .admin-story-count {
   margin-top: 10px;
   color: var(--admin-faint);
@@ -496,24 +542,13 @@ textarea {
   font-weight: 900;
 }
 
-.admin-overview-image-cell {
-  display: table-cell;
-}
-
-.admin-overview-image-cell small {
-  display: block;
-  margin-top: 3px;
-  color: var(--admin-faint);
-  font-size: 0.76rem;
-}
-
 .admin-overview-muted {
   color: var(--admin-faint);
 }
 
 .admin-overview-checks {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -540,6 +575,36 @@ textarea {
   color: var(--admin-text);
   font-size: 1.6rem;
   line-height: 1;
+}
+
+.admin-overview-code-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.admin-overview-code-link {
+  border: 1px solid rgba(244, 201, 125, 0.34);
+  border-radius: 999px;
+  background: rgba(216, 166, 99, 0.12);
+  color: var(--admin-accent-strong);
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  padding: 5px 8px;
+}
+
+.admin-overview-code-link:hover {
+  border-color: rgba(244, 201, 125, 0.72);
+  background: rgba(216, 166, 99, 0.22);
+  color: var(--admin-text);
+}
+
+.admin-overview-empty-list {
+  color: var(--admin-faint);
+  font-size: 0.86rem;
 }
 
 .admin-overview-check small,
