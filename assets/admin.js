@@ -25,7 +25,7 @@ const REFLECTION_TYPES = [
 ];
 
 const ACTIVITY_CUTOFF = new Date('2026-05-29T00:01:00+03:00');
-const ACTIVITY_SORT_FIELDS = new Set(['code', 'kind', 'created', 'updated']);
+const ACTIVITY_SORT_FIELDS = new Set(['code', 'kind', 'editor', 'created', 'updated']);
 const ACTIVITY_DATE_SORT_FIELDS = new Set(['created', 'updated']);
 const ADMIN_INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000;
 const ADMIN_INACTIVITY_EVENT_THROTTLE_MS = 15 * 1000;
@@ -39,6 +39,7 @@ const state = {
   stories: [],
   districts: [],
   clusters: [],
+  storyFieldNames: new Set(),
   editorMode: 'overview',
   activeStoryId: null,
   selectedTagIds: new Set(),
@@ -102,6 +103,14 @@ function labelFor(record, language = 'en') {
   if (!record) return '';
   if (language === 'so') return record.label_so || record.so || record.label_en || record.en || record.slug || '';
   return record.label_en || record.en || record.label_so || record.so || record.slug || '';
+}
+
+function firstTextValue(...values) {
+  for (const value of values) {
+    const text = normaliseText(value);
+    if (text) return text;
+  }
+  return '';
 }
 
 function storyDistrict(story) {
@@ -731,6 +740,70 @@ function formatAdminDateTime(value) {
   }).format(date);
 }
 
+function currentEditorUsername() {
+  return firstTextValue(
+    state.adminProfile?.username,
+    state.adminProfile?.display_name,
+    state.adminProfile?.name,
+    state.adminProfile?.email,
+    state.user?.user_metadata?.username,
+    state.user?.user_metadata?.full_name,
+    state.user?.email
+  );
+}
+
+function storyHasField(story, fieldName) {
+  if (story && Object.prototype.hasOwnProperty.call(story, fieldName)) return true;
+  return state.storyFieldNames.has(fieldName);
+}
+
+function addEditorStamp(payload, story = null, creating = false) {
+  const editorName = currentEditorUsername();
+  const editorEmail = firstTextValue(state.adminProfile?.email, state.user?.email);
+  const editorUserId = firstTextValue(state.user?.id);
+  const setIfPresent = (fieldName, value) => {
+    if (value && storyHasField(story, fieldName)) payload[fieldName] = value;
+  };
+
+  setIfPresent('updated_by_username', editorName);
+  setIfPresent('updated_by_name', editorName);
+  setIfPresent('updated_by_email', editorEmail || editorName);
+  setIfPresent('updated_by_user_id', editorUserId);
+  setIfPresent('editor_username', editorName);
+  setIfPresent('editor_name', editorName);
+  setIfPresent('editor_email', editorEmail || editorName);
+
+  if (!creating) return;
+
+  setIfPresent('created_by_username', editorName);
+  setIfPresent('created_by_name', editorName);
+  setIfPresent('created_by_email', editorEmail || editorName);
+  setIfPresent('created_by_user_id', editorUserId);
+}
+
+function editorNameForRecentEdit(row) {
+  const story = row.story || {};
+  const updatedEditor = firstTextValue(
+    story.updated_by_username,
+    story.updated_by_name,
+    story.updated_by_email,
+    story.editor_username,
+    story.editor_name,
+    story.editor_email,
+    story.updated_by
+  );
+  const createdEditor = firstTextValue(
+    story.created_by_username,
+    story.created_by_name,
+    story.created_by_email,
+    story.created_by
+  );
+
+  return row.kind === 'Created story'
+    ? createdEditor || updatedEditor || 'Unknown'
+    : updatedEditor || createdEditor || 'Unknown';
+}
+
 function recentEditRows() {
   const rows = [];
 
@@ -757,6 +830,9 @@ function recentEditRows() {
 
   const field = ACTIVITY_SORT_FIELDS.has(state.activitySortField) ? state.activitySortField : 'updated';
   const direction = state.activitySortDirection === 'asc' ? 1 : -1;
+  rows.forEach((row) => {
+    row.editor = editorNameForRecentEdit(row);
+  });
 
   return rows.sort((a, b) => {
     let comparison = 0;
@@ -767,6 +843,10 @@ function recentEditRows() {
       comparison = first - second;
     } else if (field === 'kind') {
       comparison = String(a.kind || '').localeCompare(String(b.kind || ''), undefined, {
+        sensitivity: 'base'
+      });
+    } else if (field === 'editor') {
+      comparison = String(a.editor || '').localeCompare(String(b.editor || ''), undefined, {
         sensitivity: 'base'
       });
     } else {
@@ -1406,6 +1486,7 @@ function renderOverview() {
                 <tr>
                   <th scope="col">${sortLabel('code', 'Code')}</th>
                   <th scope="col">${sortLabel('kind', 'Type of edit')}</th>
+                  <th scope="col">${sortLabel('editor', 'Editor')}</th>
                   <th scope="col">${sortLabel('created', 'Created')}</th>
                   <th scope="col">${sortLabel('updated', 'Updated')}</th>
                 </tr>
@@ -1422,12 +1503,13 @@ function renderOverview() {
                       >${escapeHtml(row.story.code || `#${row.story.id}`)}</button>
                     </th>
                     <td>${escapeHtml(row.kind)}</td>
+                    <td>${escapeHtml(row.editor)}</td>
                     <td>${escapeHtml(formatAdminDateTime(row.created))}</td>
                     <td>${escapeHtml(formatAdminDateTime(row.updated))}</td>
                   </tr>
                 `).join('') || `
                   <tr>
-                    <td colspan="4" class="admin-overview-empty-cell">No recent edits after 29 May 2026, 00:01.</td>
+                    <td colspan="5" class="admin-overview-empty-cell">No recent edits after 29 May 2026, 00:01.</td>
                   </tr>
                 `}
               </tbody>
@@ -1661,7 +1743,7 @@ async function checkAdminAccess() {
 
   const { data, error } = await state.supabase
     .from('admin_users')
-    .select('user_id,email')
+    .select('*')
     .eq('user_id', state.user.id)
     .maybeSingle();
 
@@ -1690,19 +1772,7 @@ async function loadData() {
     state.supabase
       .from('stories')
       .select(`
-        id,
-        code,
-        district_id,
-        storyteller,
-        remark,
-        teaser_so,
-        story_so,
-        teaser_en,
-        story_en,
-        status,
-        created_at,
-        updated_at,
-        published_at,
+        *,
         districts(id,slug,label_so,label_en,sort_order),
         story_tags(tag_id,tags(id,slug,label_so,label_en,sort_order,cluster_id)),
         community_reflections(id,reflection_so,reflection_en,reflection_type,status,sort_order,created_at,updated_at)
@@ -1727,6 +1797,7 @@ async function loadData() {
     }))
     .sort((a, b) => (a.sort_order ?? 999) - (b.sort_order ?? 999) || labelFor(a).localeCompare(labelFor(b)));
   state.stories = storyResult.data || [];
+  state.storyFieldNames = new Set(Object.keys(state.stories[0] || {}));
 
   const route = navigationRequestFromUrl();
   const routedStory = route.type === 'select-story' ? findStoryByIdentifier(route.id || route.code) : null;
@@ -1797,6 +1868,7 @@ function buildStoryPayload(data, story = null) {
     payload.published_at = new Date().toISOString();
   }
 
+  addEditorStamp(payload, story, !story);
   return payload;
 }
 
