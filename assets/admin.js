@@ -1859,11 +1859,12 @@ async function saveTags(storyId) {
   return null;
 }
 
-async function saveStory(form) {
+async function saveStory(form, options = {}) {
   const story = getActiveStory();
   const data = new FormData(form);
   const mode = String(data.get('mode') || (story ? 'edit' : 'create'));
   const creating = mode === 'create' || !story;
+  const closeAfterSave = options.closeAfterSave !== false;
   const validationError = validateStoryBeforeSave(data, creating);
 
   if (validationError) {
@@ -1930,11 +1931,16 @@ async function saveStory(form) {
   }
 
   state.busy = false;
-  state.editorMode = 'edit';
-  state.activeStoryId = savedStoryId;
   markClean();
   setMessage(`${creating ? 'Created' : 'Saved'} ${savedStoryCode}.`);
-  syncAdminHistory({ type: 'select-story', id: savedStoryId, code: savedStoryCode }, creating ? 'replace' : 'replace');
+  if (closeAfterSave) {
+    showOverview();
+    syncAdminHistory({ type: 'overview' }, 'replace');
+  } else {
+    state.editorMode = 'edit';
+    state.activeStoryId = savedStoryId;
+    syncAdminHistory({ type: 'select-story', id: savedStoryId, code: savedStoryCode }, 'replace');
+  }
   await loadData();
   return true;
 }
@@ -2107,7 +2113,7 @@ app.addEventListener('click', async (event) => {
     }
 
     const pending = state.pendingNavigation;
-    const saved = await saveStory(form);
+    const saved = await saveStory(form, { closeAfterSave: false });
     if (saved) {
       state.pendingNavigation = pending;
       performNavigation(pending, false);
