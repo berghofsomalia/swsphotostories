@@ -27,6 +27,9 @@ const REFLECTION_TYPES = [
 const ACTIVITY_CUTOFF = new Date('2026-05-29T00:01:00+03:00');
 const ACTIVITY_SORT_FIELDS = new Set(['code', 'kind', 'created', 'updated']);
 const ACTIVITY_DATE_SORT_FIELDS = new Set(['created', 'updated']);
+const ADMIN_INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000;
+const ADMIN_INACTIVITY_EVENT_THROTTLE_MS = 15 * 1000;
+const ADMIN_ACTIVITY_EVENTS = ['click', 'keydown', 'input', 'change', 'scroll', 'pointerdown', 'pointermove', 'touchstart'];
 
 const state = {
   supabase: null,
@@ -47,6 +50,10 @@ const state = {
   districtFilter: 'all',
   activitySortField: 'updated',
   activitySortDirection: 'desc',
+  adminInactivityTimerId: null,
+  adminInactivitySignOutInProgress: false,
+  lastAdminActivityAt: 0,
+  lastAdminActivityEventAt: 0,
   busy: false,
   message: '',
   error: '',
@@ -106,6 +113,16 @@ function storyReflections(story) {
 
 function storyTagIds(story) {
   return new Set((story?.story_tags || []).map((row) => Number(row.tag_id)).filter(Boolean));
+}
+
+function adminClusterToneClass(clusterSlug) {
+  const slug = String(clusterSlug || '').trim();
+  if (slug === 'people') return 'admin-cluster-tone-people';
+
+  const clusters = state.clusters.filter((cluster) => cluster?.slug && cluster.slug !== 'people');
+  const index = clusters.findIndex((cluster) => cluster.slug === slug);
+  if (index < 0) return '';
+  return `admin-cluster-tone-${(index % 6) + 1}`;
 }
 
 function getActiveStory() {
@@ -221,6 +238,79 @@ function syncAdminHistory(request = navigationRequestFromState(), mode = 'push')
 function setMessage(message = '', error = '') {
   state.message = message;
   state.error = error;
+}
+
+function shouldTrackAdminInactivity() {
+  return Boolean(state.session && state.adminProfile);
+}
+
+function clearAdminInactivityTimer() {
+  if (!state.adminInactivityTimerId) return;
+  window.clearTimeout(state.adminInactivityTimerId);
+  state.adminInactivityTimerId = null;
+}
+
+function scheduleAdminInactivityTimer() {
+  clearAdminInactivityTimer();
+  if (!shouldTrackAdminInactivity()) return;
+
+  if (!state.lastAdminActivityAt) state.lastAdminActivityAt = Date.now();
+
+  const elapsed = Date.now() - state.lastAdminActivityAt;
+  const delay = Math.max(0, ADMIN_INACTIVITY_TIMEOUT_MS - elapsed);
+  state.adminInactivityTimerId = window.setTimeout(() => {
+    handleAdminInactivityTimeout().catch(console.error);
+  }, delay);
+}
+
+function startAdminInactivityTimer() {
+  state.lastAdminActivityAt = Date.now();
+  state.lastAdminActivityEventAt = 0;
+  state.adminInactivitySignOutInProgress = false;
+  scheduleAdminInactivityTimer();
+}
+
+function stopAdminInactivityTimer() {
+  clearAdminInactivityTimer();
+  state.lastAdminActivityAt = 0;
+  state.lastAdminActivityEventAt = 0;
+  state.adminInactivitySignOutInProgress = false;
+}
+
+async function handleAdminInactivityTimeout() {
+  if (!shouldTrackAdminInactivity() || state.adminInactivitySignOutInProgress) return;
+
+  const elapsed = Date.now() - (state.lastAdminActivityAt || Date.now());
+  if (elapsed < ADMIN_INACTIVITY_TIMEOUT_MS) {
+    scheduleAdminInactivityTimer();
+    return;
+  }
+
+  state.adminInactivitySignOutInProgress = true;
+  await signOut({ error: 'Signed out after 30 minutes of inactivity.' });
+  state.adminInactivitySignOutInProgress = false;
+}
+
+function noteAdminActivity() {
+  if (!shouldTrackAdminInactivity()) return;
+
+  const now = Date.now();
+  const elapsed = now - (state.lastAdminActivityAt || now);
+  if (elapsed >= ADMIN_INACTIVITY_TIMEOUT_MS) {
+    handleAdminInactivityTimeout().catch(console.error);
+    return;
+  }
+
+  if (now - state.lastAdminActivityEventAt < ADMIN_INACTIVITY_EVENT_THROTTLE_MS) return;
+
+  state.lastAdminActivityAt = now;
+  state.lastAdminActivityEventAt = now;
+  scheduleAdminInactivityTimer();
+}
+
+function handleAdminVisibilityChange() {
+  if (document.hidden) return;
+  noteAdminActivity();
 }
 
 function markDirty() {
@@ -517,11 +607,6 @@ function overviewChecks() {
 
   return [
     {
-      label: 'Missing tags',
-      stories: activeStories.filter((story) => !(story.story_tags || []).length),
-      detail: 'published or draft stories'
-    },
-    {
       label: 'Missing text',
       stories: activeStories.filter((story) => isTextMissing(story, ['teaser_en', 'teaser_so', 'story_en', 'story_so'])),
       detail: 'teaser or story fields'
@@ -545,6 +630,44 @@ function overviewRemarkRows() {
       numeric: true,
       sensitivity: 'base'
     }));
+}
+
+function overviewTagSummaryGroups() {
+  const countsByTagId = new Map();
+
+  state.stories.forEach((story) => {
+    const tagIds = storyTagIds(story);
+    tagIds.forEach((tagId) => {
+      if (!countsByTagId.has(tagId)) {
+        countsByTagId.set(tagId, {
+          total: 0,
+          published: 0,
+          draft: 0,
+          archived: 0
+        });
+      }
+
+      const counts = countsByTagId.get(tagId);
+      counts.total += 1;
+      if (Object.prototype.hasOwnProperty.call(counts, story.status)) {
+        counts[story.status] += 1;
+      }
+    });
+  });
+
+  return state.clusters.map((cluster) => ({
+    cluster,
+    toneClass: adminClusterToneClass(cluster.slug),
+    rows: (cluster.tags || []).map((tag) => ({
+      tag,
+      counts: countsByTagId.get(Number(tag.id)) || {
+        total: 0,
+        published: 0,
+        draft: 0,
+        archived: 0
+      }
+    }))
+  }));
 }
 
 function parseAdminDate(value) {
@@ -1069,10 +1192,53 @@ function renderTagsEditor() {
   `;
 }
 
+function renderOverviewTagSummary(groups) {
+  return `
+    <div class="admin-filter-summary">
+      <div class="admin-recent-edits-header">
+        <h3>Filter tag summary</h3>
+        <p>Story counts by the same clusters and tags used in the public gallery filter panel.</p>
+      </div>
+      <div class="admin-filter-summary-groups">
+        ${groups.map((group) => `
+          <section class="admin-filter-summary-group ${group.toneClass}">
+            <h4>${escapeHtml(labelFor(group.cluster) || 'Tag cluster')}</h4>
+            <div class="admin-tag-summary-table-wrap">
+              <table class="admin-tag-summary-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Tag</th>
+                    <th scope="col">Published</th>
+                    <th scope="col">Draft</th>
+                    <th scope="col">Archived</th>
+                    <th scope="col">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${group.rows.map((row) => `
+                    <tr>
+                      <th scope="row">${escapeHtml(labelFor(row.tag))}</th>
+                      <td>${row.counts.published}</td>
+                      <td>${row.counts.draft}</td>
+                      <td>${row.counts.archived}</td>
+                      <td>${row.counts.total}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
 function renderOverview() {
   const rows = overviewRows();
   const totals = overviewTotals();
   const checks = overviewChecks();
+  const tagSummaryGroups = overviewTagSummaryGroups();
   const remarkRows = overviewRemarkRows();
   const editRows = recentEditRows();
   const renderStoryCodeList = (stories = []) => {
@@ -1141,6 +1307,8 @@ function renderOverview() {
             </tfoot>
           </table>
         </div>
+
+        ${renderOverviewTagSummary(tagSummaryGroups)}
 
         ${state.overviewImageAuditError ? `<div class="admin-error">${escapeHtml(state.overviewImageAuditError)}</div>` : ''}
 
@@ -1401,8 +1569,9 @@ async function signIn(form) {
   await afterAuthChange();
 }
 
-async function signOut() {
-  await state.supabase.auth.signOut();
+async function signOut(options = {}) {
+  stopAdminInactivityTimer();
+  const signOutResult = state.supabase ? await state.supabase.auth.signOut() : { error: null };
   state.session = null;
   state.user = null;
   state.adminProfile = null;
@@ -1410,7 +1579,7 @@ async function signOut() {
   state.adminAccessLoading = false;
   state.stories = [];
   startNewStory();
-  setMessage();
+  setMessage(options.message || '', options.error || signOutResult?.error?.message || '');
   render();
 }
 
@@ -1523,10 +1692,12 @@ async function afterAuthChange() {
   state.adminAccessLoading = false;
 
   if (!state.adminProfile) {
+    stopAdminInactivityTimer();
     render();
     return;
   }
 
+  startAdminInactivityTimer();
   await loadData();
 }
 
@@ -2031,6 +2202,12 @@ window.addEventListener('popstate', () => {
   performNavigation(route, state.hasUnsavedChanges, 'none');
 });
 
+ADMIN_ACTIVITY_EVENTS.forEach((eventName) => {
+  window.addEventListener(eventName, noteAdminActivity, { capture: true, passive: true });
+});
+
+document.addEventListener('visibilitychange', handleAdminVisibilityChange);
+
 async function init() {
   if (!isSupabaseConfigured) {
     render();
@@ -2057,6 +2234,7 @@ async function init() {
     state.user = session?.user || null;
 
     if (!state.user) {
+      stopAdminInactivityTimer();
       state.adminProfile = null;
       state.adminAccessChecked = false;
       state.adminAccessLoading = false;

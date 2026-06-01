@@ -566,7 +566,8 @@ textarea {
 }
 
 .admin-overview-check span,
-.admin-recent-edits h3 {
+.admin-recent-edits h3,
+.admin-filter-summary h3 {
   color: var(--admin-muted);
   font-size: 0.78rem;
   font-weight: 900;
@@ -612,12 +613,14 @@ textarea {
 }
 
 .admin-overview-check small,
-.admin-recent-edits p {
+.admin-recent-edits p,
+.admin-filter-summary p {
   color: var(--admin-faint);
   line-height: 1.45;
 }
 
-.admin-recent-edits {
+.admin-recent-edits,
+.admin-filter-summary {
   display: grid;
   gap: 12px;
   border: 1px solid var(--admin-border);
@@ -633,6 +636,128 @@ textarea {
 
 .admin-recent-edits p {
   margin: 0;
+}
+
+.admin-filter-summary p {
+  margin: 0;
+}
+
+.admin-filter-summary-groups {
+  display: grid;
+  overflow: hidden;
+  border-radius: 14px;
+}
+
+.admin-filter-summary-group {
+  --cluster-panel: rgba(255, 244, 223, 0.05);
+  --cluster-soft: rgba(255, 244, 223, 0.08);
+  --cluster-border: rgba(255, 244, 223, 0.16);
+  --cluster-text: var(--admin-accent-strong);
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  background: var(--cluster-panel);
+}
+
+.admin-filter-summary-group + .admin-filter-summary-group {
+  border-top: 1px solid rgba(255, 244, 223, 0.08);
+}
+
+.admin-filter-summary-group h4 {
+  margin: 0;
+  color: var(--cluster-text);
+  font-size: 0.86rem;
+  font-weight: 900;
+}
+
+.admin-tag-summary-table-wrap {
+  overflow-x: auto;
+}
+
+.admin-tag-summary-table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+}
+
+.admin-tag-summary-table th,
+.admin-tag-summary-table td {
+  border-bottom: 1px solid var(--cluster-border);
+  padding: 9px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.admin-tag-summary-table thead th {
+  color: var(--admin-faint);
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.admin-tag-summary-table tbody th {
+  color: var(--admin-text);
+  font-weight: 800;
+}
+
+.admin-tag-summary-table td {
+  color: var(--admin-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-tag-summary-table tbody tr:last-child th,
+.admin-tag-summary-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.admin-cluster-tone-1 {
+  --cluster-panel: rgba(82, 143, 136, 0.11);
+  --cluster-soft: rgba(82, 143, 136, 0.16);
+  --cluster-border: rgba(135, 197, 188, 0.28);
+  --cluster-text: #a8d8d2;
+}
+
+.admin-cluster-tone-2 {
+  --cluster-panel: rgba(183, 128, 62, 0.11);
+  --cluster-soft: rgba(183, 128, 62, 0.16);
+  --cluster-border: rgba(223, 173, 102, 0.3);
+  --cluster-text: #e1b26d;
+}
+
+.admin-cluster-tone-3 {
+  --cluster-panel: rgba(126, 151, 86, 0.11);
+  --cluster-soft: rgba(126, 151, 86, 0.16);
+  --cluster-border: rgba(190, 210, 124, 0.28);
+  --cluster-text: #c8d58b;
+}
+
+.admin-cluster-tone-4 {
+  --cluster-panel: rgba(168, 101, 124, 0.11);
+  --cluster-soft: rgba(168, 101, 124, 0.16);
+  --cluster-border: rgba(224, 154, 178, 0.28);
+  --cluster-text: #e4a6b9;
+}
+
+.admin-cluster-tone-5 {
+  --cluster-panel: rgba(91, 131, 178, 0.11);
+  --cluster-soft: rgba(91, 131, 178, 0.16);
+  --cluster-border: rgba(155, 190, 229, 0.3);
+  --cluster-text: #a9c7e8;
+}
+
+.admin-cluster-tone-6 {
+  --cluster-panel: rgba(137, 122, 166, 0.11);
+  --cluster-soft: rgba(137, 122, 166, 0.16);
+  --cluster-border: rgba(195, 180, 224, 0.28);
+  --cluster-text: #c1b3e0;
+}
+
+.admin-cluster-tone-people {
+  --cluster-panel: rgba(154, 118, 83, 0.12);
+  --cluster-soft: rgba(154, 118, 83, 0.17);
+  --cluster-border: rgba(213, 174, 128, 0.28);
+  --cluster-text: #d9b184;
 }
 
 .admin-recent-edits-table {
