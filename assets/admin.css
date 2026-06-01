@@ -443,6 +443,124 @@ textarea {
   font-size: 2.4rem;
 }
 
+.admin-overview-body {
+  display: grid;
+  gap: 18px;
+  padding: 20px;
+}
+
+.admin-overview-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--admin-border);
+  border-radius: 22px;
+}
+
+.admin-overview-table {
+  width: 100%;
+  min-width: 680px;
+  border-collapse: collapse;
+}
+
+.admin-overview-table th,
+.admin-overview-table td {
+  border-bottom: 1px solid var(--admin-border);
+  padding: 13px 14px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.admin-overview-table thead th {
+  color: var(--admin-muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-overview-table tbody th,
+.admin-overview-total-row th {
+  color: var(--admin-text);
+  font-weight: 900;
+}
+
+.admin-overview-table td {
+  color: var(--admin-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-overview-table tfoot th,
+.admin-overview-table tfoot td {
+  border-bottom: 0;
+  background: rgba(216, 166, 99, 0.1);
+  color: var(--admin-accent-strong);
+  font-weight: 900;
+}
+
+.admin-overview-image-cell {
+  display: table-cell;
+}
+
+.admin-overview-image-cell small {
+  display: block;
+  margin-top: 3px;
+  color: var(--admin-faint);
+  font-size: 0.76rem;
+}
+
+.admin-overview-muted {
+  color: var(--admin-faint);
+}
+
+.admin-overview-checks {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.admin-overview-check {
+  display: grid;
+  gap: 5px;
+  border: 1px solid var(--admin-border);
+  border-radius: 18px;
+  background: rgba(255, 244, 223, 0.05);
+  padding: 14px;
+}
+
+.admin-overview-check span,
+.admin-overview-suggestions h3 {
+  color: var(--admin-muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.admin-overview-check strong {
+  color: var(--admin-text);
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.admin-overview-check small,
+.admin-overview-suggestions p {
+  color: var(--admin-faint);
+  line-height: 1.45;
+}
+
+.admin-overview-suggestions {
+  display: grid;
+  gap: 8px;
+  border: 1px solid var(--admin-border);
+  border-radius: 18px;
+  background: rgba(255, 244, 223, 0.04);
+  padding: 14px;
+}
+
+.admin-overview-suggestions p {
+  margin: 0;
+}
+
 .admin-small-code {
   border-radius: 8px;
   background: rgba(0, 0, 0, 0.24);
@@ -469,9 +587,19 @@ textarea {
     grid-template-columns: 1fr;
   }
 
+  .admin-overview-checks {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .admin-actions {
     flex-direction: column;
     align-items: stretch;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-overview-checks {
+    grid-template-columns: 1fr;
   }
 }
 

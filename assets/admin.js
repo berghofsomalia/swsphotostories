@@ -32,6 +32,7 @@ const state = {
   stories: [],
   districts: [],
   clusters: [],
+  editorMode: 'overview',
   activeStoryId: null,
   selectedTagIds: new Set(),
   editorDistrictId: null,
@@ -51,6 +52,8 @@ const state = {
   storyImages: {},
   storyImageLoading: new Set(),
   storyImageErrors: {},
+  overviewImageAuditLoading: false,
+  overviewImageAuditError: '',
   selectedImagePath: null,
   pendingImageDelete: null,
   sidebarScrollTop: 0
@@ -104,14 +107,26 @@ function getActiveStory() {
 }
 
 function isCreatingStory() {
-  return !getActiveStory();
+  return state.editorMode === 'create';
 }
 
 function resetEditorDraft() {
   state.formDraft = {};
 }
 
+function showOverview() {
+  state.editorMode = 'overview';
+  state.activeStoryId = null;
+  state.selectedTagIds = new Set();
+  state.editorDistrictId = null;
+  state.newCodeKind = 'standard';
+  state.selectedImagePath = null;
+  resetEditorDraft();
+  markClean();
+}
+
 function startNewStory() {
+  state.editorMode = 'create';
   state.activeStoryId = null;
   state.selectedTagIds = new Set();
   state.editorDistrictId = null;
@@ -124,11 +139,12 @@ function startNewStory() {
 function setActiveStory(storyId) {
   const story = state.stories.find((item) => Number(item.id) === Number(storyId));
   if (!story) {
-    startNewStory();
+    showOverview();
     return;
   }
 
   state.activeStoryId = Number(story.id);
+  state.editorMode = 'edit';
   state.selectedTagIds = storyTagIds(story);
   state.editorDistrictId = story.district_id ? Number(story.district_id) : null;
   state.newCodeKind = 'standard';
@@ -242,7 +258,8 @@ function buildPlaceholderSlides(code = 'NEW') {
   }));
 }
 
-async function loadStoryImages(code) {
+async function loadStoryImages(code, options = {}) {
+  const { silent = false } = options;
   if (!USE_SUPABASE_IMAGES || !state.supabase || !code) return;
   if (Array.isArray(state.storyImages[code]) || state.storyImageLoading.has(code)) return;
 
@@ -262,7 +279,7 @@ async function loadStoryImages(code) {
     console.warn(`Could not load admin photos for ${code}`, error);
     state.storyImages[code] = [];
     state.storyImageErrors[code] = error.message || 'Could not load photos.';
-    render();
+    if (!silent) render();
     return;
   }
 
@@ -280,13 +297,46 @@ async function loadStoryImages(code) {
     };
   });
 
-  render();
+  if (!silent) render();
 }
 
 function ensureActiveStoryImages() {
   const story = getActiveStory();
   if (!story?.code || !USE_SUPABASE_IMAGES) return;
   loadStoryImages(story.code);
+}
+
+async function ensureOverviewImageAudit() {
+  if (state.editorMode !== 'overview') return;
+  if (!USE_SUPABASE_IMAGES || !state.supabase || state.overviewImageAuditLoading) return;
+
+  const pendingCodes = state.stories
+    .map((story) => String(story.code || '').trim())
+    .filter(Boolean)
+    .filter((code) => !Array.isArray(state.storyImages[code]) && !state.storyImageLoading.has(code));
+
+  if (!pendingCodes.length) return;
+
+  state.overviewImageAuditLoading = true;
+  state.overviewImageAuditError = '';
+  render();
+
+  try {
+    const batchSize = 8;
+    for (let index = 0; index < pendingCodes.length; index += batchSize) {
+      await Promise.all(
+        pendingCodes
+          .slice(index, index + batchSize)
+          .map((code) => loadStoryImages(code, { silent: true }))
+      );
+    }
+  } catch (error) {
+    console.warn('Could not complete image audit', error);
+    state.overviewImageAuditError = error?.message || 'Could not complete image audit.';
+  } finally {
+    state.overviewImageAuditLoading = false;
+    render();
+  }
 }
 
 function filteredStories() {
@@ -312,6 +362,125 @@ function filteredStories() {
   });
 }
 
+function activeStoriesForOverview(stories = state.stories) {
+  return stories.filter((story) => story.status !== 'archived');
+}
+
+function imageAuditForStories(stories = []) {
+  if (!USE_SUPABASE_IMAGES) {
+    return { without: null, unknown: stories.length, total: stories.length, enabled: false };
+  }
+
+  return stories.reduce((summary, story) => {
+    const code = String(story.code || '').trim();
+    const images = code ? state.storyImages[code] : null;
+    summary.total += 1;
+
+    if (!Array.isArray(images)) {
+      summary.unknown += 1;
+    } else if (images.length === 0) {
+      summary.without += 1;
+    }
+
+    return summary;
+  }, { without: 0, unknown: 0, total: 0, enabled: true });
+}
+
+function renderImageAuditValue(stories = []) {
+  const audit = imageAuditForStories(stories);
+  if (!audit.enabled) return '<span class="admin-overview-muted">Off</span>';
+
+  return `
+    <span>${audit.without}</span>
+    ${audit.unknown ? `<small>${state.overviewImageAuditLoading ? 'checking' : 'unknown'} ${audit.unknown}</small>` : ''}
+  `;
+}
+
+function reflectionRowsForStories(stories = []) {
+  return stories.flatMap((story) => storyReflections(story));
+}
+
+function isTextMissing(story, fieldNames) {
+  return fieldNames.some((fieldName) => !normaliseText(story[fieldName]));
+}
+
+function overviewRows() {
+  const rows = state.districts.map((district) => {
+    const stories = state.stories.filter((story) => Number(story.district_id) === Number(district.id));
+    const activeStories = activeStoriesForOverview(stories);
+    return {
+      label: labelFor(district) || 'Unnamed district',
+      stories,
+      activeStories,
+      published: stories.filter((story) => story.status === 'published').length,
+      draft: stories.filter((story) => story.status === 'draft').length,
+      reflections: reflectionRowsForStories(stories).length
+    };
+  });
+
+  const assignedDistrictIds = new Set(state.districts.map((district) => Number(district.id)));
+  const unassignedStories = state.stories.filter((story) => !assignedDistrictIds.has(Number(story.district_id)));
+  if (unassignedStories.length) {
+    rows.push({
+      label: 'No district',
+      stories: unassignedStories,
+      activeStories: activeStoriesForOverview(unassignedStories),
+      published: unassignedStories.filter((story) => story.status === 'published').length,
+      draft: unassignedStories.filter((story) => story.status === 'draft').length,
+      reflections: reflectionRowsForStories(unassignedStories).length
+    });
+  }
+
+  return rows;
+}
+
+function overviewTotals() {
+  const stories = state.stories;
+  return {
+    label: 'Total',
+    stories,
+    activeStories: activeStoriesForOverview(stories),
+    published: stories.filter((story) => story.status === 'published').length,
+    draft: stories.filter((story) => story.status === 'draft').length,
+    reflections: reflectionRowsForStories(stories).length
+  };
+}
+
+function overviewChecks() {
+  const activeStories = activeStoriesForOverview();
+  const reflections = reflectionRowsForStories(state.stories);
+  const imageAudit = imageAuditForStories(activeStories);
+
+  return [
+    {
+      label: 'Missing tags',
+      value: activeStories.filter((story) => !(story.story_tags || []).length).length,
+      detail: 'published or draft stories'
+    },
+    {
+      label: 'Missing text',
+      value: activeStories.filter((story) => isTextMissing(story, ['teaser_en', 'teaser_so', 'story_en', 'story_so'])).length,
+      detail: 'teaser or story fields'
+    },
+    {
+      label: 'Reflection type gaps',
+      value: reflections.filter((reflection) => !normaliseReflectionType(reflection.reflection_type)).length,
+      detail: 'direct/indirect unset'
+    },
+    {
+      label: 'Image audit',
+      value: imageAudit.enabled
+        ? state.overviewImageAuditLoading
+          ? 'Checking'
+          : imageAudit.unknown
+            ? `${imageAudit.unknown} unknown`
+            : 'Complete'
+        : 'Off',
+      detail: imageAudit.enabled ? `${imageAudit.without} without images` : 'storage image checks disabled'
+    }
+  ];
+}
+
 function autoGrowTextarea(textarea) {
   if (!textarea) return;
   textarea.style.height = 'auto';
@@ -327,6 +496,7 @@ function finishRender() {
     restoreSidebarScroll();
     autoGrowAllTextareas();
     ensureActiveStoryImages();
+    ensureOverviewImageAudit();
   });
 }
 
@@ -412,6 +582,7 @@ function renderDeniedCard() {
 function renderStoryList() {
   const stories = filteredStories();
   const creating = isCreatingStory();
+  const overviewActive = state.editorMode === 'overview';
 
   return `
     <aside class="admin-sidebar">
@@ -424,6 +595,7 @@ function renderStoryList() {
           <button type="button" class="admin-secondary-button" data-action="sign-out">Sign out</button>
         </div>
         <div class="admin-user-line">Signed in as ${escapeHtml(state.user?.email || '')}</div>
+        <button type="button" class="admin-new-story-button ${overviewActive ? 'is-active' : ''}" data-action="show-overview">Overview</button>
         <button type="button" class="admin-new-story-button ${creating ? 'is-active' : ''}" data-action="new-story">+ New story</button>
         <div class="admin-search">
           <input type="search" data-field="search" placeholder="Search code, name, text…" value="${escapeHtml(state.searchQuery)}">
@@ -715,6 +887,71 @@ function renderTagsEditor() {
   `;
 }
 
+function renderOverview() {
+  const rows = overviewRows();
+  const totals = overviewTotals();
+  const checks = overviewChecks();
+  const renderRow = (row, extraClass = '') => `
+    <tr class="${extraClass}">
+      <th scope="row">${escapeHtml(row.label)}</th>
+      <td>${row.published}</td>
+      <td>${row.draft}</td>
+      <td class="admin-overview-image-cell">${renderImageAuditValue(row.activeStories)}</td>
+      <td>${row.reflections}</td>
+    </tr>
+  `;
+
+  return `
+    <section class="admin-editor admin-overview">
+      <div class="admin-editor-header">
+        <div class="admin-editor-title">
+          <h2>Overview</h2>
+          <p>Quick checks across districts before editing individual stories.</p>
+        </div>
+      </div>
+
+      <div class="admin-overview-body">
+        <div class="admin-overview-table-wrap">
+          <table class="admin-overview-table">
+            <thead>
+              <tr>
+                <th scope="col">District</th>
+                <th scope="col">Published</th>
+                <th scope="col">Draft</th>
+                <th scope="col">Without images</th>
+                <th scope="col">Community reflections</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows.map((row) => renderRow(row)).join('')}
+            </tbody>
+            <tfoot>
+              ${renderRow(totals, 'admin-overview-total-row')}
+            </tfoot>
+          </table>
+        </div>
+
+        ${state.overviewImageAuditError ? `<div class="admin-error">${escapeHtml(state.overviewImageAuditError)}</div>` : ''}
+
+        <div class="admin-overview-checks" aria-label="Useful admin checks">
+          ${checks.map((check) => `
+            <div class="admin-overview-check">
+              <span>${escapeHtml(check.label)}</span>
+              <strong>${escapeHtml(check.value)}</strong>
+              <small>${escapeHtml(check.detail)}</small>
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="admin-overview-suggestions">
+          <h3>Other useful admin checks</h3>
+          <p>Useful next additions would be: recent edits, published stories missing community reflections, and a translation-completeness column for English/Somali fields.</p>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
 function renderEditor() {
   const story = getActiveStory();
   const mode = story ? 'edit' : 'create';
@@ -810,10 +1047,11 @@ function renderImageDeleteModal() {
 }
 
 function renderAdminApp() {
+  const mainPanel = state.editorMode === 'overview' ? renderOverview() : renderEditor();
   return `
     <div class="admin-app-frame">
       ${renderStoryList()}
-      ${renderEditor()}
+      ${mainPanel}
     </div>
     ${renderUnsavedModal()}
     ${renderImageDeleteModal()}
@@ -960,7 +1198,7 @@ async function loadData() {
   if (state.activeStoryId && state.stories.some((story) => Number(story.id) === Number(state.activeStoryId))) {
     setActiveStory(state.activeStoryId);
   } else {
-    startNewStory();
+    showOverview();
   }
 
   render();
@@ -1242,6 +1480,12 @@ function performNavigation(request, discard = false) {
     return;
   }
 
+  if (request.type === 'overview') {
+    showOverview();
+    render();
+    return;
+  }
+
   if (request.type === 'select-story') {
     setActiveStory(request.id);
     render();
@@ -1287,6 +1531,11 @@ app.addEventListener('click', async (event) => {
 
   if (action === 'new-story') {
     requestNavigation({ type: 'new-story' });
+    return;
+  }
+
+  if (action === 'show-overview') {
+    requestNavigation({ type: 'overview' });
     return;
   }
 
