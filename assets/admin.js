@@ -595,16 +595,6 @@ function recentEditRows() {
       });
     }
 
-    storyReflections(story).forEach((reflection) => {
-      if (isAfterActivityCutoff(reflection.updated_at) && !datesAreSameMinute(reflection.created_at, reflection.updated_at)) {
-        rows.push({
-          story,
-          kind: 'Updated community reflection',
-          created: reflection.created_at,
-          updated: reflection.updated_at
-        });
-      }
-    });
   });
 
   const field = state.activitySortField === 'created' ? 'created' : 'updated';
