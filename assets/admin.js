@@ -63,6 +63,8 @@ const state = {
   hasUnsavedChanges: false,
   pendingNavigation: null,
   validationModal: null,
+  saveConfirmationModal: null,
+  scrollOverviewToTopAfterRender: false,
   storyImages: {},
   storyImageLoading: new Set(),
   storyImageErrors: {},
@@ -253,6 +255,14 @@ function closeValidationModal() {
   state.validationModal = null;
 }
 
+function showSaveConfirmationModal(message) {
+  state.saveConfirmationModal = { message };
+}
+
+function closeSaveConfirmationModal() {
+  state.saveConfirmationModal = null;
+}
+
 function shouldTrackAdminInactivity() {
   return Boolean(state.session && state.adminProfile);
 }
@@ -326,12 +336,20 @@ function handleAdminVisibilityChange() {
   noteAdminActivity();
 }
 
+function updateEditorSaveButtonState() {
+  const button = app.querySelector('.admin-actions .admin-button[type="submit"]');
+  if (!button) return;
+  button.disabled = state.busy || !state.hasUnsavedChanges;
+}
+
 function markDirty() {
   state.hasUnsavedChanges = true;
+  updateEditorSaveButtonState();
 }
 
 function markClean() {
   state.hasUnsavedChanges = false;
+  updateEditorSaveButtonState();
 }
 
 function captureFormDraft() {
@@ -783,8 +801,13 @@ function finishRender() {
   window.requestAnimationFrame(() => {
     restoreSidebarScroll();
     autoGrowAllTextareas();
+    updateEditorSaveButtonState();
     ensureActiveStoryImages();
     ensureOverviewImageAudit();
+    if (state.scrollOverviewToTopAfterRender && state.editorMode === 'overview') {
+      state.scrollOverviewToTopAfterRender = false;
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    }
   });
 }
 
@@ -1514,6 +1537,22 @@ function renderValidationModal() {
   `;
 }
 
+function renderSaveConfirmationModal() {
+  if (!state.saveConfirmationModal) return '';
+
+  return `
+    <div class="admin-modal-backdrop" role="presentation">
+      <section class="admin-unsaved-modal" role="dialog" aria-modal="true" aria-labelledby="save-confirmation-title" aria-describedby="save-confirmation-message">
+        <h2 id="save-confirmation-title">Saved</h2>
+        <p id="save-confirmation-message">${escapeHtml(state.saveConfirmationModal.message)}</p>
+        <div class="admin-modal-actions">
+          <button type="button" class="admin-button" data-action="close-save-confirmation">OK</button>
+        </div>
+      </section>
+    </div>
+  `;
+}
+
 function renderImageDeleteModal() {
   if (!state.pendingImageDelete) return '';
 
@@ -1540,6 +1579,7 @@ function renderAdminApp() {
     </div>
     ${renderUnsavedModal()}
     ${renderValidationModal()}
+    ${renderSaveConfirmationModal()}
     ${renderImageDeleteModal()}
   `;
 }
@@ -1609,6 +1649,8 @@ async function signOut(options = {}) {
   state.adminAccessLoading = false;
   state.stories = [];
   state.validationModal = null;
+  state.saveConfirmationModal = null;
+  state.scrollOverviewToTopAfterRender = false;
   startNewStory();
   setMessage(options.message || '', options.error || signOutResult?.error?.message || '');
   render();
@@ -1865,6 +1907,8 @@ async function saveStory(form, options = {}) {
   const mode = String(data.get('mode') || (story ? 'edit' : 'create'));
   const creating = mode === 'create' || !story;
   const closeAfterSave = options.closeAfterSave !== false;
+  if (!state.hasUnsavedChanges) return false;
+
   const validationError = validateStoryBeforeSave(data, creating);
 
   if (validationError) {
@@ -1932,16 +1976,21 @@ async function saveStory(form, options = {}) {
 
   state.busy = false;
   markClean();
-  setMessage(`${creating ? 'Created' : 'Saved'} ${savedStoryCode}.`);
   if (closeAfterSave) {
+    setMessage();
     showOverview();
     syncAdminHistory({ type: 'overview' }, 'replace');
+    await loadData();
+    showSaveConfirmationModal(`${savedStoryCode} was saved.`);
+    state.scrollOverviewToTopAfterRender = true;
+    render();
   } else {
+    setMessage(`${creating ? 'Created' : 'Saved'} ${savedStoryCode}.`);
     state.editorMode = 'edit';
     state.activeStoryId = savedStoryId;
     syncAdminHistory({ type: 'select-story', id: savedStoryId, code: savedStoryCode }, 'replace');
+    await loadData();
   }
-  await loadData();
   return true;
 }
 
@@ -2101,6 +2150,12 @@ app.addEventListener('click', async (event) => {
 
   if (action === 'close-validation-modal') {
     closeValidationModal();
+    render();
+    return;
+  }
+
+  if (action === 'close-save-confirmation') {
+    closeSaveConfirmationModal();
     render();
     return;
   }

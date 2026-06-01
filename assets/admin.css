@@ -159,6 +159,16 @@ textarea {
   background: var(--admin-accent-strong);
 }
 
+.admin-button:disabled,
+.admin-secondary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.admin-button:disabled:hover {
+  background: var(--admin-accent);
+}
+
 .admin-secondary-button {
   border: 1px solid var(--admin-border);
   background: rgba(255, 244, 223, 0.07);
@@ -466,16 +476,27 @@ textarea {
 
 .admin-actions {
   position: sticky;
-  bottom: 0;
+  bottom: 16px;
+  z-index: 20;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 12px;
-  margin: 24px -20px -20px;
-  padding: 16px 20px;
-  border-top: 1px solid var(--admin-border);
-  background: rgba(32, 25, 19, 0.96);
-  backdrop-filter: blur(12px);
+  margin: 24px 0 0;
+  padding: 0;
+  pointer-events: none;
+}
+
+.admin-actions > * {
+  pointer-events: auto;
+}
+
+.admin-actions > div {
+  max-width: min(520px, calc(100% - 180px));
+}
+
+.admin-actions .admin-button {
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.36);
 }
 
 .admin-empty-editor {
@@ -828,8 +849,11 @@ textarea {
   }
 
   .admin-actions {
-    flex-direction: column;
-    align-items: stretch;
+    align-items: flex-end;
+  }
+
+  .admin-actions > div {
+    max-width: 100%;
   }
 }
 
