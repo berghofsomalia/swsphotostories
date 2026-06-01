@@ -24,6 +24,10 @@ const REFLECTION_TYPES = [
   { value: 'indirect', label: 'Indirect' }
 ];
 
+const ACTIVITY_CUTOFF = new Date('2026-05-29T00:01:00+03:00');
+const ACTIVITY_SORT_FIELDS = new Set(['code', 'kind', 'created', 'updated']);
+const ACTIVITY_DATE_SORT_FIELDS = new Set(['created', 'updated']);
+
 const state = {
   supabase: null,
   session: null,
@@ -551,7 +555,7 @@ function parseAdminDate(value) {
 
 function isAfterActivityCutoff(value) {
   const date = parseAdminDate(value);
-  return Boolean(date && date >= new Date('2026-05-27T00:00:00+03:00'));
+  return Boolean(date && date >= ACTIVITY_CUTOFF);
 }
 
 function datesAreSameMinute(a, b) {
@@ -597,14 +601,35 @@ function recentEditRows() {
 
   });
 
-  const field = state.activitySortField === 'created' ? 'created' : 'updated';
+  const field = ACTIVITY_SORT_FIELDS.has(state.activitySortField) ? state.activitySortField : 'updated';
   const direction = state.activitySortDirection === 'asc' ? 1 : -1;
 
   return rows.sort((a, b) => {
-    const first = parseAdminDate(a[field])?.getTime() || 0;
-    const second = parseAdminDate(b[field])?.getTime() || 0;
-    if (first !== second) return (first - second) * direction;
-    return String(a.story?.code || '').localeCompare(String(b.story?.code || ''));
+    let comparison = 0;
+
+    if (ACTIVITY_DATE_SORT_FIELDS.has(field)) {
+      const first = parseAdminDate(a[field])?.getTime() || 0;
+      const second = parseAdminDate(b[field])?.getTime() || 0;
+      comparison = first - second;
+    } else if (field === 'kind') {
+      comparison = String(a.kind || '').localeCompare(String(b.kind || ''), undefined, {
+        sensitivity: 'base'
+      });
+    } else {
+      comparison = String(a.story?.code || '').localeCompare(String(b.story?.code || ''), undefined, {
+        numeric: true,
+        sensitivity: 'base'
+      });
+    }
+
+    if (comparison !== 0) return comparison * direction;
+
+    const updatedDifference = (parseAdminDate(b.updated)?.getTime() || 0) - (parseAdminDate(a.updated)?.getTime() || 0);
+    if (updatedDifference !== 0) return updatedDifference;
+    return String(a.story?.code || '').localeCompare(String(b.story?.code || ''), undefined, {
+      numeric: true,
+      sensitivity: 'base'
+    });
   });
 }
 
@@ -1169,14 +1194,14 @@ function renderOverview() {
         <div class="admin-recent-edits">
           <div class="admin-recent-edits-header">
             <h3>Recent edits</h3>
-            <p>Shows story and reflection rows created or updated from 27 May 2026 onwards. Exact before/after field changes need an audit log.</p>
+            <p>Shows story rows created or updated from 29 May 2026, 00:01 onwards. Exact before/after field changes need an audit log.</p>
           </div>
           <div class="admin-overview-table-wrap">
             <table class="admin-overview-table admin-recent-edits-table">
               <thead>
                 <tr>
-                  <th scope="col">Code</th>
-                  <th scope="col">Type of edit</th>
+                  <th scope="col">${sortLabel('code', 'Code')}</th>
+                  <th scope="col">${sortLabel('kind', 'Type of edit')}</th>
                   <th scope="col">${sortLabel('created', 'Created')}</th>
                   <th scope="col">${sortLabel('updated', 'Updated')}</th>
                 </tr>
@@ -1198,7 +1223,7 @@ function renderOverview() {
                   </tr>
                 `).join('') || `
                   <tr>
-                    <td colspan="4" class="admin-overview-empty-cell">No recent edits after 27 May 2026.</td>
+                    <td colspan="4" class="admin-overview-empty-cell">No recent edits after 29 May 2026, 00:01.</td>
                   </tr>
                 `}
               </tbody>
@@ -1831,12 +1856,12 @@ app.addEventListener('click', async (event) => {
   }
 
   if (action === 'set-activity-sort') {
-    const field = button.dataset.value === 'created' ? 'created' : 'updated';
+    const field = ACTIVITY_SORT_FIELDS.has(button.dataset.value) ? button.dataset.value : 'updated';
     if (state.activitySortField === field) {
       state.activitySortDirection = state.activitySortDirection === 'asc' ? 'desc' : 'asc';
     } else {
       state.activitySortField = field;
-      state.activitySortDirection = 'desc';
+      state.activitySortDirection = ACTIVITY_DATE_SORT_FIELDS.has(field) ? 'desc' : 'asc';
     }
     render();
     return;
