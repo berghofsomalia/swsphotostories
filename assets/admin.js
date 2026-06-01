@@ -62,6 +62,7 @@ const state = {
   authCheckVersion: 0,
   hasUnsavedChanges: false,
   pendingNavigation: null,
+  validationModal: null,
   storyImages: {},
   storyImageLoading: new Set(),
   storyImageErrors: {},
@@ -151,6 +152,7 @@ function showOverview() {
   state.editorDistrictId = null;
   state.newCodeKind = 'standard';
   state.selectedImagePath = null;
+  state.validationModal = null;
   resetEditorDraft();
   markClean();
 }
@@ -162,6 +164,7 @@ function startNewStory() {
   state.editorDistrictId = null;
   state.newCodeKind = 'standard';
   state.selectedImagePath = null;
+  state.validationModal = null;
   resetEditorDraft();
   markClean();
 }
@@ -179,6 +182,7 @@ function setActiveStory(storyId) {
   state.editorDistrictId = story.district_id ? Number(story.district_id) : null;
   state.newCodeKind = 'standard';
   state.selectedImagePath = null;
+  state.validationModal = null;
   resetEditorDraft();
   markClean();
 }
@@ -238,6 +242,15 @@ function syncAdminHistory(request = navigationRequestFromState(), mode = 'push')
 function setMessage(message = '', error = '') {
   state.message = message;
   state.error = error;
+}
+
+function showValidationModal(message, title = 'Required field missing') {
+  state.validationModal = { title, message };
+  setMessage();
+}
+
+function closeValidationModal() {
+  state.validationModal = null;
 }
 
 function shouldTrackAdminInactivity() {
@@ -1485,6 +1498,22 @@ function renderUnsavedModal() {
   `;
 }
 
+function renderValidationModal() {
+  if (!state.validationModal) return '';
+
+  return `
+    <div class="admin-modal-backdrop" role="presentation">
+      <section class="admin-unsaved-modal" role="alertdialog" aria-modal="true" aria-labelledby="validation-title" aria-describedby="validation-message">
+        <h2 id="validation-title">${escapeHtml(state.validationModal.title)}</h2>
+        <p id="validation-message">${escapeHtml(state.validationModal.message)}</p>
+        <div class="admin-modal-actions">
+          <button type="button" class="admin-button" data-action="close-validation-modal">OK</button>
+        </div>
+      </section>
+    </div>
+  `;
+}
+
 function renderImageDeleteModal() {
   if (!state.pendingImageDelete) return '';
 
@@ -1510,6 +1539,7 @@ function renderAdminApp() {
       ${mainPanel}
     </div>
     ${renderUnsavedModal()}
+    ${renderValidationModal()}
     ${renderImageDeleteModal()}
   `;
 }
@@ -1578,6 +1608,7 @@ async function signOut(options = {}) {
   state.adminAccessChecked = false;
   state.adminAccessLoading = false;
   state.stories = [];
+  state.validationModal = null;
   startNewStory();
   setMessage(options.message || '', options.error || signOutResult?.error?.message || '');
   render();
@@ -1754,6 +1785,25 @@ function validateReflectionRows(data) {
   return 'Choose Direct or Indirect for each community reflection before saving.';
 }
 
+function validateStoryBeforeSave(data, creating) {
+  if (!data.get('district_id')) {
+    return 'Choose a district before saving.';
+  }
+
+  if (creating && !normaliseText(data.get('code'))) {
+    return 'Choose a generated code before saving.';
+  }
+
+  const reflectionValidationError = validateReflectionRows(data);
+  if (reflectionValidationError) return reflectionValidationError;
+
+  if (state.selectedTagIds.size === 0) {
+    return 'Choose at least one tag before saving.';
+  }
+
+  return '';
+}
+
 async function saveReflections(storyId, data) {
   for (const row of reflectionRowsFromForm(data)) {
     const reflectionId = row.id;
@@ -1814,27 +1864,16 @@ async function saveStory(form) {
   const data = new FormData(form);
   const mode = String(data.get('mode') || (story ? 'edit' : 'create'));
   const creating = mode === 'create' || !story;
+  const validationError = validateStoryBeforeSave(data, creating);
 
-  if (creating && !data.get('district_id')) {
-    setMessage('', 'Choose a district before creating a story.');
-    render();
-    return false;
-  }
-
-  if (creating && !normaliseText(data.get('code'))) {
-    setMessage('', 'Choose a generated code before creating a story.');
-    render();
-    return false;
-  }
-
-  const reflectionValidationError = validateReflectionRows(data);
-  if (reflectionValidationError) {
+  if (validationError) {
     state.formDraft = Object.fromEntries(data.entries());
-    setMessage('', reflectionValidationError);
+    showValidationModal(validationError);
     render();
     return false;
   }
 
+  closeValidationModal();
   const storyPayload = buildStoryPayload(data, creating ? null : story);
 
   state.busy = true;
@@ -2050,6 +2089,12 @@ app.addEventListener('click', async (event) => {
 
   if (action === 'cancel-navigation') {
     state.pendingNavigation = null;
+    render();
+    return;
+  }
+
+  if (action === 'close-validation-modal') {
+    closeValidationModal();
     render();
     return;
   }
