@@ -41,6 +41,8 @@ const state = {
   searchQuery: '',
   statusFilter: 'all',
   districtFilter: 'all',
+  activitySortField: 'updated',
+  activitySortDirection: 'desc',
   busy: false,
   message: '',
   error: '',
@@ -409,6 +411,7 @@ function filteredStories() {
     const haystack = [
       story.code,
       story.storyteller,
+      story.remark,
       story.teaser_en,
       story.teaser_so,
       story.story_en,
@@ -529,6 +532,99 @@ function overviewChecks() {
         : 'storage image checks disabled'
     }
   ];
+}
+
+function overviewRemarkRows() {
+  return state.stories
+    .filter((story) => normaliseText(story.remark))
+    .sort((a, b) => String(a.code || '').localeCompare(String(b.code || ''), undefined, {
+      numeric: true,
+      sensitivity: 'base'
+    }));
+}
+
+function parseAdminDate(value) {
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function isAfterActivityCutoff(value) {
+  const date = parseAdminDate(value);
+  return Boolean(date && date >= new Date('2026-05-27T00:00:00+03:00'));
+}
+
+function datesAreSameMinute(a, b) {
+  const first = parseAdminDate(a);
+  const second = parseAdminDate(b);
+  if (!first || !second) return false;
+  return Math.abs(first.getTime() - second.getTime()) < 60_000;
+}
+
+function formatAdminDateTime(value) {
+  const date = parseAdminDate(value);
+  if (!date) return '';
+  return new Intl.DateTimeFormat('en-GB', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  }).format(date);
+}
+
+function recentEditRows() {
+  const rows = [];
+
+  state.stories.forEach((story) => {
+    if (isAfterActivityCutoff(story.created_at)) {
+      rows.push({
+        story,
+        kind: 'Created story',
+        created: story.created_at,
+        updated: story.updated_at || story.created_at
+      });
+    }
+
+    if (isAfterActivityCutoff(story.updated_at) && !datesAreSameMinute(story.created_at, story.updated_at)) {
+      rows.push({
+        story,
+        kind: 'Updated story fields/status',
+        created: story.created_at,
+        updated: story.updated_at
+      });
+    }
+
+    storyReflections(story).forEach((reflection) => {
+      if (isAfterActivityCutoff(reflection.created_at)) {
+        rows.push({
+          story,
+          kind: 'Added community reflection',
+          created: reflection.created_at,
+          updated: reflection.updated_at || reflection.created_at
+        });
+      }
+
+      if (isAfterActivityCutoff(reflection.updated_at) && !datesAreSameMinute(reflection.created_at, reflection.updated_at)) {
+        rows.push({
+          story,
+          kind: 'Updated community reflection',
+          created: reflection.created_at,
+          updated: reflection.updated_at
+        });
+      }
+    });
+  });
+
+  const field = state.activitySortField === 'created' ? 'created' : 'updated';
+  const direction = state.activitySortDirection === 'asc' ? 1 : -1;
+
+  return rows.sort((a, b) => {
+    const first = parseAdminDate(a[field])?.getTime() || 0;
+    const second = parseAdminDate(b[field])?.getTime() || 0;
+    if (first !== second) return (first - second) * direction;
+    return String(a.story?.code || '').localeCompare(String(b.story?.code || ''));
+  });
 }
 
 function autoGrowTextarea(textarea) {
@@ -971,6 +1067,8 @@ function renderOverview() {
   const rows = overviewRows();
   const totals = overviewTotals();
   const checks = overviewChecks();
+  const remarkRows = overviewRemarkRows();
+  const editRows = recentEditRows();
   const renderStoryCodeList = (stories = []) => {
     if (!stories.length) return '<div class="admin-overview-empty-list">None</div>';
     return `
@@ -995,6 +1093,18 @@ function renderOverview() {
       <td>${row.reflections}</td>
     </tr>
   `;
+  const sortLabel = (field, label) => {
+    const active = state.activitySortField === field;
+    const arrow = active ? (state.activitySortDirection === 'asc' ? 'ASC' : 'DESC') : '';
+    return `
+      <button
+        type="button"
+        class="admin-table-sort-button ${active ? 'is-active' : ''}"
+        data-action="set-activity-sort"
+        data-value="${field}"
+      >${escapeHtml(label)} ${arrow}</button>
+    `;
+  };
 
   return `
     <section class="admin-editor admin-overview">
@@ -1039,9 +1149,80 @@ function renderOverview() {
           `).join('')}
         </div>
 
-        <div class="admin-overview-suggestions">
-          <h3>Other useful admin checks</h3>
-          <p>Useful next additions would be: recent edits, published stories missing community reflections, and a translation-completeness column for English/Somali fields.</p>
+        <div class="admin-recent-edits">
+          <div class="admin-recent-edits-header">
+            <h3>Admin remarks</h3>
+            <p>Internal story notes. These do not appear on the public website.</p>
+          </div>
+          <div class="admin-overview-table-wrap">
+            <table class="admin-overview-table admin-remarks-table">
+              <thead>
+                <tr>
+                  <th scope="col">Code</th>
+                  <th scope="col">Remark</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${remarkRows.map((story) => `
+                  <tr>
+                    <th scope="row">
+                      <button
+                        type="button"
+                        class="admin-overview-code-link"
+                        data-action="select-story"
+                        data-id="${story.id}"
+                      >${escapeHtml(story.code || `#${story.id}`)}</button>
+                    </th>
+                    <td class="admin-remark-cell">${escapeHtml(story.remark)}</td>
+                  </tr>
+                `).join('') || `
+                  <tr>
+                    <td colspan="2" class="admin-overview-empty-cell">No admin remarks yet.</td>
+                  </tr>
+                `}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="admin-recent-edits">
+          <div class="admin-recent-edits-header">
+            <h3>Recent edits</h3>
+            <p>Shows story and reflection rows created or updated from 27 May 2026 onwards. Exact before/after field changes need an audit log.</p>
+          </div>
+          <div class="admin-overview-table-wrap">
+            <table class="admin-overview-table admin-recent-edits-table">
+              <thead>
+                <tr>
+                  <th scope="col">Code</th>
+                  <th scope="col">Type of edit</th>
+                  <th scope="col">${sortLabel('created', 'Created')}</th>
+                  <th scope="col">${sortLabel('updated', 'Updated')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${editRows.map((row) => `
+                  <tr>
+                    <th scope="row">
+                      <button
+                        type="button"
+                        class="admin-overview-code-link"
+                        data-action="select-story"
+                        data-id="${row.story.id}"
+                      >${escapeHtml(row.story.code || `#${row.story.id}`)}</button>
+                    </th>
+                    <td>${escapeHtml(row.kind)}</td>
+                    <td>${escapeHtml(formatAdminDateTime(row.created))}</td>
+                    <td>${escapeHtml(formatAdminDateTime(row.updated))}</td>
+                  </tr>
+                `).join('') || `
+                  <tr>
+                    <td colspan="4" class="admin-overview-empty-cell">No recent edits after 27 May 2026.</td>
+                  </tr>
+                `}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </section>
@@ -1068,6 +1249,11 @@ function renderEditor() {
         ${story ? `<input type="hidden" name="story_id" value="${story.id}">` : ''}
 
         <div class="admin-editor-grid">
+          <div class="admin-field is-wide">
+            <label for="story-remark">Admin remark</label>
+            <textarea id="story-remark" name="remark" class="admin-remark-textarea" placeholder="Internal editor note, not shown on the public site.">${escapeHtml(draftValue('remark', story?.remark || ''))}</textarea>
+          </div>
+
           <div class="admin-field is-wide">
             <label>District</label>
             ${renderDistrictButtons(currentDistrictId)}
@@ -1260,15 +1446,18 @@ async function loadData() {
         code,
         district_id,
         storyteller,
+        remark,
         teaser_so,
         story_so,
         teaser_en,
         story_en,
         status,
+        created_at,
+        updated_at,
         published_at,
         districts(id,slug,label_so,label_en,sort_order),
         story_tags(tag_id,tags(id,slug,label_so,label_en,sort_order,cluster_id)),
-        community_reflections(id,reflection_so,reflection_en,reflection_type,status,sort_order)
+        community_reflections(id,reflection_so,reflection_en,reflection_type,status,sort_order,created_at,updated_at)
       `)
       .order('code', { ascending: true })
   ]);
@@ -1340,6 +1529,7 @@ function buildStoryPayload(data, story = null) {
   const payload = {
     district_id: data.get('district_id') ? Number(data.get('district_id')) : null,
     storyteller: normaliseText(data.get('storyteller')),
+    remark: normaliseText(data.get('remark')),
     teaser_en: normaliseText(data.get('teaser_en')),
     teaser_so: normaliseText(data.get('teaser_so')),
     story_en: normaliseText(data.get('story_en')),
@@ -1655,6 +1845,18 @@ app.addEventListener('click', async (event) => {
   if (action === 'set-district-filter') {
     captureFormDraft();
     state.districtFilter = button.dataset.value || 'all';
+    render();
+    return;
+  }
+
+  if (action === 'set-activity-sort') {
+    const field = button.dataset.value === 'created' ? 'created' : 'updated';
+    if (state.activitySortField === field) {
+      state.activitySortDirection = state.activitySortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      state.activitySortField = field;
+      state.activitySortDirection = 'desc';
+    }
     render();
     return;
   }

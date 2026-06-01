@@ -115,6 +115,10 @@ textarea {
   min-height: 180px;
 }
 
+.admin-field textarea.admin-remark-textarea {
+  min-height: 76px;
+}
+
 .admin-form-row input:focus,
 .admin-form-row select:focus,
 .admin-form-row textarea:focus,
@@ -562,7 +566,7 @@ textarea {
 }
 
 .admin-overview-check span,
-.admin-overview-suggestions h3 {
+.admin-recent-edits h3 {
   color: var(--admin-muted);
   font-size: 0.78rem;
   font-weight: 900;
@@ -608,22 +612,64 @@ textarea {
 }
 
 .admin-overview-check small,
-.admin-overview-suggestions p {
+.admin-recent-edits p {
   color: var(--admin-faint);
   line-height: 1.45;
 }
 
-.admin-overview-suggestions {
+.admin-recent-edits {
   display: grid;
-  gap: 8px;
+  gap: 12px;
   border: 1px solid var(--admin-border);
   border-radius: 18px;
   background: rgba(255, 244, 223, 0.04);
   padding: 14px;
 }
 
-.admin-overview-suggestions p {
+.admin-recent-edits-header {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-recent-edits p {
   margin: 0;
+}
+
+.admin-recent-edits-table {
+  min-width: 760px;
+}
+
+.admin-remarks-table {
+  min-width: 620px;
+}
+
+.admin-remark-cell {
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.admin-table-sort-button {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  padding: 0;
+  text-align: left;
+  text-transform: inherit;
+}
+
+.admin-table-sort-button:hover,
+.admin-table-sort-button.is-active {
+  color: var(--admin-accent-strong);
+}
+
+.admin-overview-empty-cell {
+  color: var(--admin-faint);
+  text-align: center;
 }
 
 .admin-small-code {
