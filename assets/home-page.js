@@ -119,6 +119,17 @@ function renderHomeSwitchers(t) {
   `;
 }
 
+function renderHomeTitleLines(lines = []) {
+  return lines
+    .flatMap((line) => {
+      if (line === 'Visual storytelling') return ['Visual', 'storytelling'];
+      if (line === 'from Southwest State, Somalia') return ['from Southwest', 'State, Somalia'];
+      return [line];
+    })
+    .map((line) => `<span>${esc(line)}</span>`)
+    .join('');
+}
+
 function renderLoading() {
   savePrefs();
   const app = document.querySelector('#app');
@@ -196,7 +207,7 @@ function renderPage() {
           </div>
           ${storyCard}
           <div class="landing-copy-card landing-copy-card--title home-badge-title" aria-hidden="true">
-            <p>${(landing.section1TitleLines || []).map((l) => `<span>${esc(l)}</span>`).join('')}</p>
+            <p>${renderHomeTitleLines(landing.section1TitleLines || [])}</p>
           </div>
         </div>
       </main>
