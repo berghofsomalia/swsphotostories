@@ -160,6 +160,14 @@ function storyTagSearchTerms(story) {
   });
 }
 
+function storyReflectionSearchTerms(story) {
+  return storyReflections(story).flatMap((reflection) => [
+    reflection.reflection_en,
+    reflection.reflection_so,
+    reflection.reflection_type
+  ]);
+}
+
 function adminClusterToneClass(clusterSlug) {
   const slug = String(clusterSlug || '').trim();
   if (slug === 'people') return 'admin-cluster-tone-people';
@@ -602,7 +610,8 @@ function filteredStories() {
       story.story_so,
       labelFor(storyDistrict(story), 'en'),
       labelFor(storyDistrict(story), 'so'),
-      ...storyTagSearchTerms(story)
+      ...storyTagSearchTerms(story),
+      ...storyReflectionSearchTerms(story)
     ].join(' ').toLowerCase();
 
     return haystack.includes(query);

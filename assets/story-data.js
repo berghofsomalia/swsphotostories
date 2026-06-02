@@ -77,6 +77,26 @@ function storyContainsAny(storyItems = [], selectedSlugs = []) {
   return selectedSlugs.some((slug) => storySlugs.has(slug));
 }
 
+function storyReflectionSearchTerms(story) {
+  const reflectionTerms = (story.reflections || []).flatMap((reflection) => {
+    const text = reflection?.text || reflection;
+    return [
+      reflection?.type,
+      text?.en,
+      text?.so,
+      typeof text === 'string' ? text : ''
+    ];
+  });
+  const legacyReflection = story.reflection || null;
+
+  return [
+    ...reflectionTerms,
+    legacyReflection?.en,
+    legacyReflection?.so,
+    typeof legacyReflection === 'string' ? legacyReflection : ''
+  ].join(' ');
+}
+
 export function storyMatchesFilters(story, filters) {
   if (filters.district && story.district?.slug !== filters.district) return false;
 
@@ -95,7 +115,8 @@ export function storyMatchesFilters(story, filters) {
       story.summary?.so,
       story.story?.en,
       story.story?.so,
-      tagLabels
+      tagLabels,
+      storyReflectionSearchTerms(story)
     ].join(' ').toLowerCase();
     if (!haystack.includes(q)) return false;
   }
