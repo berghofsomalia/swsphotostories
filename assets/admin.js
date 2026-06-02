@@ -36,6 +36,7 @@ const state = {
   session: null,
   user: null,
   adminProfile: null,
+  adminUsers: [],
   stories: [],
   districts: [],
   clusters: [],
@@ -752,6 +753,37 @@ function currentEditorUsername() {
   );
 }
 
+function adminUserLabel(user = {}) {
+  return firstTextValue(
+    user.username,
+    user.display_name,
+    user.name,
+    user.email,
+    user.user_id,
+    user.id
+  );
+}
+
+function adminUserLabelById(userId) {
+  const id = String(userId || '').trim();
+  if (!id) return '';
+
+  const user = state.adminUsers.find((adminUser) => (
+    String(adminUser.user_id || '').trim() === id
+    || String(adminUser.id || '').trim() === id
+  ));
+  if (user) return adminUserLabel(user);
+
+  if (
+    String(state.adminProfile?.user_id || '').trim() === id
+    || String(state.user?.id || '').trim() === id
+  ) {
+    return adminUserLabel(state.adminProfile) || currentEditorUsername();
+  }
+
+  return '';
+}
+
 function storyHasField(story, fieldName) {
   if (story && Object.prototype.hasOwnProperty.call(story, fieldName)) return true;
   return state.storyFieldNames.has(fieldName);
@@ -784,20 +816,22 @@ function addEditorStamp(payload, story = null, creating = false) {
 function storyEditorNames(story = {}) {
   return {
     updated: firstTextValue(
-    story.updated_by_username,
-    story.updated_by_name,
-    story.updated_by_email,
-    story.editor_username,
-    story.editor_name,
-    story.editor_email,
-    story.updated_by
-  ),
+      story.updated_by_username,
+      story.updated_by_name,
+      story.updated_by_email,
+      story.editor_username,
+      story.editor_name,
+      story.editor_email,
+      story.updated_by,
+      adminUserLabelById(story.updated_by_user_id)
+    ),
     created: firstTextValue(
-    story.created_by_username,
-    story.created_by_name,
-    story.created_by_email,
-    story.created_by
-  )
+      story.created_by_username,
+      story.created_by_name,
+      story.created_by_email,
+      story.created_by,
+      adminUserLabelById(story.created_by_user_id)
+    )
   };
 }
 
@@ -1741,6 +1775,7 @@ async function signOut(options = {}) {
   state.session = null;
   state.user = null;
   state.adminProfile = null;
+  state.adminUsers = [];
   state.adminAccessChecked = false;
   state.adminAccessLoading = false;
   state.stories = [];
@@ -1774,7 +1809,7 @@ async function loadData() {
   setMessage();
   render();
 
-  const [districtResult, clusterResult, storyResult] = await Promise.all([
+  const [districtResult, clusterResult, storyResult, adminUsersResult] = await Promise.all([
     state.supabase
       .from('districts')
       .select('id,slug,label_so,label_en,sort_order')
@@ -1791,7 +1826,10 @@ async function loadData() {
         story_tags(tag_id,tags(id,slug,label_so,label_en,sort_order,cluster_id)),
         community_reflections(id,reflection_so,reflection_en,reflection_type,status,sort_order,created_at,updated_at)
       `)
-      .order('code', { ascending: true })
+      .order('code', { ascending: true }),
+    state.supabase
+      .from('admin_users')
+      .select('*')
   ]);
 
   state.busy = false;
@@ -1812,6 +1850,13 @@ async function loadData() {
     .sort((a, b) => (a.sort_order ?? 999) - (b.sort_order ?? 999) || labelFor(a).localeCompare(labelFor(b)));
   state.stories = storyResult.data || [];
   state.storyFieldNames = new Set(Object.keys(state.stories[0] || {}));
+  state.adminUsers = adminUsersResult.error ? [] : (adminUsersResult.data || []);
+  if (
+    state.adminProfile
+    && !state.adminUsers.some((adminUser) => String(adminUser.user_id || '') === String(state.adminProfile.user_id || ''))
+  ) {
+    state.adminUsers.push(state.adminProfile);
+  }
 
   const route = navigationRequestFromUrl();
   const routedStory = route.type === 'select-story' ? findStoryByIdentifier(route.id || route.code) : null;
