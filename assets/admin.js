@@ -137,6 +137,29 @@ function storyTagIds(story) {
   return new Set((story?.story_tags || []).map((row) => Number(row.tag_id)).filter(Boolean));
 }
 
+function tagById(tagId) {
+  const id = Number(tagId);
+  if (!id) return null;
+
+  for (const cluster of state.clusters) {
+    const tag = (cluster.tags || []).find((item) => Number(item.id) === id);
+    if (tag) return tag;
+  }
+
+  return null;
+}
+
+function storyTagSearchTerms(story) {
+  return (story?.story_tags || []).flatMap((row) => {
+    const tag = row.tags || tagById(row.tag_id);
+    return [
+      tag?.slug,
+      labelFor(tag, 'en'),
+      labelFor(tag, 'so')
+    ];
+  });
+}
+
 function adminClusterToneClass(clusterSlug) {
   const slug = String(clusterSlug || '').trim();
   if (slug === 'people') return 'admin-cluster-tone-people';
@@ -578,7 +601,8 @@ function filteredStories() {
       story.story_en,
       story.story_so,
       labelFor(storyDistrict(story), 'en'),
-      labelFor(storyDistrict(story), 'so')
+      labelFor(storyDistrict(story), 'so'),
+      ...storyTagSearchTerms(story)
     ].join(' ').toLowerCase();
 
     return haystack.includes(query);
@@ -1107,7 +1131,7 @@ function renderStoryList() {
         <button type="button" class="admin-new-story-button ${clusterTagsActive ? 'is-active' : ''}" data-action="show-cluster-tags">Clusters-Tags</button>
         <button type="button" class="admin-new-story-button ${creating ? 'is-active' : ''}" data-action="new-story">+ New story</button>
         <div class="admin-search">
-          <input type="search" data-field="search" placeholder="Search code, name, text…" value="${escapeHtml(state.searchQuery)}">
+          <input type="search" data-field="search" placeholder="Search code, name, text, tags…" value="${escapeHtml(state.searchQuery)}">
           <div class="admin-filter-stack">
             <div class="admin-filter-section">
               <div class="admin-filter-label">Status</div>
