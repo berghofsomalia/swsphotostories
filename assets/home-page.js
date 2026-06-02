@@ -124,6 +124,7 @@ function renderHomeTitleLines(lines = []) {
     .flatMap((line) => {
       if (line === 'Visual storytelling') return ['Visual', 'storytelling'];
       if (line === 'from Southwest State, Somalia') return ['from Southwest', 'State, Somalia'];
+      if (line === 'ka yimid Koonfur Galbeed, Soomaaliya') return ['ka yimid Koonfur', 'Galbeed, Soomaaliya'];
       return [line];
     })
     .map((line) => `<span>${esc(line)}</span>`)

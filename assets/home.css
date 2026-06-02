@@ -24,10 +24,16 @@
 
 .home-hero-grid {
   --home-flap-bg: rgba(141, 82, 15, 0.64);
+  --home-flap-text: #fff;
+  --home-flap-contrast-text: #f3d1b8;
   --home-flap-size: clamp(6.2rem, min(16vw, 26svh), 15rem);
   --home-flap-overlap: clamp(1.15rem, min(4.2vw, 7svh), 4rem);
   --home-flap-outer: max(0rem, calc(var(--home-flap-size) - var(--home-flap-overlap)));
   --home-flap-font: clamp(0.9rem, calc(var(--home-flap-size) * 0.108), 1.58rem);
+  --home-flap-nexus-font: var(--home-flap-font);
+  --home-flap-title-font: clamp(0.78rem, calc(var(--home-flap-size) * 0.092), 1.34rem);
+  --home-flap-nexus-line-height: 1.16;
+  --home-flap-title-line-height: 1.16;
 
   display: grid;
   width: 100%;
@@ -65,7 +71,7 @@
   border-radius: 0 !important;
   box-shadow: none !important;
   background: var(--home-flap-bg) !important;
-  color: #fff !important;
+  color: var(--home-flap-text) !important;
   overflow: hidden !important;
   pointer-events: none;
   z-index: 6;
@@ -118,7 +124,7 @@
   margin: 0 !important;
   padding: clamp(0.42rem, calc(var(--home-flap-size) * 0.055), 0.9rem) !important;
   gap: 0.02em !important;
-  color: #fff !important;
+  color: var(--home-flap-text) !important;
   font-size: var(--home-flap-font) !important;
   font-weight: 300 !important;
   line-height: 1.16 !important;
@@ -126,13 +132,14 @@
   text-shadow: none !important;
 }
 
-html[data-theme="light"] .home-hero-grid > .home-badge-nexus p,
-html[data-theme="light"] .home-hero-grid > .home-badge-title p {
-  color: #fff !important;
-  font-size: var(--home-flap-font) !important;
-  font-weight: 300 !important;
-  line-height: 1.16 !important;
-  letter-spacing: 0 !important;
+.home-hero-grid > .home-badge-nexus p {
+  font-size: var(--home-flap-nexus-font) !important;
+  line-height: var(--home-flap-nexus-line-height) !important;
+}
+
+.home-hero-grid > .home-badge-title p {
+  font-size: var(--home-flap-title-font) !important;
+  line-height: var(--home-flap-title-line-height) !important;
 }
 
 .home-hero-grid > .home-badge-nexus p {
@@ -159,24 +166,36 @@ html[data-theme="light"] .home-hero-grid > .home-badge-title p {
 
 .home-hero-grid > .home-badge-nexus p span:nth-child(2),
 .home-hero-grid > .home-badge-nexus p span:nth-child(4) {
-  color: #f3d1b8 !important;
+  color: var(--home-flap-contrast-text) !important;
 }
 
 html[data-theme="light"] .home-hero-grid > .home-badge-nexus,
 html[data-theme="light"] .home-hero-grid > .home-badge-title {
   background: var(--home-flap-bg) !important;
-  color: #fff !important;
+  color: var(--home-flap-text) !important;
 }
 
 html[data-theme="light"] .home-hero-grid > .home-badge-nexus p span,
 html[data-theme="light"] .home-hero-grid > .home-badge-title p span {
-  color: #fff !important;
+  color: var(--home-flap-text) !important;
   opacity: 1 !important;
 }
 
 html[data-theme="light"] .home-hero-grid > .home-badge-nexus p span:nth-child(2),
 html[data-theme="light"] .home-hero-grid > .home-badge-nexus p span:nth-child(4) {
-  color: #f3d1b8 !important;
+  color: var(--home-flap-contrast-text) !important;
+}
+
+html[data-theme="light"] .home-hero-grid > .home-badge-nexus p {
+  color: var(--home-flap-text) !important;
+  font-size: var(--home-flap-nexus-font) !important;
+  line-height: var(--home-flap-nexus-line-height) !important;
+}
+
+html[data-theme="light"] .home-hero-grid > .home-badge-title p {
+  color: var(--home-flap-text) !important;
+  font-size: var(--home-flap-title-font) !important;
+  line-height: var(--home-flap-title-line-height) !important;
 }
 
 .home-hero-grid > .home-badge-nexus br,
@@ -384,6 +403,10 @@ html[data-theme="light"] .home-card-body .home-switch-button.is-active {
     --home-flap-overlap: 0rem;
     --home-flap-outer: 0rem;
     --home-flap-font: clamp(1.02rem, 5.2vw, 1.55rem);
+    --home-flap-nexus-font: clamp(0.68rem, 2.3vw, 0.86rem);
+    --home-flap-title-font: clamp(0.78rem, 3.45vw, 1.12rem);
+    --home-flap-nexus-line-height: 1.42;
+    --home-flap-title-line-height: 1.16;
     position: relative;
     grid-template-columns: 1fr;
     grid-template-rows: 1fr;
@@ -411,17 +434,16 @@ html[data-theme="light"] .home-card-body .home-switch-button.is-active {
     clip-path: polygon(100% 0, 100% 100%, 0 100%);
   }
 
-  .home-hero-grid > .home-badge-nexus p {
+  html[data-theme] .home-hero-grid > .home-badge-nexus p {
+    align-items: flex-start !important;
     justify-content: flex-start !important;
-    padding: clamp(1.25rem, 6vw, 2rem) clamp(0.8rem, 4vw, 1.4rem) clamp(1rem, 5vw, 1.6rem) clamp(1rem, 5.2vw, 1.8rem) !important;
-    line-height: 1.45 !important;
+    padding: clamp(0.9rem, 4.4vw, 1.45rem) clamp(0.72rem, 3.5vw, 1.2rem) clamp(1rem, 5vw, 1.6rem) clamp(0.9rem, 4.4vw, 1.45rem) !important;
   }
 
-  .home-hero-grid > .home-badge-title p {
-    font-size: clamp(0.92rem, 4.2vw, 1.35rem) !important;
+  html[data-theme] .home-hero-grid > .home-badge-title p {
+    align-items: flex-end !important;
     justify-content: flex-end !important;
     padding: clamp(1rem, 5vw, 1.6rem) clamp(1rem, 5.2vw, 1.8rem) clamp(1.25rem, 6vw, 2rem) clamp(1rem, 5vw, 1.6rem) !important;
-    line-height: 1.16 !important;
   }
 
   .home-card {
@@ -436,7 +458,7 @@ html[data-theme="light"] .home-card-body .home-switch-button.is-active {
   }
 
   .home-card-image {
-    flex: 0 0 clamp(8rem, 34svh, 15rem);
+    flex: 0 0 clamp(8rem, 26svh, 15rem);
     width: 100%;
   }
 
@@ -451,10 +473,11 @@ html[data-theme="light"] .home-card-body .home-switch-button.is-active {
   }
 
   .home-card-teaser {
-    font-size: clamp(0.78rem, min(3.6vw, 2.5svh), 1.05rem);
-    line-height: 1.16;
-    min-height: calc(1.16em * 6);
-    max-height: calc(1.16em * 6);
+    font-size: clamp(0.84rem, min(3.65vw, 2.6svh), 1.08rem);
+    line-height: 1.14;
+    -webkit-line-clamp: 5;
+    min-height: calc(1.14em * 5);
+    max-height: calc(1.14em * 5);
   }
 
   .home-card-actions .action-button {
