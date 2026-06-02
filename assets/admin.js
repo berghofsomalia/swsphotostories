@@ -24,6 +24,8 @@ const REFLECTION_TYPES = [
   { value: 'indirect', label: 'Indirect' }
 ];
 
+const PHASE_2_CODE_PREFIXES = ['BD', 'HD', 'BW'];
+const PHASE_3_CODE_PREFIXES = ['BDCM', 'HDCM', 'BWCM'];
 const ACTIVITY_CUTOFF = new Date('2026-05-29T00:01:00+03:00');
 const ACTIVITY_SORT_FIELDS = new Set(['code', 'kind', 'editor', 'created', 'updated']);
 const ACTIVITY_DATE_SORT_FIELDS = new Set(['created', 'updated']);
@@ -112,6 +114,13 @@ function firstTextValue(...values) {
     if (text) return text;
   }
   return '';
+}
+
+function storyCodePhase(value) {
+  const code = String(value || '').trim().toUpperCase();
+  if (PHASE_3_CODE_PREFIXES.some((prefix) => code.startsWith(prefix))) return 'phase3';
+  if (PHASE_2_CODE_PREFIXES.some((prefix) => code.startsWith(prefix))) return 'phase2';
+  return null;
 }
 
 function storyDistrict(story) {
@@ -716,14 +725,20 @@ function overviewTagSummaryGroups() {
           total: 0,
           published: 0,
           draft: 0,
-          archived: 0
+          archived: 0,
+          phase2: 0,
+          phase3: 0
         });
       }
 
       const counts = countsByTagId.get(tagId);
+      const phase = storyCodePhase(story.code);
       counts.total += 1;
       if (Object.prototype.hasOwnProperty.call(counts, story.status)) {
         counts[story.status] += 1;
+      }
+      if (phase) {
+        counts[phase] += 1;
       }
     });
   });
@@ -737,7 +752,9 @@ function overviewTagSummaryGroups() {
         total: 0,
         published: 0,
         draft: 0,
-        archived: 0
+        archived: 0,
+        phase2: 0,
+        phase3: 0
       }
     }))
   }));
@@ -1407,6 +1424,8 @@ function renderClusterTagsView() {
                 <th scope="col">Published</th>
                 <th scope="col">Draft</th>
                 <th scope="col">Archived</th>
+                <th scope="col">Phase 2</th>
+                <th scope="col">Phase 3</th>
                 <th scope="col">Total</th>
               </tr>
             </thead>
@@ -1418,6 +1437,8 @@ function renderClusterTagsView() {
                   <td>${row.counts.published}</td>
                   <td>${row.counts.draft}</td>
                   <td>${row.counts.archived}</td>
+                  <td>${row.counts.phase2}</td>
+                  <td>${row.counts.phase3}</td>
                   <td>${row.counts.total}</td>
                 </tr>
               `).join('')).join('')}

@@ -701,7 +701,7 @@ textarea {
 
 .admin-tag-summary-table {
   width: 100%;
-  min-width: 760px;
+  min-width: 900px;
   border-collapse: separate;
   border-spacing: 0;
 }
