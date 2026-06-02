@@ -604,6 +604,15 @@ function reflectionRowsForStories(stories = []) {
   return stories.flatMap((story) => storyReflections(story));
 }
 
+function reflectionTypeCountsForStories(stories = []) {
+  return reflectionRowsForStories(stories).reduce((counts, reflection) => {
+    const type = normaliseReflectionType(reflection.reflection_type);
+    if (type === 'direct') counts.direct += 1;
+    if (type === 'indirect') counts.indirect += 1;
+    return counts;
+  }, { direct: 0, indirect: 0 });
+}
+
 function isTextMissing(story, fieldNames) {
   return fieldNames.some((fieldName) => !normaliseText(story[fieldName]));
 }
@@ -612,6 +621,7 @@ function overviewRows() {
   const rows = state.districts.map((district) => {
     const stories = state.stories.filter((story) => Number(story.district_id) === Number(district.id));
     const activeStories = activeStoriesForOverview(stories);
+    const reflectionCounts = reflectionTypeCountsForStories(stories);
     return {
       label: labelFor(district) || 'Unnamed district',
       stories,
@@ -619,13 +629,15 @@ function overviewRows() {
       published: stories.filter((story) => story.status === 'published').length,
       draft: stories.filter((story) => story.status === 'draft').length,
       archived: stories.filter((story) => story.status === 'archived').length,
-      reflections: reflectionRowsForStories(stories).length
+      directReflections: reflectionCounts.direct,
+      indirectReflections: reflectionCounts.indirect
     };
   });
 
   const assignedDistrictIds = new Set(state.districts.map((district) => Number(district.id)));
   const unassignedStories = state.stories.filter((story) => !assignedDistrictIds.has(Number(story.district_id)));
   if (unassignedStories.length) {
+    const reflectionCounts = reflectionTypeCountsForStories(unassignedStories);
     rows.push({
       label: 'No district',
       stories: unassignedStories,
@@ -633,7 +645,8 @@ function overviewRows() {
       published: unassignedStories.filter((story) => story.status === 'published').length,
       draft: unassignedStories.filter((story) => story.status === 'draft').length,
       archived: unassignedStories.filter((story) => story.status === 'archived').length,
-      reflections: reflectionRowsForStories(unassignedStories).length
+      directReflections: reflectionCounts.direct,
+      indirectReflections: reflectionCounts.indirect
     });
   }
 
@@ -642,6 +655,7 @@ function overviewRows() {
 
 function overviewTotals() {
   const stories = state.stories;
+  const reflectionCounts = reflectionTypeCountsForStories(stories);
   return {
     label: 'Total',
     stories,
@@ -649,7 +663,8 @@ function overviewTotals() {
     published: stories.filter((story) => story.status === 'published').length,
     draft: stories.filter((story) => story.status === 'draft').length,
     archived: stories.filter((story) => story.status === 'archived').length,
-    reflections: reflectionRowsForStories(stories).length
+    directReflections: reflectionCounts.direct,
+    indirectReflections: reflectionCounts.indirect
   };
 }
 
@@ -1441,7 +1456,8 @@ function renderOverview() {
       <td>${row.published}</td>
       <td>${row.draft}</td>
       <td>${row.archived}</td>
-      <td>${row.reflections}</td>
+      <td>${row.directReflections}</td>
+      <td>${row.indirectReflections}</td>
     </tr>
   `;
   const sortLabel = (field, label) => {
@@ -1475,7 +1491,8 @@ function renderOverview() {
                 <th scope="col">Published</th>
                 <th scope="col">Draft</th>
                 <th scope="col">Archived</th>
-                <th scope="col">Community reflections</th>
+                <th scope="col">Direct reflections</th>
+                <th scope="col">Indirect reflections</th>
               </tr>
             </thead>
             <tbody>
