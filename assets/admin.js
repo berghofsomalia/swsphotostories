@@ -781,9 +781,9 @@ function addEditorStamp(payload, story = null, creating = false) {
   setIfPresent('created_by_user_id', editorUserId);
 }
 
-function editorNameForRecentEdit(row) {
-  const story = row.story || {};
-  const updatedEditor = firstTextValue(
+function storyEditorNames(story = {}) {
+  return {
+    updated: firstTextValue(
     story.updated_by_username,
     story.updated_by_name,
     story.updated_by_email,
@@ -791,17 +791,27 @@ function editorNameForRecentEdit(row) {
     story.editor_name,
     story.editor_email,
     story.updated_by
-  );
-  const createdEditor = firstTextValue(
+  ),
+    created: firstTextValue(
     story.created_by_username,
     story.created_by_name,
     story.created_by_email,
     story.created_by
-  );
+  )
+  };
+}
+
+function editorNameForStory(story = {}) {
+  const editors = storyEditorNames(story);
+  return editors.updated || editors.created || 'Unknown';
+}
+
+function editorNameForRecentEdit(row) {
+  const editors = storyEditorNames(row.story || {});
 
   return row.kind === 'Created story'
-    ? createdEditor || updatedEditor || 'Unknown'
-    : updatedEditor || createdEditor || 'Unknown';
+    ? editors.created || editors.updated || 'Unknown'
+    : editors.updated || editors.created || 'Unknown';
 }
 
 function recentEditRows() {
@@ -1449,6 +1459,8 @@ function renderOverview() {
               <thead>
                 <tr>
                   <th scope="col">Code</th>
+                  <th scope="col">Editor</th>
+                  <th scope="col">Status</th>
                   <th scope="col">Remark</th>
                 </tr>
               </thead>
@@ -1463,11 +1475,13 @@ function renderOverview() {
                         data-id="${story.id}"
                       >${escapeHtml(story.code || `#${story.id}`)}</button>
                     </th>
+                    <td>${escapeHtml(editorNameForStory(story))}</td>
+                    <td>${escapeHtml(story.status || '')}</td>
                     <td class="admin-remark-cell">${escapeHtml(story.remark)}</td>
                   </tr>
                 `).join('') || `
                   <tr>
-                    <td colspan="2" class="admin-overview-empty-cell">No admin remarks yet.</td>
+                    <td colspan="4" class="admin-overview-empty-cell">No admin remarks yet.</td>
                   </tr>
                 `}
               </tbody>
