@@ -169,6 +169,18 @@ function showOverview() {
   markClean();
 }
 
+function showClusterTags() {
+  state.editorMode = 'cluster-tags';
+  state.activeStoryId = null;
+  state.selectedTagIds = new Set();
+  state.editorDistrictId = null;
+  state.newCodeKind = 'standard';
+  state.selectedImagePath = null;
+  state.validationModal = null;
+  resetEditorDraft();
+  markClean();
+}
+
 function startNewStory() {
   state.editorMode = 'create';
   state.activeStoryId = null;
@@ -200,6 +212,7 @@ function setActiveStory(storyId) {
 }
 
 function normaliseNavigationRequest(request = {}) {
+  if (request.type === 'cluster-tags') return { type: 'cluster-tags' };
   if (request.type === 'new-story') return { type: 'new-story' };
   if (request.type === 'select-story') {
     const story = findStoryByIdentifier(request.id || request.code);
@@ -215,10 +228,12 @@ function navigationRequestFromUrl() {
   const story = params.get('story');
   if (story) return normaliseNavigationRequest({ type: 'select-story', id: story });
   if (params.get('new') === 'story') return { type: 'new-story' };
+  if (params.get('view') === 'clusters-tags') return { type: 'cluster-tags' };
   return { type: 'overview' };
 }
 
 function navigationRequestFromState() {
+  if (state.editorMode === 'cluster-tags') return { type: 'cluster-tags' };
   if (state.editorMode === 'create') return { type: 'new-story' };
   if (state.editorMode === 'edit') {
     const story = getActiveStory();
@@ -235,6 +250,8 @@ function adminUrlForNavigation(request = {}) {
 
   if (route.type === 'new-story') {
     url.searchParams.set('new', 'story');
+  } else if (route.type === 'cluster-tags') {
+    url.searchParams.set('view', 'clusters-tags');
   } else if (route.type === 'select-story') {
     url.searchParams.set('story', route.code || route.id);
   }
@@ -1018,6 +1035,7 @@ function renderStoryList() {
   const stories = filteredStories();
   const creating = isCreatingStory();
   const overviewActive = state.editorMode === 'overview';
+  const clusterTagsActive = state.editorMode === 'cluster-tags';
   const statusOptions = [
     { value: 'all', label: 'All statuses' },
     { value: 'draft', label: 'Draft' },
@@ -1037,6 +1055,7 @@ function renderStoryList() {
         </div>
         <div class="admin-user-line">Signed in as ${escapeHtml(state.user?.email || '')}</div>
         <button type="button" class="admin-new-story-button ${overviewActive ? 'is-active' : ''}" data-action="show-overview">Overview</button>
+        <button type="button" class="admin-new-story-button ${clusterTagsActive ? 'is-active' : ''}" data-action="show-cluster-tags">Clusters-Tags</button>
         <button type="button" class="admin-new-story-button ${creating ? 'is-active' : ''}" data-action="new-story">+ New story</button>
         <div class="admin-search">
           <input type="search" data-field="search" placeholder="Search code, name, text…" value="${escapeHtml(state.searchQuery)}">
@@ -1352,45 +1371,46 @@ function renderTagsEditor() {
   `;
 }
 
-function renderOverviewTagSummary(groups) {
+function renderClusterTagsView() {
+  const groups = overviewTagSummaryGroups();
   return `
-    <div class="admin-filter-summary">
-      <div class="admin-recent-edits-header">
-        <h3>Filter tag summary</h3>
-        <p>Story counts by the same clusters and tags used in the public gallery filter panel.</p>
+    <section class="admin-editor admin-cluster-tags-view">
+      <div class="admin-editor-header">
+        <div class="admin-editor-title">
+          <h2>Clusters-Tags</h2>
+          <p>Story counts by the same clusters and tags used in the public gallery filter panel.</p>
+        </div>
       </div>
-      <div class="admin-filter-summary-groups">
-        ${groups.map((group) => `
-          <section class="admin-filter-summary-group ${group.toneClass}">
-            <h4>${escapeHtml(labelFor(group.cluster) || 'Tag cluster')}</h4>
-            <div class="admin-tag-summary-table-wrap">
-              <table class="admin-tag-summary-table">
-                <thead>
-                  <tr>
-                    <th scope="col">Tag</th>
-                    <th scope="col">Published</th>
-                    <th scope="col">Draft</th>
-                    <th scope="col">Archived</th>
-                    <th scope="col">Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${group.rows.map((row) => `
-                    <tr>
-                      <th scope="row">${escapeHtml(labelFor(row.tag))}</th>
-                      <td>${row.counts.published}</td>
-                      <td>${row.counts.draft}</td>
-                      <td>${row.counts.archived}</td>
-                      <td>${row.counts.total}</td>
-                    </tr>
-                  `).join('')}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        `).join('')}
+
+      <div class="admin-overview-body">
+        <div class="admin-tag-summary-table-wrap">
+          <table class="admin-tag-summary-table">
+            <thead>
+              <tr>
+                <th scope="col">Cluster</th>
+                <th scope="col">Tag</th>
+                <th scope="col">Published</th>
+                <th scope="col">Draft</th>
+                <th scope="col">Archived</th>
+                <th scope="col">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${groups.map((group) => group.rows.map((row, index) => `
+                <tr class="${group.toneClass}">
+                  ${index === 0 ? `<th class="admin-tag-summary-cluster" scope="rowgroup" rowspan="${Math.max(1, group.rows.length)}">${escapeHtml(labelFor(group.cluster) || 'Tag cluster')}</th>` : ''}
+                  <th scope="row">${escapeHtml(labelFor(row.tag))}</th>
+                  <td>${row.counts.published}</td>
+                  <td>${row.counts.draft}</td>
+                  <td>${row.counts.archived}</td>
+                  <td>${row.counts.total}</td>
+                </tr>
+              `).join('')).join('')}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+    </section>
   `;
 }
 
@@ -1398,7 +1418,6 @@ function renderOverview() {
   const rows = overviewRows();
   const totals = overviewTotals();
   const checks = overviewChecks();
-  const tagSummaryGroups = overviewTagSummaryGroups();
   const remarkRows = overviewRemarkRows();
   const editRows = recentEditRows();
   const renderStoryCodeList = (stories = []) => {
@@ -1467,8 +1486,6 @@ function renderOverview() {
             </tfoot>
           </table>
         </div>
-
-        ${renderOverviewTagSummary(tagSummaryGroups)}
 
         ${state.overviewImageAuditError ? `<div class="admin-error">${escapeHtml(state.overviewImageAuditError)}</div>` : ''}
 
@@ -1701,7 +1718,11 @@ function renderImageDeleteModal() {
 }
 
 function renderAdminApp() {
-  const mainPanel = state.editorMode === 'overview' ? renderOverview() : renderEditor();
+  const mainPanel = state.editorMode === 'overview'
+    ? renderOverview()
+    : state.editorMode === 'cluster-tags'
+      ? renderClusterTagsView()
+      : renderEditor();
   return `
     <div class="admin-app-frame">
       ${renderStoryList()}
@@ -1864,6 +1885,8 @@ async function loadData() {
     setActiveStory(routedStory.id);
   } else if (route.type === 'new-story') {
     startNewStory();
+  } else if (route.type === 'cluster-tags') {
+    showClusterTags();
   } else {
     showOverview();
   }
@@ -2183,6 +2206,13 @@ function performNavigation(request, discard = false, historyMode = 'push') {
     return;
   }
 
+  if (request.type === 'cluster-tags') {
+    showClusterTags();
+    if (historyMode !== 'none') syncAdminHistory({ type: 'cluster-tags' }, historyMode);
+    render();
+    return;
+  }
+
   if (request.type === 'select-story') {
     setActiveStory(request.id);
     if (historyMode !== 'none') syncAdminHistory(navigationRequestFromState(), historyMode);
@@ -2234,6 +2264,11 @@ app.addEventListener('click', async (event) => {
 
   if (action === 'show-overview') {
     requestNavigation({ type: 'overview' });
+    return;
+  }
+
+  if (action === 'show-cluster-tags') {
+    requestNavigation({ type: 'cluster-tags' });
     return;
   }
 

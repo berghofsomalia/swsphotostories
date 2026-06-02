@@ -693,13 +693,17 @@ textarea {
 }
 
 .admin-tag-summary-table-wrap {
-  overflow-x: auto;
+  max-height: calc(100vh - 210px);
+  overflow: auto;
+  border: 1px solid var(--admin-border);
+  border-radius: 16px;
 }
 
 .admin-tag-summary-table {
   width: 100%;
-  min-width: 560px;
-  border-collapse: collapse;
+  min-width: 760px;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
 .admin-tag-summary-table th,
@@ -711,6 +715,10 @@ textarea {
 }
 
 .admin-tag-summary-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: rgba(42, 33, 24, 0.98);
   color: var(--admin-faint);
   font-size: 0.74rem;
   font-weight: 900;
@@ -721,6 +729,28 @@ textarea {
 .admin-tag-summary-table tbody th {
   color: var(--admin-text);
   font-weight: 800;
+}
+
+.admin-tag-summary-table tbody tr {
+  --cluster-panel: rgba(255, 244, 223, 0.05);
+  --cluster-border: rgba(255, 244, 223, 0.16);
+  --cluster-text: var(--admin-accent-strong);
+  background: var(--cluster-panel);
+}
+
+.admin-tag-summary-table thead th:first-child {
+  left: 0;
+  z-index: 4;
+}
+
+.admin-tag-summary-cluster {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  min-width: 11rem;
+  background: var(--cluster-panel);
+  color: var(--cluster-text) !important;
+  font-weight: 900 !important;
 }
 
 .admin-tag-summary-table td {
