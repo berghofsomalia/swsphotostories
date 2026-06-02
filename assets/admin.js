@@ -595,9 +595,7 @@ async function ensureOverviewImageAudit() {
 function filteredStories() {
   const query = state.searchQuery.trim().toLowerCase();
 
-  return state.stories.filter((story) => {
-    if (state.statusFilter !== 'all' && story.status !== state.statusFilter) return false;
-    if (state.districtFilter !== 'all' && Number(story.district_id) !== Number(state.districtFilter)) return false;
+  return statusDistrictFilteredStories().filter((story) => {
     if (!query) return true;
 
     const haystack = [
@@ -616,6 +614,16 @@ function filteredStories() {
 
     return haystack.includes(query);
   });
+}
+
+function storyMatchesStatusDistrictFilters(story) {
+  if (state.statusFilter !== 'all' && story.status !== state.statusFilter) return false;
+  if (state.districtFilter !== 'all' && Number(story.district_id) !== Number(state.districtFilter)) return false;
+  return true;
+}
+
+function statusDistrictFilteredStories() {
+  return state.stories.filter((story) => storyMatchesStatusDistrictFilters(story));
 }
 
 function activeStoriesForOverview(stories = state.stories) {
@@ -767,7 +775,7 @@ function overviewRemarkRows() {
 function overviewTagSummaryGroups() {
   const countsByTagId = new Map();
 
-  state.stories.forEach((story) => {
+  statusDistrictFilteredStories().forEach((story) => {
     const tagIds = storyTagIds(story);
     tagIds.forEach((tagId) => {
       if (!countsByTagId.has(tagId)) {
