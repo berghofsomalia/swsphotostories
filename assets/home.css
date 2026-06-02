@@ -47,10 +47,6 @@
     var(--home-flap-outer);
 }
 
-html[data-theme="light"] .home-hero-grid {
-  --home-flap-bg: rgba(141, 82, 15, 0.56);
-}
-
 /* Corner flaps */
 .home-hero-grid > .home-badge-nexus,
 .home-hero-grid > .home-badge-title {
@@ -125,9 +121,18 @@ html[data-theme="light"] .home-hero-grid {
   color: #fff !important;
   font-size: var(--home-flap-font) !important;
   font-weight: 300 !important;
-  line-height: 1.08 !important;
+  line-height: 1.16 !important;
   letter-spacing: 0 !important;
   text-shadow: none !important;
+}
+
+html[data-theme="light"] .home-hero-grid > .home-badge-nexus p,
+html[data-theme="light"] .home-hero-grid > .home-badge-title p {
+  color: #fff !important;
+  font-size: var(--home-flap-font) !important;
+  font-weight: 300 !important;
+  line-height: 1.16 !important;
+  letter-spacing: 0 !important;
 }
 
 .home-hero-grid > .home-badge-nexus p {
@@ -146,6 +151,28 @@ html[data-theme="light"] .home-hero-grid {
   display: block !important;
   color: #fff !important;
   opacity: 1 !important;
+}
+
+.home-hero-grid > .home-badge-nexus p span:nth-child(2),
+.home-hero-grid > .home-badge-nexus p span:nth-child(4) {
+  color: #f3d1b8 !important;
+}
+
+html[data-theme="light"] .home-hero-grid > .home-badge-nexus,
+html[data-theme="light"] .home-hero-grid > .home-badge-title {
+  background: var(--home-flap-bg) !important;
+  color: #fff !important;
+}
+
+html[data-theme="light"] .home-hero-grid > .home-badge-nexus p span,
+html[data-theme="light"] .home-hero-grid > .home-badge-title p span {
+  color: #fff !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="light"] .home-hero-grid > .home-badge-nexus p span:nth-child(2),
+html[data-theme="light"] .home-hero-grid > .home-badge-nexus p span:nth-child(4) {
+  color: #f3d1b8 !important;
 }
 
 .home-hero-grid > .home-badge-nexus br,

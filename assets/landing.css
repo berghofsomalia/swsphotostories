@@ -2735,3 +2735,18 @@ html[data-theme="light"] .landing-copy-card--section4 {
 .landing-copy-card--title p {
   line-height: 1.14 !important;
 }
+
+/* About body copy uses one responsive type size across sections. */
+.landing-page-shell {
+  --landing-body-copy-size: clamp(1.04rem, 1.35vw, 1.22rem);
+  --landing-body-copy-line-height: 1.45;
+}
+
+.landing-page-shell .landing-copy-card--section2 p,
+.landing-page-shell .landing-copy-card--pondered p,
+.landing-page-shell .landing-question-card p,
+.landing-page-shell .landing-copy-card--section4 p,
+.landing-page-shell .landing-cta-copy {
+  font-size: var(--landing-body-copy-size) !important;
+  line-height: var(--landing-body-copy-line-height) !important;
+}

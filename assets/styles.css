@@ -852,31 +852,81 @@ html[data-theme="light"] .saved-remove-button {
 html[data-theme="light"] .saved-remove-button:hover { color: #fff; background: var(--accent); }
 
 .context-strip {
-  width: 16.5rem;
-  min-height: 7.4rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 0.12rem;
-  white-space: normal;
-  line-height: 1.02;
-}
-.context-strip--nexus {
-  font-size: clamp(1rem, 1.7vw, 1.46rem);
-  font-weight: 700;
-  letter-spacing: 0.16em;
-}
-.context-strip--nexus span:nth-child(1) { opacity: 1; }
-.context-strip--nexus span:nth-child(2) { opacity: 0.86; }
-.context-strip--nexus span:nth-child(3) { opacity: 0.72; }
-.context-strip--nexus span:nth-child(4) { opacity: 0.58; }
-.context-strip--title {
-  color: #d99b34;
-  font-size: clamp(1rem, 1.5vw, 1.34rem);
-  letter-spacing: 0.04em;
+  --context-strip-bg: rgba(141, 82, 15, 0.72);
+  --context-strip-diagonal: clamp(1.2rem, 3.2vw, 2.4rem);
+  box-sizing: border-box;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  width: auto;
+  min-width: 0;
+  min-height: clamp(1.55rem, 2.2vw, 1.9rem);
+  gap: 0;
+  padding: clamp(0.26rem, 0.55vw, 0.42rem) clamp(0.68rem, 1.4vw, 1rem);
+  border-radius: 0;
+  background: var(--context-strip-bg) !important;
+  color: #fff !important;
+  font-size: clamp(0.72rem, 0.94vw, 0.9rem);
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.08;
   text-transform: none;
+  white-space: nowrap;
+  overflow: hidden;
 }
-html[data-theme="light"] .context-strip--title { color: #5a3a20; }
+
+.context-strip span {
+  display: inline-block;
+  color: #fff !important;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  opacity: 1 !important;
+}
+
+.context-strip--top {
+  justify-content: flex-start;
+  padding-right: calc(var(--context-strip-diagonal) + clamp(0.48rem, 1vw, 0.75rem));
+  clip-path: polygon(0 0, 100% 0, calc(100% - var(--context-strip-diagonal)) 100%, 0 100%);
+  text-align: left;
+}
+
+.context-strip--bottom {
+  justify-content: flex-end;
+  padding-left: calc(var(--context-strip-diagonal) + clamp(0.48rem, 1vw, 0.75rem));
+  clip-path: polygon(var(--context-strip-diagonal) 0, 100% 0, 100% 100%, 0 100%, 0 var(--context-strip-diagonal));
+  text-align: right;
+}
+
+.context-strip--nexus {
+  font-size: clamp(0.68rem, 0.88vw, 0.84rem);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.context-strip--nexus span + span::before {
+  content: "\2022";
+  display: inline-block;
+  margin: 0 0.38rem;
+}
+
+.context-strip--title {
+  font-size: clamp(0.78rem, 1vw, 0.95rem);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.context-strip--title span + span::before {
+  content: "\00a0";
+}
+
+html[data-theme="light"] .context-strip,
+html[data-theme="light"] .context-strip--nexus,
+html[data-theme="light"] .context-strip--title,
+html[data-theme="light"] .context-strip span {
+  color: #fff !important;
+}
 
 @media (max-width: 900px) {
   .gallery-layout {
@@ -937,75 +987,16 @@ html[data-theme="light"] .context-strip--title { color: #5a3a20; }
   .story-meta-name { font-size: 1.18rem; }
   .story-meta-teaser { font-size: 1.16rem; }
   .context-strip {
-    width: 11.5rem;
-    min-height: 5.6rem;
-    padding: 0.55rem 0.75rem;
+    --context-strip-diagonal: 1.25rem;
+    min-height: 1.55rem;
+    padding-block: 0.32rem;
   }
-  .context-strip--nexus { font-size: 0.82rem; letter-spacing: 0.12em; }
-  .context-strip--title { font-size: 0.82rem; }
+  .context-strip--nexus { font-size: 0.66rem; }
+  .context-strip--title { font-size: 0.78rem; }
 }
 
 /* ── Stories page compact context badges ───────────────────── */
-.context-strip {
-  width: auto;
-  min-width: 0;
-  min-height: 0;
-  display: inline-flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 0.42rem;
-  padding: 0.2rem 0.62rem;
-  white-space: nowrap;
-  line-height: 1;
-}
-.context-strip--nexus,
-.context-strip--title {
-  font-size: clamp(0.52rem, 0.72vw, 0.68rem);
-  font-weight: 600;
-  letter-spacing: 0.08em;
-}
-.context-strip--title {
-  text-transform: none;
-  letter-spacing: 0.035em;
-}
-.context-strip span {
-  display: inline-block;
-}
-
-@media (max-width: 560px) {
-  .context-strip {
-    width: auto;
-    min-height: 0;
-    padding: 0.18rem 0.5rem;
-    gap: 0.32rem;
-  }
-  .context-strip--nexus,
-  .context-strip--title {
-    font-size: 0.5rem;
-    letter-spacing: 0.055em;
-  }
-}
-
 /* ── Refinement: compact stories badges and distinct flow button ─ */
-.context-strip {
-  gap: 0.34rem;
-  padding: 0.14rem 0.54rem;
-  line-height: 0.86;
-}
-.context-strip--nexus,
-.context-strip--title,
-.context-strip span {
-  line-height: 0.86;
-}
-.context-strip--nexus,
-.context-strip--title {
-  font-size: clamp(0.48rem, 0.66vw, 0.62rem);
-}
-.context-strip--bottom {
-  padding-top: 0.15rem;
-  padding-bottom: 0.16rem;
-}
 .guidance-flow-button {
   color: #f0b56f;
   border-color: rgba(240,181,111,0.3);
@@ -1027,122 +1018,8 @@ html[data-theme="light"] .guidance-flow-button:hover {
   background: rgba(184,92,56,0.14);
 }
 
-@media (max-width: 560px) {
-  .context-strip {
-    gap: 0.25rem;
-    padding: 0.13rem 0.42rem;
-    line-height: 0.84;
-  }
-  .context-strip--nexus,
-  .context-strip--title,
-  .context-strip span {
-    line-height: 0.84;
-  }
-  .context-strip--nexus,
-  .context-strip--title {
-    font-size: 0.46rem;
-  }
-}
-
 /* Stories page badge color and sizing alignment */
-.context-strip {
-  width: clamp(13rem, 18vw, 15.75rem);
-  height: clamp(1.38rem, 2vw, 1.65rem);
-  box-sizing: border-box;
-  gap: 0.42rem;
-  padding: 0.28rem 0.84rem;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-}
-.context-strip--nexus,
-.context-strip--title,
-.context-strip span {
-  line-height: 1;
-}
-.context-strip--nexus,
-.context-strip--title {
-  font-size: clamp(0.56rem, 0.78vw, 0.72rem);
-}
-.context-strip--nexus {
-  color: #fff;
-  background: rgba(141, 82, 15, 0.72);
-}
-.context-strip--nexus span {
-  color: #fff;
-  opacity: 1 !important;
-}
-.context-strip--title {
-  color: #f1c4bd;
-  background: rgba(51, 51, 51, 0.72);
-}
-.context-strip--title span {
-  color: #f1c4bd;
-}
-html[data-theme="light"] .context-strip--nexus {
-  color: #fff;
-  background: rgba(141, 82, 15, 0.56);
-}
-html[data-theme="light"] .context-strip--nexus span {
-  color: #fff;
-}
-html[data-theme="light"] .context-strip--title {
-  color: #7d1b1b;
-  background: rgba(66, 66, 66, 0.42);
-}
-html[data-theme="light"] .context-strip--title span {
-  color: #7d1b1b;
-}
-
-.context-strip {
-  width: clamp(15.5rem, 22vw, 18rem);
-  height: clamp(1.55rem, 2.3vw, 1.9rem);
-}
-.context-strip--title {
-  font-size: clamp(0.64rem, 0.9vw, 0.82rem);
-}
-html[data-theme="light"] .context-strip {
-  width: clamp(17rem, 25vw, 20.5rem);
-  height: clamp(1.75rem, 2.6vw, 2.1rem);
-}
-html[data-theme="light"] .context-strip--title {
-  font-size: clamp(0.81rem, calc(0.9vw + 0.17rem), 0.99rem);
-}
-
-@media (max-width: 560px) {
-  .context-strip {
-    width: min(calc(100vw - 2rem), 15rem);
-    height: 1.65rem;
-    gap: 0.24rem;
-    padding: 0.24rem 0.58rem;
-  }
-  html[data-theme="light"] .context-strip {
-    width: min(calc(100vw - 2rem), 17rem);
-    height: 1.85rem;
-  }
-  .context-strip--nexus {
-    font-size: 0.5rem;
-    letter-spacing: 0.04em;
-  }
-  .context-strip--title {
-    font-size: 0.6rem;
-    letter-spacing: 0.035em;
-  }
-  html[data-theme="light"] .context-strip--title {
-    font-size: 0.77rem;
-  }
-}
-
 /* ── Requested UI iteration: stories layout and mobile filters ─ */
-.context-strip--top {
-  justify-content: flex-start;
-  text-align: left;
-}
-.context-strip--bottom {
-  justify-content: flex-end;
-  text-align: right;
-}
-
 .story-meta-name {
   font-weight: 700;
   text-transform: uppercase;
@@ -1670,82 +1547,6 @@ html[data-theme="light"] .filter-panel-scroll-body {
   .filter-panel-sticky.gallery-header--filter {
     margin-left: -1rem;
     margin-right: -1rem;
-  }
-}
-
-/* Final shared flap lock: theme switches should not change size or text color. */
-.context-strip,
-html[data-theme="light"] .context-strip {
-  width: clamp(15.5rem, 22vw, 18rem);
-  height: clamp(1.55rem, 2.3vw, 1.9rem);
-}
-
-.context-strip--nexus,
-.context-strip--title,
-html[data-theme="light"] .context-strip--nexus,
-html[data-theme="light"] .context-strip--title {
-  color: #fff !important;
-}
-
-.context-strip--nexus span,
-.context-strip--title span,
-html[data-theme="light"] .context-strip--nexus span,
-html[data-theme="light"] .context-strip--title span {
-  color: #fff !important;
-}
-
-.context-strip--title {
-  background: rgba(141, 82, 15, 0.72) !important;
-}
-
-html[data-theme="light"] .context-strip--title {
-  background: rgba(141, 82, 15, 0.56) !important;
-}
-
-html[data-theme="light"] .context-strip--nexus {
-  background: rgba(141, 82, 15, 0.56) !important;
-}
-
-html[data-theme="light"] .context-strip--title {
-  font-size: clamp(0.64rem, 0.9vw, 0.82rem) !important;
-}
-
-@media (max-width: 560px) {
-  .context-strip,
-  html[data-theme="light"] .context-strip {
-    width: min(calc(100vw - 2rem), 15rem);
-    height: 1.65rem;
-  }
-
-  html[data-theme="light"] .context-strip--title {
-    font-size: 0.6rem !important;
-  }
-}
-
-/* Responsive flap text safety: avoid clipped text at awkward aspect ratios. */
-.context-strip,
-html[data-theme="light"] .context-strip {
-  height: auto !important;
-  min-height: clamp(1.95rem, 2.8vw, 2.35rem) !important;
-  padding-block: clamp(0.38rem, 0.55vw, 0.5rem) !important;
-  align-items: center !important;
-  overflow: visible !important;
-}
-
-.context-strip--nexus,
-.context-strip--title,
-.context-strip span,
-html[data-theme="light"] .context-strip--nexus,
-html[data-theme="light"] .context-strip--title,
-html[data-theme="light"] .context-strip span {
-  line-height: 1.14 !important;
-}
-
-@media (max-width: 560px) {
-  .context-strip,
-  html[data-theme="light"] .context-strip {
-    min-height: 2rem !important;
-    padding-block: 0.4rem !important;
   }
 }
 
