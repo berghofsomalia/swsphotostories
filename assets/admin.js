@@ -622,6 +622,14 @@ function reflectionTypeCountsForStories(stories = []) {
   }, { direct: 0, indirect: 0 });
 }
 
+function phaseCountsForStories(stories = []) {
+  return stories.reduce((counts, story) => {
+    const phase = storyCodePhase(story.code);
+    if (phase) counts[phase] += 1;
+    return counts;
+  }, { phase2: 0, phase3: 0 });
+}
+
 function isTextMissing(story, fieldNames) {
   return fieldNames.some((fieldName) => !normaliseText(story[fieldName]));
 }
@@ -631,6 +639,7 @@ function overviewRows() {
     const stories = state.stories.filter((story) => Number(story.district_id) === Number(district.id));
     const activeStories = activeStoriesForOverview(stories);
     const reflectionCounts = reflectionTypeCountsForStories(stories);
+    const phaseCounts = phaseCountsForStories(stories);
     return {
       label: labelFor(district) || 'Unnamed district',
       stories,
@@ -638,6 +647,8 @@ function overviewRows() {
       published: stories.filter((story) => story.status === 'published').length,
       draft: stories.filter((story) => story.status === 'draft').length,
       archived: stories.filter((story) => story.status === 'archived').length,
+      phase2: phaseCounts.phase2,
+      phase3: phaseCounts.phase3,
       directReflections: reflectionCounts.direct,
       indirectReflections: reflectionCounts.indirect
     };
@@ -647,6 +658,7 @@ function overviewRows() {
   const unassignedStories = state.stories.filter((story) => !assignedDistrictIds.has(Number(story.district_id)));
   if (unassignedStories.length) {
     const reflectionCounts = reflectionTypeCountsForStories(unassignedStories);
+    const phaseCounts = phaseCountsForStories(unassignedStories);
     rows.push({
       label: 'No district',
       stories: unassignedStories,
@@ -654,6 +666,8 @@ function overviewRows() {
       published: unassignedStories.filter((story) => story.status === 'published').length,
       draft: unassignedStories.filter((story) => story.status === 'draft').length,
       archived: unassignedStories.filter((story) => story.status === 'archived').length,
+      phase2: phaseCounts.phase2,
+      phase3: phaseCounts.phase3,
       directReflections: reflectionCounts.direct,
       indirectReflections: reflectionCounts.indirect
     });
@@ -665,6 +679,7 @@ function overviewRows() {
 function overviewTotals() {
   const stories = state.stories;
   const reflectionCounts = reflectionTypeCountsForStories(stories);
+  const phaseCounts = phaseCountsForStories(stories);
   return {
     label: 'Total',
     stories,
@@ -672,6 +687,8 @@ function overviewTotals() {
     published: stories.filter((story) => story.status === 'published').length,
     draft: stories.filter((story) => story.status === 'draft').length,
     archived: stories.filter((story) => story.status === 'archived').length,
+    phase2: phaseCounts.phase2,
+    phase3: phaseCounts.phase3,
     directReflections: reflectionCounts.direct,
     indirectReflections: reflectionCounts.indirect
   };
@@ -1477,6 +1494,8 @@ function renderOverview() {
       <td>${row.published}</td>
       <td>${row.draft}</td>
       <td>${row.archived}</td>
+      <td>${row.phase2}</td>
+      <td>${row.phase3}</td>
       <td>${row.directReflections}</td>
       <td>${row.indirectReflections}</td>
     </tr>
@@ -1512,6 +1531,8 @@ function renderOverview() {
                 <th scope="col">Published</th>
                 <th scope="col">Draft</th>
                 <th scope="col">Archived</th>
+                <th scope="col">Phase 2</th>
+                <th scope="col">Phase 3</th>
                 <th scope="col">Direct reflections</th>
                 <th scope="col">Indirect reflections</th>
               </tr>
