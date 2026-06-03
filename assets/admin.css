@@ -12,7 +12,7 @@
   --admin-danger: #ff9b7f;
   --admin-success: #a6d99b;
   --admin-shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: Aptos, "Segoe UI Variable", "Segoe UI", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 * {
@@ -27,6 +27,7 @@ body {
     radial-gradient(circle at bottom right, rgba(122, 69, 42, 0.28), transparent 38rem),
     var(--admin-bg);
   color: var(--admin-text);
+  font-family: Aptos, "Segoe UI Variable", "Segoe UI", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 button,
@@ -58,7 +59,6 @@ textarea {
 .admin-denied-card h1,
 .admin-config-card h1 {
   margin: 0 0 10px;
-  font-family: Georgia, serif;
   font-size: clamp(2rem, 6vw, 3.4rem);
   line-height: 0.95;
 }
@@ -239,7 +239,6 @@ textarea {
 .admin-title-block h1,
 .admin-editor-title h2 {
   margin: 0;
-  font-family: Georgia, serif;
   font-size: clamp(1.8rem, 4vw, 3.1rem);
   line-height: 0.98;
 }
@@ -433,7 +432,6 @@ textarea {
   margin: 22px 0 0;
   padding-top: 20px;
   border-top: 1px solid var(--admin-border);
-  font-family: Georgia, serif;
   font-size: 1.45rem;
 }
 
@@ -446,6 +444,10 @@ textarea {
 .admin-tag-cluster {
   display: grid;
   gap: 10px;
+}
+
+.admin-tag-cluster-title {
+  font-weight: 400;
 }
 
 .admin-tag-buttons {
@@ -511,7 +513,6 @@ textarea {
 
 .admin-empty-editor h2 {
   margin: 0 0 8px;
-  font-family: Georgia, serif;
   font-size: 2.4rem;
 }
 
@@ -689,7 +690,7 @@ textarea {
   margin: 0;
   color: var(--cluster-text);
   font-size: 0.86rem;
-  font-weight: 900;
+  font-weight: 400;
 }
 
 .admin-tag-summary-table-wrap {
@@ -701,7 +702,7 @@ textarea {
 
 .admin-tag-summary-table {
   width: 100%;
-  min-width: 900px;
+  min-width: 820px;
   border-collapse: separate;
   border-spacing: 0;
 }
@@ -721,14 +722,14 @@ textarea {
   background: rgba(42, 33, 24, 0.98);
   color: var(--admin-faint);
   font-size: 0.74rem;
-  font-weight: 900;
+  font-weight: 500;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
 .admin-tag-summary-table tbody th {
   color: var(--admin-text);
-  font-weight: 800;
+  font-weight: 400;
 }
 
 .admin-tag-summary-table tbody tr {
@@ -742,6 +743,12 @@ textarea {
   color: var(--cluster-text);
 }
 
+.admin-tag-summary-table tbody tr[class*="admin-cluster-tone-"] > th,
+.admin-tag-summary-table tbody tr[class*="admin-cluster-tone-"] > td {
+  background: var(--cluster-panel);
+  border-bottom-color: var(--cluster-border);
+}
+
 .admin-tag-summary-table tbody tr[class*="admin-cluster-tone-"] td {
   color: var(--cluster-text);
   opacity: 0.82;
@@ -750,16 +757,23 @@ textarea {
 .admin-tag-summary-table thead th:first-child {
   left: 0;
   z-index: 4;
+  width: 5.5rem;
+  min-width: 5.5rem;
+  max-width: 5.5rem;
 }
 
 .admin-tag-summary-cluster {
   position: sticky;
   left: 0;
   z-index: 2;
-  min-width: 11rem;
+  width: 5.5rem;
+  min-width: 5.5rem;
+  max-width: 5.5rem;
   background: linear-gradient(90deg, var(--cluster-soft), var(--cluster-panel));
   color: var(--cluster-text) !important;
-  font-weight: 900 !important;
+  font-weight: 400 !important;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
 }
 
 .admin-tag-summary-table td {
@@ -877,7 +891,6 @@ textarea {
   background: rgba(0, 0, 0, 0.24);
   color: var(--admin-accent-strong);
   padding: 2px 6px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.9em;
 }
 
@@ -1018,9 +1031,8 @@ textarea {
     linear-gradient(135deg, rgba(216, 166, 99, 0.18), rgba(255, 244, 223, 0.04)),
     rgba(16, 13, 10, 0.72);
   color: rgba(255, 244, 223, 0.76);
-  font-family: Georgia, serif;
   font-size: 2rem;
-  font-weight: 800;
+  font-weight: 400;
   letter-spacing: 0.08em;
 }
 
@@ -1128,7 +1140,6 @@ textarea {
 
 .admin-unsaved-modal h2 {
   margin: 0 0 8px;
-  font-family: Georgia, serif;
   font-size: 2rem;
   line-height: 1;
 }
