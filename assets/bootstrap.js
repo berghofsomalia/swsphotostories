@@ -1,4 +1,4 @@
-import { renderApp, qs, qsa, syncGalleryCardHeights } from './render.js';
+import { renderApp, qs, qsa, syncGalleryCardHeights } from './render.js?v=20260603-search-focus3';
 import { state, createEmptyFilters } from './state.js';
 import {
   buildShareUrl,
@@ -11,7 +11,7 @@ import {
   savePersistentState,
   updateUrlForStory,
   isSaved
-} from './story-data.js';
+} from './story-data.js?v=20260603-search-focus3';
 import { getUiText, labelFor, initialiseI18n } from './content.js';
 import { ensureStoryImages, fetchStories, fetchTagCatalogue } from './api.js';
 
@@ -21,14 +21,24 @@ let listenersAttached = false;
 let imageHydrationRun = 0;
 let imageHydrationScheduled = false;
 let filterResizeDrag = null;
+let searchRenderTimerId = null;
+let pendingSearchFocus = null;
+const SEARCH_RENDER_DELAY_MS = 160;
 
 // ── Rendering ─────────────────────────────────────────────────────────────────
 
 function renderSite() {
+  const activeElement = document.activeElement;
+  const activeSearch = activeElement?.matches?.('[data-search-input]') ? captureSearchFocus(activeElement) : null;
+  const searchFocus = pendingSearchFocus || activeSearch;
+  pendingSearchFocus = null;
+
   renderApp(state);
   startAutoplay();
   requestAnimationFrame(syncGalleryCardHeights);
   scheduleVisibleImageHydration();
+
+  if (searchFocus) restoreSearchFocus(searchFocus);
 }
 
 function renderLoading() {
@@ -78,6 +88,51 @@ function scrollStoryTop() {
 
 function scrollGallery() {
   qs('#gallery')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function focusSearchInput() {
+  const input = qs('[data-search-input]');
+  if (!input) return;
+  pendingSearchFocus = captureSearchFocus(input, { atEnd: true });
+  input.focus({ preventScroll: true });
+  input.setSelectionRange(input.value.length, input.value.length);
+}
+
+function captureSearchFocus(input, options = {}) {
+  const fallback = input?.value?.length || 0;
+  if (options.atEnd) {
+    return {
+      selectionStart: fallback,
+      selectionEnd: fallback
+    };
+  }
+
+  return {
+    selectionStart: input?.selectionStart ?? fallback,
+    selectionEnd: input?.selectionEnd ?? fallback
+  };
+}
+
+function applySearchFocus(focusState) {
+  const restored = qs('[data-search-input]');
+  if (!restored) return;
+  try {
+    restored.focus({ preventScroll: true });
+  } catch (error) {
+    restored.focus();
+  }
+  const length = restored.value.length;
+  const start = Math.min(focusState.selectionStart ?? length, length);
+  const end = Math.min(focusState.selectionEnd ?? start, length);
+  restored.setSelectionRange(start, end);
+}
+
+function restoreSearchFocus(focusState) {
+  requestAnimationFrame(() => {
+    applySearchFocus(focusState);
+    requestAnimationFrame(() => applySearchFocus(focusState));
+    window.setTimeout(() => applySearchFocus(focusState), 80);
+  });
 }
 
 function scrollFromHash(options = {}) {
@@ -571,26 +626,18 @@ function handleFilterResizeEnd(event) {
   replaceCurrentHistoryState(state.galleryVisible ? 'gallery' : 'story');
 }
 
-/**
- * Search input handler.
- * After re-rendering we restore focus and cursor position so typing feels
- * uninterrupted despite the full DOM rebuild.
- */
 function handleSearchInput(event) {
   const input = event.target.closest('[data-search-input]');
   if (!input) return;
 
   state.filters.searchQuery = input.value;
+  pendingSearchFocus = captureSearchFocus(input, { atEnd: true });
   setGalleryModeFromFilters();
-  renderSite();
-
-  // Restore focus and cursor after re-render
-  const restored = qs('[data-search-input]');
-  if (restored) {
-    restored.focus();
-    const len = restored.value.length;
-    restored.setSelectionRange(len, len);
-  }
+  clearTimeout(searchRenderTimerId);
+  searchRenderTimerId = window.setTimeout(() => {
+    renderSite();
+    replaceCurrentHistoryState(state.galleryVisible ? 'gallery' : 'story');
+  }, SEARCH_RENDER_DELAY_MS);
 }
 
 function attachGlobalListeners() {
@@ -682,6 +729,7 @@ export async function initialiseApp() {
 
   const params = new URLSearchParams(window.location.search);
   const code = params.get('code');
+  const shouldFocusSearch = params.get('focus') === 'search';
   const shouldRandomise = params.has('random') && !code;
   const existing = getStoryById(state.stories, code);
   const randomStory = state.stories[Math.floor(Math.random() * state.stories.length)] || null;
@@ -709,7 +757,12 @@ export async function initialiseApp() {
 
   if (window.location.hash && state.galleryVisible) {
     requestAnimationFrame(() => {
-      requestAnimationFrame(() => scrollFromHash({ behavior: 'auto' }));
+      requestAnimationFrame(() => {
+        scrollFromHash({ behavior: 'auto' });
+        if (shouldFocusSearch) focusSearchInput();
+      });
     });
+  } else if (shouldFocusSearch && state.galleryVisible) {
+    requestAnimationFrame(() => focusSearchInput());
   }
 }

@@ -103,10 +103,32 @@ function formatStat(value) {
   return value == null ? '…' : String(value);
 }
 
-function renderCountedCopy(template = '') {
-  return escapeHtml(template)
-    .replaceAll('{stories}', formatStat(state.siteStats.stories))
-    .replaceAll('{reflections}', formatStat(state.siteStats.reflections));
+function renderExploreCta() {
+  const storyCount = formatStat(state.siteStats.stories);
+  const searchLink = '../stories/?focus=search#gallery';
+  const galleryLink = '../stories/#gallery';
+  const randomLink = randomStoryLink('../stories/');
+  const paragraphs = state.language === 'so'
+    ? [
+      `Waxaan kugu martiqaadeynaa inaad sahamiso ${storyCount}-ka sheeko-sawireed.`,
+      `Waxaad ${renderCtaLink(searchLink, 'raadin kartaa erayo gaar ah')} oo maskaxdaada ku jira, ama ${renderCtaLink(galleryLink, 'isku dari kartaa mawduucyo, dad iyo goobo')} si aad u raacdo xiriirrada adiga kuu muuqda.`,
+      `Ama, haddii aad rabto wax lama-filaan ah, ${renderCtaLink(randomLink, 'fur sheeko-sawireed aan kala sooc lahayn')}.`
+    ]
+    : [
+      `We invite you to explore the ${storyCount} photostories.`,
+      `You can ${renderCtaLink(searchLink, 'search for specific words')} you have in mind, or ${renderCtaLink(galleryLink, 'combine themes, people and places')} to follow the connections that matter to you.`,
+      `Or, if you are in the mood for a surprise, ${renderCtaLink(randomLink, 'open a random photostory')}.`
+    ];
+
+  return `
+    <div class="landing-cta-copy">
+      ${paragraphs.map((paragraph) => `<p>${paragraph}</p>`).join('')}
+    </div>
+  `;
+}
+
+function renderCtaLink(href, text) {
+  return `<a href="${escapeHtml(href)}">${escapeHtml(text)}</a>`;
 }
 
 function randomItem(items = []) {
@@ -244,12 +266,7 @@ function renderLandingPage() {
             </div>
             <div class="landing-copy-card landing-copy-card--cta-spacer"></div>
             <div class="landing-copy-card landing-copy-card--section5">
-              <p class="landing-cta-copy">${renderCountedCopy(landing.section5Body)}</p>
-              <div class="landing-button-row landing-button-row--pdf">
-                <a class="landing-button" href="${randomStoryLink('../stories/')}">${escapeHtml(landing.surprise)}</a>
-                <a class="landing-button" href="../stories/#gallery">${escapeHtml(landing.explore)}</a>
-                <a class="landing-button" href="mailto:?subject=Photostory submission">${escapeHtml(landing.shareOwn)}</a>
-              </div>
+              ${renderExploreCta()}
             </div>
           </div>
         </section>

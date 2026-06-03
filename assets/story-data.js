@@ -1,6 +1,8 @@
 import { STORAGE_KEYS } from './content.js';
 import { PAGE_SIZE } from './state.js';
 
+export const SEARCH_MIN_CHARS = 3;
+
 export function getStoryById(stories, id) {
   const target = String(id || '').trim();
   return stories.find((story) => String(story.id) === target || String(story.code) === target) || null;
@@ -67,8 +69,13 @@ export function hasActiveFilters(filters) {
     filters.district ||
     filters.people.length ||
     filters.tags.length ||
-    filters.searchQuery
+    effectiveSearchQuery(filters)
   );
+}
+
+export function effectiveSearchQuery(filters) {
+  const query = String(filters?.searchQuery || '').trim().toLowerCase();
+  return query.length >= SEARCH_MIN_CHARS ? query : '';
 }
 
 function storyContainsAny(storyItems = [], selectedSlugs = []) {
@@ -104,7 +111,8 @@ export function storyMatchesFilters(story, filters) {
   if (!storyContainsAny(story.tags || [], selectedTagSlugs)) return false;
 
   if (filters.searchQuery) {
-    const q = filters.searchQuery.toLowerCase().trim();
+    const q = effectiveSearchQuery(filters);
+    if (!q) return true;
     const tagLabels = (story.tags || []).flatMap((tag) => [tag.en, tag.so]).join(' ');
     const haystack = [
       story.code,

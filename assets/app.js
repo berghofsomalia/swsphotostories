@@ -1,5 +1,5 @@
-import { initialiseApp } from './bootstrap.js';
-import { qs } from './render.js';
+import { initialiseApp } from './bootstrap.js?v=20260603-search-focus3';
+import { qs } from './render.js?v=20260603-search-focus3';
 
 initialiseApp().catch((error) => {
   console.error(error);

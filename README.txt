@@ -1,8 +1,15 @@
 Photostory GitHub Pages package
 
 Contents
-- index.html: main one-page experience
-- assets/styles.css: site styles
+- index.html: home experience
+- about/index.html: about page
+- stories/index.html: stories and gallery page
+- admin/index.html: admin interface
+- assets/base.css: shared reset, tokens, loading states and utility menu
+- assets/home.css: home page styles
+- assets/about.css: about page styles
+- assets/stories.css: stories page styles
+- assets/admin.css: admin page styles
 - assets/app.js: site logic
 - data/stories.json: cleaned story data used by the site
 - images/: bundled image assets, including local lead photos in images/leads/
