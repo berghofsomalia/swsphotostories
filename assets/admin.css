@@ -738,6 +738,15 @@ textarea {
   background: var(--cluster-panel);
 }
 
+.admin-tag-summary-table tbody tr[class*="admin-cluster-tone-"] th[scope="row"] {
+  color: var(--cluster-text);
+}
+
+.admin-tag-summary-table tbody tr[class*="admin-cluster-tone-"] td {
+  color: var(--cluster-text);
+  opacity: 0.82;
+}
+
 .admin-tag-summary-table thead th:first-child {
   left: 0;
   z-index: 4;
@@ -748,7 +757,7 @@ textarea {
   left: 0;
   z-index: 2;
   min-width: 11rem;
-  background: var(--cluster-panel);
+  background: linear-gradient(90deg, var(--cluster-soft), var(--cluster-panel));
   color: var(--cluster-text) !important;
   font-weight: 900 !important;
 }
@@ -766,6 +775,8 @@ textarea {
 .admin-cluster-tone-1 {
   --cluster-panel: rgba(82, 143, 136, 0.11);
   --cluster-soft: rgba(82, 143, 136, 0.16);
+  --cluster-hover: rgba(82, 143, 136, 0.24);
+  --cluster-active: rgba(82, 143, 136, 0.62);
   --cluster-border: rgba(135, 197, 188, 0.28);
   --cluster-text: #a8d8d2;
 }
@@ -773,6 +784,8 @@ textarea {
 .admin-cluster-tone-2 {
   --cluster-panel: rgba(183, 128, 62, 0.11);
   --cluster-soft: rgba(183, 128, 62, 0.16);
+  --cluster-hover: rgba(183, 128, 62, 0.24);
+  --cluster-active: rgba(183, 128, 62, 0.66);
   --cluster-border: rgba(223, 173, 102, 0.3);
   --cluster-text: #e1b26d;
 }
@@ -780,6 +793,8 @@ textarea {
 .admin-cluster-tone-3 {
   --cluster-panel: rgba(126, 151, 86, 0.11);
   --cluster-soft: rgba(126, 151, 86, 0.16);
+  --cluster-hover: rgba(126, 151, 86, 0.24);
+  --cluster-active: rgba(126, 151, 86, 0.64);
   --cluster-border: rgba(190, 210, 124, 0.28);
   --cluster-text: #c8d58b;
 }
@@ -787,6 +802,8 @@ textarea {
 .admin-cluster-tone-4 {
   --cluster-panel: rgba(168, 101, 124, 0.11);
   --cluster-soft: rgba(168, 101, 124, 0.16);
+  --cluster-hover: rgba(168, 101, 124, 0.24);
+  --cluster-active: rgba(168, 101, 124, 0.64);
   --cluster-border: rgba(224, 154, 178, 0.28);
   --cluster-text: #e4a6b9;
 }
@@ -794,6 +811,8 @@ textarea {
 .admin-cluster-tone-5 {
   --cluster-panel: rgba(91, 131, 178, 0.11);
   --cluster-soft: rgba(91, 131, 178, 0.16);
+  --cluster-hover: rgba(91, 131, 178, 0.24);
+  --cluster-active: rgba(91, 131, 178, 0.64);
   --cluster-border: rgba(155, 190, 229, 0.3);
   --cluster-text: #a9c7e8;
 }
@@ -801,6 +820,8 @@ textarea {
 .admin-cluster-tone-6 {
   --cluster-panel: rgba(137, 122, 166, 0.11);
   --cluster-soft: rgba(137, 122, 166, 0.16);
+  --cluster-hover: rgba(137, 122, 166, 0.24);
+  --cluster-active: rgba(137, 122, 166, 0.64);
   --cluster-border: rgba(195, 180, 224, 0.28);
   --cluster-text: #c1b3e0;
 }
@@ -808,6 +829,8 @@ textarea {
 .admin-cluster-tone-people {
   --cluster-panel: rgba(154, 118, 83, 0.12);
   --cluster-soft: rgba(154, 118, 83, 0.17);
+  --cluster-hover: rgba(154, 118, 83, 0.25);
+  --cluster-active: rgba(154, 118, 83, 0.66);
   --cluster-border: rgba(213, 174, 128, 0.28);
   --cluster-text: #d9b184;
 }

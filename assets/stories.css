@@ -1,5 +1,8 @@
 /* ── Story app layout ────────────────────────────────────────── */
 .site-shell {
+  --context-strip-color: #fff;
+  --context-strip-top-bg: rgba(141, 82, 15, 0.72);
+  --context-strip-bottom-bg: rgba(141, 82, 15, 0.72);
   min-height: 100vh;
   padding-top: 1.8rem;
   padding-bottom: 1.8rem;
@@ -484,24 +487,6 @@ body, button, input, textarea, select,
 .story-guidance-card--3 { background: #9c5d24; }
 .story-guidance-card--4 { background: #ab5a10; }
 
-/* ── Context strips ─────────────────────────────────────────── */
-.context-strip {
-  position: fixed;
-  z-index: 90;
-  padding: 0.28rem 0.85rem;
-  font-size: 0.66rem;
-  font-weight: 600;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  pointer-events: none;
-  color: #f8efe5;
-  background: rgba(104,103,101,0.82);
-  backdrop-filter: blur(6px);
-}
-.context-strip--top    { top: 0;    left: 0;  border-radius: 0 0 0.55rem 0; }
-.context-strip--bottom { bottom: 0; right: 0; border-radius: 0.55rem 0 0 0; }
-
 /* ── Load more ──────────────────────────────────────────────── */
 .load-more-row    { display: flex; justify-content: center; padding: 2rem 0 1rem; }
 .load-more-button {
@@ -596,7 +581,6 @@ html[data-theme="light"] .storyteller-name,
 html[data-theme="light"] .filter-group h3 { color: #2b2825; }
 html[data-theme="light"] .stage-dot         { background: rgba(31,29,26,0.2); }
 html[data-theme="light"] .stage-dot.is-active { background: var(--accent); }
-html[data-theme="light"] .context-strip     { color: #f8efe5; background: rgba(80,78,75,0.82); }
 html[data-theme="light"] .load-more-button  { border-color: rgba(43,33,21,0.15); background: rgba(43,33,21,0.04); }
 html[data-theme="light"] .load-more-button:hover { background: rgba(43,33,21,0.08); border-color: rgba(43,33,21,0.22); }
 html[data-theme="light"] .search-input { border-color: rgba(43,33,21,0.14); background: rgba(255,255,255,0.55); color: #2b2115; }
@@ -763,83 +747,6 @@ html[data-theme="light"] .saved-remove-button {
 }
 html[data-theme="light"] .saved-remove-button:hover { color: #fff; background: var(--accent); }
 
-.context-strip {
-  --context-strip-bg: rgba(141, 82, 15, 0.72);
-  --context-strip-diagonal: clamp(1.2rem, 3.2vw, 2.4rem);
-  box-sizing: border-box;
-  display: inline-flex;
-  flex-direction: row;
-  align-items: center;
-  width: auto;
-  min-width: 0;
-  min-height: clamp(1.55rem, 2.2vw, 1.9rem);
-  gap: 0;
-  padding: clamp(0.26rem, 0.55vw, 0.42rem) clamp(0.68rem, 1.4vw, 1rem);
-  border-radius: 0;
-  background: var(--context-strip-bg) !important;
-  color: #fff !important;
-  font-size: clamp(0.72rem, 0.94vw, 0.9rem);
-  font-weight: 400;
-  letter-spacing: 0;
-  line-height: 1.08;
-  text-transform: none;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.context-strip span {
-  display: inline-block;
-  color: #fff !important;
-  font-size: inherit;
-  font-weight: inherit;
-  line-height: inherit;
-  opacity: 1 !important;
-}
-
-.context-strip--top {
-  justify-content: flex-start;
-  padding-right: calc(var(--context-strip-diagonal) + clamp(0.48rem, 1vw, 0.75rem));
-  clip-path: polygon(0 0, 100% 0, calc(100% - var(--context-strip-diagonal)) 100%, 0 100%);
-  text-align: left;
-}
-
-.context-strip--bottom {
-  justify-content: flex-end;
-  padding-left: calc(var(--context-strip-diagonal) + clamp(0.48rem, 1vw, 0.75rem));
-  clip-path: polygon(var(--context-strip-diagonal) 0, 100% 0, 100% 100%, 0 100%, 0 var(--context-strip-diagonal));
-  text-align: right;
-}
-
-.context-strip--nexus {
-  font-size: clamp(0.68rem, 0.88vw, 0.84rem);
-  font-weight: 400;
-  letter-spacing: 0;
-  text-transform: uppercase;
-}
-
-.context-strip--nexus span + span::before {
-  content: "\2022";
-  display: inline-block;
-  margin: 0 0.38rem;
-}
-
-.context-strip--title {
-  font-size: clamp(0.78rem, 1vw, 0.95rem);
-  font-weight: 400;
-  letter-spacing: 0;
-}
-
-.context-strip--title span + span::before {
-  content: "\00a0";
-}
-
-html[data-theme="light"] .context-strip,
-html[data-theme="light"] .context-strip--nexus,
-html[data-theme="light"] .context-strip--title,
-html[data-theme="light"] .context-strip span {
-  color: #fff !important;
-}
-
 @media (max-width: 900px) {
   .gallery-layout {
     display: flex;
@@ -898,13 +805,6 @@ html[data-theme="light"] .context-strip span {
   .story-meta-panel { padding: 0 0.35rem; }
   .story-meta-name { font-size: 1.18rem; }
   .story-meta-teaser { font-size: 1.16rem; }
-  .context-strip {
-    --context-strip-diagonal: 1.25rem;
-    min-height: 1.55rem;
-    padding-block: 0.32rem;
-  }
-  .context-strip--nexus { font-size: 0.66rem; }
-  .context-strip--title { font-size: 0.78rem; }
 }
 
 /* ── Stories page compact context badges ───────────────────── */

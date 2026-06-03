@@ -153,6 +153,80 @@ html[data-theme="light"] .loading-spinner {
   opacity: 0.9;
 }
 
+/* Shared corner context flaps */
+.context-strip {
+  --context-strip-diagonal: clamp(1.2rem, 3.2vw, 2.4rem);
+  position: fixed;
+  z-index: 90;
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  max-width: min(92vw, 38rem);
+  min-height: clamp(1.35rem, 3vw, 2.15rem);
+  padding: clamp(0.28rem, 0.65vw, 0.48rem) clamp(0.65rem, 1.4vw, 1rem);
+  color: var(--context-strip-color, #fff);
+  font-size: clamp(0.7rem, 0.95vw, 0.92rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.context-strip span {
+  display: inline-flex;
+  align-items: center;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+}
+
+.context-strip--top {
+  top: 0;
+  left: 0;
+  padding-right: calc(var(--context-strip-diagonal) + clamp(0.48rem, 1vw, 0.75rem));
+  background: var(--context-strip-top-bg, rgba(78, 127, 153, 0.88));
+  clip-path: polygon(0 0, 100% 0, calc(100% - var(--context-strip-diagonal)) 100%, 0 100%);
+}
+
+.context-strip--bottom {
+  right: 0;
+  bottom: 0;
+  justify-content: flex-end;
+  padding-left: calc(var(--context-strip-diagonal) + clamp(0.48rem, 1vw, 0.75rem));
+  background: var(--context-strip-bottom-bg, rgba(86, 139, 165, 0.88));
+  clip-path: polygon(var(--context-strip-diagonal) 0, 100% 0, 100% 100%, 0 100%, 0 var(--context-strip-diagonal));
+}
+
+.context-strip--nexus span + span::before {
+  content: "\2022";
+  margin: 0 0.32rem;
+}
+
+.context-strip--title {
+  gap: 0.32rem;
+  max-width: min(92vw, 30rem);
+  font-size: clamp(0.74rem, 1vw, 0.98rem);
+  text-transform: none;
+  text-align: right;
+}
+
+@media (max-width: 760px) {
+  .context-strip {
+    --context-strip-diagonal: 1.25rem;
+    max-width: 88vw;
+  }
+
+  .context-strip--nexus {
+    font-size: 0.66rem;
+  }
+
+  .context-strip--title {
+    font-size: 0.78rem;
+  }
+}
+
 /* Shared utility menu */
 .utility-menu-shell {
   position: fixed;
