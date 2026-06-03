@@ -1,14 +1,14 @@
 :root {
   color-scheme: dark;
-  --admin-bg: #130f0c;
-  --admin-panel: #201913;
-  --admin-panel-soft: #2a2118;
-  --admin-border: rgba(255, 238, 204, 0.16);
-  --admin-text: #fff4df;
-  --admin-muted: rgba(255, 244, 223, 0.68);
-  --admin-faint: rgba(255, 244, 223, 0.48);
-  --admin-accent: #d8a663;
-  --admin-accent-strong: #f4c97d;
+  --admin-bg: #13171d;
+  --admin-panel: #171c22;
+  --admin-panel-soft: #1c2430;
+  --admin-border: rgba(199, 212, 224, 0.16);
+  --admin-text: #f3eee7;
+  --admin-muted: rgba(199, 212, 224, 0.72);
+  --admin-faint: rgba(199, 212, 224, 0.5);
+  --admin-accent: #5b83b2;
+  --admin-accent-strong: #a9c7e8;
   --admin-danger: #ff9b7f;
   --admin-success: #a6d99b;
   --admin-shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
@@ -23,11 +23,17 @@ body {
   min-height: 100vh;
   margin: 0;
   background:
-    radial-gradient(circle at top left, rgba(216, 166, 99, 0.16), transparent 32rem),
-    radial-gradient(circle at bottom right, rgba(122, 69, 42, 0.28), transparent 38rem),
+    radial-gradient(circle at top left, rgba(91, 131, 178, 0.16), transparent 32rem),
+    radial-gradient(circle at bottom right, rgba(36, 48, 60, 0.44), transparent 38rem),
     var(--admin-bg);
   color: var(--admin-text);
   font-family: Aptos, "Segoe UI Variable", "Segoe UI", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.admin-shell,
+.admin-shell *,
+.admin-shell strong {
+  font-weight: 400;
 }
 
 button,
@@ -51,7 +57,7 @@ textarea {
   padding: 28px;
   border: 1px solid var(--admin-border);
   border-radius: 28px;
-  background: rgba(32, 25, 19, 0.92);
+  background: rgba(23, 28, 34, 0.94);
   box-shadow: var(--admin-shadow);
 }
 
@@ -82,7 +88,7 @@ textarea {
 .admin-tag-cluster-title {
   color: var(--admin-muted);
   font-size: 0.82rem;
-  font-weight: 800;
+  font-weight: 400;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -98,7 +104,7 @@ textarea {
   width: 100%;
   border: 1px solid var(--admin-border);
   border-radius: 16px;
-  background: rgba(16, 13, 10, 0.72);
+  background: rgba(15, 19, 24, 0.72);
   color: var(--admin-text);
   outline: none;
   padding: 12px 14px;
@@ -127,8 +133,8 @@ textarea {
 .admin-field textarea:focus,
 .admin-search input:focus,
 .admin-filter-select:focus {
-  border-color: rgba(244, 201, 125, 0.76);
-  box-shadow: 0 0 0 3px rgba(244, 201, 125, 0.14);
+  border-color: rgba(169, 199, 232, 0.76);
+  box-shadow: 0 0 0 3px rgba(91, 131, 178, 0.2);
 }
 
 .admin-button,
@@ -147,12 +153,12 @@ textarea {
   gap: 8px;
   border-radius: 999px;
   padding: 11px 18px;
-  font-weight: 800;
+  font-weight: 400;
 }
 
 .admin-button {
   background: var(--admin-accent);
-  color: #1d140c;
+  color: #f3eee7;
 }
 
 .admin-button:hover {
@@ -171,12 +177,12 @@ textarea {
 
 .admin-secondary-button {
   border: 1px solid var(--admin-border);
-  background: rgba(255, 244, 223, 0.07);
+  background: rgba(199, 212, 224, 0.07);
   color: var(--admin-text);
 }
 
 .admin-secondary-button:hover {
-  background: rgba(255, 244, 223, 0.12);
+  background: rgba(199, 212, 224, 0.12);
 }
 
 .admin-error,
@@ -202,7 +208,7 @@ textarea {
 
 .admin-note {
   border: 1px solid var(--admin-border);
-  background: rgba(255, 244, 223, 0.06);
+  background: rgba(199, 212, 224, 0.06);
   color: var(--admin-muted);
 }
 
@@ -218,7 +224,7 @@ textarea {
 .admin-editor {
   border: 1px solid var(--admin-border);
   border-radius: 28px;
-  background: rgba(32, 25, 19, 0.88);
+  background: rgba(23, 28, 34, 0.9);
   box-shadow: var(--admin-shadow);
   overflow: hidden;
 }
@@ -280,7 +286,7 @@ textarea {
 .admin-filter-label {
   color: var(--admin-faint);
   font-size: 0.72rem;
-  font-weight: 900;
+  font-weight: 400;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -294,22 +300,22 @@ textarea {
 .admin-filter-button {
   border: 1px solid var(--admin-border);
   border-radius: 999px;
-  background: rgba(255, 244, 223, 0.06);
+  background: rgba(199, 212, 224, 0.06);
   color: var(--admin-muted);
   cursor: pointer;
   font-size: 0.8rem;
-  font-weight: 800;
+  font-weight: 400;
   padding: 7px 10px;
 }
 
 .admin-filter-button:hover {
-  border-color: rgba(244, 201, 125, 0.45);
+  border-color: rgba(169, 199, 232, 0.45);
   color: var(--admin-text);
 }
 
 .admin-filter-button.is-selected {
-  border-color: rgba(244, 201, 125, 0.82);
-  background: rgba(216, 166, 99, 0.2);
+  border-color: rgba(169, 199, 232, 0.82);
+  background: rgba(91, 131, 178, 0.22);
   color: var(--admin-text);
 }
 
@@ -338,11 +344,11 @@ textarea {
 
 .admin-story-list-button:hover,
 .admin-story-list-button.is-active {
-  background: rgba(255, 244, 223, 0.08);
+  background: rgba(199, 212, 224, 0.08);
 }
 
 .admin-story-list-button.is-active {
-  outline: 1px solid rgba(244, 201, 125, 0.32);
+  outline: 1px solid rgba(169, 199, 232, 0.32);
 }
 
 .admin-story-code-row {
@@ -354,17 +360,17 @@ textarea {
 }
 
 .admin-story-code {
-  font-weight: 900;
+  font-weight: 400;
   letter-spacing: 0.04em;
 }
 
 .admin-status-pill {
   border-radius: 999px;
   padding: 3px 9px;
-  background: rgba(255, 244, 223, 0.1);
+  background: rgba(199, 212, 224, 0.1);
   color: var(--admin-muted);
   font-size: 0.72rem;
-  font-weight: 800;
+  font-weight: 400;
   text-transform: uppercase;
 }
 
@@ -374,7 +380,7 @@ textarea {
 }
 
 .admin-status-pill.is-draft {
-  background: rgba(255, 244, 223, 0.1);
+  background: rgba(199, 212, 224, 0.1);
 }
 
 .admin-status-pill.is-archived {
@@ -459,20 +465,20 @@ textarea {
 .admin-tag-button {
   border: 1px solid var(--admin-border);
   border-radius: 999px;
-  background: rgba(255, 244, 223, 0.06);
+  background: rgba(199, 212, 224, 0.06);
   color: var(--admin-muted);
   padding: 8px 12px;
   font-size: 0.9rem;
 }
 
 .admin-tag-button:hover {
-  border-color: rgba(244, 201, 125, 0.45);
+  border-color: rgba(169, 199, 232, 0.45);
   color: var(--admin-text);
 }
 
 .admin-tag-button.is-selected {
-  border-color: rgba(244, 201, 125, 0.82);
-  background: rgba(216, 166, 99, 0.22);
+  border-color: rgba(169, 199, 232, 0.82);
+  background: rgba(91, 131, 178, 0.24);
   color: var(--admin-text);
 }
 
@@ -545,7 +551,7 @@ textarea {
 .admin-overview-table thead th {
   color: var(--admin-muted);
   font-size: 0.78rem;
-  font-weight: 900;
+  font-weight: 400;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -553,7 +559,7 @@ textarea {
 .admin-overview-table tbody th,
 .admin-overview-total-row th {
   color: var(--admin-text);
-  font-weight: 900;
+  font-weight: 400;
 }
 
 .admin-overview-table td {
@@ -564,9 +570,9 @@ textarea {
 .admin-overview-table tfoot th,
 .admin-overview-table tfoot td {
   border-bottom: 0;
-  background: rgba(216, 166, 99, 0.1);
+  background: rgba(91, 131, 178, 0.12);
   color: var(--admin-accent-strong);
-  font-weight: 900;
+  font-weight: 400;
 }
 
 .admin-overview-muted {
@@ -584,7 +590,7 @@ textarea {
   gap: 5px;
   border: 1px solid var(--admin-border);
   border-radius: 18px;
-  background: rgba(255, 244, 223, 0.05);
+  background: rgba(199, 212, 224, 0.05);
   padding: 14px;
 }
 
@@ -593,7 +599,7 @@ textarea {
 .admin-filter-summary h3 {
   color: var(--admin-muted);
   font-size: 0.78rem;
-  font-weight: 900;
+  font-weight: 400;
   letter-spacing: 0.08em;
   margin: 0;
   text-transform: uppercase;
@@ -613,20 +619,20 @@ textarea {
 }
 
 .admin-overview-code-link {
-  border: 1px solid rgba(244, 201, 125, 0.34);
+  border: 1px solid rgba(169, 199, 232, 0.34);
   border-radius: 999px;
-  background: rgba(216, 166, 99, 0.12);
+  background: rgba(91, 131, 178, 0.14);
   color: var(--admin-accent-strong);
   cursor: pointer;
   font-size: 0.78rem;
-  font-weight: 900;
+  font-weight: 400;
   letter-spacing: 0.04em;
   padding: 5px 8px;
 }
 
 .admin-overview-code-link:hover {
-  border-color: rgba(244, 201, 125, 0.72);
-  background: rgba(216, 166, 99, 0.22);
+  border-color: rgba(169, 199, 232, 0.72);
+  background: rgba(91, 131, 178, 0.24);
   color: var(--admin-text);
 }
 
@@ -648,7 +654,7 @@ textarea {
   gap: 12px;
   border: 1px solid var(--admin-border);
   border-radius: 18px;
-  background: rgba(255, 244, 223, 0.04);
+  background: rgba(199, 212, 224, 0.04);
   padding: 14px;
 }
 
@@ -672,9 +678,9 @@ textarea {
 }
 
 .admin-filter-summary-group {
-  --cluster-panel: rgba(255, 244, 223, 0.05);
-  --cluster-soft: rgba(255, 244, 223, 0.08);
-  --cluster-border: rgba(255, 244, 223, 0.16);
+  --cluster-panel: rgba(199, 212, 224, 0.05);
+  --cluster-soft: rgba(199, 212, 224, 0.08);
+  --cluster-border: rgba(199, 212, 224, 0.16);
   --cluster-text: var(--admin-accent-strong);
   display: grid;
   gap: 10px;
@@ -683,7 +689,7 @@ textarea {
 }
 
 .admin-filter-summary-group + .admin-filter-summary-group {
-  border-top: 1px solid rgba(255, 244, 223, 0.08);
+  border-top: 1px solid rgba(199, 212, 224, 0.08);
 }
 
 .admin-filter-summary-group h4 {
@@ -719,10 +725,10 @@ textarea {
   position: sticky;
   top: 0;
   z-index: 3;
-  background: rgba(42, 33, 24, 0.98);
+  background: rgba(28, 36, 48, 0.98);
   color: var(--admin-faint);
   font-size: 0.74rem;
-  font-weight: 500;
+  font-weight: 400;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -733,8 +739,8 @@ textarea {
 }
 
 .admin-tag-summary-table tbody tr {
-  --cluster-panel: rgba(255, 244, 223, 0.05);
-  --cluster-border: rgba(255, 244, 223, 0.16);
+  --cluster-panel: rgba(199, 212, 224, 0.05);
+  --cluster-border: rgba(199, 212, 224, 0.16);
   --cluster-text: var(--admin-accent-strong);
   background: var(--cluster-panel);
 }
@@ -869,7 +875,7 @@ textarea {
   color: inherit;
   cursor: pointer;
   font: inherit;
-  font-weight: inherit;
+  font-weight: 400;
   letter-spacing: inherit;
   padding: 0;
   text-align: left;
@@ -933,20 +939,20 @@ textarea {
 .admin-new-story-button {
   width: 100%;
   margin-top: 16px;
-  border: 1px solid rgba(244, 201, 125, 0.34);
+  border: 1px solid rgba(169, 199, 232, 0.34);
   border-radius: 18px;
-  background: rgba(216, 166, 99, 0.12);
+  background: rgba(91, 131, 178, 0.14);
   color: var(--admin-text);
   cursor: pointer;
-  font-weight: 900;
+  font-weight: 400;
   padding: 12px 14px;
   text-align: left;
 }
 
 .admin-new-story-button:hover,
 .admin-new-story-button.is-active {
-  background: rgba(216, 166, 99, 0.22);
-  border-color: rgba(244, 201, 125, 0.7);
+  background: rgba(91, 131, 178, 0.24);
+  border-color: rgba(169, 199, 232, 0.7);
 }
 
 .admin-district-buttons,
@@ -963,10 +969,10 @@ textarea {
   gap: 8px;
   border: 1px solid var(--admin-border);
   border-radius: 18px;
-  background: rgba(255, 244, 223, 0.06);
+  background: rgba(199, 212, 224, 0.06);
   color: var(--admin-muted);
   cursor: pointer;
-  font-weight: 900;
+  font-weight: 400;
   min-height: 48px;
   padding: 11px 14px;
 }
@@ -984,8 +990,8 @@ textarea {
 .admin-district-button.is-selected,
 .admin-code-option:hover,
 .admin-code-option.is-selected {
-  border-color: rgba(244, 201, 125, 0.82);
-  background: rgba(216, 166, 99, 0.2);
+  border-color: rgba(169, 199, 232, 0.82);
+  background: rgba(91, 131, 178, 0.22);
   color: var(--admin-text);
 }
 
@@ -1019,7 +1025,7 @@ textarea {
   overflow: hidden;
   border: 1px solid var(--admin-border);
   border-radius: 22px;
-  background: rgba(255, 244, 223, 0.05);
+  background: rgba(199, 212, 224, 0.05);
   scroll-snap-align: start;
 }
 
@@ -1028,9 +1034,9 @@ textarea {
   min-height: 150px;
   place-items: center;
   background:
-    linear-gradient(135deg, rgba(216, 166, 99, 0.18), rgba(255, 244, 223, 0.04)),
-    rgba(16, 13, 10, 0.72);
-  color: rgba(255, 244, 223, 0.76);
+    linear-gradient(135deg, rgba(91, 131, 178, 0.2), rgba(199, 212, 224, 0.05)),
+    rgba(15, 19, 24, 0.72);
+  color: rgba(199, 212, 224, 0.78);
   font-size: 2rem;
   font-weight: 400;
   letter-spacing: 0.08em;
@@ -1060,7 +1066,7 @@ textarea {
   gap: 14px;
   border: 1px solid var(--admin-border);
   border-radius: 22px;
-  background: rgba(255, 244, 223, 0.04);
+  background: rgba(199, 212, 224, 0.04);
   padding: 14px;
 }
 
@@ -1094,11 +1100,11 @@ textarea {
   gap: 7px;
   border: 1px solid var(--admin-border);
   border-radius: 999px;
-  background: rgba(255, 244, 223, 0.06);
+  background: rgba(199, 212, 224, 0.06);
   color: var(--admin-muted);
   cursor: pointer;
   font-size: 0.84rem;
-  font-weight: 800;
+  font-weight: 400;
   padding: 7px 10px;
 }
 
@@ -1107,8 +1113,8 @@ textarea {
 }
 
 .admin-radio-pill:has(input:checked) {
-  border-color: rgba(244, 201, 125, 0.82);
-  background: rgba(216, 166, 99, 0.2);
+  border-color: rgba(169, 199, 232, 0.82);
+  background: rgba(91, 131, 178, 0.22);
   color: var(--admin-text);
 }
 
@@ -1133,7 +1139,7 @@ textarea {
   width: min(460px, 100%);
   border: 1px solid var(--admin-border);
   border-radius: 26px;
-  background: rgba(32, 25, 19, 0.98);
+  background: rgba(23, 28, 34, 0.98);
   box-shadow: var(--admin-shadow);
   padding: 24px;
 }
@@ -1161,7 +1167,7 @@ textarea {
   overflow: hidden;
   border: 1px solid var(--admin-border);
   border-radius: 22px;
-  background: rgba(255, 244, 223, 0.05);
+  background: rgba(199, 212, 224, 0.05);
   scroll-snap-align: start;
   margin: 0;
 }
@@ -1171,7 +1177,7 @@ textarea {
   width: 100%;
   height: 170px;
   object-fit: cover;
-  background: rgba(16, 13, 10, 0.72);
+  background: rgba(15, 19, 24, 0.72);
 }
 
 .admin-image-card figcaption {
@@ -1188,7 +1194,7 @@ textarea {
 }
 
 .admin-image-card.is-selected {
-  outline: 2px solid rgba(244, 201, 125, 0.72);
+  outline: 2px solid rgba(169, 199, 232, 0.72);
   outline-offset: 2px;
 }
 
@@ -1203,7 +1209,7 @@ textarea {
 }
 
 .admin-image-select:focus-visible {
-  outline: 2px solid rgba(244, 201, 125, 0.72);
+  outline: 2px solid rgba(169, 199, 232, 0.72);
   outline-offset: -2px;
 }
 
@@ -1227,7 +1233,7 @@ textarea {
   color: #ffd6cc;
   padding: 7px 11px;
   font-size: 0.72rem;
-  font-weight: 900;
+  font-weight: 400;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   cursor: pointer;

@@ -1112,7 +1112,7 @@ function renderDeniedCard() {
   return `
     <section class="admin-denied-card">
       <h1>Access not enabled</h1>
-      <p>You are signed in as <strong>${escapeHtml(state.user?.email || '')}</strong>, but this account is not listed in <span class="admin-small-code">public.admin_users</span>.</p>
+      <p>You are signed in as <span>${escapeHtml(state.user?.email || '')}</span>, but this account is not listed in <span class="admin-small-code">public.admin_users</span>.</p>
       <p>Add this user ID in Supabase, then refresh:</p>
       <p><span class="admin-small-code">${escapeHtml(state.user?.id || '')}</span></p>
       <button type="button" class="admin-secondary-button" data-action="sign-out">Sign out</button>
@@ -1593,7 +1593,7 @@ function renderOverview() {
           ${checks.map((check) => `
             <div class="admin-overview-check">
               <span>${escapeHtml(check.label)}</span>
-              <strong>${check.stories.length}</strong>
+              <span>${check.stories.length}</span>
               ${renderStoryCodeList(check.stories)}
               <small>${escapeHtml(check.detail)}</small>
             </div>
@@ -1807,7 +1807,7 @@ function renderImageDeleteModal() {
     <div class="admin-modal-backdrop" role="presentation">
       <section class="admin-unsaved-modal" role="dialog" aria-modal="true" aria-labelledby="delete-image-title">
         <h2 id="delete-image-title">Delete image?</h2>
-        <p>This will permanently delete <strong>${escapeHtml(state.pendingImageDelete.name || state.pendingImageDelete.path)}</strong> from the Supabase Storage bucket.</p>
+        <p>This will permanently delete <span>${escapeHtml(state.pendingImageDelete.name || state.pendingImageDelete.path)}</span> from the Supabase Storage bucket.</p>
         <div class="admin-modal-actions">
           <button type="button" class="admin-danger-button" data-action="confirm-delete-image" ${state.busy ? 'disabled' : ''}>${state.busy ? 'Deleting…' : 'Yes, delete'}</button>
           <button type="button" class="admin-secondary-button" data-action="cancel-delete-image" ${state.busy ? 'disabled' : ''}>Cancel</button>
