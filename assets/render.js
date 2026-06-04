@@ -410,7 +410,7 @@ function renderGalleryCard(state, item) {
   `;
 }
 
-const RELATED_PAGE_SIZE = 3;
+const RELATED_PAGE_SIZE = 4;
 
 function renderRelatedStoriesSection(state, story, t) {
   const relatedPageSize = state.relatedPage ? state.relatedPage * RELATED_PAGE_SIZE : RELATED_PAGE_SIZE;

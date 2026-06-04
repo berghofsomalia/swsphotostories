@@ -1867,3 +1867,11 @@ html[data-theme="light"] .gallery-card:hover {
   background: rgba(255,255,255,0.07);
   box-shadow: 0 0 0 2px rgba(180,110,56,0.12);
 }
+
+/* ── Related grid responsive ──────────────────────────────────── */
+@media (max-width: 1080px) {
+  .related-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .related-grid { grid-template-columns: 1fr; }
+}
