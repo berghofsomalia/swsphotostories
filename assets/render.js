@@ -16,6 +16,7 @@ import {
   hasMoreStories,
   isSaved,
   pagedStories,
+  scoreRelated,
   SEARCH_MIN_CHARS,
   storyCountLabel
 } from './story-data.js?v=20260603-search-focus3';
@@ -409,6 +410,38 @@ function renderGalleryCard(state, item) {
   `;
 }
 
+const RELATED_PAGE_SIZE = 3;
+
+function renderRelatedStoriesSection(state, story, t) {
+  const relatedPageSize = state.relatedPage ? state.relatedPage * RELATED_PAGE_SIZE : RELATED_PAGE_SIZE;
+  const scored = state.stories
+    .map((s) => ({ story: s, score: scoreRelated(story, s) }))
+    .filter((e) => e.score > 0)
+    .sort((a, b) => b.score - a.score);
+
+  if (!scored.length) return '';
+
+  const visible = scored.slice(0, relatedPageSize);
+  const hasMore = scored.length > relatedPageSize;
+
+  const cards = visible.map(({ story: s }) => renderGalleryCard(state, s)).join('');
+
+  return `
+    <section class="related-band">
+      <div class="content-wrap">
+        <div class="related-header">
+          <span class="related-label">${escapeHtml(t.relatedLabel || 'Related photostories')}</span>
+        </div>
+        <div class="gallery-grid related-grid">${cards}</div>
+        <div class="related-footer">
+          ${hasMore ? `<button type="button" class="related-more-button" data-action="load-more-related">${escapeHtml(t.loadMoreRelated || 'Load more related stories')}</button>` : ''}
+          <button type="button" class="close-story-button" data-action="close-story">${escapeHtml(t.allStories || 'Browse all stories')}</button>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
 export function renderApp(state) {
   const app = qs('#app');
   const story = currentStory(state);
@@ -483,13 +516,12 @@ export function renderApp(state) {
             ${icon.bookmark()}<span>${escapeHtml(isSaved(state, story.id) ? t.saved : t.save)}</span>
           </button>
           <button type="button" class="action-button" data-action="open-share">${icon.share()}<span>${escapeHtml(t.share)}</span></button>
-          <button type="button" class="action-button" data-action="random-related">${icon.shuffle()}<span>${escapeHtml(t.relatedRandom)}</span></button>
-          <button type="button" class="action-button" data-action="show-related">${icon.related()}<span>${escapeHtml(t.related)}</span></button>
-          <button type="button" class="action-button" data-action="explore-all">${icon.sliders()}<span>${escapeHtml(t.explore)}</span></button>
         </div>
         ${state.actionMessage ? `<div class="action-message">${escapeHtml(state.actionMessage)}</div>` : ''}
       </div>
     </section>
+
+    ${renderRelatedStoriesSection(state, story, t)}
   ` : '';
 
   const galleryGridMarkup = visibleStories.length === 0
@@ -544,7 +576,9 @@ export function renderApp(state) {
   const shellClasses = [
     'site-shell',
     !state.storyVisible ? 'is-gallery-only' : '',
-    state.galleryVisible && state.filterDrawerOpen ? 'is-filter-split' : ''
+    state.galleryVisible && state.filterDrawerOpen ? 'is-filter-split' : '',
+    state.storySlideOut ? 'is-story-sliding-out' : '',
+    state.storySlideIn ? 'is-story-sliding-in' : ''
   ].filter(Boolean).join(' ');
 
   app.innerHTML = `

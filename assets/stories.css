@@ -1573,3 +1573,123 @@ button.chip.cluster-tone-people:hover {
   border-color: transparent !important;
   background: var(--cluster-active) !important;
 }
+
+/* ── Story slide-in / slide-out animation ──────────────────────────────────── */
+
+.story-stage-shell {
+  animation: none;
+}
+
+.is-story-sliding-in .story-stage-shell,
+.is-story-sliding-in .story-band,
+.is-story-sliding-in .reflection-band,
+.is-story-sliding-in .actions-band,
+.is-story-sliding-in .related-band {
+  animation: storySlideIn 0.38s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.is-story-sliding-out .story-stage-shell,
+.is-story-sliding-out .story-band,
+.is-story-sliding-out .reflection-band,
+.is-story-sliding-out .actions-band,
+.is-story-sliding-out .related-band {
+  animation: storySlideOut 0.32s cubic-bezier(0.55, 0, 1, 0.45) both;
+  pointer-events: none;
+}
+
+@keyframes storySlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes storySlideOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-28px);
+  }
+}
+
+/* ── Related stories section ──────────────────────────────────────────────── */
+
+.related-band {
+  padding: 2.5rem 0 3rem;
+  border-top: 1px solid var(--color-border-secondary, rgba(255,255,255,0.08));
+}
+
+.related-header {
+  margin-bottom: 1.25rem;
+}
+
+.related-label {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.related-grid {
+  /* inherits .gallery-grid layout */
+}
+
+.related-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-border-secondary, rgba(255,255,255,0.06));
+  gap: 1rem;
+}
+
+.related-more-button {
+  font-size: 0.8rem;
+  font-family: inherit;
+  color: var(--color-text-secondary);
+  background: none;
+  border: 1px solid var(--color-border-primary, rgba(255,255,255,0.15));
+  border-radius: 2rem;
+  padding: 0.45rem 1.1rem;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.related-more-button:hover {
+  color: var(--color-text-primary);
+  border-color: var(--color-text-secondary);
+}
+
+.close-story-button {
+  font-size: 0.8rem;
+  font-family: inherit;
+  color: var(--color-text-secondary);
+  background: none;
+  border: none;
+  padding: 0.45rem 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: transparent;
+  transition: color 0.15s, text-decoration-color 0.15s;
+  margin-left: auto;
+}
+
+.close-story-button:hover {
+  color: var(--color-text-primary);
+  text-decoration-color: currentColor;
+}
+
+/* When related-more-button is absent, push close button to right */
+.related-footer:not(:has(.related-more-button)) .close-story-button {
+  margin-left: auto;
+}

@@ -148,7 +148,7 @@ export function hasMoreStories(state) {
   return filteredStories(state).length > state.galleryPage * PAGE_SIZE;
 }
 
-function scoreRelated(base, candidate) {
+export function scoreRelated(base, candidate) {
   if (!base || !candidate || base.id === candidate.id) return -1;
 
   const baseTags = new Set((base.tags || []).map((tag) => tag.slug).filter(Boolean));

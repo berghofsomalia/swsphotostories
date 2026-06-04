@@ -541,12 +541,47 @@ const ACTIONS = {
   'open-story': async ({ value }) => {
     const story = getStoryById(state.stories, value);
     if (!story) return;
+    // Trigger slide-in animation
+    state.storySlideIn = true;
+    state.storySlideOut = false;
+    state.relatedPage = 1;
     if (state.galleryVisible) {
       replaceCurrentHistoryState('gallery');
       setCurrentStory(story.id, { scrollTop: true, pushHistory: true });
-      return;
+    } else {
+      setCurrentStory(story.id, { scrollTop: true });
     }
-    setCurrentStory(story.id, { scrollTop: true });
+    // Remove slide-in class after animation completes
+    window.setTimeout(() => {
+      state.storySlideIn = false;
+      renderSite();
+    }, 420);
+  },
+  'close-story': async () => {
+    // Slide story out, reveal gallery
+    state.storySlideOut = true;
+    state.storySlideIn = false;
+    renderSite();
+    window.setTimeout(() => {
+      state.storySlideOut = false;
+      state.currentStoryId = null;
+      state.storyVisible = false;
+      state.galleryVisible = true;
+      state.filterDrawerOpen = true;
+      state.filters = { district: '', people: [], tags: [], searchQuery: '' };
+      state.galleryMode = 'total';
+      state.galleryPage = 1;
+      const url = new URL(window.location.href);
+      url.search = '';
+      url.hash = 'gallery';
+      history.pushState(makeHistoryState('gallery'), '', url.href);
+      renderSite();
+      requestAnimationFrame(() => qs('#gallery')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+    }, 350);
+  },
+  'load-more-related': async () => {
+    state.relatedPage = (state.relatedPage || 1) + 1;
+    renderSite();
   },
   'prev-image': async () => { moveToPreviousImage(); },
   'next-image': async () => { moveToNextImage(); },

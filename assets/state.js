@@ -42,7 +42,10 @@ export function createInitialState() {
     filterDrawerOpen: false,
     gallerySplitPercent: 50,
     actionMessage: '',
-    autoplayId: null
+    autoplayId: null,
+    storySlideIn: false,
+    storySlideOut: false,
+    relatedPage: 1
   };
 }
 
