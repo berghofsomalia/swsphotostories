@@ -57,6 +57,17 @@ export function buildShareUrl(story) {
   return url.toString();
 }
 
+export function buildGalleryShareUrl(filters) {
+  const url = storyAppUrl();
+  url.search = '';
+  url.hash = 'gallery';
+  if (filters.district)               url.searchParams.set('district', filters.district);
+  if (filters.people?.length)         url.searchParams.set('people',   filters.people.join(','));
+  if (filters.tags?.length)           url.searchParams.set('tags',     filters.tags.join(','));
+  if (filters.searchQuery?.trim())    url.searchParams.set('q',        filters.searchQuery.trim());
+  return url.toString();
+}
+
 export function updateUrlForStory(story, options = {}) {
   const url = storyAppUrl();
   url.searchParams.set('code', story.code || story.id);

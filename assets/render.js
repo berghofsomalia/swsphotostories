@@ -222,11 +222,15 @@ function renderSavedDrawer(state) {
 
 function renderShareModal(state) {
   const t = getUiText(state.language);
+  const story = currentStory(state);
+  const title = story
+    ? escapeHtml(t.shareThisStory)
+    : escapeHtml(t.shareThisView || 'Share this view');
   return `
     <div class="modal-backdrop ${state.shareOpen ? 'is-open' : ''}" data-action="close-share"></div>
     <div class="share-modal ${state.shareOpen ? 'is-open' : ''}" aria-hidden="${!state.shareOpen}">
       <div class="share-header">
-        <div class="share-title">${escapeHtml(t.shareThisStory)}</div>
+        <div class="share-title">${title}</div>
         <button type="button" class="icon-button" data-action="close-share" aria-label="${escapeHtml(t.close)}">${icon.close()}</button>
       </div>
       <div class="share-grid">
@@ -372,10 +376,13 @@ function storyFilterSummaryMarkup(state) {
   const label = t.photostories || t.stories || 'photostories';
   const isFiltered = visible !== total || hasActiveFilters(state.filters) || state.galleryMode === 'related';
 
+  const shareBtn = `<button type="button" class="filter-summary-share" data-action="open-share" aria-label="${escapeHtml(t.share)}">${icon.share()}</button>`;
+
   if (!isFiltered) {
     return `
       <span class="filter-summary-text">${total} ${escapeHtml(label)}</span>
       <span class="filter-resize-grip" aria-hidden="true">${icon.resizeY()}</span>
+      ${shareBtn}
     `;
   }
 
@@ -383,6 +390,7 @@ function storyFilterSummaryMarkup(state) {
     <span class="filter-summary-text">${visible}/${total} ${escapeHtml(label)}</span>
     <span class="filter-resize-grip" aria-hidden="true">${icon.resizeY()}</span>
     <button type="button" class="filter-summary-reset" data-action="reset-filters">${escapeHtml(t.resetFilters || 'Reset filters')}</button>
+    ${shareBtn}
   `;
 }
 

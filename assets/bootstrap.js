@@ -1,7 +1,8 @@
 import { renderApp, qs, qsa, syncGalleryCardHeights } from './render.js?v=20260603-search-focus3';
-import { state, createEmptyFilters } from './state.js';
+import { state, createEmptyFilters, PAGE_SIZE } from './state.js';
 import {
   buildShareUrl,
+  buildGalleryShareUrl,
   currentStory,
   getStoryById,
   hasActiveFilters,
@@ -24,6 +25,21 @@ let filterResizeDrag = null;
 let searchRenderTimerId = null;
 let pendingSearchFocus = null;
 const SEARCH_RENDER_DELAY_MS = 160;
+
+// ── Viewport-aware initial gallery count ──────────────────────────────────────
+function viewportInitialPageCount() {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  // Match CSS breakpoints: 1 col ≤560px, 2 cols ≤1080px, 3 cols above
+  const cols = vw <= 560 ? 1 : vw <= 1080 ? 2 : 3;
+  // Card height: image frame (15.5rem ≈ 248px) + body (~130px) + gap (1rem ≈ 16px)
+  const cardHeight = 248 + 130 + 16;
+  const rowsFit = Math.ceil(vh / cardHeight);
+  // Add one extra row so there's always something below the fold
+  const cardsNeeded = (rowsFit + 1) * cols;
+  // Round up to a full PAGE_SIZE multiple, minimum 1 page
+  return Math.max(1, Math.ceil(cardsNeeded / PAGE_SIZE));
+}
 
 // ── Rendering ─────────────────────────────────────────────────────────────────
 
@@ -284,7 +300,7 @@ function setCurrentStory(id, options = {}) {
 }
 
 function resetPage() {
-  state.galleryPage = 1;
+  state.galleryPage = viewportInitialPageCount();
 }
 
 function setGalleryModeFromFilters() {
@@ -302,6 +318,10 @@ function toggleSaved(storyId) {
     state.actionMessage = t.savedMessage;
   }
   savePersistentState(state);
+
+  // Set initial page count to fill viewport rather than a fixed number
+  state.galleryPage = viewportInitialPageCount();
+
   renderSite();
   clearActionMessageSoon();
 }
@@ -413,22 +433,22 @@ const ACTIONS = {
     renderSite();
   },
   'share-copy': async ({ story }) => {
-    if (!story) return;
-    await writeToClipboard(buildShareUrl(story));
+    const url = story ? buildShareUrl(story) : buildGalleryShareUrl(state.filters);
+    await writeToClipboard(url);
     state.shareOpen = false;
     state.actionMessage = getUiText(state.language).copied;
     renderSite();
     clearActionMessageSoon();
   },
   'share-facebook': async ({ story }) => {
-    if (!story) return;
-    openUrlInNewTab(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(buildShareUrl(story))}`);
+    const url = story ? buildShareUrl(story) : buildGalleryShareUrl(state.filters);
+    openUrlInNewTab(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`);
     state.shareOpen = false;
     renderSite();
   },
   'share-instagram': async ({ story }) => {
-    if (!story) return;
-    await writeToClipboard(buildShareUrl(story));
+    const url = story ? buildShareUrl(story) : buildGalleryShareUrl(state.filters);
+    await writeToClipboard(url);
     openUrlInNewTab('https://www.instagram.com/');
     state.shareOpen = false;
     state.actionMessage = getUiText(state.language).instagramHint;
@@ -436,17 +456,16 @@ const ACTIONS = {
     clearActionMessageSoon();
   },
   'share-x': async ({ story }) => {
-    if (!story) return;
-    const shareUrl = buildShareUrl(story);
-    openUrlInNewTab(`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(currentStoryLabel(story))}`);
+    const url = story ? buildShareUrl(story) : buildGalleryShareUrl(state.filters);
+    const text = story ? currentStoryLabel(story) : getUiText(state.language).shareThisView || 'Photostories from Southwest State';
+    openUrlInNewTab(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`);
     state.shareOpen = false;
     renderSite();
   },
   'share-email': async ({ story }) => {
-    if (!story) return;
-    const shareUrl = buildShareUrl(story);
-    const subject = encodeURIComponent(currentStoryLabel(story));
-    const body = encodeURIComponent(`${labelFor(story.summary, state.language)}\n\n${shareUrl}`);
+    const url = story ? buildShareUrl(story) : buildGalleryShareUrl(state.filters);
+    const subject = encodeURIComponent(story ? currentStoryLabel(story) : getUiText(state.language).shareThisView || 'Photostories from Southwest State');
+    const body = encodeURIComponent(story ? `${labelFor(story.summary, state.language)}\n\n${url}` : url);
     window.location.href = `mailto:?subject=${subject}&body=${body}`;
     state.shareOpen = false;
     renderSite();
@@ -570,7 +589,7 @@ const ACTIONS = {
       state.filterDrawerOpen = true;
       state.filters = { district: '', people: [], tags: [], searchQuery: '' };
       state.galleryMode = 'total';
-      state.galleryPage = 1;
+      state.galleryPage = viewportInitialPageCount();
       const url = new URL(window.location.href);
       url.search = '';
       url.hash = 'gallery';
@@ -665,14 +684,24 @@ function handleSearchInput(event) {
   const input = event.target.closest('[data-search-input]');
   if (!input) return;
 
+  const selectionStart = input.selectionStart;
+  const selectionEnd   = input.selectionEnd;
+
   state.filters.searchQuery = input.value;
-  pendingSearchFocus = captureSearchFocus(input, { atEnd: true });
   setGalleryModeFromFilters();
-  clearTimeout(searchRenderTimerId);
-  searchRenderTimerId = window.setTimeout(() => {
-    renderSite();
-    replaceCurrentHistoryState(state.galleryVisible ? 'gallery' : 'story');
-  }, SEARCH_RENDER_DELAY_MS);
+  renderSite();
+  replaceCurrentHistoryState(state.galleryVisible ? 'gallery' : 'story');
+
+  // Restore caret without multi-hop async — same pattern as admin
+  const restored = qs('[data-search-input]');
+  if (restored) {
+    try { restored.focus({ preventScroll: true }); } catch { restored.focus(); }
+    const len = restored.value.length;
+    restored.setSelectionRange(
+      Math.min(selectionStart ?? len, len),
+      Math.min(selectionEnd   ?? len, len)
+    );
+  }
 }
 
 function attachGlobalListeners() {
@@ -767,6 +796,18 @@ export async function initialiseApp() {
   const shouldFocusSearch = params.get('focus') === 'search';
   const shouldRandomise = params.has('random') && !code;
   const existing = getStoryById(state.stories, code);
+
+  // Restore gallery filter state from shared URL params
+  if (!code) {
+    const pDistrict = params.get('district');
+    const pPeople   = params.get('people');
+    const pTags     = params.get('tags');
+    const pQ        = params.get('q');
+    if (pDistrict) state.filters.district = pDistrict;
+    if (pPeople)   state.filters.people   = pPeople.split(',').filter(Boolean);
+    if (pTags)     state.filters.tags     = pTags.split(',').filter(Boolean);
+    if (pQ)        state.filters.searchQuery = pQ;
+  }
   const randomStory = state.stories[Math.floor(Math.random() * state.stories.length)] || null;
   const selectedStory = shouldRandomise ? randomStory : existing;
   const startInGallery = !selectedStory;
