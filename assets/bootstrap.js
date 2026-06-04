@@ -1,4 +1,4 @@
-import { renderApp, qs, qsa, syncGalleryCardHeights } from './render.js?v=20260603-search-focus3';
+import { renderApp, qs, qsa, syncGalleryCardHeights } from './render.js?v=20260604-gallery-header';
 import { state, createEmptyFilters, PAGE_SIZE } from './state.js';
 import {
   buildShareUrl,

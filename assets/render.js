@@ -376,13 +376,10 @@ function storyFilterSummaryMarkup(state) {
   const label = t.photostories || t.stories || 'photostories';
   const isFiltered = visible !== total || hasActiveFilters(state.filters) || state.galleryMode === 'related';
 
-  const shareBtn = `<button type="button" class="filter-summary-share" data-action="open-share" aria-label="${escapeHtml(t.share)}">${icon.share()}</button>`;
-
   if (!isFiltered) {
     return `
       <span class="filter-summary-text">${total} ${escapeHtml(label)}</span>
       <span class="filter-resize-grip" aria-hidden="true">${icon.resizeY()}</span>
-      ${shareBtn}
     `;
   }
 
@@ -390,7 +387,6 @@ function storyFilterSummaryMarkup(state) {
     <span class="filter-summary-text">${visible}/${total} ${escapeHtml(label)}</span>
     <span class="filter-resize-grip" aria-hidden="true">${icon.resizeY()}</span>
     <button type="button" class="filter-summary-reset" data-action="reset-filters">${escapeHtml(t.resetFilters || 'Reset filters')}</button>
-    ${shareBtn}
   `;
 }
 
