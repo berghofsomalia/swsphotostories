@@ -1639,7 +1639,8 @@ button.chip.cluster-tone-people:hover {
 }
 
 .related-grid {
-  /* inherits .gallery-grid layout */
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
 }
 
 .related-footer {
@@ -1692,4 +1693,177 @@ button.chip.cluster-tone-people:hover {
 /* When related-more-button is absent, push close button to right */
 .related-footer:not(:has(.related-more-button)) .close-story-button {
   margin-left: auto;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PHASE 2 — Story reading experience
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Wider, more generous reading column */
+.story-band .content-wrap.narrow,
+.reflection-band .content-wrap.narrow {
+  width: min(100%, 1080px);
+}
+
+/* Better body text — more breathing, slightly larger */
+.story-copy p,
+.reflection-copy p {
+  font-size: 1.06rem;
+  line-height: 2.0;
+}
+
+/* Opening paragraph gets a gentle drop-cap feel via larger first line */
+.story-copy p:first-of-type {
+  font-size: 1.1rem;
+  line-height: 1.95;
+  color: #ede5db;
+}
+
+/* Meta panel — more vertical rhythm */
+.story-meta-panel {
+  gap: 1.2rem;
+  padding: 0.6rem 0 0;
+}
+
+.story-meta-teaser {
+  font-size: 1.08rem;
+  line-height: 1.76;
+  color: #ede5db;
+}
+
+/* Tags in meta panel — slightly more breathing */
+.story-meta-tags {
+  gap: 0.6rem;
+  margin-top: 0.2rem;
+}
+
+/* Actions-band — now just Save + Share, so centre them elegantly */
+.actions-band .content-wrap {
+  padding-top: 2rem;
+  padding-bottom: 2.25rem;
+}
+
+.actions-row {
+  justify-content: flex-start;
+  gap: 0.65rem;
+}
+
+.action-button {
+  min-height: 2.6rem;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 2rem;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.04);
+  letter-spacing: 0.02em;
+}
+
+.action-button:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.2);
+}
+
+/* Reflection band heading rhythm */
+.reflection-band .content-wrap.narrow {
+  padding-top: 2.8rem;
+  padding-bottom: 3rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PHASE 3 — Gallery page feel & filter sidebar
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Filter panel — slightly warmer, more defined */
+.filter-panel {
+  border: 1px solid rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.03);
+  padding: 1.1rem 0.9rem;
+}
+
+html[data-theme="light"] .filter-panel {
+  background: rgba(246,239,230,0.96);
+  border: 1px solid rgba(100,80,60,0.1);
+}
+
+/* Filter group headings — colored dot per cluster group */
+.filter-group h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  margin-bottom: 0.6rem;
+}
+
+.filter-group h3::before {
+  content: '';
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: currentColor;
+  opacity: 0.55;
+}
+
+/* Per-cluster dot colors */
+.cluster-tone-people    h3 { color: #d9b184; }
+.cluster-tone-people    h3::before { background: #d9b184; opacity: 1; }
+.cluster-tone-1         h3::before { background: #b07a4a; opacity: 1; }
+.cluster-tone-2         h3::before { background: #7a9e6e; opacity: 1; }
+.cluster-tone-3         h3::before { background: #8e6bad; opacity: 1; }
+.cluster-tone-4         h3::before { background: #b05a5a; opacity: 1; }
+.cluster-tone-5         h3::before { background: #5a8aad; opacity: 1; }
+.cluster-tone-6         h3::before { background: #7aad5a; opacity: 1; }
+
+html[data-theme="light"] .cluster-tone-1 h3::before { background: #8b5a2a; }
+html[data-theme="light"] .cluster-tone-2 h3::before { background: #4a7a3a; }
+html[data-theme="light"] .cluster-tone-3 h3::before { background: #6a4a8a; }
+html[data-theme="light"] .cluster-tone-4 h3::before { background: #8a3a3a; }
+html[data-theme="light"] .cluster-tone-5 h3::before { background: #3a6a8a; }
+html[data-theme="light"] .cluster-tone-6 h3::before { background: #4a7a2a; }
+
+/* Tighter filter group spacing */
+.filter-group + .filter-group {
+  margin-top: 1.1rem;
+}
+
+/* Chips — slightly softer, rounder */
+.chip {
+  border-radius: 999px;
+  font-size: 0.70rem;
+  padding: 0.38rem 0.68rem;
+  letter-spacing: 0.02em;
+  transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
+}
+
+/* Gallery card — warmer hover */
+.gallery-card:hover {
+  border-color: rgba(184,122,56,0.25);
+}
+
+html[data-theme="light"] .gallery-card:hover {
+  border-color: rgba(160,90,40,0.2);
+  box-shadow: 0 2px 18px rgba(160,90,40,0.08);
+}
+
+/* Gallery summary — slightly better legibility */
+.gallery-summary {
+  font-size: 0.91rem;
+  line-height: 1.6;
+}
+
+/* Gallery count / header — quieter */
+.filter-summary-text {
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  opacity: 0.7;
+}
+
+/* Search input — warmer focus ring */
+.search-input:focus {
+  border-color: rgba(180,110,56,0.55);
+  background: rgba(255,255,255,0.07);
+  box-shadow: 0 0 0 2px rgba(180,110,56,0.12);
 }
