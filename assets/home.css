@@ -458,6 +458,7 @@ html[data-theme="light"] .home-card {
 }
 
 .home-card-image {
+  position: relative;
   flex: 2 1 66.666%;
   min-width: 0;
   min-height: 0;
@@ -466,7 +467,7 @@ html[data-theme="light"] .home-card {
 }
 
 html[data-theme="light"] .home-card-image {
-  background: #eadfd2;
+  background: #11161c;
 }
 
 .home-card-image img {

@@ -131,6 +131,35 @@ function renderHomeTitleLines(lines = []) {
     .join('');
 }
 
+function isLoadingImageSrc(src = '') {
+  const value = String(src || '');
+  return !value || value.startsWith('data:image/svg+xml');
+}
+
+function imageLoadingMarkup(code = '') {
+  const safeCode = esc(String(code || 'story').trim() || 'story');
+  return `
+    <div class="image-loading-panel" role="status" aria-label="Loading image ${safeCode}">
+      <span class="image-loading-pulse" aria-hidden="true"></span>
+      <span class="image-loading-text">Loading image <span>${safeCode}</span></span>
+    </div>
+  `;
+}
+
+function syncHomeImageLoadStates(root = document) {
+  root.querySelectorAll('img[data-image-fade]').forEach((image) => {
+    if (image.naturalWidth > 0) {
+      image.classList.add('is-image-loaded');
+      return;
+    }
+    image.classList.remove('is-image-loaded');
+    if (!image.dataset.imageLoadWatch) {
+      image.dataset.imageLoadWatch = 'true';
+      image.addEventListener('load', () => image.classList.add('is-image-loaded'), { once: true });
+    }
+  });
+}
+
 function renderLoading() {
   savePrefs();
   const app = document.querySelector('#app');
@@ -165,11 +194,14 @@ function renderPage() {
   document.title = t.siteTitle;
 
   const leadSrc = story?.images?.[0] || '';
+  const leadImageLoading = isLoadingImageSrc(leadSrc);
 
   const storyCard = story ? `
     <div class="home-card">
       <div class="home-card-image">
-        <img src="${esc(leadSrc)}" alt="${esc(story.storyteller)}" loading="eager">
+        ${leadImageLoading
+          ? imageLoadingMarkup(story.code || story.id)
+          : `<img data-image-fade src="${esc(leadSrc)}" alt="${esc(story.storyteller)}" loading="eager">`}
       </div>
       <div class="home-card-body">
         <p class="home-card-teaser">${esc(labelFor(story.summary, state.language))}</p>
@@ -216,10 +248,17 @@ function renderPage() {
       ${renderSavedDrawer(t)}
     </div>
   `;
+  requestAnimationFrame(syncHomeImageLoadStates);
 }
 
 // ── Listeners ─────────────────────────────────────────────────────────────────
 function attachListeners() {
+  document.addEventListener('load', (e) => {
+    if (e.target?.matches?.('img[data-image-fade]')) {
+      e.target.classList.add('is-image-loaded');
+    }
+  }, true);
+
   document.addEventListener('click', async (e) => {
     const target = e.target.closest('[data-action]');
     if (!target) return;

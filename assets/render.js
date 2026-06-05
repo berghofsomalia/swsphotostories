@@ -54,13 +54,45 @@ function escapeHtml(value = '') {
     .replaceAll("'", '&#39;');
 }
 
-function adaptiveImageMarkup(src, alt, mode = 'contain', extraClass = '') {
-  const safeSrc = escapeHtml(src || '');
+function isLoadingImageSrc(src = '') {
+  const value = String(src || '');
+  return !value || value.startsWith('data:image/svg+xml');
+}
+
+function imageLoadingMarkup(code = '') {
+  const safeCode = escapeHtml(String(code || 'story').trim() || 'story');
   return `
-    <div class="adaptive-image ${mode === 'cover' ? 'is-cover' : 'is-contain'} ${extraClass}">
-      <img class="adaptive-image-bg" src="${safeSrc}" alt="" aria-hidden="true">
-      <div class="adaptive-image-overlay"></div>
-      <img class="adaptive-image-fg" src="${safeSrc}" alt="${escapeHtml(alt)}" loading="lazy">
+    <div class="image-loading-panel" role="status" aria-label="Loading image ${safeCode}">
+      <span class="image-loading-pulse" aria-hidden="true"></span>
+      <span class="image-loading-text">Loading image <span>${safeCode}</span></span>
+    </div>
+  `;
+}
+
+export function syncImageLoadStates(root = document) {
+  qsa('img[data-image-fade]', root).forEach((image) => {
+    if (image.naturalWidth > 0) {
+      image.classList.add('is-image-loaded');
+      return;
+    }
+    image.classList.remove('is-image-loaded');
+    if (!image.dataset.imageLoadWatch) {
+      image.dataset.imageLoadWatch = 'true';
+      image.addEventListener('load', () => image.classList.add('is-image-loaded'), { once: true });
+    }
+  });
+}
+
+function adaptiveImageMarkup(src, alt, mode = 'contain', extraClass = '', code = '') {
+  const safeSrc = escapeHtml(src || '');
+  const loading = isLoadingImageSrc(src);
+  return `
+    <div class="adaptive-image ${mode === 'cover' ? 'is-cover' : 'is-contain'} ${loading ? 'is-loading-image' : ''} ${extraClass}">
+      ${loading ? imageLoadingMarkup(code) : `
+        <img class="adaptive-image-bg" src="${safeSrc}" alt="" aria-hidden="true">
+        <div class="adaptive-image-overlay"></div>
+        <img class="adaptive-image-fg" data-image-fade src="${safeSrc}" alt="${escapeHtml(alt)}" loading="lazy">
+      `}
     </div>
   `;
 }
@@ -393,10 +425,14 @@ function storyFilterSummaryMarkup(state) {
 function renderGalleryCard(state, item) {
   const t = getUiText(state.language);
   const visibleTags = [...(item.people || []), ...(item.topicTags || [])];
+  const leadImage = item.images?.[0] || '';
+  const imageLoading = isLoadingImageSrc(leadImage);
   return `
     <button type="button" class="gallery-card" data-action="open-story" data-value="${escapeHtml(item.id)}">
       <div class="gallery-image-frame">
-        <img class="gallery-image-cover" src="${escapeHtml(item.images?.[0] || '')}" alt="${escapeHtml(item.storyteller)}" loading="lazy">
+        ${imageLoading
+          ? imageLoadingMarkup(item.code || item.id)
+          : `<img class="gallery-image-cover" data-image-fade src="${escapeHtml(leadImage)}" alt="${escapeHtml(item.storyteller)}" loading="lazy">`}
       </div>
       <div class="gallery-card-body">
         <p class="gallery-summary">${escapeHtml(labelFor(item.summary, state.language))}</p>
@@ -477,7 +513,7 @@ export function renderApp(state) {
   const imageIndex = Math.min(state.currentImageIndex, Math.max((story.images || []).length - 1, 0));
   const storySlides = (story.images || []).map((src, i) => `
     <div class="story-slide ${i === imageIndex ? 'is-active' : ''}">
-      ${adaptiveImageMarkup(src, story.storyteller, 'contain', 'story-stage-image')}
+      ${adaptiveImageMarkup(src, story.storyteller, 'contain', 'story-stage-image', story.code || story.id)}
     </div>
   `).join('');
   const reflectionEntries = renderReflectionEntries(story, state, t);

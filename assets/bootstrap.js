@@ -1,4 +1,4 @@
-import { renderApp, qs, qsa, syncGalleryCardHeights } from './render.js?v=20260604-gallery-header';
+import { renderApp, qs, qsa, syncGalleryCardHeights, syncImageLoadStates } from './render.js?v=20260605-image-loading4';
 import { state, createEmptyFilters, PAGE_SIZE } from './state.js';
 import {
   buildShareUrl,
@@ -10,6 +10,7 @@ import {
   pagedStories,
   pickRandomRelatedStory,
   savePersistentState,
+  scoreRelated,
   updateUrlForStory,
   isSaved
 } from './story-data.js?v=20260603-search-focus3';
@@ -43,7 +44,8 @@ function viewportInitialPageCount() {
 
 // ── Rendering ─────────────────────────────────────────────────────────────────
 
-function renderSite() {
+function renderSite(options = {}) {
+  const galleryScroll = options.preserveGalleryScroll ? captureGalleryScroll() : null;
   const activeElement = document.activeElement;
   const activeSearch = activeElement?.matches?.('[data-search-input]') ? captureSearchFocus(activeElement) : null;
   const searchFocus = pendingSearchFocus || activeSearch;
@@ -51,10 +53,12 @@ function renderSite() {
 
   renderApp(state);
   startAutoplay();
+  requestAnimationFrame(syncImageLoadStates);
   requestAnimationFrame(syncGalleryCardHeights);
   scheduleVisibleImageHydration();
 
   if (searchFocus) restoreSearchFocus(searchFocus);
+  if (galleryScroll) restoreGalleryScroll(galleryScroll);
 }
 
 function renderLoading() {
@@ -64,10 +68,46 @@ function renderLoading() {
   app.innerHTML = `<div class="loading-state loading-state--page"><span class="loading-spinner" aria-hidden="true"></span><span>${loadingText}</span></div>`;
 }
 
+function captureGalleryScroll() {
+  const pane = qs('.gallery-results-pane');
+  return {
+    windowX: window.scrollX,
+    windowY: window.scrollY,
+    paneScrollLeft: pane?.scrollLeft ?? null,
+    paneScrollTop: pane?.scrollTop ?? null
+  };
+}
+
+function restoreGalleryScroll(snapshot) {
+  const apply = () => {
+    const pane = qs('.gallery-results-pane');
+    if (pane && snapshot.paneScrollTop !== null) {
+      pane.scrollLeft = snapshot.paneScrollLeft || 0;
+      pane.scrollTop = snapshot.paneScrollTop;
+    }
+    window.scrollTo(snapshot.windowX || 0, snapshot.windowY || 0);
+  };
+
+  requestAnimationFrame(() => {
+    apply();
+    requestAnimationFrame(apply);
+    window.setTimeout(apply, 90);
+  });
+}
+
 function visibleStoriesForImages() {
   const visible = new Map();
   const story = currentStory(state);
-  if (state.storyVisible && story) visible.set(story.id, story);
+  if (state.storyVisible && story) {
+    visible.set(story.id, story);
+    const relatedPageSize = (state.relatedPage || 1) * 4;
+    state.stories
+      .map((item) => ({ story: item, score: scoreRelated(story, item) }))
+      .filter((entry) => entry.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, relatedPageSize)
+      .forEach((entry) => visible.set(entry.story.id, entry.story));
+  }
   if (state.galleryVisible) {
     pagedStories(state).forEach((item) => visible.set(item.id, item));
   }
@@ -83,7 +123,7 @@ function scheduleVisibleImageHydration() {
     if (!batch.length) return;
     const runId = ++imageHydrationRun;
     await Promise.all(batch.map((story) => ensureStoryImages(story)));
-    if (runId === imageHydrationRun) renderSite();
+    if (runId === imageHydrationRun) renderSite({ preserveGalleryScroll: true });
   }, 60);
 }
 
@@ -496,7 +536,7 @@ const ACTIONS = {
   'load-more': async () => {
     if (hasMoreStories(state)) {
       state.galleryPage += 1;
-      renderSite();
+      renderSite({ preserveGalleryScroll: true });
     }
   },
   'explore-all': async () => {
@@ -748,6 +788,12 @@ function attachGlobalListeners() {
       if (event.key === 'ArrowRight') { moveToNextImage(); }
     }
   });
+
+  document.addEventListener('load', (event) => {
+    if (event.target?.matches?.('img[data-image-fade]')) {
+      event.target.classList.add('is-image-loaded');
+    }
+  }, true);
 
   window.addEventListener('beforeunload', stopAutoplay);
   listenersAttached = true;

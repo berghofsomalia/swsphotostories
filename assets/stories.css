@@ -139,6 +139,10 @@
 .adaptive-image-fg { position: relative; z-index: 1; }
 .adaptive-image.is-contain .adaptive-image-fg { object-fit: contain; padding: 1rem; }
 .adaptive-image.is-cover  .adaptive-image-fg { object-fit: cover; object-position: center; }
+.story-stage-image.adaptive-image.is-contain .adaptive-image-fg {
+  padding: 0;
+  object-position: center center;
+}
 
 /* ── Tags / chips ───────────────────────────────────────────── */
 .tag-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.95rem; }
@@ -605,7 +609,6 @@ html[data-theme="light"] .gallery-results-pane.is-search-pending {
   .gallery-layout { grid-template-columns: 1fr; }
   .filter-panel { position: static; }
   .story-hero-layout { grid-template-columns: 1fr; }
-  .story-slide, .story-stage, .story-slides, .story-stage-image { min-height: 56vh; }
 }
 @media (max-width: 560px) {
   .saved-drawer { width: 100%; }
@@ -882,6 +885,7 @@ html[data-theme="light"] .filter-panel-sticky {
   .story-hero-layout {
     gap: 0.65rem;
   }
+  .story-slide,
   .story-stage,
   .story-slides,
   .story-stage-image {
@@ -1000,6 +1004,7 @@ html[data-theme="light"] .filter-panel-sticky {
 }
 
 @media (max-width: 560px) {
+  .story-slide,
   .story-stage,
   .story-slides,
   .story-stage-image {
