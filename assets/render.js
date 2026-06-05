@@ -59,26 +59,54 @@ function isLoadingImageSrc(src = '') {
   return !value || value.startsWith('data:image/svg+xml');
 }
 
+const loadedImageSources = new Set();
+
+function imageSourceKeys(src = '') {
+  const raw = String(src || '').trim();
+  if (!raw) return [];
+  const keys = [raw];
+  try {
+    keys.push(new URL(raw, document.baseURI).href);
+  } catch (error) {
+    // Keep the raw source key when URL normalization is not available.
+  }
+  return [...new Set(keys)];
+}
+
+function rememberLoadedImageSource(src = '') {
+  imageSourceKeys(src).forEach((key) => loadedImageSources.add(key));
+}
+
+function isImageSourceLoaded(src = '') {
+  return imageSourceKeys(src).some((key) => loadedImageSources.has(key));
+}
+
+export function markImageLoaded(image) {
+  if (!image) return;
+  rememberLoadedImageSource(image.currentSrc || image.src || image.getAttribute('src'));
+  image.classList.add('is-image-loaded');
+}
+
 function imageLoadingMarkup(code = '') {
   const safeCode = escapeHtml(String(code || 'story').trim() || 'story');
   return `
     <div class="image-loading-panel" role="status" aria-label="Loading image ${safeCode}">
       <span class="image-loading-pulse" aria-hidden="true"></span>
-      <span class="image-loading-text">Loading image <span>${safeCode}</span></span>
     </div>
   `;
 }
 
 export function syncImageLoadStates(root = document) {
   qsa('img[data-image-fade]', root).forEach((image) => {
-    if (image.naturalWidth > 0) {
-      image.classList.add('is-image-loaded');
+    const src = image.currentSrc || image.src || image.getAttribute('src');
+    if (isImageSourceLoaded(src) || (image.complete && image.naturalWidth > 0)) {
+      markImageLoaded(image);
       return;
     }
     image.classList.remove('is-image-loaded');
     if (!image.dataset.imageLoadWatch) {
       image.dataset.imageLoadWatch = 'true';
-      image.addEventListener('load', () => image.classList.add('is-image-loaded'), { once: true });
+      image.addEventListener('load', () => markImageLoaded(image), { once: true });
     }
   });
 }
@@ -91,7 +119,7 @@ function adaptiveImageMarkup(src, alt, mode = 'contain', extraClass = '', code =
       ${loading ? imageLoadingMarkup(code) : `
         <img class="adaptive-image-bg" src="${safeSrc}" alt="" aria-hidden="true">
         <div class="adaptive-image-overlay"></div>
-        <img class="adaptive-image-fg" data-image-fade src="${safeSrc}" alt="${escapeHtml(alt)}" loading="lazy">
+        <img class="adaptive-image-fg ${isImageSourceLoaded(src) ? 'is-image-loaded' : ''}" data-image-fade src="${safeSrc}" alt="${escapeHtml(alt)}" loading="lazy">
       `}
     </div>
   `;
@@ -432,7 +460,7 @@ function renderGalleryCard(state, item) {
       <div class="gallery-image-frame">
         ${imageLoading
           ? imageLoadingMarkup(item.code || item.id)
-          : `<img class="gallery-image-cover" data-image-fade src="${escapeHtml(leadImage)}" alt="${escapeHtml(item.storyteller)}" loading="lazy">`}
+          : `<img class="gallery-image-cover ${isImageSourceLoaded(leadImage) ? 'is-image-loaded' : ''}" data-image-fade src="${escapeHtml(leadImage)}" alt="${escapeHtml(item.storyteller)}" loading="lazy">`}
       </div>
       <div class="gallery-card-body">
         <p class="gallery-summary">${escapeHtml(labelFor(item.summary, state.language))}</p>

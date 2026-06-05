@@ -1,5 +1,5 @@
-import { initialiseApp } from './bootstrap.js?v=20260605-gallery-scroll';
-import { qs } from './render.js?v=20260605-image-loading4';
+import { initialiseApp } from './bootstrap.js?v=20260605-loader-pulse3';
+import { qs } from './render.js?v=20260605-loader-pulse2';
 
 initialiseApp().catch((error) => {
   console.error(error);

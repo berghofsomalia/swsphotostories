@@ -141,7 +141,6 @@ function imageLoadingMarkup(code = '') {
   return `
     <div class="image-loading-panel" role="status" aria-label="Loading image ${safeCode}">
       <span class="image-loading-pulse" aria-hidden="true"></span>
-      <span class="image-loading-text">Loading image <span>${safeCode}</span></span>
     </div>
   `;
 }

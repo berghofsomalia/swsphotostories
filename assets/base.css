@@ -80,8 +80,6 @@ svg {
   z-index: 2;
   display: grid;
   place-items: center;
-  gap: 0.75rem;
-  align-content: center;
   padding: 1rem;
   background:
     radial-gradient(circle at 50% 40%, rgba(91, 131, 178, 0.18), transparent 48%),
@@ -104,19 +102,6 @@ svg {
   background: rgba(218, 179, 158, 0.9);
   box-shadow: 0 0 0 0 rgba(218, 179, 158, 0.34);
   animation: image-loading-pulse 1.35s ease-out infinite;
-}
-.image-loading-text {
-  position: relative;
-  z-index: 1;
-  display: inline-flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.28rem;
-  font-size: clamp(0.92rem, 1vw, 1.08rem);
-  letter-spacing: 0.02em;
-}
-.image-loading-text span {
-  color: #dab39e;
 }
 img[data-image-fade] {
   opacity: 0;

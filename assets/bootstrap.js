@@ -1,4 +1,4 @@
-import { renderApp, qs, qsa, syncGalleryCardHeights, syncImageLoadStates } from './render.js?v=20260605-image-loading4';
+import { renderApp, qs, qsa, syncGalleryCardHeights, syncImageLoadStates, markImageLoaded } from './render.js?v=20260605-loader-pulse2';
 import { state, createEmptyFilters, PAGE_SIZE } from './state.js';
 import {
   buildShareUrl,
@@ -70,12 +70,29 @@ function renderLoading() {
 
 function captureGalleryScroll() {
   const pane = qs('.gallery-results-pane');
-  return {
+  const snapshot = {
     windowX: window.scrollX,
     windowY: window.scrollY,
     paneScrollLeft: pane?.scrollLeft ?? null,
-    paneScrollTop: pane?.scrollTop ?? null
+    paneScrollTop: pane?.scrollTop ?? null,
+    paneAnchorValue: null,
+    paneAnchorOffset: 0
   };
+
+  if (pane) {
+    const paneRect = pane.getBoundingClientRect();
+    const anchor = qsa('.gallery-card', pane).find((card) => {
+      const rect = card.getBoundingClientRect();
+      return rect.bottom > paneRect.top + 1 && rect.top < paneRect.bottom - 1;
+    });
+
+    if (anchor) {
+      snapshot.paneAnchorValue = anchor.dataset.value || null;
+      snapshot.paneAnchorOffset = anchor.getBoundingClientRect().top - paneRect.top;
+    }
+  }
+
+  return snapshot;
 }
 
 function restoreGalleryScroll(snapshot) {
@@ -83,15 +100,26 @@ function restoreGalleryScroll(snapshot) {
     const pane = qs('.gallery-results-pane');
     if (pane && snapshot.paneScrollTop !== null) {
       pane.scrollLeft = snapshot.paneScrollLeft || 0;
-      pane.scrollTop = snapshot.paneScrollTop;
+      const anchor = snapshot.paneAnchorValue
+        ? qsa('.gallery-card', pane).find((card) => card.dataset.value === snapshot.paneAnchorValue)
+        : null;
+      if (anchor) {
+        const paneRect = pane.getBoundingClientRect();
+        const anchorRect = anchor.getBoundingClientRect();
+        pane.scrollTop += anchorRect.top - paneRect.top - (snapshot.paneAnchorOffset || 0);
+      } else {
+        pane.scrollTop = snapshot.paneScrollTop;
+      }
     }
     window.scrollTo(snapshot.windowX || 0, snapshot.windowY || 0);
   };
 
+  apply();
   requestAnimationFrame(() => {
     apply();
     requestAnimationFrame(apply);
     window.setTimeout(apply, 90);
+    window.setTimeout(apply, 240);
   });
 }
 
@@ -791,7 +819,7 @@ function attachGlobalListeners() {
 
   document.addEventListener('load', (event) => {
     if (event.target?.matches?.('img[data-image-fade]')) {
-      event.target.classList.add('is-image-loaded');
+      markImageLoaded(event.target);
     }
   }, true);
 
