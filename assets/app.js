@@ -1,5 +1,5 @@
-import { initialiseApp } from './bootstrap.js?v=20260605-loader-pulse3';
-import { qs } from './render.js?v=20260605-loader-pulse2';
+import { initialiseApp } from './bootstrap.js?v=20260605-guidance-list';
+import { qs } from './render.js?v=20260605-guidance-list';
 
 initialiseApp().catch((error) => {
   console.error(error);

@@ -1,4 +1,4 @@
-import { renderApp, qs, qsa, syncGalleryCardHeights, syncImageLoadStates, markImageLoaded } from './render.js?v=20260605-loader-pulse2';
+import { renderApp, qs, qsa, syncGalleryCardHeights, syncImageLoadStates, markImageLoaded } from './render.js?v=20260605-guidance-list';
 import { state, createEmptyFilters, PAGE_SIZE } from './state.js';
 import {
   buildShareUrl,
@@ -14,7 +14,7 @@ import {
   updateUrlForStory,
   isSaved
 } from './story-data.js?v=20260603-search-focus3';
-import { getUiText, labelFor, initialiseI18n } from './content.js';
+import { getUiText, labelFor, initialiseI18n } from './content.js?v=20260605-story-actions2';
 import { ensureStoryImages, fetchStories, fetchTagCatalogue } from './api.js';
 
 let actionMessageTimerId = null;

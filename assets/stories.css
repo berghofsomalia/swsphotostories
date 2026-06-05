@@ -471,7 +471,6 @@ body, button, input, textarea, select,
 .guidance-modal.is-open { opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: auto; }
 .guidance-modal-close { position: absolute; top: 0.82rem; right: 0.82rem; }
 .guidance-modal .story-guidance-intro { padding-right: 3rem; color: #e7ded4; font-weight: 700; }
-.guidance-modal .story-guidance-grid { gap: 0.75rem; }
 
 /* ── Guidance box ───────────────────────────────────────────── */
 .story-guidance-box {
@@ -484,13 +483,6 @@ body, button, input, textarea, select,
 .story-guidance-box--plain { margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; color: inherit; }
 .story-guidance-box.is-compact, .story-guidance-box--plain.is-compact { padding: 0; }
 .story-guidance-intro { margin: 0; font-size: 0.96rem; line-height: 1.62; }
-.story-guidance-grid  { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0.6rem; }
-.story-guidance-card  { padding: 1rem 0.92rem; border-radius: 1rem; color: #fff8f2; min-height: 100%; }
-.story-guidance-card p { margin: 0; font-size: 0.96rem; line-height: 1.4; }
-.story-guidance-card--1 { background: #78614d; }
-.story-guidance-card--2 { background: #8a6540; }
-.story-guidance-card--3 { background: #9c5d24; }
-.story-guidance-card--4 { background: #ab5a10; }
 
 /* ── Load more ──────────────────────────────────────────────── */
 .load-more-row    { display: flex; justify-content: center; padding: 2rem 0 1rem; }
@@ -553,10 +545,6 @@ html[data-theme="light"] .reflection-copy { color: var(--muted); }
 html[data-theme="light"] .reflection-entry + .reflection-entry { border-top-color: rgba(43,33,21,0.16); }
 html[data-theme="light"] .reflection-type-label { color: #8e241d; }
 html[data-theme="light"] .story-guidance-box  { color: #2a2825; }
-html[data-theme="light"] .story-guidance-card--1 { background: #987352; }
-html[data-theme="light"] .story-guidance-card--2 { background: #a87648; }
-html[data-theme="light"] .story-guidance-card--3 { background: #b56f26; }
-html[data-theme="light"] .story-guidance-card--4 { background: #bc6a14; }
 html[data-theme="light"] .chip        { border-color: rgba(31,29,26,0.12); background: rgba(255,255,255,0.78); color: #2b2825; }
 html[data-theme="light"] .chip-muted  { border-color: rgba(31,29,26,0.1);  background: rgba(255,255,255,0.62); color: var(--muted); }
 html[data-theme="light"] .chip-active { background: var(--accent); border-color: var(--accent); color: #fff; }
@@ -612,7 +600,6 @@ html[data-theme="light"] .gallery-results-pane.is-search-pending {
 }
 @media (max-width: 560px) {
   .saved-drawer { width: 100%; }
-  .story-guidance-grid { grid-template-columns: 1fr; }
 }
 
 /* ── UI refinement pass ─────────────────────────────────────── */
@@ -1740,6 +1727,10 @@ button.chip.cluster-tone-people:hover {
   color: #ede5db;
 }
 
+html[data-theme="light"] .story-copy p:first-of-type {
+  color: #2a2825;
+}
+
 /* Meta panel — more vertical rhythm */
 .story-meta-panel {
   gap: 1.2rem;
@@ -1784,6 +1775,134 @@ button.chip.cluster-tone-people:hover {
 .action-button:hover {
   background: rgba(255,255,255,0.08);
   border-color: rgba(255,255,255,0.2);
+}
+
+/* Story flow and related navigation */
+.story-meta-panel .guidance-flow-button {
+  align-self: stretch;
+  justify-self: stretch;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 0.65rem;
+  margin: 0.1rem 0 0;
+  padding: 0.74rem 1rem;
+  border: 1px solid rgba(234, 215, 191, 0.2);
+  border-radius: 0.45rem;
+  background: #211914;
+  color: #ead7bf;
+  font-size: 0.98rem;
+  font-weight: 400;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  box-shadow: none;
+  transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.story-meta-panel .guidance-flow-button:hover {
+  background: #2d231c;
+  border-color: rgba(234, 215, 191, 0.34);
+  color: #f2e0ca;
+  transform: translateY(-1px);
+}
+
+.story-meta-panel .guidance-flow-icon,
+.story-meta-panel .guidance-flow-icon svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.guidance-modal {
+  border: 1px solid rgba(234, 215, 191, 0.2);
+  border-radius: 0.55rem;
+  background: #211914;
+  color: #ead7bf;
+}
+
+.guidance-modal .icon-button {
+  border-color: rgba(234, 215, 191, 0.16);
+  background: rgba(234, 215, 191, 0.08);
+  color: #ead7bf;
+}
+
+.guidance-modal .icon-button:hover {
+  background: rgba(234, 215, 191, 0.14);
+}
+
+.guidance-modal .story-guidance-box,
+.guidance-modal .story-guidance-intro {
+  color: #ead7bf;
+}
+
+.story-guidance-list {
+  display: grid;
+  gap: 0.85rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.story-guidance-list li {
+  margin: 0;
+  padding-left: 1.35rem;
+  text-indent: -1.35rem;
+  color: inherit;
+  font-size: 0.96rem;
+  font-style: italic;
+  line-height: 1.48;
+}
+
+.guidance-modal .story-guidance-list {
+  color: #ead7bf;
+}
+
+html[data-theme="light"] .story-meta-panel .guidance-flow-button,
+html[data-theme="light"] .story-meta-panel .guidance-flow-button:hover,
+html[data-theme="light"] .guidance-modal,
+html[data-theme="light"] .guidance-modal .story-guidance-box,
+html[data-theme="light"] .guidance-modal .story-guidance-intro,
+html[data-theme="light"] .guidance-modal .story-guidance-list {
+  color: #211914;
+}
+
+html[data-theme="light"] .story-meta-panel .guidance-flow-button,
+html[data-theme="light"] .guidance-modal {
+  background: #ead7bf;
+}
+
+html[data-theme="light"] .guidance-modal .icon-button {
+  border-color: rgba(48, 35, 24, 0.16);
+  background: rgba(255, 255, 255, 0.34);
+  color: #211914;
+}
+
+html[data-theme="light"] .guidance-modal .icon-button:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.related-footer {
+  justify-content: flex-start;
+}
+
+.related-footer .action-button {
+  min-height: 2.6rem;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.85rem;
+  font-weight: 400;
+  border-radius: 2rem;
+  text-decoration: none;
+  margin-left: 0;
+}
+
+.related-footer .action-button svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.related-footer:not(:has(.related-more-button)) .close-story-button {
+  margin-left: auto;
 }
 
 /* Reflection band heading rhythm */

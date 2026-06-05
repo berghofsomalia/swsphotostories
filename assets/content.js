@@ -7,6 +7,7 @@ export const STORAGE_KEYS = {
 // ── i18n cache ────────────────────────────────────────────────────────────────
 // Loaded once on first call to loadI18n(), then reused.
 const cache = {};
+const I18N_CACHE_VERSION = '20260605-story-actions2';
 
 /**
  * Loads the i18n JSON for a given language and caches it.
@@ -19,7 +20,7 @@ const cache = {};
 async function loadI18n(language) {
   if (cache[language]) return;
   const base = new URL('../i18n/', import.meta.url);
-  const response = await fetch(`${base}${language}.json`);
+  const response = await fetch(`${base}${language}.json?v=${I18N_CACHE_VERSION}`);
   if (!response.ok) throw new Error(`Failed to load i18n/${language}.json (HTTP ${response.status})`);
   cache[language] = await response.json();
 }

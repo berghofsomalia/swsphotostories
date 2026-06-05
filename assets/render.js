@@ -3,7 +3,7 @@ import {
   getLandingText,
   getUiText,
   labelFor
-} from './content.js';
+} from './content.js?v=20260605-story-actions2';
 import { renderMenu } from './menu.js';
 import {
   allDistricts,
@@ -165,6 +165,12 @@ function reflectionTypeLabel(type, t) {
   return '';
 }
 
+function reflectionTypeRank(type = '') {
+  if (type === 'direct') return 0;
+  if (type === 'indirect') return 1;
+  return 2;
+}
+
 function renderReflectionEntry(reflection, state, t) {
   const reflectionText = String(labelFor(reflection?.text || reflection, state.language) || '').trim();
   if (!reflectionText) return '';
@@ -181,6 +187,9 @@ function renderReflectionEntry(reflection, state, t) {
 function renderReflectionEntries(story, state, t) {
   const entries = Array.isArray(story.reflections) ? story.reflections : [];
   const entryMarkup = entries
+    .map((reflection, index) => ({ reflection, index }))
+    .sort((a, b) => reflectionTypeRank(a.reflection?.type) - reflectionTypeRank(b.reflection?.type) || a.index - b.index)
+    .map(({ reflection }) => reflection)
     .map((reflection) => renderReflectionEntry(reflection, state, t))
     .filter(Boolean)
     .join('');
@@ -238,7 +247,6 @@ function renderStoryMetaPanel(state, story) {
         <p class="story-meta-teaser">${escapeHtml(labelFor(story.summary, state.language))}</p>
       </div>
       <div class="tag-row story-meta-tags">${tagChips(state, story)}</div>
-      <div class="story-meta-divider" aria-hidden="true"></div>
       <button type="button" class="guidance-flow-button" data-action="open-guidance"><span class="guidance-flow-icon">${icon.flow()}</span><span>${escapeHtml(t.storyFlow)}</span></button>
     </aside>
   `;
@@ -313,13 +321,9 @@ function renderGuidanceBox(state, options = {}) {
   return `
     <div class="${classes.join(' ')}">
       <p class="story-guidance-intro">${escapeHtml(guidance.intro)}</p>
-      <div class="story-guidance-grid">
-        ${guidance.questions.map((q, i) => `
-          <div class="story-guidance-card story-guidance-card--${i + 1}">
-            <p>${escapeHtml(q)}</p>
-          </div>
-        `).join('')}
-      </div>
+      <ul class="story-guidance-list">
+        ${guidance.questions.map((q) => `<li>${escapeHtml(q)}</li>`).join('')}
+      </ul>
     </div>
   `;
 }
@@ -498,12 +502,12 @@ function renderRelatedStoriesSection(state, story, t) {
     <section class="related-band">
       <div class="content-wrap">
         <div class="related-header">
-          <span class="related-label">${escapeHtml(t.relatedLabel || 'Related photostories')}</span>
+          <span class="related-label">${escapeHtml(t.relatedLabel || t.related || 'Related photostories')}</span>
         </div>
         <div class="gallery-grid related-grid">${cards}</div>
         <div class="related-footer">
-          ${hasMore ? `<button type="button" class="related-more-button" data-action="load-more-related">${escapeHtml(t.loadMoreRelated || 'Load more related stories')}</button>` : ''}
-          <button type="button" class="close-story-button" data-action="close-story">${escapeHtml(t.allStories || 'Browse all stories')}</button>
+          ${hasMore ? `<button type="button" class="action-button related-more-button" data-action="load-more-related">${icon.related()}<span>${escapeHtml(t.loadMoreRelated || 'More related stories...')}</span></button>` : ''}
+          <button type="button" class="action-button close-story-button" data-action="close-story">${icon.sliders()}<span>${escapeHtml(t.allStories || 'All stories')}</span></button>
         </div>
       </div>
     </section>
