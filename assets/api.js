@@ -82,6 +82,16 @@ function isExternalUrl(src = '') {
   return /^(https?:|data:|blob:|\/)/i.test(src);
 }
 
+function storagePathToPublicUrl(path = '') {
+  const cleanPath = String(path || '').replace(/^\/+/, '');
+  if (!isSupabaseConfigured || !USE_SUPABASE_IMAGES || !cleanPath) return '';
+  const encodedPath = cleanPath
+    .split('/')
+    .map((part) => encodeURIComponent(part))
+    .join('/');
+  return `${SUPABASE_URL.replace(/\/+$/, '')}/storage/v1/object/public/${SUPABASE_STORY_PHOTO_BUCKET}/${encodedPath}`;
+}
+
 function localStoryImage(src = '') {
   if (!src) return '';
   if (isExternalUrl(src)) return src;
@@ -183,7 +193,37 @@ function cleanStorageFiles(files = []) {
     .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
 }
 
+function mapStoryPhotos(photos = [], story = {}) {
+  const mapped = (photos || [])
+    .filter((photo) => photo?.storage_path)
+    .sort((a, b) => {
+      const order = (a.sort_order ?? 9999) - (b.sort_order ?? 9999);
+      if (order !== 0) return order;
+      return String(a.storage_path).localeCompare(String(b.storage_path), undefined, { numeric: true, sensitivity: 'base' });
+    })
+    .map((photo, index) => ({
+      id: photo.id,
+      url: storagePathToPublicUrl(photo.storage_path),
+      storagePath: photo.storage_path,
+      alt: labelObject(photo.alt_en || story.storyteller || '', photo.alt_so || story.storyteller || ''),
+      caption: labelObject(photo.caption_en, photo.caption_so),
+      sortOrder: photo.sort_order ?? index + 1,
+      isCover: Boolean(photo.is_cover)
+    }))
+    .filter((photo) => photo.url);
+
+  if (mapped.length && !mapped.some((photo) => photo.isCover)) {
+    mapped[0].isCover = true;
+  }
+
+  return mapped;
+}
+
 async function fetchImagesForStory(story) {
+  const photoUrls = (story?.photos || []).map((photo) => photo.url).filter(Boolean);
+  if (photoUrls.length) return photoUrls;
+  if (story?.imagesLoaded && story.images?.length) return story.images;
+
   if (!isSupabaseConfigured || !USE_SUPABASE_IMAGES || !story?.code) {
     return [placeholderImage(story)];
   }
@@ -345,19 +385,85 @@ async function mapSupabaseStory(row) {
     imagesLoading: false
   };
 
-  const cachedImages = readCachedImages(story.code);
-  if (cachedImages?.length) {
-    story.images = cachedImages;
+  const dbPhotos = mapStoryPhotos(row.story_photos || [], story);
+  if (dbPhotos.length) {
+    story.photos = dbPhotos;
+    story.images = dbPhotos.map((photo) => photo.url);
+    story.coverImage = (dbPhotos.find((photo) => photo.isCover) || dbPhotos[0]).url;
     story.imagesLoaded = true;
+    writeCachedImages(story.code, story.images);
   } else {
-    story.images = [placeholderImage(story)];
+    story.photos = [];
+    const cachedImages = readCachedImages(story.code);
+    if (cachedImages?.length) {
+      story.images = cachedImages;
+      story.imagesLoaded = true;
+    } else {
+      story.images = [placeholderImage(story)];
+    }
   }
 
   return story;
 }
 
-async function fetchStoriesFromSupabase() {
+const STORY_PHOTOS_SELECT = `
+  story_photos (
+    id,
+    storage_path,
+    alt_so,
+    alt_en,
+    caption_so,
+    caption_en,
+    sort_order,
+    is_cover
+  )
+`;
+
+function isStoryPhotosPermissionError(error) {
+  const text = [
+    error?.message,
+    error?.details,
+    error?.hint,
+    error?.code
+  ].filter(Boolean).join(' ').toLowerCase();
+  return text.includes('story_photos') && (text.includes('permission') || text.includes('grant'));
+}
+
+async function fetchHomeStoriesFromSupabase({ includePhotos = true } = {}) {
   const supabase = await getSupabase();
+  const photosSelect = includePhotos ? `,\n      ${STORY_PHOTOS_SELECT}` : '';
+  const { data, error } = await supabase
+    .from('stories')
+    .select(`
+      id,
+      code,
+      storyteller,
+      teaser_so,
+      teaser_en,
+      status,
+      sort_order,
+      published_at,
+      districts (
+        id,
+        slug,
+        label_so,
+        label_en,
+        sort_order
+      )${photosSelect}
+    `)
+    .eq('status', 'published')
+    .order('sort_order', { ascending: true })
+    .order('published_at', { ascending: false, nullsFirst: false });
+
+  if (error) throw error;
+
+  const mapped = await Promise.all((data || []).map(mapSupabaseStory));
+  return mapped.filter((story) => story.code && isPublishedStory(story));
+}
+
+async function fetchStoriesFromSupabase({ includePhotos = true } = {}) {
+  const supabase = await getSupabase();
+  const photosSelect = includePhotos ? `,\n      ${STORY_PHOTOS_SELECT}` : '';
   const { data, error } = await supabase
     .from('stories')
     .select(`
@@ -401,7 +507,7 @@ async function fetchStoriesFromSupabase() {
         reflection_type,
         sort_order,
         status
-      )
+      )${photosSelect}
     `)
     .eq('status', 'published')
     .order('sort_order', { ascending: true })
@@ -487,9 +593,31 @@ export async function fetchStories() {
   }
 
   try {
-    return await fetchStoriesFromSupabase();
+    return await fetchStoriesFromSupabase({ includePhotos: true });
   } catch (error) {
+    if (isStoryPhotosPermissionError(error)) {
+      console.warn('Supabase story_photos is not readable by the public key. Falling back to storage listing for images.', error);
+      return fetchStoriesFromSupabase({ includePhotos: false });
+    }
     console.error('Supabase story fetch failed.', error);
+    throw error;
+  }
+}
+
+export async function fetchHomeStories() {
+  if (!isSupabaseConfigured) {
+    console.info('Supabase is not configured. Loading fallback data/stories.json.');
+    return fetchStoriesFromJson();
+  }
+
+  try {
+    return await fetchHomeStoriesFromSupabase({ includePhotos: true });
+  } catch (error) {
+    if (isStoryPhotosPermissionError(error)) {
+      console.warn('Supabase story_photos is not readable by the public key. Falling back to storage listing for home images.', error);
+      return fetchHomeStoriesFromSupabase({ includePhotos: false });
+    }
+    console.error('Supabase home story fetch failed.', error);
     throw error;
   }
 }

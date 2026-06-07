@@ -1,4 +1,4 @@
-import { initialiseApp } from './bootstrap.js?v=20260605-guidance-list';
+import { initialiseApp } from './bootstrap.js?v=20260607-story-photos';
 import { qs } from './render.js?v=20260605-guidance-list';
 
 initialiseApp().catch((error) => {

@@ -1,5 +1,5 @@
 import { getLandingText, getUiText, STORAGE_KEYS } from './content.js';
-import { fetchStories } from './api.js';
+import { fetchStories } from './api.js?v=20260607-story-photos';
 
 const state = {
   language: localStorage.getItem(STORAGE_KEYS.language) || 'en',

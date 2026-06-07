@@ -15,7 +15,7 @@ import {
   isSaved
 } from './story-data.js?v=20260603-search-focus3';
 import { getUiText, labelFor, initialiseI18n } from './content.js?v=20260605-story-actions2';
-import { ensureStoryImages, fetchStories, fetchTagCatalogue } from './api.js';
+import { ensureStoryImages, fetchStories, fetchTagCatalogue } from './api.js?v=20260607-story-photos';
 
 let actionMessageTimerId = null;
 let touchStartX = null;

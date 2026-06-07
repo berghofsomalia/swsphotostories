@@ -1,5 +1,5 @@
 import { getUiText, getLandingText, STORAGE_KEYS, initialiseI18n } from './content.js?v=20260607-home-carousel23';
-import { ensureStoryImages, fetchStories } from './api.js';
+import { ensureStoryImages, fetchHomeStories } from './api.js?v=20260607-story-photos';
 import { renderMenu as renderSharedMenu } from './menu.js';
 
 const HOME_CAROUSEL_INTERVAL_MS = 7000;
@@ -503,7 +503,7 @@ async function init() {
   renderLoading();
   await Promise.all([
     initialiseI18n(state.language),
-    fetchStories().then((stories) => {
+    fetchHomeStories().then((stories) => {
       state.stories      = stories;
       state.currentStory = pickRandom(stories);
       if (state.currentStory) {

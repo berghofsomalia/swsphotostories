@@ -1,5 +1,5 @@
 import { getLandingText, getUiText, STORAGE_KEYS, initialiseI18n } from './content.js';
-import { fetchStories } from './api.js';
+import { fetchStories } from './api.js?v=20260607-story-photos';
 import { renderMenu } from './menu.js';
 
 const LANDING_MAP_IMAGE = 'images/1.png';
