@@ -462,7 +462,7 @@ html[data-theme="light"] .home-card {
   flex: 2 1 66.666%;
   min-width: 0;
   min-height: 0;
-  background: #11161c;
+  background: var(--story);
   overflow: hidden;
 }
 

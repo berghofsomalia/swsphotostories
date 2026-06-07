@@ -7,7 +7,7 @@ export const STORAGE_KEYS = {
 // ── i18n cache ────────────────────────────────────────────────────────────────
 // Loaded once on first call to loadI18n(), then reused.
 const cache = {};
-const I18N_CACHE_VERSION = '20260607-home-carousel22';
+const I18N_CACHE_VERSION = '20260607-home-carousel23';
 
 /**
  * Loads the i18n JSON for a given language and caches it.

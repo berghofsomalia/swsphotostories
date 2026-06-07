@@ -1,4 +1,4 @@
-import { getUiText, getLandingText, STORAGE_KEYS, initialiseI18n } from './content.js?v=20260607-home-carousel22';
+import { getUiText, getLandingText, STORAGE_KEYS, initialiseI18n } from './content.js?v=20260607-home-carousel23';
 import { ensureStoryImages, fetchStories } from './api.js';
 import { renderMenu as renderSharedMenu } from './menu.js';
 
