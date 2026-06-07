@@ -1,6 +1,8 @@
-import { getUiText, getLandingText, STORAGE_KEYS, initialiseI18n } from './content.js';
+import { getUiText, getLandingText, STORAGE_KEYS, initialiseI18n } from './content.js?v=20260607-home-carousel22';
 import { ensureStoryImages, fetchStories } from './api.js';
 import { renderMenu as renderSharedMenu } from './menu.js';
+
+const HOME_CAROUSEL_INTERVAL_MS = 7000;
 
 const state = {
   language:     localStorage.getItem(STORAGE_KEYS.language) || 'en',
@@ -11,7 +13,14 @@ const state = {
   savedOpen:    false,
   savedIds:     [],
   storyTrail:   [],
-  trailIndex:   -1
+  trailIndex:   -1,
+  carouselPaused: false,
+  carouselTimer:  null,
+  carouselBusy:   false,
+  queuedStory:    null,
+  queuedStoryReady: false,
+  queuedStoryPromise: null,
+  animateStoryContent: false
 };
 
 // Load saved IDs from localStorage
@@ -40,14 +49,122 @@ function labelFor(entry, lang) {
 }
 
 function pickRandom(stories, excludeId = null) {
-  const pool = excludeId ? stories.filter((s) => s.id !== excludeId) : stories;
+  const blockedId = excludeId == null ? null : String(excludeId);
+  const pool = blockedId ? stories.filter((s) => String(s.id) !== blockedId) : stories;
   return pool[Math.floor(Math.random() * pool.length)] || stories[0] || null;
+}
+
+function findStoryById(id) {
+  return state.stories.find((story) => String(story.id) === String(id)) || null;
+}
+
+function pickNextRandomStory() {
+  const seenIds = new Set(state.storyTrail.map(String));
+  const unseenStories = state.stories.filter((story) => !seenIds.has(String(story.id)));
+  const pool = unseenStories.length ? unseenStories : state.stories;
+  return pickRandom(pool, state.currentStory?.id);
+}
+
+function stopHomeCarousel() {
+  if (!state.carouselTimer) return;
+  window.clearInterval(state.carouselTimer);
+  state.carouselTimer = null;
+}
+
+function startHomeCarousel() {
+  stopHomeCarousel();
+  if (state.carouselPaused || state.stories.length <= 1) return;
+  state.carouselTimer = window.setInterval(() => {
+    void goNextHomeStory({ resetTimer: false });
+  }, HOME_CAROUSEL_INTERVAL_MS);
+}
+
+function restartHomeCarousel() {
+  if (!state.carouselPaused) startHomeCarousel();
+}
+
+function hasUsableLeadImage(story) {
+  return !!story?.images?.[0] && !isLoadingImageSrc(story.images[0]);
+}
+
+function clearQueuedHomeStory() {
+  state.queuedStory = null;
+  state.queuedStoryReady = false;
+  state.queuedStoryPromise = null;
+}
+
+function preloadNextHomeStory() {
+  if (state.stories.length <= 1) {
+    clearQueuedHomeStory();
+    return;
+  }
+  const nextStory = pickNextRandomStory();
+  if (!nextStory) {
+    clearQueuedHomeStory();
+    return;
+  }
+  if (String(state.queuedStory?.id) === String(nextStory.id)) return;
+  state.queuedStory = nextStory;
+  state.queuedStoryReady = hasUsableLeadImage(nextStory);
+  state.queuedStoryPromise = ensureStoryImages(nextStory)
+    .then(() => {
+      if (String(state.queuedStory?.id) === String(nextStory.id)) {
+        state.queuedStoryReady = hasUsableLeadImage(nextStory);
+      }
+    })
+    .catch((err) => {
+      console.warn('Failed to preload home carousel image', err);
+      if (String(state.queuedStory?.id) === String(nextStory.id)) clearQueuedHomeStory();
+    });
+}
+
+function takeQueuedHomeStory() {
+  if (!state.queuedStory || !state.queuedStoryReady) return null;
+  const story = state.queuedStory;
+  clearQueuedHomeStory();
+  return story;
+}
+
+async function goPreviousHomeStory({ resetTimer = true } = {}) {
+  if (state.carouselBusy || state.trailIndex <= 0) return;
+  state.carouselBusy = true;
+  try {
+    state.trailIndex -= 1;
+    const previous = findStoryById(state.storyTrail[state.trailIndex]);
+    if (previous) await setHomeStory(previous, { push: false, preloaded: hasUsableLeadImage(previous) });
+  } finally {
+    state.carouselBusy = false;
+    if (resetTimer) restartHomeCarousel();
+  }
+}
+
+async function goNextHomeStory({ resetTimer = true } = {}) {
+  if (state.carouselBusy || state.stories.length === 0) return;
+  state.carouselBusy = true;
+  try {
+    if (state.trailIndex < state.storyTrail.length - 1) {
+      state.trailIndex += 1;
+      const next = findStoryById(state.storyTrail[state.trailIndex]);
+      if (next) {
+        await setHomeStory(next, { push: false, preloaded: hasUsableLeadImage(next) });
+        return;
+      }
+      state.storyTrail = state.storyTrail.slice(0, state.trailIndex);
+    }
+    const nextRandom = takeQueuedHomeStory() || pickNextRandomStory();
+    await setHomeStory(nextRandom, { preloaded: hasUsableLeadImage(nextRandom) });
+  } finally {
+    state.carouselBusy = false;
+    if (resetTimer) restartHomeCarousel();
+  }
 }
 
 // ── SVG icons ─────────────────────────────────────────────────────────────────
 const icon = {
   chevronLeft:  () => '<svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg>',
   chevronRight: () => '<svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>',
+  pause:        () => '<svg viewBox="0 0 24 24"><path d="M9 5v14"/><path d="M15 5v14"/></svg>',
+  play:         () => '<svg viewBox="0 0 24 24"><path d="M7 5v14l11-7-11-7Z"/></svg>',
   sliders:      () => '<svg viewBox="0 0 24 24"><path d="M4 21v-7"/><path d="M4 10V3"/><path d="M12 21v-9"/><path d="M12 8V3"/><path d="M20 21v-5"/><path d="M20 12V3"/><path d="M1 14h6"/><path d="M9 8h6"/><path d="M17 16h6"/></svg>',
   close:        () => '<svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>',
   glasses:      () => '<svg viewBox="0 0 24 24"><circle cx="7.5" cy="14" r="3.2"/><circle cx="16.5" cy="14" r="3.2"/><path d="M10.7 13.5c.7-.5 1.9-.5 2.6 0"/><path d="M4.5 13.2 3 8.5"/><path d="M19.5 13.2 21 8.5"/></svg>'
@@ -157,6 +274,17 @@ function syncHomeImageLoadStates(root = document) {
       image.addEventListener('load', () => image.classList.add('is-image-loaded'), { once: true });
     }
   });
+  root.querySelectorAll('[data-story-fade]').forEach((element) => {
+    element.classList.add('is-home-content-loaded');
+  });
+  state.animateStoryContent = false;
+}
+
+function fadeOutCurrentHomeStoryContent() {
+  const homeCard = document.querySelector('.home-card');
+  if (!homeCard || homeCard.querySelector('.image-loading-panel')) return Promise.resolve();
+  homeCard.classList.add('is-home-story-exiting');
+  return new Promise((resolve) => window.setTimeout(resolve, 180));
 }
 
 function renderLoading() {
@@ -169,15 +297,29 @@ function renderLoading() {
 
 async function setHomeStory(story, options = {}) {
   if (!story) return;
+  const shouldFadeOut = options.preloaded
+    && state.currentStory
+    && String(state.currentStory.id) !== String(story.id);
+  if (shouldFadeOut) await fadeOutCurrentHomeStoryContent();
+  state.animateStoryContent = state.currentStory
+    ? String(state.currentStory.id) !== String(story.id)
+    : false;
   state.currentStory = story;
   if (options.push !== false) {
     state.storyTrail = state.storyTrail.slice(0, state.trailIndex + 1);
-    state.storyTrail.push(story.id);
+    if (String(state.storyTrail[state.storyTrail.length - 1]) !== String(story.id)) {
+      state.storyTrail.push(story.id);
+    }
     state.trailIndex = state.storyTrail.length - 1;
   }
+  if (!options.preloaded) {
+    renderPage();
+    await ensureStoryImages(story);
+  } else if (!hasUsableLeadImage(story)) {
+    await ensureStoryImages(story);
+  }
   renderPage();
-  await ensureStoryImages(story);
-  renderPage();
+  preloadNextHomeStory();
 }
 
 // ── Render ────────────────────────────────────────────────────────────────────
@@ -194,35 +336,57 @@ function renderPage() {
 
   const leadSrc = story?.images?.[0] || '';
   const leadImageLoading = isLoadingImageSrc(leadSrc);
+  const leadImageLoadedClass = hasUsableLeadImage(story) && !state.animateStoryContent ? ' is-image-loaded' : '';
+  const storyContentLoadedClass = state.animateStoryContent ? '' : ' is-home-content-loaded';
+  const readLabel = t.homeRead || t.readStory || 'Read';
+  const exploreLabel = t.homeExploreAll || t.exploreFilters || 'Explore all';
+  const carouselLabel = t.homeCarouselControls || 'Story carousel controls';
+  const pauseLabel = state.carouselPaused
+    ? (t.resumeCarousel || 'Resume carousel')
+    : (t.pauseCarousel || 'Pause carousel');
+  const nextLabel = state.trailIndex < state.storyTrail.length - 1
+    ? (t.nextStory || 'Next story')
+    : (t.nextRandomStory || t.nextStory || 'Next random story');
 
   const storyCard = story ? `
     <div class="home-card">
       <div class="home-card-image">
         ${leadImageLoading
           ? imageLoadingMarkup(story.code || story.id)
-          : `<img data-image-fade src="${esc(leadSrc)}" alt="${esc(story.storyteller)}" loading="eager">`}
+          : `<img class="${leadImageLoadedClass.trim()}" data-image-fade src="${esc(leadSrc)}" alt="${esc(story.storyteller)}" loading="eager">`}
       </div>
       <div class="home-card-body">
-        <p class="home-card-teaser">${esc(labelFor(story.summary, state.language))}</p>
-        <div class="home-card-actions">
-          <div class="home-card-action-row home-card-action-row--primary">
-            <a class="action-button" href="stories/?code=${esc(story.id)}">
-              ${icon.glasses()}<span>${esc(t.readStory)}</span>
-            </a>
-            <a class="action-button" href="stories/#gallery">
-              ${icon.sliders()}<span>${esc(t.exploreFilters)}</span>
-            </a>
-          </div>
-          <div class="home-card-action-row home-card-action-row--nav">
-            <button type="button" class="action-button home-random-nav ${state.trailIndex <= 0 ? 'is-disabled' : ''}" data-action="previous-home-story" aria-label="Previous story" ${state.trailIndex <= 0 ? 'disabled' : ''}>
-              ${icon.chevronLeft()}<span>${esc(t.previousStory || 'Previous')}</span>
-            </button>
-            <button type="button" class="action-button home-random-nav" data-action="next-home-story" aria-label="Next random story">
-              ${icon.chevronRight()}<span>${esc(t.nextStory || 'Next random')}</span>
-            </button>
+        <div class="home-card-primary-panel">
+          <p class="home-card-teaser${storyContentLoadedClass}" data-story-fade>${esc(labelFor(story.summary, state.language))}</p>
+          <div class="home-card-actions home-card-actions--primary">
+            <div class="home-card-action-row home-card-action-row--top">
+              <div class="home-card-action-row--carousel" aria-label="${esc(carouselLabel)}">
+                <button type="button" class="action-button home-carousel-button ${state.trailIndex <= 0 ? 'is-disabled' : ''}" data-action="previous-home-story" aria-label="${esc(t.previousStory || 'Previous story')}" ${state.trailIndex <= 0 ? 'disabled' : ''}>
+                  ${icon.chevronLeft()}
+                </button>
+                <button type="button" class="action-button home-carousel-button home-carousel-button--pause" data-action="toggle-home-carousel" aria-label="${esc(pauseLabel)}" aria-pressed="${state.carouselPaused ? 'true' : 'false'}">
+                  ${state.carouselPaused ? icon.play() : icon.pause()}
+                </button>
+                <button type="button" class="action-button home-carousel-button" data-action="next-home-story" aria-label="${esc(nextLabel)}">
+                  ${icon.chevronRight()}
+                </button>
+              </div>
+              <a class="action-button home-read-button" href="stories/?code=${esc(story.id)}">
+                ${icon.glasses()}<span>${esc(readLabel)}</span>
+              </a>
+            </div>
           </div>
         </div>
-        ${renderHomeSwitchers(t)}
+        <div class="home-card-secondary-panel">
+          ${renderHomeSwitchers(t)}
+          <div class="home-card-actions home-card-actions--secondary">
+            <div class="home-card-action-row home-card-action-row--secondary">
+              <a class="action-button home-explore-button" href="stories/#gallery">
+                ${icon.sliders()}<span>${esc(exploreLabel)}</span>
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   ` : `<div class="home-loading">${esc(t.loading)}</div>`;
@@ -247,7 +411,12 @@ function renderPage() {
       ${renderSavedDrawer(t)}
     </div>
   `;
-  requestAnimationFrame(syncHomeImageLoadStates);
+  const shouldDelayStoryAnimation = state.animateStoryContent;
+  if (shouldDelayStoryAnimation) {
+    requestAnimationFrame(() => requestAnimationFrame(() => syncHomeImageLoadStates()));
+  } else {
+    requestAnimationFrame(() => syncHomeImageLoadStates());
+  }
 }
 
 // ── Listeners ─────────────────────────────────────────────────────────────────
@@ -304,16 +473,18 @@ function attachListeners() {
       return;
     }
     if (action === 'previous-home-story') {
-      if (state.trailIndex > 0) {
-        state.trailIndex -= 1;
-        const previousId = state.storyTrail[state.trailIndex];
-        const previous = state.stories.find((story) => String(story.id) === String(previousId));
-        await setHomeStory(previous, { push: false });
-      }
+      await goPreviousHomeStory();
       return;
     }
     if (action === 'next-home-story') {
-      await setHomeStory(pickRandom(state.stories, state.currentStory?.id));
+      await goNextHomeStory();
+      return;
+    }
+    if (action === 'toggle-home-carousel') {
+      state.carouselPaused = !state.carouselPaused;
+      if (state.carouselPaused) stopHomeCarousel();
+      else startHomeCarousel();
+      renderPage();
       return;
     }
   });
@@ -345,7 +516,9 @@ async function init() {
   if (state.currentStory) {
     await ensureStoryImages(state.currentStory);
     renderPage();
+    preloadNextHomeStory();
   }
+  startHomeCarousel();
 }
 
 init().catch((err) => {
