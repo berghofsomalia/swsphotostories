@@ -214,26 +214,9 @@ function renderMenu(t) {
     basePaths: { home: './', about: 'about/', stories: 'stories/' },
     savedCount: state.savedIds.length,
     savedAction: 'open-saved',
-    showSwitchers: false,
+    showSwitchers: true,
     shellClass: 'home-menu-shell'
   });
-}
-
-function renderHomeSwitchers(t) {
-  const soLabel = 'Soomali';
-  const enLabel = 'English';
-  return `
-    <div class="home-inline-switchers" aria-label="Display options">
-      <div class="home-inline-switcher" role="group" aria-label="Language">
-        <button type="button" class="home-switch-button ${state.language === 'so' ? 'is-active' : ''}" data-action="set-language" data-value="so">${esc(soLabel)}</button>
-        <button type="button" class="home-switch-button ${state.language === 'en' ? 'is-active' : ''}" data-action="set-language" data-value="en">${esc(enLabel)}</button>
-      </div>
-      <div class="home-inline-switcher" role="group" aria-label="Theme">
-        <button type="button" class="home-switch-button ${state.theme === 'light' ? 'is-active' : ''}" data-action="set-theme" data-value="light">${esc(t.light)}</button>
-        <button type="button" class="home-switch-button ${state.theme === 'dark' ? 'is-active' : ''}" data-action="set-theme" data-value="dark">${esc(t.dark)}</button>
-      </div>
-    </div>
-  `;
 }
 
 function renderHomeTitleLines(lines = []) {
@@ -360,6 +343,9 @@ function renderPage() {
           <p class="home-card-teaser${storyContentLoadedClass}" data-story-fade>${esc(labelFor(story.summary, state.language))}</p>
           <div class="home-card-actions home-card-actions--primary">
             <div class="home-card-action-row home-card-action-row--top">
+              <a class="action-button home-read-button" href="stories/?code=${esc(story.id)}">
+                ${icon.glasses()}<span>${esc(readLabel)}</span>
+              </a>
               <div class="home-card-action-row--carousel" aria-label="${esc(carouselLabel)}">
                 <button type="button" class="action-button home-carousel-button ${state.trailIndex <= 0 ? 'is-disabled' : ''}" data-action="previous-home-story" aria-label="${esc(t.previousStory || 'Previous story')}" ${state.trailIndex <= 0 ? 'disabled' : ''}>
                   ${icon.chevronLeft()}
@@ -371,20 +357,8 @@ function renderPage() {
                   ${icon.chevronRight()}
                 </button>
               </div>
-              <a class="action-button home-read-button" href="stories/?code=${esc(story.id)}">
-                ${icon.glasses()}<span>${esc(readLabel)}</span>
-              </a>
             </div>
-          </div>
-        </div>
-        <div class="home-card-secondary-panel">
-          ${renderHomeSwitchers(t)}
-          <div class="home-card-actions home-card-actions--secondary">
-            <div class="home-card-action-row home-card-action-row--secondary">
-              <a class="action-button home-explore-button" href="stories/#gallery">
-                ${icon.sliders()}<span>${esc(exploreLabel)}</span>
-              </a>
-            </div>
+            <a class="home-explore-link" href="stories/#gallery">${esc(exploreLabel)} &rarr;</a>
           </div>
         </div>
       </div>
