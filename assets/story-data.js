@@ -61,7 +61,8 @@ export function buildGalleryShareUrl(filters) {
   const url = storyAppUrl();
   url.search = '';
   url.hash = 'gallery';
-  if (filters.district)               url.searchParams.set('district', filters.district);
+  const districts = selectedDistricts(filters);
+  if (districts.length)               url.searchParams.set('district', districts.join(','));
   if (filters.people?.length)         url.searchParams.set('people',   filters.people.join(','));
   if (filters.tags?.length)           url.searchParams.set('tags',     filters.tags.join(','));
   if (filters.searchQuery?.trim())    url.searchParams.set('q',        filters.searchQuery.trim());
@@ -77,11 +78,16 @@ export function updateUrlForStory(story, options = {}) {
 
 export function hasActiveFilters(filters) {
   return Boolean(
-    filters.district ||
+    selectedDistricts(filters).length ||
     filters.people.length ||
     filters.tags.length ||
     effectiveSearchQuery(filters)
   );
+}
+
+export function selectedDistricts(filters) {
+  if (Array.isArray(filters?.district)) return filters.district.filter(Boolean);
+  return filters?.district ? [filters.district] : [];
 }
 
 export function effectiveSearchQuery(filters) {
@@ -93,6 +99,37 @@ function storyContainsAny(storyItems = [], selectedSlugs = []) {
   if (selectedSlugs.length === 0) return true;
   const storySlugs = new Set(storyItems.map((item) => resolveSlug(item)).filter(Boolean));
   return selectedSlugs.some((slug) => storySlugs.has(slug));
+}
+
+function selectedTagGroups(state, selectedSlugs = []) {
+  const selectedSet = new Set(selectedSlugs.filter(Boolean));
+  if (selectedSet.size === 0) return [];
+
+  const clusters = new Map();
+  const knownSlugs = new Set();
+
+  const addTag = (tag, fallbackClusterSlug = 'other') => {
+    const slug = resolveSlug(tag);
+    if (!slug || !selectedSet.has(slug)) return;
+    knownSlugs.add(slug);
+    const clusterSlug = tag.clusterSlug || tag.cluster?.slug || fallbackClusterSlug;
+    if (!clusters.has(clusterSlug)) clusters.set(clusterSlug, []);
+    clusters.get(clusterSlug).push(slug);
+  };
+
+  (state.tagClusters || []).forEach((cluster) => {
+    (cluster.tags || []).forEach((tag) => addTag(tag, cluster.slug || 'other'));
+  });
+
+  (state.stories || []).forEach((story) => {
+    (story.topicTags || []).forEach((tag) => addTag(tag));
+  });
+
+  selectedSet.forEach((slug) => {
+    if (!knownSlugs.has(slug)) clusters.set(`unknown-${slug}`, [slug]);
+  });
+
+  return [...clusters.values()].map((group) => [...new Set(group)]);
 }
 
 function storyReflectionSearchTerms(story) {
@@ -115,11 +152,13 @@ function storyReflectionSearchTerms(story) {
   ].join(' ');
 }
 
-export function storyMatchesFilters(story, filters) {
-  if (filters.district && story.district?.slug !== filters.district) return false;
+export function storyMatchesFilters(story, filters, selectedTagGroups = []) {
+  const districts = selectedDistricts(filters);
+  if (districts.length && !districts.includes(story.district?.slug)) return false;
 
-  const selectedTagSlugs = [...filters.people, ...filters.tags];
-  if (!storyContainsAny(story.tags || [], selectedTagSlugs)) return false;
+  if (!storyContainsAny(story.people || [], filters.people || [])) return false;
+
+  if (!selectedTagGroups.every((clusterSlugs) => storyContainsAny(story.topicTags || [], clusterSlugs))) return false;
 
   if (filters.searchQuery) {
     const q = effectiveSearchQuery(filters);
@@ -144,7 +183,8 @@ export function storyMatchesFilters(story, filters) {
 }
 
 export function filteredStories(state, filters = state.filters) {
-  const matches = state.stories.filter((story) => storyMatchesFilters(story, filters));
+  const tagGroups = selectedTagGroups(state, filters.tags || []);
+  const matches = state.stories.filter((story) => storyMatchesFilters(story, filters, tagGroups));
   if (state.galleryMode === 'related' && state.currentStoryId) {
     return matches.filter((story) => String(story.id) !== String(state.currentStoryId));
   }
@@ -187,7 +227,8 @@ export function pickRandomRelatedStory(state, base) {
 }
 
 export function countForFilters(state, nextFilters) {
-  let matches = state.stories.filter((story) => storyMatchesFilters(story, nextFilters));
+  const tagGroups = selectedTagGroups(state, nextFilters.tags || []);
+  let matches = state.stories.filter((story) => storyMatchesFilters(story, nextFilters, tagGroups));
   if (state.galleryMode === 'related' && state.currentStoryId) {
     matches = matches.filter((story) => String(story.id) !== String(state.currentStoryId));
   }

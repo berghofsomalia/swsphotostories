@@ -26,6 +26,9 @@
 .actions-band .content-wrap           { padding-top: 1.9rem;  padding-bottom: 2rem;  }
 .gallery-band .content-wrap           { padding-top: 3rem;    padding-bottom: 4rem;  }
 .gallery-band--entry .content-wrap    { padding-top: 1.35rem; }
+.site-shell.is-gallery-only .gallery-band--entry .content-wrap {
+  padding-top: clamp(2.7rem, 5vw, 4.4rem);
+}
 
 /* ── Story stage ─────────────────────────────────────────────── */
 .story-stage-shell { background: var(--stage); }
@@ -2015,4 +2018,158 @@ html[data-theme="light"] .gallery-card:hover {
 }
 @media (max-width: 560px) {
   .related-grid { grid-template-columns: 1fr; }
+}
+
+/* Active filter summary lives with the results on wider screens. */
+.gallery-active-filter-panel {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 2.65rem;
+  margin: 0 0 0.85rem;
+  padding: 0.45rem 0.6rem;
+  background: rgba(255, 255, 255, 0.045);
+  color: #d8dee4;
+}
+
+.gallery-active-filter-count {
+  flex: 0 0 auto;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+}
+
+.gallery-active-filter-chips {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.active-filter-chip,
+.gallery-active-filter-reset {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 1.45rem;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.18rem 0.48rem;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ece5dc;
+  font-size: 0.68rem;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.active-filter-chip:hover,
+.gallery-active-filter-reset:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.active-filter-chip-dot {
+  width: 0.28rem;
+  height: 0.28rem;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: 0.72;
+}
+
+.active-filter-chip-remove {
+  opacity: 0.62;
+}
+
+.gallery-active-filter-reset {
+  flex: 0 0 auto;
+  color: #f0c8bd;
+}
+
+html[data-theme="light"] .gallery-active-filter-panel {
+  background: rgba(70, 54, 40, 0.075);
+  color: #342f2a;
+}
+
+html[data-theme="light"] .active-filter-chip,
+html[data-theme="light"] .gallery-active-filter-reset {
+  background: rgba(255, 255, 255, 0.62);
+  color: #342f2a;
+}
+
+html[data-theme="light"] .active-filter-chip:hover,
+html[data-theme="light"] .gallery-active-filter-reset:hover {
+  background: rgba(255, 255, 255, 0.86);
+}
+
+html[data-theme="light"] .gallery-active-filter-reset {
+  color: #8f3d34;
+}
+
+.cluster-tone-district {
+  --cluster-panel: rgba(82, 113, 132, 0.24);
+  --cluster-soft: rgba(117, 152, 172, 0.2);
+  --cluster-hover: rgba(117, 152, 172, 0.3);
+  --cluster-active: rgba(92, 130, 154, 0.72);
+  --cluster-border: rgba(117, 152, 172, 0.3);
+  --cluster-text: #c3d7e3;
+}
+
+html[data-theme="light"] .cluster-tone-district {
+  --cluster-panel: rgba(103, 136, 158, 0.18);
+  --cluster-soft: rgba(103, 136, 158, 0.18);
+  --cluster-hover: rgba(103, 136, 158, 0.26);
+  --cluster-active: rgba(74, 108, 132, 0.76);
+  --cluster-border: rgba(74, 108, 132, 0.25);
+  --cluster-text: #315368;
+}
+
+.chip.cluster-tone-district,
+.active-filter-chip.cluster-tone-district,
+.active-filter-chip.cluster-tone-people,
+.active-filter-chip.cluster-tone-1,
+.active-filter-chip.cluster-tone-2,
+.active-filter-chip.cluster-tone-3,
+.active-filter-chip.cluster-tone-4,
+.active-filter-chip.cluster-tone-5,
+.active-filter-chip.cluster-tone-6 {
+  color: var(--cluster-text) !important;
+  border-color: transparent !important;
+  background: var(--cluster-soft) !important;
+}
+
+button.chip.cluster-tone-district {
+  border-color: var(--cluster-border) !important;
+}
+
+button.chip.cluster-tone-district:hover,
+.active-filter-chip.cluster-tone-district:hover,
+.active-filter-chip.cluster-tone-people:hover,
+.active-filter-chip.cluster-tone-1:hover,
+.active-filter-chip.cluster-tone-2:hover,
+.active-filter-chip.cluster-tone-3:hover,
+.active-filter-chip.cluster-tone-4:hover,
+.active-filter-chip.cluster-tone-5:hover,
+.active-filter-chip.cluster-tone-6:hover {
+  background: var(--cluster-hover) !important;
+}
+
+.chip.cluster-tone-district.chip-active {
+  color: #fff !important;
+  border-color: transparent !important;
+  background: var(--cluster-active) !important;
+}
+
+@media (min-width: 769px) {
+  .site-shell.is-filter-split .gallery-header--filter {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .site-shell.is-gallery-only .gallery-band--entry .content-wrap {
+    padding-top: 0.85rem;
+  }
+
+  .gallery-active-filter-panel {
+    display: none;
+  }
 }

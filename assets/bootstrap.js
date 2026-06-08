@@ -1,4 +1,4 @@
-import { renderApp, qs, qsa, syncGalleryCardHeights, syncImageLoadStates, markImageLoaded } from './render.js?v=20260605-guidance-list';
+import { renderApp, qs, qsa, syncGalleryCardHeights, syncImageLoadStates, markImageLoaded } from './render.js?v=20260608-cluster-and';
 import { state, createEmptyFilters, PAGE_SIZE } from './state.js';
 import {
   buildShareUrl,
@@ -11,9 +11,10 @@ import {
   pickRandomRelatedStory,
   savePersistentState,
   scoreRelated,
+  selectedDistricts,
   updateUrlForStory,
   isSaved
-} from './story-data.js?v=20260603-search-focus3';
+} from './story-data.js?v=20260608-cluster-and';
 import { getUiText, labelFor, initialiseI18n } from './content.js?v=20260605-story-actions2';
 import { ensureStoryImages, fetchStories, fetchTagCatalogue } from './api.js?v=20260607-story-photos';
 
@@ -264,7 +265,7 @@ function setGallerySplitFromPointer(clientY) {
 
 function cloneFilters(filters) {
   return {
-    district: filters?.district || '',
+    district: selectedDistricts(filters),
     people: Array.isArray(filters?.people) ? [...filters.people] : [],
     tags: Array.isArray(filters?.tags) ? [...filters.tags] : [],
     searchQuery: filters?.searchQuery || ''
@@ -548,7 +549,7 @@ const ACTIONS = {
   'show-related': async ({ story }) => {
     if (!story) return;
     state.filters = {
-      district: '',
+      district: [],
       people: (story.people || []).map((tag) => tag.slug).filter(Boolean),
       tags: (story.topicTags || []).map((tag) => tag.slug).filter(Boolean),
       searchQuery: ''
@@ -583,13 +584,20 @@ const ACTIONS = {
     resetPage();
     renderSite();
   },
+  'clear-search': async () => {
+    state.filters.searchQuery = '';
+    setGalleryModeFromFilters();
+    renderSite({ preserveGalleryScroll: true });
+  },
   'filter-district': async ({ value }) => {
-    state.filters.district = state.filters.district === value ? '' : value;
+    state.filters.district = state.filters.district.includes(value)
+      ? state.filters.district.filter((slug) => slug !== value)
+      : [...state.filters.district, value];
     setGalleryModeFromFilters();
     renderSite();
   },
   'filter-district-all': async () => {
-    state.filters.district = '';
+    state.filters.district = [];
     setGalleryModeFromFilters();
     renderSite();
   },
@@ -655,7 +663,7 @@ const ACTIONS = {
       state.storyVisible = false;
       state.galleryVisible = true;
       state.filterDrawerOpen = true;
-      state.filters = { district: '', people: [], tags: [], searchQuery: '' };
+      state.filters = { district: [], people: [], tags: [], searchQuery: '' };
       state.galleryMode = 'total';
       state.galleryPage = viewportInitialPageCount();
       const url = new URL(window.location.href);
@@ -877,7 +885,7 @@ export async function initialiseApp() {
     const pPeople   = params.get('people');
     const pTags     = params.get('tags');
     const pQ        = params.get('q');
-    if (pDistrict) state.filters.district = pDistrict;
+    if (pDistrict) state.filters.district = pDistrict.split(',').filter(Boolean);
     if (pPeople)   state.filters.people   = pPeople.split(',').filter(Boolean);
     if (pTags)     state.filters.tags     = pTags.split(',').filter(Boolean);
     if (pQ)        state.filters.searchQuery = pQ;

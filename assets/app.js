@@ -1,5 +1,5 @@
-import { initialiseApp } from './bootstrap.js?v=20260607-story-photos';
-import { qs } from './render.js?v=20260605-guidance-list';
+import { initialiseApp } from './bootstrap.js?v=20260608-cluster-and';
+import { qs } from './render.js?v=20260608-cluster-and';
 
 initialiseApp().catch((error) => {
   console.error(error);

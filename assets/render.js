@@ -11,15 +11,17 @@ import {
   allTagClusters,
   countForFilters,
   currentStory,
+  effectiveSearchQuery,
   filteredStories,
   hasActiveFilters,
   hasMoreStories,
   isSaved,
   pagedStories,
   scoreRelated,
+  selectedDistricts,
   SEARCH_MIN_CHARS,
   storyCountLabel
-} from './story-data.js?v=20260603-search-focus3';
+} from './story-data.js?v=20260608-cluster-and';
 
 export const qs = (selector, root = document) => root.querySelector(selector);
 export const qsa = (selector, root = document) => Array.from(root.querySelectorAll(selector));
@@ -341,7 +343,7 @@ function renderGuidanceModal(state) {
 
 function cloneFilters(filters) {
   return {
-    district: filters.district,
+    district: selectedDistricts(filters),
     people: [...filters.people],
     tags: [...filters.tags],
     searchQuery: filters.searchQuery
@@ -352,41 +354,31 @@ function renderFilterGroup(state, title, allLabel, items, currentValue, action, 
   const isMulti = options.multi !== false;
   const filterKey = options.filterKey;
   const groupSlugs = items.map((item) => item.value);
-  const clusterTone = filterKey === 'people'
-    ? clusterToneClass(state, 'people')
-    : filterKey === 'tags'
-      ? clusterToneClass(state, options.groupValue)
-      : '';
-  const clusterSlug = filterKey === 'people' ? 'people' : options.groupValue || '';
+  const clusterTone = filterKey === 'district'
+    ? 'cluster-tone-district'
+    : filterKey === 'people'
+      ? clusterToneClass(state, 'people')
+      : filterKey === 'tags'
+        ? clusterToneClass(state, options.groupValue)
+        : '';
+  const clusterSlug = filterKey === 'district' ? 'district' : filterKey === 'people' ? 'people' : options.groupValue || '';
   const groupClasses = ['filter-group'];
   if (clusterTone) groupClasses.push(clusterTone);
-  const base = cloneFilters(state.filters);
   const allCountFilters = cloneFilters(state.filters);
 
-  if (filterKey === 'district') allCountFilters.district = '';
+  if (filterKey === 'district') allCountFilters.district = [];
   if (filterKey === 'people') allCountFilters.people = [];
   if (filterKey === 'tags') allCountFilters.tags = allCountFilters.tags.filter((slug) => !groupSlugs.includes(slug));
-
-  const groupHasActive = isMulti
-    ? currentValue.some((value) => groupSlugs.includes(value))
-    : Boolean(currentValue);
+  const itemCountBase = cloneFilters(allCountFilters);
 
   return `
     <section class="${groupClasses.join(' ')}">
       <h3>${escapeHtml(title)}</h3>
       <div class="chip-list">
-        ${renderChip(allLabel, {
-          active: !groupHasActive,
-          muted: true,
-          clusterTone,
-          clusterSlug,
-          count: countForFilters(state, allCountFilters),
-          onClick: { action: `${action}-all`, value: options.groupValue || '' }
-        })}
         ${items.map((item) => {
           const active = isMulti ? currentValue.includes(item.value) : currentValue === item.value;
-          const nextFilters = cloneFilters(base);
-          if (filterKey === 'district') nextFilters.district = item.value;
+          const nextFilters = cloneFilters(itemCountBase);
+          if (filterKey === 'district' && !nextFilters.district.includes(item.value)) nextFilters.district.push(item.value);
           if (filterKey === 'people' && !nextFilters.people.includes(item.value)) nextFilters.people.push(item.value);
           if (filterKey === 'tags' && !nextFilters.tags.includes(item.value)) nextFilters.tags.push(item.value);
           return renderChip(item.label, {
@@ -400,6 +392,59 @@ function renderFilterGroup(state, title, allLabel, items, currentValue, action, 
         }).join('')}
       </div>
     </section>
+  `;
+}
+
+function labelFromItems(items = [], slug = '') {
+  return items.find((item) => item.value === slug)?.label || slug;
+}
+
+function removableFilterChip(label, action, value, clusterTone = '', clusterSlug = '') {
+  const classes = ['active-filter-chip'];
+  if (clusterTone) classes.push(clusterTone);
+  const clusterAttr = clusterSlug ? ` data-cluster="${escapeHtml(clusterSlug)}"` : '';
+  return `
+    <button type="button" class="${classes.join(' ')}"${clusterAttr} data-action="${escapeHtml(action)}" data-value="${escapeHtml(value)}">
+      <span class="active-filter-chip-dot" aria-hidden="true"></span>
+      <span>${escapeHtml(label)}</span>
+      <span class="active-filter-chip-remove" aria-hidden="true">x</span>
+    </button>
+  `;
+}
+
+function renderActiveFilterPanel(state, districtItems, peopleItems, tagGroups) {
+  const t = getUiText(state.language);
+  const total = state.stories.length;
+  const visible = filteredStories(state).length;
+  const chips = [];
+
+  selectedDistricts(state.filters).forEach((slug) => {
+    chips.push(removableFilterChip(labelFromItems(districtItems, slug), 'filter-district', slug, 'cluster-tone-district', 'district'));
+  });
+
+  state.filters.people.forEach((slug) => {
+    chips.push(removableFilterChip(labelFromItems(peopleItems, slug), 'filter-people', slug, clusterToneClass(state, 'people'), 'people'));
+  });
+
+  tagGroups.forEach((group) => {
+    state.filters.tags
+      .filter((slug) => group.items.some((item) => item.value === slug))
+      .forEach((slug) => {
+        chips.push(removableFilterChip(labelFromItems(group.items, slug), 'filter-tag', slug, clusterToneClass(state, group.slug), group.slug));
+      });
+  });
+
+  const searchQuery = effectiveSearchQuery(state.filters);
+  if (searchQuery) {
+    chips.push(removableFilterChip(searchQuery, 'clear-search', ''));
+  }
+
+  return `
+    <div class="gallery-active-filter-panel">
+      <div class="gallery-active-filter-count">${visible}/${total} ${escapeHtml(t.photostories || t.stories || 'photostories')}</div>
+      ${chips.length ? `<div class="gallery-active-filter-chips">${chips.join('')}</div>` : ''}
+      ${chips.length ? `<button type="button" class="gallery-active-filter-reset" data-action="reset-filters">${escapeHtml(t.resetFilters || 'Reset filters')}</button>` : ''}
+    </div>
   `;
 }
 
@@ -612,7 +657,7 @@ export function renderApp(state) {
     : '';
 
   const filterGroupsMarkup = [
-    renderFilterGroup(state, t.district, t.all, districtItems, state.filters.district, 'filter-district', { multi: false, filterKey: 'district' }),
+    renderFilterGroup(state, t.district, t.all, districtItems, selectedDistricts(state.filters), 'filter-district', { multi: true, filterKey: 'district' }),
     renderFilterGroup(state, t.people, t.all, peopleItems, state.filters.people, 'filter-people', { multi: true, filterKey: 'people' }),
     ...tagGroups.map((group) => renderFilterGroup(state, group.label, t.all, group.items, state.filters.tags, 'filter-tag', {
       multi: true,
@@ -620,6 +665,7 @@ export function renderApp(state) {
       groupValue: group.slug
     }))
   ].join('');
+  const activeFilterPanelMarkup = renderActiveFilterPanel(state, districtItems, peopleItems, tagGroups);
 
   const galleryMarkup = state.galleryVisible ? `
     <section id="gallery" class="gallery-band gallery-band--entry">
@@ -635,6 +681,7 @@ export function renderApp(state) {
             <div class="filter-panel-scroll-body">${filterGroupsMarkup}</div>
           </aside>
           <div class="gallery-results-pane ${String(state.filters.searchQuery || '').trim().length > 0 && String(state.filters.searchQuery || '').trim().length < SEARCH_MIN_CHARS ? 'is-search-pending' : ''}">
+            ${activeFilterPanelMarkup}
             <div class="gallery-grid">
               ${galleryGridMarkup}
             </div>
