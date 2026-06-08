@@ -274,7 +274,7 @@ function renderLoading() {
   savePrefs();
   const app = document.querySelector('#app');
   if (!app) return;
-  const loadingText = state.language === 'so' ? 'Bogga waa la raraya…' : 'Loading…';
+  const loadingText = state.language === 'so' ? 'Sheekada waa la raraya…' : 'Loading story…';
   app.innerHTML = `<div class="home-shell"><div class="loading-state loading-state--page"><span class="loading-spinner" aria-hidden="true"></span><span>${esc(loadingText)}</span></div></div>`;
 }
 
@@ -358,12 +358,11 @@ function renderPage() {
                 </button>
               </div>
             </div>
-            <a class="home-explore-link" href="stories/#gallery">${esc(exploreLabel)} &rarr;</a>
           </div>
         </div>
       </div>
     </div>
-  ` : `<div class="home-loading">${esc(t.loading)}</div>`;
+  ` : `<div class="home-loading">${esc(t.loadingStory || 'Loading story…')}</div>`;
 
   app.innerHTML = `
     <div class="home-shell">
@@ -376,6 +375,7 @@ function renderPage() {
             <p>${(landing.section1NexusLines || []).map((l) => `<span>${esc(l)}</span>`).join('')}</p>
           </div>
           ${storyCard}
+          ${story ? `<a class="home-explore-link" href="stories/#gallery">${icon.sliders()}<span>${esc(exploreLabel)}</span><span aria-hidden="true">&rarr;</span></a>` : ''}
           <div class="home-badge-title" aria-hidden="true">
             <p>${renderHomeTitleLines(landing.section1TitleLines || [])}</p>
           </div>
@@ -395,11 +395,46 @@ function renderPage() {
 
 // ── Listeners ─────────────────────────────────────────────────────────────────
 function attachListeners() {
+  const swipe = {
+    active: false,
+    pointerId: null,
+    x: 0,
+    y: 0,
+    startedAt: 0
+  };
+
   document.addEventListener('load', (e) => {
     if (e.target?.matches?.('img[data-image-fade]')) {
       e.target.classList.add('is-image-loaded');
     }
   }, true);
+
+  document.addEventListener('pointerdown', (e) => {
+    const card = e.target.closest?.('.home-card');
+    if (!card || e.target.closest?.('a, button, input, select, textarea')) return;
+    swipe.active = true;
+    swipe.pointerId = e.pointerId;
+    swipe.x = e.clientX;
+    swipe.y = e.clientY;
+    swipe.startedAt = Date.now();
+  });
+
+  document.addEventListener('pointerup', async (e) => {
+    if (!swipe.active || e.pointerId !== swipe.pointerId) return;
+    const dx = e.clientX - swipe.x;
+    const dy = e.clientY - swipe.y;
+    const elapsed = Date.now() - swipe.startedAt;
+    swipe.active = false;
+    swipe.pointerId = null;
+    if (elapsed > 1200 || Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy) * 1.35) return;
+    if (dx < 0) await goNextHomeStory();
+    else await goPreviousHomeStory();
+  });
+
+  document.addEventListener('pointercancel', () => {
+    swipe.active = false;
+    swipe.pointerId = null;
+  });
 
   document.addEventListener('click', async (e) => {
     const target = e.target.closest('[data-action]');

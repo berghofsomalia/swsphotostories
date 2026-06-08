@@ -24,6 +24,7 @@
     "searchPlaceholder": "Search stories…",
     "noResults": "No stories match these filters.",
     "loading": "Loading stories…",
+    "loadingStory": "Loading story…",
     "loadMore": "Load more",
     "loadMoreRelated": "More related stories...",
     "allStories": "All stories",

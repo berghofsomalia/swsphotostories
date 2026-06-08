@@ -65,7 +65,10 @@ function renderSite(options = {}) {
 function renderLoading() {
   const app = qs('#app');
   if (!app) return;
-  const loadingText = state.language === 'so' ? 'Sheekooyinka waa la raraya…' : 'Loading stories…';
+  const hasStoryCode = new URLSearchParams(window.location.search).has('code');
+  const loadingText = state.language === 'so'
+    ? (hasStoryCode ? 'Sheekada waa la raraya…' : 'Sheekooyinka waa la raraya…')
+    : (hasStoryCode ? 'Loading story…' : 'Loading stories…');
   app.innerHTML = `<div class="loading-state loading-state--page"><span class="loading-spinner" aria-hidden="true"></span><span>${loadingText}</span></div>`;
 }
 

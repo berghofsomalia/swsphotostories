@@ -1,4 +1,4 @@
-import { initialiseApp } from './bootstrap.js?v=20260608-cluster-and';
+import { initialiseApp } from './bootstrap.js?v=20260608-loading-labels';
 import { qs } from './render.js?v=20260608-cluster-and';
 
 initialiseApp().catch((error) => {
