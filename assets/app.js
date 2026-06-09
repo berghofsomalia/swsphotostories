@@ -1,5 +1,5 @@
-import { initialiseApp } from './bootstrap.js?v=20260608-loading-labels';
-import { qs } from './render.js?v=20260608-cluster-and';
+import { initialiseApp } from './bootstrap.js?v=20260608-gallery-batches';
+import { qs } from './render.js?v=20260608-gallery-batches';
 
 initialiseApp().catch((error) => {
   console.error(error);

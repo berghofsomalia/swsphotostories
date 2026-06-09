@@ -1,5 +1,5 @@
 import { STORAGE_KEYS } from './content.js';
-import { PAGE_SIZE } from './state.js';
+import { PAGE_SIZE } from './state.js?v=20260608-gallery-batches';
 
 export const SEARCH_MIN_CHARS = 3;
 

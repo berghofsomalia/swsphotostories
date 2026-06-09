@@ -1,6 +1,6 @@
 import { STORAGE_KEYS } from './content.js';
 
-export const PAGE_SIZE = 24;
+export const PAGE_SIZE = 12;
 
 export function createEmptyFilters() {
   return {

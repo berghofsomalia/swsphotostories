@@ -1,5 +1,5 @@
-import { renderApp, qs, qsa, syncGalleryCardHeights, syncImageLoadStates, markImageLoaded } from './render.js?v=20260608-cluster-and';
-import { state, createEmptyFilters, PAGE_SIZE } from './state.js';
+import { renderApp, qs, qsa, syncGalleryCardHeights, syncImageLoadStates, markImageLoaded } from './render.js?v=20260608-gallery-batches';
+import { state, createEmptyFilters, PAGE_SIZE } from './state.js?v=20260608-gallery-batches';
 import {
   buildShareUrl,
   buildGalleryShareUrl,
@@ -14,9 +14,9 @@ import {
   selectedDistricts,
   updateUrlForStory,
   isSaved
-} from './story-data.js?v=20260608-cluster-and';
+} from './story-data.js?v=20260608-gallery-batches';
 import { getUiText, labelFor, initialiseI18n } from './content.js?v=20260605-story-actions2';
-import { ensureStoryImages, fetchStories, fetchTagCatalogue } from './api.js?v=20260607-story-photos';
+import { ensureStoryImages, fetchStories, fetchStoryByCode, fetchTagCatalogue } from './api.js?v=20260608-lazy-gallery';
 
 let actionMessageTimerId = null;
 let touchStartX = null;
@@ -28,19 +28,27 @@ let searchRenderTimerId = null;
 let pendingSearchFocus = null;
 const SEARCH_RENDER_DELAY_MS = 160;
 
+async function loadGalleryDataset() {
+  if (state.galleryDatasetLoaded) return;
+  if (state.galleryDatasetPromise) return state.galleryDatasetPromise;
+
+  state.galleryDatasetPromise = (async () => {
+    const stories = await fetchStories();
+    state.stories = stories;
+    state.tagClusters = await fetchTagCatalogue(stories);
+    state.galleryDatasetLoaded = true;
+  })();
+
+  try {
+    await state.galleryDatasetPromise;
+  } finally {
+    state.galleryDatasetPromise = null;
+  }
+}
+
 // ── Viewport-aware initial gallery count ──────────────────────────────────────
 function viewportInitialPageCount() {
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-  // Match CSS breakpoints: 1 col ≤560px, 2 cols ≤1080px, 3 cols above
-  const cols = vw <= 560 ? 1 : vw <= 1080 ? 2 : 3;
-  // Card height: image frame (15.5rem ≈ 248px) + body (~130px) + gap (1rem ≈ 16px)
-  const cardHeight = 248 + 130 + 16;
-  const rowsFit = Math.ceil(vh / cardHeight);
-  // Add one extra row so there's always something below the fold
-  const cardsNeeded = (rowsFit + 1) * cols;
-  // Round up to a full PAGE_SIZE multiple, minimum 1 page
-  return Math.max(1, Math.ceil(cardsNeeded / PAGE_SIZE));
+  return 1;
 }
 
 // ── Rendering ─────────────────────────────────────────────────────────────────
@@ -309,11 +317,16 @@ async function restoreHistoryState(snapshot) {
       setCurrentStory(story.id, { skipUrl: true, scrollTop: true });
       return;
     }
+    await loadGalleryDataset();
     showGalleryOnly();
     history.replaceState(makeHistoryState('gallery'), '', galleryUrl());
     renderSite();
     requestAnimationFrame(() => qs('#gallery')?.scrollIntoView({ behavior: 'auto', block: 'start' }));
     return;
+  }
+
+  if (snapshot.galleryVisible) {
+    await loadGalleryDataset();
   }
 
   state.currentStoryId = snapshot.currentStoryId || state.currentStoryId;
@@ -547,10 +560,14 @@ const ACTIONS = {
   },
   'random-related': async ({ story }) => {
     if (!story) return;
-    setCurrentStory(pickRandomRelatedStory(state, story).id, { scrollTop: true });
+    await loadGalleryDataset();
+    const baseStory = getStoryById(state.stories, story.id) || story;
+    const related = pickRandomRelatedStory(state, baseStory);
+    if (related) setCurrentStory(related.id, { scrollTop: true });
   },
   'show-related': async ({ story }) => {
     if (!story) return;
+    await loadGalleryDataset();
     state.filters = {
       district: [],
       people: (story.people || []).map((tag) => tag.slug).filter(Boolean),
@@ -566,12 +583,14 @@ const ACTIONS = {
     scrollGallery();
   },
   'load-more': async () => {
+    await loadGalleryDataset();
     if (hasMoreStories(state)) {
       state.galleryPage += 1;
       renderSite({ preserveGalleryScroll: true });
     }
   },
   'explore-all': async () => {
+    await loadGalleryDataset();
     state.filters = createEmptyFilters();
     state.galleryMode = 'total';
     resetPage();
@@ -582,6 +601,7 @@ const ACTIONS = {
     scrollGallery();
   },
   'reset-filters': async () => {
+    await loadGalleryDataset();
     state.filters = createEmptyFilters();
     state.galleryMode = 'total';
     resetPage();
@@ -593,6 +613,7 @@ const ACTIONS = {
     renderSite({ preserveGalleryScroll: true });
   },
   'filter-district': async ({ value }) => {
+    await loadGalleryDataset();
     state.filters.district = state.filters.district.includes(value)
       ? state.filters.district.filter((slug) => slug !== value)
       : [...state.filters.district, value];
@@ -600,11 +621,13 @@ const ACTIONS = {
     renderSite();
   },
   'filter-district-all': async () => {
+    await loadGalleryDataset();
     state.filters.district = [];
     setGalleryModeFromFilters();
     renderSite();
   },
   'filter-tag': async ({ value }) => {
+    await loadGalleryDataset();
     state.filters.tags = state.filters.tags.includes(value)
       ? state.filters.tags.filter((slug) => slug !== value)
       : [...state.filters.tags, value];
@@ -612,6 +635,7 @@ const ACTIONS = {
     renderSite();
   },
   'filter-tag-all': async ({ value }) => {
+    await loadGalleryDataset();
     if (!value) {
       state.filters.tags = [];
     } else {
@@ -625,6 +649,7 @@ const ACTIONS = {
     renderSite();
   },
   'filter-people': async ({ value }) => {
+    await loadGalleryDataset();
     state.filters.people = state.filters.people.includes(value)
       ? state.filters.people.filter((p) => p !== value)
       : [...state.filters.people, value];
@@ -632,6 +657,7 @@ const ACTIONS = {
     renderSite();
   },
   'filter-people-all': async () => {
+    await loadGalleryDataset();
     state.filters.people = [];
     setGalleryModeFromFilters();
     renderSite();
@@ -656,6 +682,7 @@ const ACTIONS = {
     }, 420);
   },
   'close-story': async () => {
+    await loadGalleryDataset();
     // Slide story out, reveal gallery
     state.storySlideOut = true;
     state.storySlideIn = false;
@@ -871,19 +898,17 @@ export async function initialiseApp() {
   attachGlobalListeners();
   renderLoading();
 
-  // Load i18n, stories and the full tag catalogue.
   await initialiseI18n(state.language);
-  state.stories = await fetchStories();
-  state.tagClusters = await fetchTagCatalogue(state.stories);
 
   const params = new URLSearchParams(window.location.search);
   const code = params.get('code');
   const shouldFocusSearch = params.get('focus') === 'search';
   const shouldRandomise = params.has('random') && !code;
-  const existing = getStoryById(state.stories, code);
+  const selectedStory = code ? await fetchStoryByCode(code) : null;
 
   // Restore gallery filter state from shared URL params
   if (!code) {
+    await loadGalleryDataset();
     const pDistrict = params.get('district');
     const pPeople   = params.get('people');
     const pTags     = params.get('tags');
@@ -893,14 +918,26 @@ export async function initialiseApp() {
     if (pTags)     state.filters.tags     = pTags.split(',').filter(Boolean);
     if (pQ)        state.filters.searchQuery = pQ;
   }
-  const randomStory = state.stories[Math.floor(Math.random() * state.stories.length)] || null;
-  const selectedStory = shouldRandomise ? randomStory : existing;
-  const startInGallery = !selectedStory;
+  const randomStory = shouldRandomise
+    ? state.stories[Math.floor(Math.random() * state.stories.length)] || null
+    : null;
+  const activeStory = shouldRandomise ? randomStory : selectedStory;
+  const startInGallery = !activeStory;
+
+  if (activeStory && !state.stories.some((story) => String(story.id) === String(activeStory.id))) {
+    state.stories = [activeStory];
+    state.tagClusters = [];
+    state.galleryDatasetLoaded = false;
+  }
+
+  if (startInGallery && !state.galleryDatasetLoaded) {
+    await loadGalleryDataset();
+  }
 
   if (startInGallery) {
     showGalleryOnly();
   } else {
-    state.currentStoryId = selectedStory.id;
+    state.currentStoryId = activeStory.id;
     state.storyVisible = true;
     state.galleryVisible = false;
     state.filterDrawerOpen = false;

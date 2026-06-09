@@ -419,6 +419,54 @@ const STORY_PHOTOS_SELECT = `
   )
 `;
 
+function fullStorySelect({ includePhotos = true } = {}) {
+  const photosSelect = includePhotos ? `,
+      ${STORY_PHOTOS_SELECT}` : '';
+  return `
+      id,
+      code,
+      storyteller,
+      teaser_so,
+      story_so,
+      teaser_en,
+      story_en,
+      status,
+      sort_order,
+      published_at,
+      districts (
+        id,
+        slug,
+        label_so,
+        label_en,
+        sort_order
+      ),
+      story_tags (
+        tags (
+          id,
+          slug,
+          label_so,
+          label_en,
+          sort_order,
+          tag_clusters (
+            id,
+            slug,
+            label_so,
+            label_en,
+            sort_order
+          )
+        )
+      ),
+      community_reflections (
+        id,
+        reflection_so,
+        reflection_en,
+        reflection_type,
+        sort_order,
+        status
+      )${photosSelect}
+    `;
+}
+
 function isStoryPhotosPermissionError(error) {
   const text = [
     error?.message,
@@ -463,52 +511,9 @@ async function fetchHomeStoriesFromSupabase({ includePhotos = true } = {}) {
 
 async function fetchStoriesFromSupabase({ includePhotos = true } = {}) {
   const supabase = await getSupabase();
-  const photosSelect = includePhotos ? `,\n      ${STORY_PHOTOS_SELECT}` : '';
   const { data, error } = await supabase
     .from('stories')
-    .select(`
-      id,
-      code,
-      storyteller,
-      teaser_so,
-      story_so,
-      teaser_en,
-      story_en,
-      status,
-      sort_order,
-      published_at,
-      districts (
-        id,
-        slug,
-        label_so,
-        label_en,
-        sort_order
-      ),
-      story_tags (
-        tags (
-          id,
-          slug,
-          label_so,
-          label_en,
-          sort_order,
-          tag_clusters (
-            id,
-            slug,
-            label_so,
-            label_en,
-            sort_order
-          )
-        )
-      ),
-      community_reflections (
-        id,
-        reflection_so,
-        reflection_en,
-        reflection_type,
-        sort_order,
-        status
-      )${photosSelect}
-    `)
+    .select(fullStorySelect({ includePhotos }))
     .eq('status', 'published')
     .order('sort_order', { ascending: true })
     .order('published_at', { ascending: false, nullsFirst: false });
@@ -517,6 +522,24 @@ async function fetchStoriesFromSupabase({ includePhotos = true } = {}) {
 
   const mapped = await Promise.all((data || []).map(mapSupabaseStory));
   return mapped.filter((story) => story.code && isPublishedStory(story));
+}
+
+async function fetchStoryByCodeFromSupabase(code, { includePhotos = true } = {}) {
+  const storyCode = String(code || '').trim();
+  if (!storyCode) return null;
+  const supabase = await getSupabase();
+  const { data, error } = await supabase
+    .from('stories')
+    .select(fullStorySelect({ includePhotos }))
+    .eq('status', 'published')
+    .eq('code', storyCode)
+    .maybeSingle();
+
+  if (error) throw error;
+  if (!data) return null;
+
+  const story = await mapSupabaseStory(data);
+  return story?.code && isPublishedStory(story) ? story : null;
 }
 
 
@@ -600,6 +623,25 @@ export async function fetchStories() {
       return fetchStoriesFromSupabase({ includePhotos: false });
     }
     console.error('Supabase story fetch failed.', error);
+    throw error;
+  }
+}
+
+export async function fetchStoryByCode(code) {
+  if (!code) return null;
+  if (!isSupabaseConfigured) {
+    const stories = await fetchStoriesFromJson();
+    return stories.find((story) => String(story.code || story.id) === String(code)) || null;
+  }
+
+  try {
+    return await fetchStoryByCodeFromSupabase(code, { includePhotos: true });
+  } catch (error) {
+    if (isStoryPhotosPermissionError(error)) {
+      console.warn('Supabase story_photos is not readable by the public key. Falling back to storage listing for this story.', error);
+      return fetchStoryByCodeFromSupabase(code, { includePhotos: false });
+    }
+    console.error('Supabase single story fetch failed.', error);
     throw error;
   }
 }

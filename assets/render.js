@@ -21,7 +21,7 @@ import {
   selectedDistricts,
   SEARCH_MIN_CHARS,
   storyCountLabel
-} from './story-data.js?v=20260608-cluster-and';
+} from './story-data.js?v=20260608-gallery-batches';
 
 export const qs = (selector, root = document) => root.querySelector(selector);
 export const qsa = (selector, root = document) => Array.from(root.querySelectorAll(selector));

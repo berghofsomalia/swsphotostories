@@ -1041,10 +1041,10 @@ html[data-theme] .home-card-body {
   position: absolute;
   inset: 0 0 0 auto;
   z-index: -1;
-  width: 33%;
+  width: 42%;
   pointer-events: none;
   background:
-    linear-gradient(90deg, rgba(13, 17, 22, 0) 0%, rgba(13, 17, 22, 0.74) 24%, rgba(13, 17, 22, 0.96) 100%);
+    linear-gradient(90deg, rgba(13, 17, 22, 0) 0%, rgba(13, 17, 22, 0.68) 22%, rgba(13, 17, 22, 0.96) 100%);
 }
 
 .home-card-primary-panel {
@@ -1094,7 +1094,7 @@ html[data-theme="light"] .home-card-body {
 
 html[data-theme="light"] .home-card-body::before {
   background:
-    linear-gradient(90deg, rgba(30, 26, 21, 0) 0%, rgba(30, 26, 21, 0.62) 24%, rgba(30, 26, 21, 0.86) 100%);
+    linear-gradient(90deg, rgba(30, 26, 21, 0) 0%, rgba(30, 26, 21, 0.56) 22%, rgba(30, 26, 21, 0.86) 100%);
 }
 
 .home-card-actions {
