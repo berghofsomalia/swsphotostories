@@ -1749,7 +1749,7 @@ function renderEditor() {
         ${story ? `<input type="hidden" name="story_id" value="${story.id}">` : ''}
 
         <div class="admin-story-edit-layout">
-          <div class="admin-editor-grid admin-editor-main-grid">
+          <div class="admin-editor-grid admin-editor-top-grid">
             <div class="admin-field is-wide">
               <label for="story-remark">Admin remark</label>
               <textarea id="story-remark" name="remark" class="admin-remark-textarea" placeholder="Internal editor note, not shown on the public site.">${escapeHtml(draftValue('remark', story?.remark || ''))}</textarea>
@@ -1777,6 +1777,9 @@ function renderEditor() {
             </div>
 
             ${renderImageSlider(story)}
+          </div>
+
+          <div class="admin-editor-grid admin-editor-main-grid admin-editor-body-grid">
             ${renderTextFields(story)}
             ${renderReflectionsEditor(story)}
           </div>
