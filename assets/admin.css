@@ -1306,7 +1306,7 @@ textarea {
   min-width: 0;
 }
 
-.admin-tags-column .admin-field textarea.admin-remark-textarea {
+.admin-side-fields .admin-field textarea.admin-remark-textarea {
   min-height: 92px;
 }
 

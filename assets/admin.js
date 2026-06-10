@@ -1472,25 +1472,29 @@ function renderReflectionsEditor(story = null) {
   `;
 }
 
-function renderTagsEditor(story = null, statusValue = 'draft') {
+function renderAdminSideFields(story = null, statusValue = 'draft') {
   return `
-    <aside class="admin-tags-column" aria-label="Story administration and tags">
-      <div class="admin-side-fields" aria-label="Story admin fields">
-        <div class="admin-field">
-          <label for="story-status">Status</label>
-          <select id="story-status" name="status">
-            ${['draft', 'published', 'archived'].map((status) => `
-              <option value="${status}" ${statusValue === status ? 'selected' : ''}>${status}</option>
-            `).join('')}
-          </select>
-        </div>
-
-        <div class="admin-field">
-          <label for="story-remark">Admin remark</label>
-          <textarea id="story-remark" name="remark" class="admin-remark-textarea" placeholder="Internal editor note, not shown on the public site.">${escapeHtml(draftValue('remark', story?.remark || ''))}</textarea>
-        </div>
+    <div class="admin-side-fields" aria-label="Story admin fields">
+      <div class="admin-field">
+        <label for="story-status">Status</label>
+        <select id="story-status" name="status">
+          ${['draft', 'published', 'archived'].map((status) => `
+            <option value="${status}" ${statusValue === status ? 'selected' : ''}>${status}</option>
+          `).join('')}
+        </select>
       </div>
 
+      <div class="admin-field">
+        <label for="story-remark">Admin remark</label>
+        <textarea id="story-remark" name="remark" class="admin-remark-textarea" placeholder="Internal editor note, not shown on the public site.">${escapeHtml(draftValue('remark', story?.remark || ''))}</textarea>
+      </div>
+    </div>
+  `;
+}
+
+function renderTagsEditor(story = null) {
+  return `
+    <aside class="admin-tags-column" aria-label="Story tags">
       <section class="admin-tags-panel" aria-label="Story tags">
         <h3 class="admin-section-title">Tags</h3>
         <div class="admin-tag-groups">
@@ -1766,7 +1770,7 @@ function renderEditor() {
         <input type="hidden" name="mode" value="${mode}">
         ${story ? `<input type="hidden" name="story_id" value="${story.id}">` : ''}
 
-        <div class="admin-story-edit-layout">
+        <div class="admin-story-edit-layout admin-story-edit-layout-upper">
           <div class="admin-editor-grid admin-editor-main-grid">
             <div class="admin-field is-wide">
               <label>District</label>
@@ -1781,11 +1785,18 @@ function renderEditor() {
             </div>
 
             ${renderImageSlider(story)}
+          </div>
+
+          ${renderAdminSideFields(story, statusValue)}
+        </div>
+
+        <div class="admin-story-edit-layout admin-story-edit-layout-text">
+          <div class="admin-editor-grid admin-editor-main-grid">
             ${renderTextFields(story)}
             ${renderReflectionsEditor(story)}
           </div>
 
-          ${renderTagsEditor(story, statusValue)}
+          ${renderTagsEditor(story)}
         </div>
 
         <div class="admin-actions">
