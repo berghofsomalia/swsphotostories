@@ -1246,3 +1246,263 @@ textarea {
   cursor: not-allowed;
   opacity: 0.55;
 }
+
+/* Full-width admin workspace and three-column story editor. */
+.admin-shell {
+  width: 100%;
+}
+
+.admin-app-frame {
+  width: 100%;
+  max-width: none;
+  grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+}
+
+.admin-story-edit-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+  align-items: start;
+  gap: 18px;
+}
+
+.admin-editor-main-grid {
+  min-width: 0;
+}
+
+.admin-tags-column {
+  position: sticky;
+  top: 20px;
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  align-self: start;
+}
+
+.admin-tags-column .admin-section-title {
+  grid-column: auto;
+  margin: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.admin-tags-column .admin-tag-groups {
+  grid-column: auto;
+  overflow: hidden;
+  gap: 0;
+  border: 1px solid var(--admin-border);
+  border-radius: 22px;
+  background: rgba(15, 19, 24, 0.38);
+}
+
+.admin-tag-cluster[class*="admin-cluster-tone-"] {
+  padding: 13px;
+  border-bottom: 1px solid var(--cluster-border);
+  background: var(--cluster-panel);
+}
+
+.admin-tag-cluster[class*="admin-cluster-tone-"]:last-child {
+  border-bottom: 0;
+}
+
+.admin-tag-cluster[class*="admin-cluster-tone-"] + .admin-tag-cluster[class*="admin-cluster-tone-"] {
+  margin-top: 0;
+}
+
+.admin-tag-cluster[class*="admin-cluster-tone-"] .admin-tag-cluster-title {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--cluster-text);
+  letter-spacing: 0;
+}
+
+.admin-tag-cluster[class*="admin-cluster-tone-"] .admin-tag-cluster-title::before {
+  content: '';
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: 0.9;
+}
+
+.admin-tag-cluster[class*="admin-cluster-tone-"] .admin-tag-button {
+  border-color: var(--cluster-border);
+  background: var(--cluster-soft);
+  color: var(--cluster-text);
+}
+
+.admin-tag-cluster[class*="admin-cluster-tone-"] .admin-tag-button:hover {
+  background: var(--cluster-hover);
+  color: var(--cluster-text);
+}
+
+.admin-tag-cluster[class*="admin-cluster-tone-"] .admin-tag-button.is-selected {
+  border-color: transparent;
+  background: var(--cluster-active);
+  color: #fff;
+}
+
+/* Image viewer modal for admin story photos. */
+.admin-image-viewer-backdrop {
+  z-index: 52;
+  padding: clamp(14px, 2.6vw, 32px);
+}
+
+.admin-delete-modal-backdrop {
+  z-index: 58;
+}
+
+.admin-image-viewer-modal {
+  width: min(1120px, 100%);
+  max-height: calc(100vh - 40px);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  border: 1px solid var(--admin-border);
+  border-radius: 28px;
+  background: rgba(18, 22, 27, 0.98);
+  box-shadow: var(--admin-shadow);
+  padding: 16px;
+  outline: none;
+}
+
+.admin-image-viewer-header,
+.admin-image-viewer-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.admin-image-viewer-header h2 {
+  margin: 0;
+  font-size: clamp(1.35rem, 3vw, 2.4rem);
+  line-height: 1;
+}
+
+.admin-image-viewer-header p,
+.admin-image-viewer-keyhint {
+  margin: 6px 0 0;
+  color: var(--admin-faint);
+  font-size: 0.86rem;
+}
+
+.admin-image-viewer-close {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid var(--admin-border);
+  border-radius: 999px;
+  background: rgba(199, 212, 224, 0.07);
+  color: var(--admin-text);
+  cursor: pointer;
+  font-size: 1.7rem;
+  line-height: 1;
+}
+
+.admin-image-viewer-close:hover {
+  background: rgba(199, 212, 224, 0.14);
+}
+
+.admin-image-viewer-stage {
+  position: relative;
+  display: grid;
+  min-height: min(68vh, 720px);
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--admin-border);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at center, rgba(199, 212, 224, 0.06), transparent 26rem),
+    rgba(7, 9, 12, 0.82);
+}
+
+.admin-image-viewer-stage img {
+  display: block;
+  max-width: 100%;
+  max-height: calc(100vh - 240px);
+  object-fit: contain;
+}
+
+.admin-image-nav-button {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border: 1px solid rgba(199, 212, 224, 0.24);
+  border-radius: 999px;
+  background: rgba(15, 19, 24, 0.72);
+  color: var(--admin-text);
+  cursor: pointer;
+  font-size: 2.3rem;
+  line-height: 1;
+  transform: translateY(-50%);
+}
+
+.admin-image-nav-button:hover {
+  background: rgba(91, 131, 178, 0.42);
+}
+
+.admin-image-nav-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+
+.admin-image-nav-button.is-prev {
+  left: 14px;
+}
+
+.admin-image-nav-button.is-next {
+  right: 14px;
+}
+
+.admin-image-viewer-footer .admin-danger-button {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 1180px) {
+  .admin-story-edit-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-tags-column {
+    position: static;
+  }
+}
+
+@media (max-width: 700px) {
+  .admin-shell {
+    padding: 12px;
+  }
+
+  .admin-image-viewer-modal {
+    max-height: calc(100vh - 24px);
+    padding: 12px;
+  }
+
+  .admin-image-viewer-stage {
+    min-height: 54vh;
+  }
+
+  .admin-image-viewer-stage img {
+    max-height: calc(100vh - 230px);
+  }
+
+  .admin-image-viewer-header,
+  .admin-image-viewer-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-image-viewer-close {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+  }
+}

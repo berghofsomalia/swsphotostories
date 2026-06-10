@@ -76,6 +76,7 @@ const state = {
   overviewImageAuditError: '',
   selectedImagePath: null,
   pendingImageDelete: null,
+  imageViewerPath: null,
   sidebarScrollTop: 0
 };
 
@@ -204,6 +205,7 @@ function showOverview() {
   state.editorDistrictId = null;
   state.newCodeKind = 'standard';
   state.selectedImagePath = null;
+  state.imageViewerPath = null;
   state.validationModal = null;
   resetEditorDraft();
   markClean();
@@ -216,6 +218,7 @@ function showClusterTags() {
   state.editorDistrictId = null;
   state.newCodeKind = 'standard';
   state.selectedImagePath = null;
+  state.imageViewerPath = null;
   state.validationModal = null;
   resetEditorDraft();
   markClean();
@@ -228,6 +231,7 @@ function startNewStory() {
   state.editorDistrictId = null;
   state.newCodeKind = 'standard';
   state.selectedImagePath = null;
+  state.imageViewerPath = null;
   state.validationModal = null;
   resetEditorDraft();
   markClean();
@@ -246,6 +250,7 @@ function setActiveStory(storyId) {
   state.editorDistrictId = story.district_id ? Number(story.district_id) : null;
   state.newCodeKind = 'standard';
   state.selectedImagePath = null;
+  state.imageViewerPath = null;
   state.validationModal = null;
   resetEditorDraft();
   markClean();
@@ -557,6 +562,45 @@ function ensureActiveStoryImages() {
   const story = getActiveStory();
   if (!story?.code || !USE_SUPABASE_IMAGES) return;
   loadStoryImages(story.code);
+}
+
+function imageViewerImages(story = getActiveStory()) {
+  if (!story?.code) return [];
+  return Array.isArray(state.storyImages[story.code]) ? state.storyImages[story.code] : [];
+}
+
+function imageViewerIndex(images = imageViewerImages(), path = state.imageViewerPath) {
+  if (!images.length) return -1;
+  const index = images.findIndex((image) => image.path === path);
+  return index >= 0 ? index : 0;
+}
+
+function imageViewerImage() {
+  const images = imageViewerImages();
+  const index = imageViewerIndex(images);
+  return index >= 0 ? images[index] : null;
+}
+
+function openImageViewer(path) {
+  if (!path) return;
+  state.imageViewerPath = path;
+  state.selectedImagePath = path;
+  setMessage();
+}
+
+function closeImageViewer() {
+  state.imageViewerPath = null;
+  state.selectedImagePath = null;
+}
+
+function moveImageViewer(direction) {
+  const images = imageViewerImages();
+  if (!state.imageViewerPath || images.length < 2) return;
+
+  const currentIndex = imageViewerIndex(images);
+  const nextIndex = (currentIndex + direction + images.length) % images.length;
+  state.imageViewerPath = images[nextIndex]?.path || state.imageViewerPath;
+  state.selectedImagePath = state.imageViewerPath;
 }
 
 async function ensureOverviewImageAudit() {
@@ -1035,6 +1079,10 @@ function finishRender() {
     updateEditorSaveButtonState();
     ensureActiveStoryImages();
     ensureOverviewImageAudit();
+    const imageViewerModal = app.querySelector('.admin-image-viewer-modal');
+    if (imageViewerModal && !imageViewerModal.contains(document.activeElement)) {
+      imageViewerModal.focus({ preventScroll: true });
+    }
     if (state.scrollOverviewToTopAfterRender && state.editorMode === 'overview') {
       state.scrollOverviewToTopAfterRender = false;
       window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
@@ -1300,7 +1348,7 @@ function renderImageSlider(story = null) {
     ? isLoading
       ? `Loading photos from ${SUPABASE_STORY_PHOTO_BUCKET}/${story.code}/…`
       : hasStorageImages
-        ? `${storageImages.length} photo${storageImages.length === 1 ? '' : 's'} loaded from ${SUPABASE_STORY_PHOTO_BUCKET}/${story.code}/.`
+        ? `${storageImages.length} photo${storageImages.length === 1 ? '' : 's'} loaded from ${SUPABASE_STORY_PHOTO_BUCKET}/${story.code}/. Click a photo to open the viewer.`
         : USE_SUPABASE_IMAGES
           ? loadError || `No photos found in ${SUPABASE_STORY_PHOTO_BUCKET}/${story.code}/ yet.`
           : 'Supabase images are disabled in assets/supabase-config.js, so placeholders are shown.'
@@ -1311,30 +1359,20 @@ function renderImageSlider(story = null) {
     <div class="admin-image-slider" aria-label="Story images">
       ${slides.map((slide) => {
         if (slide.type === 'image') {
-          const selected = slide.path && state.selectedImagePath === slide.path;
           return `
-            <figure class="admin-image-card ${selected ? 'is-selected' : ''}">
+            <figure class="admin-image-card">
               <button
                 type="button"
                 class="admin-image-select"
-                data-action="select-image"
+                data-action="open-image-viewer"
                 data-path="${escapeHtml(slide.path)}"
                 data-name="${escapeHtml(slide.name)}"
-                aria-pressed="${selected ? 'true' : 'false'}"
+                aria-label="${escapeHtml(`Open ${slide.name} in image viewer`)}"
               >
                 <img src="${escapeHtml(slide.url)}" alt="${escapeHtml(`${code} ${slide.name}`)}" loading="lazy">
               </button>
               <figcaption>
                 <span>${escapeHtml(slide.name)}</span>
-                ${selected ? `
-                  <button
-                    type="button"
-                    class="admin-image-delete-button"
-                    data-action="request-delete-image"
-                    data-path="${escapeHtml(slide.path)}"
-                    data-name="${escapeHtml(slide.name)}"
-                  >Delete</button>
-                ` : ''}
               </figcaption>
             </figure>
           `;
@@ -1436,28 +1474,33 @@ function renderReflectionsEditor(story = null) {
 
 function renderTagsEditor() {
   return `
-    <h3 class="admin-section-title">Tags</h3>
-    <div class="admin-tag-groups">
-      ${state.clusters.map((cluster) => `
-        <div class="admin-tag-cluster">
-          <div class="admin-tag-cluster-title">${escapeHtml(labelFor(cluster))}</div>
-          <div class="admin-tag-buttons">
-            ${(cluster.tags || []).map((tag) => {
-              const selected = state.selectedTagIds.has(Number(tag.id));
-              return `
-                <button
-                  type="button"
-                  class="admin-tag-button ${selected ? 'is-selected' : ''}"
-                  data-action="toggle-tag"
-                  data-id="${tag.id}"
-                  aria-pressed="${selected ? 'true' : 'false'}"
-                >${escapeHtml(labelFor(tag))}</button>
-              `;
-            }).join('')}
-          </div>
-        </div>
-      `).join('')}
-    </div>
+    <aside class="admin-tags-column" aria-label="Story tags">
+      <h3 class="admin-section-title">Tags</h3>
+      <div class="admin-tag-groups">
+        ${state.clusters.map((cluster) => {
+          const toneClass = adminClusterToneClass(cluster.slug);
+          return `
+            <div class="admin-tag-cluster ${toneClass}">
+              <div class="admin-tag-cluster-title">${escapeHtml(labelFor(cluster))}</div>
+              <div class="admin-tag-buttons">
+                ${(cluster.tags || []).map((tag) => {
+                  const selected = state.selectedTagIds.has(Number(tag.id));
+                  return `
+                    <button
+                      type="button"
+                      class="admin-tag-button ${selected ? 'is-selected' : ''}"
+                      data-action="toggle-tag"
+                      data-id="${tag.id}"
+                      aria-pressed="${selected ? 'true' : 'false'}"
+                    >${escapeHtml(labelFor(tag))}</button>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </aside>
   `;
 }
 
@@ -1705,36 +1748,38 @@ function renderEditor() {
         <input type="hidden" name="mode" value="${mode}">
         ${story ? `<input type="hidden" name="story_id" value="${story.id}">` : ''}
 
-        <div class="admin-editor-grid">
-          <div class="admin-field is-wide">
-            <label for="story-remark">Admin remark</label>
-            <textarea id="story-remark" name="remark" class="admin-remark-textarea" placeholder="Internal editor note, not shown on the public site.">${escapeHtml(draftValue('remark', story?.remark || ''))}</textarea>
+        <div class="admin-story-edit-layout">
+          <div class="admin-editor-grid admin-editor-main-grid">
+            <div class="admin-field is-wide">
+              <label for="story-remark">Admin remark</label>
+              <textarea id="story-remark" name="remark" class="admin-remark-textarea" placeholder="Internal editor note, not shown on the public site.">${escapeHtml(draftValue('remark', story?.remark || ''))}</textarea>
+            </div>
+
+            <div class="admin-field is-wide">
+              <label>District</label>
+              ${renderDistrictButtons(currentDistrictId)}
+            </div>
+
+            ${renderCodeSelector(story)}
+
+            <div class="admin-field">
+              <label for="story-status">Status</label>
+              <select id="story-status" name="status">
+                ${['draft', 'published', 'archived'].map((status) => `
+                  <option value="${status}" ${statusValue === status ? 'selected' : ''}>${status}</option>
+                `).join('')}
+              </select>
+            </div>
+
+            <div class="admin-field ${story ? '' : 'is-wide'}">
+              <label for="storyteller">Storyteller</label>
+              <input id="storyteller" name="storyteller" value="${escapeHtml(draftValue('storyteller', story?.storyteller || ''))}" placeholder="Anonymous">
+            </div>
+
+            ${renderImageSlider(story)}
+            ${renderTextFields(story)}
+            ${renderReflectionsEditor(story)}
           </div>
-
-          <div class="admin-field is-wide">
-            <label>District</label>
-            ${renderDistrictButtons(currentDistrictId)}
-          </div>
-
-          ${renderCodeSelector(story)}
-
-          <div class="admin-field">
-            <label for="story-status">Status</label>
-            <select id="story-status" name="status">
-              ${['draft', 'published', 'archived'].map((status) => `
-                <option value="${status}" ${statusValue === status ? 'selected' : ''}>${status}</option>
-              `).join('')}
-            </select>
-          </div>
-
-          <div class="admin-field ${story ? '' : 'is-wide'}">
-            <label for="storyteller">Storyteller</label>
-            <input id="storyteller" name="storyteller" value="${escapeHtml(draftValue('storyteller', story?.storyteller || ''))}" placeholder="Anonymous">
-          </div>
-
-          ${renderImageSlider(story)}
-          ${renderTextFields(story)}
-          ${renderReflectionsEditor(story)}
           ${renderTagsEditor()}
         </div>
 
@@ -1800,11 +1845,69 @@ function renderSaveConfirmationModal() {
   `;
 }
 
+function renderImageViewerModal() {
+  if (!state.imageViewerPath) return '';
+
+  const story = getActiveStory();
+  const images = imageViewerImages(story);
+  if (!story || !images.length) return '';
+
+  const activeIndex = imageViewerIndex(images);
+  const image = images[activeIndex];
+  if (!image) return '';
+
+  const canNavigate = images.length > 1;
+  const title = `${story.code || 'Story'} image ${activeIndex + 1} of ${images.length}`;
+
+  return `
+    <div class="admin-modal-backdrop admin-image-viewer-backdrop" role="presentation">
+      <section class="admin-image-viewer-modal" role="dialog" aria-modal="true" aria-labelledby="image-viewer-title" tabindex="-1">
+        <div class="admin-image-viewer-header">
+          <div>
+            <h2 id="image-viewer-title">${escapeHtml(title)}</h2>
+            <p>${escapeHtml(image.name || image.path)}</p>
+          </div>
+          <button type="button" class="admin-image-viewer-close" data-action="close-image-viewer" aria-label="Close image viewer">×</button>
+        </div>
+
+        <div class="admin-image-viewer-stage">
+          <button
+            type="button"
+            class="admin-image-nav-button is-prev"
+            data-action="previous-image"
+            aria-label="Previous image"
+            ${canNavigate ? '' : 'disabled'}
+          >‹</button>
+          <img src="${escapeHtml(image.url)}" alt="${escapeHtml(`${story.code || 'Story'} ${image.name || 'image'}`)}">
+          <button
+            type="button"
+            class="admin-image-nav-button is-next"
+            data-action="next-image"
+            aria-label="Next image"
+            ${canNavigate ? '' : 'disabled'}
+          >›</button>
+        </div>
+
+        <div class="admin-image-viewer-footer">
+          <p class="admin-image-viewer-keyhint">Use ← / → to move through photos. Press Esc to close.</p>
+          <button
+            type="button"
+            class="admin-danger-button"
+            data-action="request-delete-current-image"
+            data-path="${escapeHtml(image.path)}"
+            data-name="${escapeHtml(image.name || image.path)}"
+          >Delete image</button>
+        </div>
+      </section>
+    </div>
+  `;
+}
+
 function renderImageDeleteModal() {
   if (!state.pendingImageDelete) return '';
 
   return `
-    <div class="admin-modal-backdrop" role="presentation">
+    <div class="admin-modal-backdrop admin-delete-modal-backdrop" role="presentation">
       <section class="admin-unsaved-modal" role="dialog" aria-modal="true" aria-labelledby="delete-image-title">
         <h2 id="delete-image-title">Delete image?</h2>
         <p>This will permanently delete <span>${escapeHtml(state.pendingImageDelete.name || state.pendingImageDelete.path)}</span> from the Supabase Storage bucket.</p>
@@ -1831,6 +1934,7 @@ function renderAdminApp() {
     ${renderUnsavedModal()}
     ${renderValidationModal()}
     ${renderSaveConfirmationModal()}
+    ${renderImageViewerModal()}
     ${renderImageDeleteModal()}
   `;
 }
@@ -1902,6 +2006,8 @@ async function signOut(options = {}) {
   state.stories = [];
   state.validationModal = null;
   state.saveConfirmationModal = null;
+  state.pendingImageDelete = null;
+  state.imageViewerPath = null;
   state.scrollOverviewToTopAfterRender = false;
   startNewStory();
   setMessage(options.message || '', options.error || signOutResult?.error?.message || '');
@@ -2271,9 +2377,19 @@ async function deletePendingImage() {
   }
 
   const storyCode = pending.storyCode || pending.path.split('/')[0];
-  state.storyImages[storyCode] = (state.storyImages[storyCode] || [])
-    .filter((image) => image.path !== pending.path);
-  state.selectedImagePath = null;
+  const previousImages = state.storyImages[storyCode] || [];
+  const deletedIndex = previousImages.findIndex((image) => image.path === pending.path);
+  const remainingImages = previousImages.filter((image) => image.path !== pending.path);
+  state.storyImages[storyCode] = remainingImages;
+
+  if (state.imageViewerPath === pending.path) {
+    const nextImage = remainingImages[Math.min(Math.max(deletedIndex, 0), remainingImages.length - 1)];
+    state.imageViewerPath = nextImage?.path || null;
+    state.selectedImagePath = state.imageViewerPath;
+  } else {
+    state.selectedImagePath = null;
+  }
+
   state.pendingImageDelete = null;
   setMessage(`Deleted ${pending.name || pending.path}.`);
   render();
@@ -2469,14 +2585,32 @@ app.addEventListener('click', async (event) => {
     return;
   }
 
-  if (action === 'select-image') {
-    const path = button.dataset.path || '';
-    state.selectedImagePath = state.selectedImagePath === path ? null : path;
+  if (action === 'open-image-viewer') {
+    captureFormDraft();
+    openImageViewer(button.dataset.path || '');
     render();
     return;
   }
 
-  if (action === 'request-delete-image') {
+  if (action === 'close-image-viewer') {
+    closeImageViewer();
+    render();
+    return;
+  }
+
+  if (action === 'previous-image') {
+    moveImageViewer(-1);
+    render();
+    return;
+  }
+
+  if (action === 'next-image') {
+    moveImageViewer(1);
+    render();
+    return;
+  }
+
+  if (action === 'request-delete-current-image' || action === 'request-delete-image') {
     const story = getActiveStory();
     state.pendingImageDelete = {
       path: button.dataset.path || '',
@@ -2555,6 +2689,30 @@ app.addEventListener('change', (event) => {
 
   if (field.dataset.field === 'district-filter') {
     state.districtFilter = field.value;
+    render();
+  }
+});
+
+window.addEventListener('keydown', (event) => {
+  if (!state.imageViewerPath || state.pendingImageDelete) return;
+
+  if (event.key === 'ArrowLeft') {
+    event.preventDefault();
+    moveImageViewer(-1);
+    render();
+    return;
+  }
+
+  if (event.key === 'ArrowRight') {
+    event.preventDefault();
+    moveImageViewer(1);
+    render();
+    return;
+  }
+
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    closeImageViewer();
     render();
   }
 });
