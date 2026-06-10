@@ -1472,34 +1472,52 @@ function renderReflectionsEditor(story = null) {
   `;
 }
 
-function renderTagsEditor() {
+function renderTagsEditor(story = null, statusValue = 'draft') {
   return `
-    <aside class="admin-tags-column" aria-label="Story tags">
-      <h3 class="admin-section-title">Tags</h3>
-      <div class="admin-tag-groups">
-        ${state.clusters.map((cluster) => {
-          const toneClass = adminClusterToneClass(cluster.slug);
-          return `
-            <div class="admin-tag-cluster ${toneClass}">
-              <div class="admin-tag-cluster-title">${escapeHtml(labelFor(cluster))}</div>
-              <div class="admin-tag-buttons">
-                ${(cluster.tags || []).map((tag) => {
-                  const selected = state.selectedTagIds.has(Number(tag.id));
-                  return `
-                    <button
-                      type="button"
-                      class="admin-tag-button ${selected ? 'is-selected' : ''}"
-                      data-action="toggle-tag"
-                      data-id="${tag.id}"
-                      aria-pressed="${selected ? 'true' : 'false'}"
-                    >${escapeHtml(labelFor(tag))}</button>
-                  `;
-                }).join('')}
-              </div>
-            </div>
-          `;
-        }).join('')}
+    <aside class="admin-tags-column" aria-label="Story administration and tags">
+      <div class="admin-side-fields" aria-label="Story admin fields">
+        <div class="admin-field">
+          <label for="story-status">Status</label>
+          <select id="story-status" name="status">
+            ${['draft', 'published', 'archived'].map((status) => `
+              <option value="${status}" ${statusValue === status ? 'selected' : ''}>${status}</option>
+            `).join('')}
+          </select>
+        </div>
+
+        <div class="admin-field">
+          <label for="story-remark">Admin remark</label>
+          <textarea id="story-remark" name="remark" class="admin-remark-textarea" placeholder="Internal editor note, not shown on the public site.">${escapeHtml(draftValue('remark', story?.remark || ''))}</textarea>
+        </div>
       </div>
+
+      <section class="admin-tags-panel" aria-label="Story tags">
+        <h3 class="admin-section-title">Tags</h3>
+        <div class="admin-tag-groups">
+          ${state.clusters.map((cluster) => {
+            const toneClass = adminClusterToneClass(cluster.slug);
+            return `
+              <div class="admin-tag-cluster ${toneClass}">
+                <div class="admin-tag-cluster-title">${escapeHtml(labelFor(cluster))}</div>
+                <div class="admin-tag-buttons">
+                  ${(cluster.tags || []).map((tag) => {
+                    const selected = state.selectedTagIds.has(Number(tag.id));
+                    return `
+                      <button
+                        type="button"
+                        class="admin-tag-button ${selected ? 'is-selected' : ''}"
+                        data-action="toggle-tag"
+                        data-id="${tag.id}"
+                        aria-pressed="${selected ? 'true' : 'false'}"
+                      >${escapeHtml(labelFor(tag))}</button>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </section>
     </aside>
   `;
 }
@@ -1749,12 +1767,7 @@ function renderEditor() {
         ${story ? `<input type="hidden" name="story_id" value="${story.id}">` : ''}
 
         <div class="admin-story-edit-layout">
-          <div class="admin-editor-grid admin-editor-top-grid">
-            <div class="admin-field is-wide">
-              <label for="story-remark">Admin remark</label>
-              <textarea id="story-remark" name="remark" class="admin-remark-textarea" placeholder="Internal editor note, not shown on the public site.">${escapeHtml(draftValue('remark', story?.remark || ''))}</textarea>
-            </div>
-
+          <div class="admin-editor-grid admin-editor-main-grid">
             <div class="admin-field is-wide">
               <label>District</label>
               ${renderDistrictButtons(currentDistrictId)}
@@ -1762,28 +1775,17 @@ function renderEditor() {
 
             ${renderCodeSelector(story)}
 
-            <div class="admin-field">
-              <label for="story-status">Status</label>
-              <select id="story-status" name="status">
-                ${['draft', 'published', 'archived'].map((status) => `
-                  <option value="${status}" ${statusValue === status ? 'selected' : ''}>${status}</option>
-                `).join('')}
-              </select>
-            </div>
-
             <div class="admin-field ${story ? '' : 'is-wide'}">
               <label for="storyteller">Storyteller</label>
               <input id="storyteller" name="storyteller" value="${escapeHtml(draftValue('storyteller', story?.storyteller || ''))}" placeholder="Anonymous">
             </div>
 
             ${renderImageSlider(story)}
-          </div>
-
-          <div class="admin-editor-grid admin-editor-main-grid admin-editor-body-grid">
             ${renderTextFields(story)}
             ${renderReflectionsEditor(story)}
           </div>
-          ${renderTagsEditor()}
+
+          ${renderTagsEditor(story, statusValue)}
         </div>
 
         <div class="admin-actions">
