@@ -942,18 +942,11 @@ function currentEditorUsername() {
   );
 }
 
-function adminUserLabel(user = {}) {
-  return firstTextValue(
-    user.username,
-    user.display_name,
-    user.name,
-    user.email,
-    user.user_id,
-    user.id
-  );
+function adminUserUsername(user = {}) {
+  return firstTextValue(user.username);
 }
 
-function adminUserLabelById(userId) {
+function adminUserUsernameById(userId) {
   const id = String(userId || '').trim();
   if (!id) return '';
 
@@ -962,7 +955,7 @@ function adminUserLabelById(userId) {
     || String(adminUser.id || '').trim() === id
   ));
 
-  return user ? adminUserLabel(user) : id;
+  return user ? adminUserUsername(user) : id;
 }
 
 function storyHasField(story, fieldName) {
@@ -997,7 +990,7 @@ function addEditorStamp(payload, story = null, creating = false) {
 function storyEditorNames(story = {}) {
   return {
     updated: firstTextValue(
-      adminUserLabelById(story.updated_by_user_id),
+      adminUserUsernameById(story.updated_by_user_id),
       story.updated_by_username,
       story.updated_by_name,
       story.updated_by_email,
@@ -1007,7 +1000,7 @@ function storyEditorNames(story = {}) {
       story.updated_by
     ),
     created: firstTextValue(
-      adminUserLabelById(story.created_by_user_id),
+      adminUserUsernameById(story.created_by_user_id),
       story.created_by_username,
       story.created_by_name,
       story.created_by_email,
