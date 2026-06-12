@@ -68,6 +68,7 @@ const state = {
   pendingNavigation: null,
   validationModal: null,
   saveConfirmationModal: null,
+  saveConfirmationTimerId: null,
   scrollOverviewToTopAfterRender: false,
   storyImages: {},
   storyImageLoading: new Set(),
@@ -327,12 +328,29 @@ function closeValidationModal() {
   state.validationModal = null;
 }
 
-function showSaveConfirmationModal(message) {
-  state.saveConfirmationModal = { message };
+function clearSaveConfirmationTimer() {
+  if (!state.saveConfirmationTimerId) return;
+  window.clearTimeout(state.saveConfirmationTimerId);
+  state.saveConfirmationTimerId = null;
+}
+
+function showSaveConfirmationModal(status = 'saved', message = '') {
+  clearSaveConfirmationTimer();
+  state.saveConfirmationModal = { status, message };
 }
 
 function closeSaveConfirmationModal() {
+  clearSaveConfirmationTimer();
   state.saveConfirmationModal = null;
+}
+
+function scheduleSaveConfirmationClose(delay = 4000) {
+  clearSaveConfirmationTimer();
+  state.saveConfirmationTimerId = window.setTimeout(() => {
+    state.saveConfirmationTimerId = null;
+    state.saveConfirmationModal = null;
+    render();
+  }, delay);
 }
 
 function shouldTrackAdminInactivity() {
@@ -1848,14 +1866,20 @@ function renderValidationModal() {
 function renderSaveConfirmationModal() {
   if (!state.saveConfirmationModal) return '';
 
+  const status = state.saveConfirmationModal.status || 'saved';
+  const saving = status === 'saving';
+  const title = saving ? 'Saving....' : 'Saved';
+  const icon = saving
+    ? '<span class="admin-save-spinner" aria-hidden="true"></span>'
+    : '<span class="admin-save-check" aria-hidden="true">✓</span>';
+  const message = state.saveConfirmationModal.message || (saving ? 'Saving changes....' : 'Changes saved.');
+
   return `
-    <div class="admin-modal-backdrop" role="presentation">
-      <section class="admin-unsaved-modal" role="dialog" aria-modal="true" aria-labelledby="save-confirmation-title" aria-describedby="save-confirmation-message">
-        <h2 id="save-confirmation-title">Saved</h2>
-        <p id="save-confirmation-message">${escapeHtml(state.saveConfirmationModal.message)}</p>
-        <div class="admin-modal-actions">
-          <button type="button" class="admin-button" data-action="close-save-confirmation">OK</button>
-        </div>
+    <div class="admin-modal-backdrop admin-save-status-backdrop" role="presentation">
+      <section class="admin-unsaved-modal admin-save-status-modal" role="status" aria-live="polite" aria-atomic="true">
+        <div class="admin-save-status-icon">${icon}</div>
+        <h2>${escapeHtml(title)}</h2>
+        <p>${escapeHtml(message)}</p>
       </section>
     </div>
   `;
@@ -2021,7 +2045,7 @@ async function signOut(options = {}) {
   state.adminAccessLoading = false;
   state.stories = [];
   state.validationModal = null;
-  state.saveConfirmationModal = null;
+  closeSaveConfirmationModal();
   state.pendingImageDelete = null;
   state.imageViewerPath = null;
   state.scrollOverviewToTopAfterRender = false;
@@ -2254,27 +2278,16 @@ async function saveReflections(storyId, data) {
 }
 
 async function saveTags(storyId) {
-  const selectedTagRows = [...state.selectedTagIds].map((tagId) => ({
-    story_id: storyId,
-    tag_id: tagId
-  }));
+  const tagIds = [...state.selectedTagIds]
+    .map(Number)
+    .filter(Boolean);
 
-  const deleteTags = await state.supabase
-    .from('story_tags')
-    .delete()
-    .eq('story_id', storyId);
+  const { error } = await state.supabase.rpc('set_story_tags', {
+    p_story_id: storyId,
+    p_tag_ids: tagIds
+  });
 
-  if (deleteTags.error) return deleteTags.error;
-
-  if (selectedTagRows.length > 0) {
-    const insertTags = await state.supabase
-      .from('story_tags')
-      .insert(selectedTagRows);
-
-    if (insertTags.error) return insertTags.error;
-  }
-
-  return null;
+  return error || null;
 }
 
 async function saveStory(form, options = {}) {
@@ -2299,6 +2312,7 @@ async function saveStory(form, options = {}) {
 
   state.busy = true;
   setMessage();
+  if (closeAfterSave) showSaveConfirmationModal('saving', 'Saving changes....');
   render();
 
   let savedStoryId = story?.id || null;
@@ -2313,6 +2327,7 @@ async function saveStory(form, options = {}) {
 
     if (storyInsert.error) {
       state.busy = false;
+      closeSaveConfirmationModal();
       setMessage('', storyInsert.error.message || 'Could not create story.');
       render();
       return false;
@@ -2328,6 +2343,7 @@ async function saveStory(form, options = {}) {
 
     if (storyUpdate.error) {
       state.busy = false;
+      closeSaveConfirmationModal();
       setMessage('', storyUpdate.error.message || 'Could not save story.');
       render();
       return false;
@@ -2337,6 +2353,7 @@ async function saveStory(form, options = {}) {
   const reflectionError = await saveReflections(savedStoryId, data);
   if (reflectionError) {
     state.busy = false;
+    closeSaveConfirmationModal();
     setMessage('', reflectionError.message || 'Story saved, but reflections could not be saved.');
     render();
     return false;
@@ -2345,6 +2362,7 @@ async function saveStory(form, options = {}) {
   const tagError = await saveTags(savedStoryId);
   if (tagError) {
     state.busy = false;
+    closeSaveConfirmationModal();
     setMessage('', tagError.message || 'Story saved, but tags could not be saved.');
     render();
     return false;
@@ -2357,7 +2375,8 @@ async function saveStory(form, options = {}) {
     showOverview();
     syncAdminHistory({ type: 'overview' }, 'replace');
     await loadData();
-    showSaveConfirmationModal(`${savedStoryCode} was saved.`);
+    showSaveConfirmationModal('saved', `${savedStoryCode} was saved.`);
+    scheduleSaveConfirmationClose(4000);
     state.scrollOverviewToTopAfterRender = true;
     render();
   } else {
