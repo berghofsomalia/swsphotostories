@@ -359,6 +359,7 @@ function renderPage() {
               </div>
             </div>
           </div>
+          <a class="home-explore-link" href="stories/#gallery">${icon.sliders()}<span>${esc(exploreLabel)}</span><span aria-hidden="true">&rarr;</span></a>
         </div>
       </div>
     </div>
@@ -375,7 +376,6 @@ function renderPage() {
             <p>${(landing.section1NexusLines || []).map((l) => `<span>${esc(l)}</span>`).join('')}</p>
           </div>
           ${storyCard}
-          ${story ? `<a class="home-explore-link" href="stories/#gallery">${icon.sliders()}<span>${esc(exploreLabel)}</span><span aria-hidden="true">&rarr;</span></a>` : ''}
           <div class="home-badge-title" aria-hidden="true">
             <p>${renderHomeTitleLines(landing.section1TitleLines || [])}</p>
           </div>
