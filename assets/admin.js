@@ -225,6 +225,14 @@ function showClusterTags() {
   showAdminSection('cluster-tags');
 }
 
+function showTodo() {
+  showAdminSection('todo');
+}
+
+function showStories() {
+  showAdminSection('stories');
+}
+
 function showStoryEdits() {
   showAdminSection('story-edits');
 }
@@ -267,6 +275,8 @@ function setActiveStory(storyId) {
 
 function normaliseNavigationRequest(request = {}) {
   if (request.type === 'cluster-tags') return { type: 'cluster-tags' };
+  if (request.type === 'todo') return { type: 'todo' };
+  if (request.type === 'stories') return { type: 'stories' };
   if (request.type === 'story-edits') return { type: 'story-edits' };
   if (request.type === 'tag-edits') return { type: 'tag-edits' };
   if (request.type === 'recent-edits') return { type: 'story-edits' };
@@ -286,6 +296,8 @@ function navigationRequestFromUrl() {
   if (story) return normaliseNavigationRequest({ type: 'select-story', id: story });
   if (params.get('new') === 'story') return { type: 'new-story' };
   if (params.get('view') === 'clusters-tags') return { type: 'cluster-tags' };
+  if (params.get('view') === 'todo') return { type: 'todo' };
+  if (params.get('view') === 'stories') return { type: 'stories' };
   if (params.get('view') === 'story-edits') return { type: 'story-edits' };
   if (params.get('view') === 'tag-edits') return { type: 'tag-edits' };
   if (params.get('view') === 'recent-edits') return { type: 'story-edits' };
@@ -294,6 +306,8 @@ function navigationRequestFromUrl() {
 
 function navigationRequestFromState() {
   if (state.editorMode === 'cluster-tags') return { type: 'cluster-tags' };
+  if (state.editorMode === 'todo') return { type: 'todo' };
+  if (state.editorMode === 'stories') return { type: 'stories' };
   if (state.editorMode === 'story-edits') return { type: 'story-edits' };
   if (state.editorMode === 'tag-edits') return { type: 'tag-edits' };
   if (state.editorMode === 'create') return { type: 'new-story' };
@@ -314,6 +328,10 @@ function adminUrlForNavigation(request = {}) {
     url.searchParams.set('new', 'story');
   } else if (route.type === 'cluster-tags') {
     url.searchParams.set('view', 'clusters-tags');
+  } else if (route.type === 'todo') {
+    url.searchParams.set('view', 'todo');
+  } else if (route.type === 'stories') {
+    url.searchParams.set('view', 'stories');
   } else if (route.type === 'story-edits') {
     url.searchParams.set('view', 'story-edits');
   } else if (route.type === 'tag-edits') {
@@ -642,7 +660,7 @@ function moveImageViewer(direction) {
 }
 
 async function ensureOverviewImageAudit() {
-  if (state.editorMode !== 'overview') return;
+  if (!['overview', 'todo'].includes(state.editorMode)) return;
   if (!USE_SUPABASE_IMAGES || !state.supabase || state.overviewImageAuditLoading) return;
 
   const pendingCodes = state.stories
@@ -758,8 +776,12 @@ function isTextMissing(story, fieldNames) {
 }
 
 function overviewRows() {
-  const rows = state.districts.map((district) => {
-    const stories = state.stories.filter((story) => Number(story.district_id) === Number(district.id));
+  const baseStories = statusDistrictFilteredStories();
+  const visibleDistricts = state.districtFilter === 'all'
+    ? state.districts
+    : state.districts.filter((district) => Number(district.id) === Number(state.districtFilter));
+  const rows = visibleDistricts.map((district) => {
+    const stories = baseStories.filter((story) => Number(story.district_id) === Number(district.id));
     const activeStories = activeStoriesForOverview(stories);
     const reflectionCounts = reflectionTypeCountsForStories(stories);
     const phaseCounts = phaseCountsForStories(stories);
@@ -778,8 +800,8 @@ function overviewRows() {
   });
 
   const assignedDistrictIds = new Set(state.districts.map((district) => Number(district.id)));
-  const unassignedStories = state.stories.filter((story) => !assignedDistrictIds.has(Number(story.district_id)));
-  if (unassignedStories.length) {
+  const unassignedStories = baseStories.filter((story) => !assignedDistrictIds.has(Number(story.district_id)));
+  if (state.districtFilter === 'all' && unassignedStories.length) {
     const reflectionCounts = reflectionTypeCountsForStories(unassignedStories);
     const phaseCounts = phaseCountsForStories(unassignedStories);
     rows.push({
@@ -800,7 +822,7 @@ function overviewRows() {
 }
 
 function overviewTotals() {
-  const stories = state.stories;
+  const stories = statusDistrictFilteredStories();
   const reflectionCounts = reflectionTypeCountsForStories(stories);
   const phaseCounts = phaseCountsForStories(stories);
   return {
@@ -1382,6 +1404,83 @@ function renderStoryList() {
   `;
 }
 
+function renderTopAuth() {
+  return `
+    <div class="admin-auth-strip">
+      <span>${escapeHtml(state.user?.email || '')}</span>
+      <button type="button" data-action="sign-out">sign out</button>
+    </div>
+  `;
+}
+
+function renderStatusDistrictFilters() {
+  const statusOptions = [
+    { value: 'all', label: 'All statuses' },
+    { value: 'draft', label: 'Draft' },
+    { value: 'published', label: 'Published' },
+    { value: 'archived', label: 'Archived' }
+  ];
+
+  return `
+    <div class="admin-top-filters" aria-label="Story filters">
+      <div class="admin-filter-button-set" role="radiogroup" aria-label="Filter by status">
+        ${statusOptions.map((option) => `
+          <button
+            type="button"
+            class="admin-filter-button ${state.statusFilter === option.value ? 'is-selected' : ''}"
+            data-action="set-status-filter"
+            data-value="${escapeHtml(option.value)}"
+            aria-pressed="${state.statusFilter === option.value ? 'true' : 'false'}"
+          >${escapeHtml(option.label)}</button>
+        `).join('')}
+      </div>
+      <div class="admin-filter-button-set" role="radiogroup" aria-label="Filter by district">
+        <button
+          type="button"
+          class="admin-filter-button ${state.districtFilter === 'all' ? 'is-selected' : ''}"
+          data-action="set-district-filter"
+          data-value="all"
+          aria-pressed="${state.districtFilter === 'all' ? 'true' : 'false'}"
+        >All districts</button>
+        ${state.districts.map((district) => `
+          <button
+            type="button"
+            class="admin-filter-button ${String(state.districtFilter) === String(district.id) ? 'is-selected' : ''}"
+            data-action="set-district-filter"
+            data-value="${district.id}"
+            aria-pressed="${String(state.districtFilter) === String(district.id) ? 'true' : 'false'}"
+          >${escapeHtml(labelFor(district))}</button>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderCompactStoryList() {
+  const stories = filteredStories();
+  return `
+    <aside class="admin-stories-sidebar">
+      <div class="admin-search">
+        <input type="search" data-field="search" placeholder="Search code, name, text, tags…" value="${escapeHtml(state.searchQuery)}">
+      </div>
+      <div class="admin-story-count">${stories.length} of ${state.stories.length} stories shown</div>
+      <div class="admin-story-list">
+        ${stories.map((story) => {
+          const active = Number(story.id) === Number(state.activeStoryId);
+          return `
+            <button type="button" class="admin-story-list-button ${active ? 'is-active' : ''}" data-action="select-story" data-id="${story.id}">
+              <span class="admin-story-code-row">
+                <span class="admin-story-code">${escapeHtml(story.code)}</span>
+                <span class="admin-status-pill is-${escapeHtml(story.status || 'draft')}">${escapeHtml(story.status || 'draft')}</span>
+              </span>
+            </button>
+          `;
+        }).join('') || '<div class="admin-note">No stories match this filter.</div>'}
+      </div>
+    </aside>
+  `;
+}
+
 function renderDistrictButtons(currentDistrictId = selectedDistrictId()) {
   return `
     <div class="admin-district-buttons" role="radiogroup" aria-label="District">
@@ -1651,48 +1750,47 @@ function renderTagsEditor(story = null) {
   `;
 }
 
-function renderClusterTagsView() {
+function renderClusterTagsTable() {
   const groups = overviewTagSummaryGroups();
   return `
-    <section class="admin-editor admin-cluster-tags-view">
-      <div class="admin-editor-header">
-        <div class="admin-editor-title">
-          <h2>Clusters-Tags</h2>
-          <p>Story counts by the same clusters and tags used in the public gallery filter panel.</p>
-        </div>
-      </div>
+    <div class="admin-tag-summary-table-wrap">
+      <table class="admin-tag-summary-table">
+        <thead>
+          <tr>
+            <th scope="col">Cluster</th>
+            <th scope="col">Tag</th>
+            <th scope="col">Published</th>
+            <th scope="col">Draft</th>
+            <th scope="col">Archived</th>
+            <th scope="col">Phase 2</th>
+            <th scope="col">Phase 3</th>
+            <th scope="col">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${groups.map((group) => group.rows.map((row, index) => `
+            <tr class="${group.toneClass}">
+              ${index === 0 ? `<th class="admin-tag-summary-cluster" scope="rowgroup" rowspan="${Math.max(1, group.rows.length)}">${escapeHtml(labelFor(group.cluster) || 'Tag cluster')}</th>` : ''}
+              <th scope="row">${escapeHtml(labelFor(row.tag))}</th>
+              <td>${row.counts.published}</td>
+              <td>${row.counts.draft}</td>
+              <td>${row.counts.archived}</td>
+              <td>${row.counts.phase2}</td>
+              <td>${row.counts.phase3}</td>
+              <td>${row.counts.total}</td>
+            </tr>
+          `).join('')).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
 
+function renderClusterTagsView() {
+  return `
+    <section class="admin-editor admin-cluster-tags-view">
       <div class="admin-overview-body">
-        <div class="admin-tag-summary-table-wrap">
-          <table class="admin-tag-summary-table">
-            <thead>
-              <tr>
-                <th scope="col">Cluster</th>
-                <th scope="col">Tag</th>
-                <th scope="col">Published</th>
-                <th scope="col">Draft</th>
-                <th scope="col">Archived</th>
-                <th scope="col">Phase 2</th>
-                <th scope="col">Phase 3</th>
-                <th scope="col">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${groups.map((group) => group.rows.map((row, index) => `
-                <tr class="${group.toneClass}">
-                  ${index === 0 ? `<th class="admin-tag-summary-cluster" scope="rowgroup" rowspan="${Math.max(1, group.rows.length)}">${escapeHtml(labelFor(group.cluster) || 'Tag cluster')}</th>` : ''}
-                  <th scope="row">${escapeHtml(labelFor(row.tag))}</th>
-                  <td>${row.counts.published}</td>
-                  <td>${row.counts.draft}</td>
-                  <td>${row.counts.archived}</td>
-                  <td>${row.counts.phase2}</td>
-                  <td>${row.counts.phase3}</td>
-                  <td>${row.counts.total}</td>
-                </tr>
-              `).join('')).join('')}
-            </tbody>
-          </table>
-        </div>
+        ${renderClusterTagsTable()}
       </div>
     </section>
   `;
@@ -1701,23 +1799,6 @@ function renderClusterTagsView() {
 function renderOverview() {
   const rows = overviewRows();
   const totals = overviewTotals();
-  const checks = overviewChecks();
-  const remarkRows = overviewRemarkRows();
-  const renderStoryCodeList = (stories = []) => {
-    if (!stories.length) return '<div class="admin-overview-empty-list">None</div>';
-    return `
-      <div class="admin-overview-code-list">
-        ${stories.map((story) => `
-          <button
-            type="button"
-            class="admin-overview-code-link"
-            data-action="select-story"
-            data-id="${story.id}"
-          >${escapeHtml(story.code || `#${story.id}`)}</button>
-        `).join('')}
-      </div>
-    `;
-  };
   const renderRow = (row, extraClass = '') => `
     <tr class="${extraClass}">
       <th scope="row">${escapeHtml(row.label)}</th>
@@ -1733,13 +1814,6 @@ function renderOverview() {
 
   return `
     <section class="admin-editor admin-overview">
-      <div class="admin-editor-header">
-        <div class="admin-editor-title">
-          <h2>Overview</h2>
-          <p>Quick checks across districts before editing individual stories.</p>
-        </div>
-      </div>
-
       <div class="admin-overview-body">
         <div class="admin-overview-table-wrap">
           <table class="admin-overview-table">
@@ -1765,57 +1839,68 @@ function renderOverview() {
         </div>
 
         ${state.overviewImageAuditError ? `<div class="admin-error">${escapeHtml(state.overviewImageAuditError)}</div>` : ''}
+        ${renderClusterTagsTable()}
+      </div>
+    </section>
+  `;
+}
 
-        <div class="admin-overview-checks" aria-label="Useful admin checks">
-          ${checks.map((check) => `
-            <div class="admin-overview-check">
-              <span>${escapeHtml(check.label)}</span>
-              <span>${check.stories.length}</span>
-              ${renderStoryCodeList(check.stories)}
-              <small>${escapeHtml(check.detail)}</small>
+function renderTodoView() {
+  const checks = overviewChecks();
+  const missingImages = checks.find((check) => check.label === 'Missing images')?.stories || [];
+  const missingText = checks.find((check) => check.label === 'Missing text')?.stories || [];
+  const remarkRows = overviewRemarkRows();
+  const renderStoryCodeList = (stories = []) => {
+    if (!stories.length) return '<div class="admin-overview-empty-list">None</div>';
+    return `
+      <div class="admin-overview-code-list">
+        ${stories.map((story) => `
+          <button
+            type="button"
+            class="admin-overview-code-link"
+            data-action="select-story"
+            data-id="${story.id}"
+          >${escapeHtml(story.code || `#${story.id}`)}</button>
+        `).join('')}
+      </div>
+    `;
+  };
+
+  return `
+    <section class="admin-editor admin-todo-view">
+      <div class="admin-todo-grid">
+        <div class="admin-todo-stack">
+          <section class="admin-todo-block">
+            <div class="admin-todo-block-title">
+              <span>Missing images</span>
+              <span>${missingImages.length}</span>
             </div>
-          `).join('')}
+            ${renderStoryCodeList(missingImages)}
+          </section>
+          <section class="admin-todo-block">
+            <div class="admin-todo-block-title">
+              <span>Missing text</span>
+              <span>${missingText.length}</span>
+            </div>
+            ${renderStoryCodeList(missingText)}
+          </section>
         </div>
-
-        <div class="admin-recent-edits">
-          <div class="admin-recent-edits-header">
-            <h3>Admin remarks</h3>
-            <p>Internal story notes. These do not appear on the public website.</p>
+        <section class="admin-todo-block admin-remarks-masonry-block">
+          <div class="admin-todo-block-title">
+            <span>Admin remarks</span>
+            <span>${remarkRows.length}</span>
           </div>
-          <div class="admin-overview-table-wrap">
-            <table class="admin-overview-table admin-remarks-table">
-              <thead>
-                <tr>
-                  <th scope="col">Code</th>
-                  <th scope="col">Editor</th>
-                  <th scope="col">Status</th>
-                  <th scope="col">Remark</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${remarkRows.map((story) => `
-                  <tr>
-                    <th scope="row">
-                      <button
-                        type="button"
-                        class="admin-overview-code-link"
-                        data-action="select-story"
-                        data-id="${story.id}"
-                      >${escapeHtml(story.code || `#${story.id}`)}</button>
-                    </th>
-                    <td>${escapeHtml(editorNameForStory(story))}</td>
-                    <td>${escapeHtml(story.status || '')}</td>
-                    <td class="admin-remark-cell">${escapeHtml(story.remark)}</td>
-                  </tr>
-                `).join('') || `
-                  <tr>
-                    <td colspan="4" class="admin-overview-empty-cell">No admin remarks yet.</td>
-                  </tr>
-                `}
-              </tbody>
-            </table>
+          <div class="admin-remark-masonry">
+            ${remarkRows.map((story) => `
+              <button type="button" class="admin-remark-card" data-action="select-story" data-id="${story.id}">
+                <p>${escapeHtml(story.code || `#${story.id}`)}</p>
+                <p>${escapeHtml(editorNameForStory(story))}</p>
+                <p>${escapeHtml(story.status || '')}</p>
+                <p>${escapeHtml(story.remark)}</p>
+              </button>
+            `).join('') || '<div class="admin-overview-empty-list">No admin remarks yet.</div>'}
           </div>
-        </div>
+        </section>
       </div>
     </section>
   `;
@@ -1888,7 +1973,7 @@ function renderTagEditsView() {
       <div class="admin-editor-header">
         <div class="admin-editor-title">
           <h2>Tag edits</h2>
-          <p>Shows current <span class="admin-small-code">story_tags</span> rows created from ${escapeHtml(ACTIVITY_CUTOFF_LABEL)} onwards. Admin user is read from the parent story's stored editor id where available.</p>
+          <p>Shows current <span class="admin-small-code">story_tags</span> rows created from ${escapeHtml(ACTIVITY_CUTOFF_LABEL)} onwards. Editor is read from the parent story's stored editor id where available.</p>
         </div>
       </div>
 
@@ -1905,7 +1990,7 @@ function renderTagEditsView() {
                   <th scope="col">${renderTagActivitySortLabel('code', 'Code')}</th>
                   <th scope="col">Tags</th>
                   <th scope="col">${renderTagActivitySortLabel('latestTagSave', 'Latest tag save')}</th>
-                  <th scope="col">${renderTagActivitySortLabel('editor', 'Admin user')}</th>
+                  <th scope="col">${renderTagActivitySortLabel('editor', 'Editor')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -1938,6 +2023,22 @@ function renderTagEditsView() {
             </table>
           </div>
         </div>
+      </div>
+    </section>
+  `;
+}
+
+function renderStoriesView() {
+  const story = getActiveStory();
+  return `
+    <section class="admin-stories-view">
+      ${renderCompactStoryList()}
+      <div class="admin-stories-editor-slot">
+        ${story ? renderEditor() : `
+          <section class="admin-editor admin-empty-story-panel">
+            <p>Select a story to edit.</p>
+          </section>
+        `}
       </div>
     </section>
   `;
@@ -2137,19 +2238,22 @@ function renderImageDeleteModal() {
 function renderAdminTabs() {
   const tabs = [
     { label: 'Overview', type: 'overview', action: 'show-overview' },
-    { label: 'Clusters-Tags', type: 'cluster-tags', action: 'show-cluster-tags' },
+    { label: 'To Do', type: 'todo', action: 'show-todo' },
     { label: 'Story edits', type: 'story-edits', action: 'show-story-edits' },
-    { label: 'Tag edits', type: 'tag-edits', action: 'show-tag-edits' }
+    { label: 'Tag edits', type: 'tag-edits', action: 'show-tag-edits' },
+    { label: 'Stories', type: 'stories', action: 'show-stories' },
+    { label: '+ New story', type: 'create', action: 'new-story' }
   ];
+  const activeType = state.editorMode === 'edit' ? 'stories' : state.editorMode;
 
   return `
     <nav class="admin-section-tabs" aria-label="Admin sections">
       ${tabs.map((tab) => `
         <button
           type="button"
-          class="admin-section-tab ${state.editorMode === tab.type ? 'is-active' : ''}"
+          class="admin-section-tab ${activeType === tab.type ? 'is-active' : ''}"
           data-action="${tab.action}"
-          aria-pressed="${state.editorMode === tab.type ? 'true' : 'false'}"
+          aria-pressed="${activeType === tab.type ? 'true' : 'false'}"
         >${escapeHtml(tab.label)}</button>
       `).join('')}
     </nav>
@@ -2161,15 +2265,21 @@ function renderAdminApp() {
     ? renderOverview()
     : state.editorMode === 'cluster-tags'
       ? renderClusterTagsView()
-      : state.editorMode === 'story-edits'
-        ? renderStoryEditsView()
-        : state.editorMode === 'tag-edits'
-          ? renderTagEditsView()
-          : renderEditor();
+      : state.editorMode === 'todo'
+        ? renderTodoView()
+        : (state.editorMode === 'stories' || state.editorMode === 'edit')
+          ? renderStoriesView()
+          : state.editorMode === 'story-edits'
+            ? renderStoryEditsView()
+            : state.editorMode === 'tag-edits'
+              ? renderTagEditsView()
+              : renderEditor();
+  const showTopFilters = ['overview', 'stories', 'edit'].includes(state.editorMode);
   return `
     <div class="admin-app-frame">
-      ${renderStoryList()}
+      ${renderTopAuth()}
       <main class="admin-main-area">
+        ${showTopFilters ? renderStatusDistrictFilters() : ''}
         ${renderAdminTabs()}
         ${mainPanel}
       </main>
@@ -2335,7 +2445,11 @@ async function loadData() {
   } else if (route.type === 'new-story') {
     startNewStory();
   } else if (route.type === 'cluster-tags') {
-    showClusterTags();
+    showOverview();
+  } else if (route.type === 'todo') {
+    showTodo();
+  } else if (route.type === 'stories') {
+    showStories();
   } else if (route.type === 'story-edits') {
     showStoryEdits();
   } else if (route.type === 'tag-edits') {
@@ -2665,8 +2779,22 @@ function performNavigation(request, discard = false, historyMode = 'push') {
   }
 
   if (request.type === 'cluster-tags') {
-    showClusterTags();
-    if (historyMode !== 'none') syncAdminHistory({ type: 'cluster-tags' }, historyMode);
+    showOverview();
+    if (historyMode !== 'none') syncAdminHistory({ type: 'overview' }, historyMode);
+    render();
+    return;
+  }
+
+  if (request.type === 'todo') {
+    showTodo();
+    if (historyMode !== 'none') syncAdminHistory({ type: 'todo' }, historyMode);
+    render();
+    return;
+  }
+
+  if (request.type === 'stories') {
+    showStories();
+    if (historyMode !== 'none') syncAdminHistory({ type: 'stories' }, historyMode);
     render();
     return;
   }
@@ -2741,6 +2869,16 @@ app.addEventListener('click', async (event) => {
 
   if (action === 'show-cluster-tags') {
     requestNavigation({ type: 'cluster-tags' });
+    return;
+  }
+
+  if (action === 'show-todo') {
+    requestNavigation({ type: 'todo' });
+    return;
+  }
+
+  if (action === 'show-stories') {
+    requestNavigation({ type: 'stories' });
     return;
   }
 
