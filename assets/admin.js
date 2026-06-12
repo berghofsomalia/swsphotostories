@@ -26,7 +26,8 @@ const REFLECTION_TYPES = [
 
 const PHASE_2_CODE_PREFIXES = ['BD', 'HD', 'BW'];
 const PHASE_3_CODE_PREFIXES = ['BDCM', 'HDCM', 'BWCM'];
-const ACTIVITY_CUTOFF = new Date('2026-05-29T00:01:00+03:00');
+const ACTIVITY_CUTOFF = new Date('2026-06-05T15:00:00+02:00');
+const ACTIVITY_CUTOFF_LABEL = '5 June 2026, 15:00 Berlin time';
 const ACTIVITY_SORT_FIELDS = new Set(['code', 'kind', 'editor', 'created', 'updated']);
 const ACTIVITY_DATE_SORT_FIELDS = new Set(['created', 'updated']);
 const ADMIN_INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000;
@@ -225,6 +226,19 @@ function showClusterTags() {
   markClean();
 }
 
+function showRecentEdits() {
+  state.editorMode = 'recent-edits';
+  state.activeStoryId = null;
+  state.selectedTagIds = new Set();
+  state.editorDistrictId = null;
+  state.newCodeKind = 'standard';
+  state.selectedImagePath = null;
+  state.imageViewerPath = null;
+  state.validationModal = null;
+  resetEditorDraft();
+  markClean();
+}
+
 function startNewStory() {
   state.editorMode = 'create';
   state.activeStoryId = null;
@@ -259,6 +273,7 @@ function setActiveStory(storyId) {
 
 function normaliseNavigationRequest(request = {}) {
   if (request.type === 'cluster-tags') return { type: 'cluster-tags' };
+  if (request.type === 'recent-edits') return { type: 'recent-edits' };
   if (request.type === 'new-story') return { type: 'new-story' };
   if (request.type === 'select-story') {
     const story = findStoryByIdentifier(request.id || request.code);
@@ -275,11 +290,13 @@ function navigationRequestFromUrl() {
   if (story) return normaliseNavigationRequest({ type: 'select-story', id: story });
   if (params.get('new') === 'story') return { type: 'new-story' };
   if (params.get('view') === 'clusters-tags') return { type: 'cluster-tags' };
+  if (params.get('view') === 'recent-edits') return { type: 'recent-edits' };
   return { type: 'overview' };
 }
 
 function navigationRequestFromState() {
   if (state.editorMode === 'cluster-tags') return { type: 'cluster-tags' };
+  if (state.editorMode === 'recent-edits') return { type: 'recent-edits' };
   if (state.editorMode === 'create') return { type: 'new-story' };
   if (state.editorMode === 'edit') {
     const story = getActiveStory();
@@ -298,6 +315,8 @@ function adminUrlForNavigation(request = {}) {
     url.searchParams.set('new', 'story');
   } else if (route.type === 'cluster-tags') {
     url.searchParams.set('view', 'clusters-tags');
+  } else if (route.type === 'recent-edits') {
+    url.searchParams.set('view', 'recent-edits');
   } else if (route.type === 'select-story') {
     url.searchParams.set('story', route.code || route.id);
   }
@@ -1080,6 +1099,55 @@ function recentEditRows() {
   });
 }
 
+
+function recentTagEditRows() {
+  const rows = [];
+
+  state.stories.forEach((story) => {
+    (story.story_tags || []).forEach((row) => {
+      if (!isAfterActivityCutoff(row.created_at)) return;
+
+      const tag = row.tags || tagById(row.tag_id);
+      rows.push({
+        story,
+        tag,
+        tagId: Number(row.tag_id),
+        created: row.created_at,
+        editor: editorNameForStory(story)
+      });
+    });
+  });
+
+  return rows.sort((a, b) => {
+    const createdDifference = (parseAdminDate(b.created)?.getTime() || 0) - (parseAdminDate(a.created)?.getTime() || 0);
+    if (createdDifference !== 0) return createdDifference;
+
+    const codeComparison = String(a.story?.code || '').localeCompare(String(b.story?.code || ''), undefined, {
+      numeric: true,
+      sensitivity: 'base'
+    });
+    if (codeComparison !== 0) return codeComparison;
+
+    return String(labelFor(a.tag) || a.tagId || '').localeCompare(String(labelFor(b.tag) || b.tagId || ''), undefined, {
+      numeric: true,
+      sensitivity: 'base'
+    });
+  });
+}
+
+function renderActivitySortLabel(field, label) {
+  const active = state.activitySortField === field;
+  const arrow = active ? (state.activitySortDirection === 'asc' ? 'ASC' : 'DESC') : '';
+  return `
+    <button
+      type="button"
+      class="admin-table-sort-button ${active ? 'is-active' : ''}"
+      data-action="set-activity-sort"
+      data-value="${field}"
+    >${escapeHtml(label)} ${arrow}</button>
+  `;
+}
+
 function autoGrowTextarea(textarea) {
   if (!textarea) return;
   textarea.style.height = 'auto';
@@ -1192,6 +1260,7 @@ function renderStoryList() {
   const creating = isCreatingStory();
   const overviewActive = state.editorMode === 'overview';
   const clusterTagsActive = state.editorMode === 'cluster-tags';
+  const recentEditsActive = state.editorMode === 'recent-edits';
   const statusOptions = [
     { value: 'all', label: 'All statuses' },
     { value: 'draft', label: 'Draft' },
@@ -1212,6 +1281,7 @@ function renderStoryList() {
         <div class="admin-user-line">Signed in as ${escapeHtml(state.user?.email || '')}</div>
         <button type="button" class="admin-new-story-button ${overviewActive ? 'is-active' : ''}" data-action="show-overview">Overview</button>
         <button type="button" class="admin-new-story-button ${clusterTagsActive ? 'is-active' : ''}" data-action="show-cluster-tags">Clusters-Tags</button>
+        <button type="button" class="admin-new-story-button ${recentEditsActive ? 'is-active' : ''}" data-action="show-recent-edits">Recent edits</button>
         <button type="button" class="admin-new-story-button ${creating ? 'is-active' : ''}" data-action="new-story">+ New story</button>
         <div class="admin-search">
           <input type="search" data-field="search" placeholder="Search code, name, text, tags…" value="${escapeHtml(state.searchQuery)}">
@@ -1596,7 +1666,6 @@ function renderOverview() {
   const totals = overviewTotals();
   const checks = overviewChecks();
   const remarkRows = overviewRemarkRows();
-  const editRows = recentEditRows();
   const renderStoryCodeList = (stories = []) => {
     if (!stories.length) return '<div class="admin-overview-empty-list">None</div>';
     return `
@@ -1624,18 +1693,6 @@ function renderOverview() {
       <td>${row.indirectReflections}</td>
     </tr>
   `;
-  const sortLabel = (field, label) => {
-    const active = state.activitySortField === field;
-    const arrow = active ? (state.activitySortDirection === 'asc' ? 'ASC' : 'DESC') : '';
-    return `
-      <button
-        type="button"
-        class="admin-table-sort-button ${active ? 'is-active' : ''}"
-        data-action="set-activity-sort"
-        data-value="${field}"
-      >${escapeHtml(label)} ${arrow}</button>
-    `;
-  };
 
   return `
     <section class="admin-editor admin-overview">
@@ -1722,25 +1779,43 @@ function renderOverview() {
             </table>
           </div>
         </div>
+      </div>
+    </section>
+  `;
+}
 
+function renderRecentEditsView() {
+  const storyRows = recentEditRows();
+  const tagRows = recentTagEditRows();
+
+  return `
+    <section class="admin-editor admin-recent-edits-view">
+      <div class="admin-editor-header">
+        <div class="admin-editor-title">
+          <h2>Recent edits</h2>
+          <p>Shows story and tag rows changed from ${escapeHtml(ACTIVITY_CUTOFF_LABEL)} onwards. Exact before/after field changes need an audit log.</p>
+        </div>
+      </div>
+
+      <div class="admin-overview-body">
         <div class="admin-recent-edits">
           <div class="admin-recent-edits-header">
-            <h3>Recent edits</h3>
-            <p>Shows story rows created or updated from 29 May 2026, 00:01 onwards. Exact before/after field changes need an audit log.</p>
+            <h3>Edits in stories table</h3>
+            <p>Created stories and story rows whose <span class="admin-small-code">updated_at</span> changed after the cutoff.</p>
           </div>
           <div class="admin-overview-table-wrap">
             <table class="admin-overview-table admin-recent-edits-table">
               <thead>
                 <tr>
-                  <th scope="col">${sortLabel('code', 'Code')}</th>
-                  <th scope="col">${sortLabel('kind', 'Type of edit')}</th>
-                  <th scope="col">${sortLabel('editor', 'Editor')}</th>
-                  <th scope="col">${sortLabel('created', 'Created')}</th>
-                  <th scope="col">${sortLabel('updated', 'Updated')}</th>
+                  <th scope="col">${renderActivitySortLabel('code', 'Code')}</th>
+                  <th scope="col">${renderActivitySortLabel('kind', 'Type of edit')}</th>
+                  <th scope="col">${renderActivitySortLabel('editor', 'Editor')}</th>
+                  <th scope="col">${renderActivitySortLabel('created', 'Created')}</th>
+                  <th scope="col">${renderActivitySortLabel('updated', 'Updated')}</th>
                 </tr>
               </thead>
               <tbody>
-                ${editRows.map((row) => `
+                ${storyRows.map((row) => `
                   <tr>
                     <th scope="row">
                       <button
@@ -1757,7 +1832,49 @@ function renderOverview() {
                   </tr>
                 `).join('') || `
                   <tr>
-                    <td colspan="5" class="admin-overview-empty-cell">No recent edits after 29 May 2026, 00:01.</td>
+                    <td colspan="5" class="admin-overview-empty-cell">No story edits after ${escapeHtml(ACTIVITY_CUTOFF_LABEL)}.</td>
+                  </tr>
+                `}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="admin-recent-edits">
+          <div class="admin-recent-edits-header">
+            <h3>Edits in tags</h3>
+            <p>Current <span class="admin-small-code">story_tags</span> rows whose <span class="admin-small-code">created_at</span> is after the cutoff. Admin user is inferred from the parent story editor fields.</p>
+          </div>
+          <div class="admin-overview-table-wrap">
+            <table class="admin-overview-table admin-tag-edits-table">
+              <thead>
+                <tr>
+                  <th scope="col">Code</th>
+                  <th scope="col">Story ID</th>
+                  <th scope="col">Tag</th>
+                  <th scope="col">Time</th>
+                  <th scope="col">Admin user</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${tagRows.map((row) => `
+                  <tr>
+                    <th scope="row">
+                      <button
+                        type="button"
+                        class="admin-overview-code-link"
+                        data-action="select-story"
+                        data-id="${row.story.id}"
+                      >${escapeHtml(row.story.code || `#${row.story.id}`)}</button>
+                    </th>
+                    <td>${escapeHtml(row.story.id)}</td>
+                    <td>${escapeHtml(labelFor(row.tag) || row.tag?.slug || `Tag #${row.tagId}`)}</td>
+                    <td>${escapeHtml(formatAdminDateTime(row.created))}</td>
+                    <td>${escapeHtml(row.editor)}</td>
+                  </tr>
+                `).join('') || `
+                  <tr>
+                    <td colspan="5" class="admin-overview-empty-cell">No tag edits after ${escapeHtml(ACTIVITY_CUTOFF_LABEL)}.</td>
                   </tr>
                 `}
               </tbody>
@@ -1965,7 +2082,9 @@ function renderAdminApp() {
     ? renderOverview()
     : state.editorMode === 'cluster-tags'
       ? renderClusterTagsView()
-      : renderEditor();
+      : state.editorMode === 'recent-edits'
+        ? renderRecentEditsView()
+        : renderEditor();
   return `
     <div class="admin-app-frame">
       ${renderStoryList()}
@@ -2090,7 +2209,7 @@ async function loadData() {
       .select(`
         *,
         districts(id,slug,label_so,label_en,sort_order),
-        story_tags(tag_id,tags(id,slug,label_so,label_en,sort_order,cluster_id)),
+        story_tags(tag_id,created_at,tags(id,slug,label_so,label_en,sort_order,cluster_id)),
         community_reflections(id,reflection_so,reflection_en,reflection_type,status,sort_order,created_at,updated_at)
       `)
       .order('code', { ascending: true }),
@@ -2133,6 +2252,8 @@ async function loadData() {
     startNewStory();
   } else if (route.type === 'cluster-tags') {
     showClusterTags();
+  } else if (route.type === 'recent-edits') {
+    showRecentEdits();
   } else {
     showOverview();
   }
@@ -2464,6 +2585,13 @@ function performNavigation(request, discard = false, historyMode = 'push') {
     return;
   }
 
+  if (request.type === 'recent-edits') {
+    showRecentEdits();
+    if (historyMode !== 'none') syncAdminHistory({ type: 'recent-edits' }, historyMode);
+    render();
+    return;
+  }
+
   if (request.type === 'select-story') {
     setActiveStory(request.id);
     if (historyMode !== 'none') syncAdminHistory(navigationRequestFromState(), historyMode);
@@ -2520,6 +2648,11 @@ app.addEventListener('click', async (event) => {
 
   if (action === 'show-cluster-tags') {
     requestNavigation({ type: 'cluster-tags' });
+    return;
+  }
+
+  if (action === 'show-recent-edits') {
+    requestNavigation({ type: 'recent-edits' });
     return;
   }
 

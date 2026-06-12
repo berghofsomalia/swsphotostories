@@ -1592,3 +1592,7 @@ textarea {
     right: 18px;
   }
 }
+
+.admin-tag-edits-table {
+  min-width: 860px;
+}
