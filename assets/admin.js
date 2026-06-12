@@ -955,7 +955,11 @@ function adminUserUsernameById(userId) {
     || String(adminUser.id || '').trim() === id
   ));
 
-  return user ? adminUserUsername(user) : id;
+  return user ? adminUserUsername(user) : '';
+}
+
+function adminUserIdFallback(userId) {
+  return String(userId || '').trim();
 }
 
 function storyHasField(story, fieldName) {
@@ -997,14 +1001,16 @@ function storyEditorNames(story = {}) {
       story.editor_username,
       story.editor_name,
       story.editor_email,
-      story.updated_by
+      story.updated_by,
+      adminUserIdFallback(story.updated_by_user_id)
     ),
     created: firstTextValue(
       adminUserUsernameById(story.created_by_user_id),
       story.created_by_username,
       story.created_by_name,
       story.created_by_email,
-      story.created_by
+      story.created_by,
+      adminUserIdFallback(story.created_by_user_id)
     )
   };
 }
