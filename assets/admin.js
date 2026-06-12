@@ -200,8 +200,8 @@ function resetEditorDraft() {
   state.formDraft = {};
 }
 
-function showOverview() {
-  state.editorMode = 'overview';
+function showAdminSection(mode = 'overview') {
+  state.editorMode = mode;
   state.activeStoryId = null;
   state.selectedTagIds = new Set();
   state.editorDistrictId = null;
@@ -211,32 +211,22 @@ function showOverview() {
   state.validationModal = null;
   resetEditorDraft();
   markClean();
+}
+
+function showOverview() {
+  showAdminSection('overview');
 }
 
 function showClusterTags() {
-  state.editorMode = 'cluster-tags';
-  state.activeStoryId = null;
-  state.selectedTagIds = new Set();
-  state.editorDistrictId = null;
-  state.newCodeKind = 'standard';
-  state.selectedImagePath = null;
-  state.imageViewerPath = null;
-  state.validationModal = null;
-  resetEditorDraft();
-  markClean();
+  showAdminSection('cluster-tags');
 }
 
-function showRecentEdits() {
-  state.editorMode = 'recent-edits';
-  state.activeStoryId = null;
-  state.selectedTagIds = new Set();
-  state.editorDistrictId = null;
-  state.newCodeKind = 'standard';
-  state.selectedImagePath = null;
-  state.imageViewerPath = null;
-  state.validationModal = null;
-  resetEditorDraft();
-  markClean();
+function showStoryEdits() {
+  showAdminSection('story-edits');
+}
+
+function showTagEdits() {
+  showAdminSection('tag-edits');
 }
 
 function startNewStory() {
@@ -273,7 +263,9 @@ function setActiveStory(storyId) {
 
 function normaliseNavigationRequest(request = {}) {
   if (request.type === 'cluster-tags') return { type: 'cluster-tags' };
-  if (request.type === 'recent-edits') return { type: 'recent-edits' };
+  if (request.type === 'story-edits') return { type: 'story-edits' };
+  if (request.type === 'tag-edits') return { type: 'tag-edits' };
+  if (request.type === 'recent-edits') return { type: 'story-edits' };
   if (request.type === 'new-story') return { type: 'new-story' };
   if (request.type === 'select-story') {
     const story = findStoryByIdentifier(request.id || request.code);
@@ -290,13 +282,16 @@ function navigationRequestFromUrl() {
   if (story) return normaliseNavigationRequest({ type: 'select-story', id: story });
   if (params.get('new') === 'story') return { type: 'new-story' };
   if (params.get('view') === 'clusters-tags') return { type: 'cluster-tags' };
-  if (params.get('view') === 'recent-edits') return { type: 'recent-edits' };
+  if (params.get('view') === 'story-edits') return { type: 'story-edits' };
+  if (params.get('view') === 'tag-edits') return { type: 'tag-edits' };
+  if (params.get('view') === 'recent-edits') return { type: 'story-edits' };
   return { type: 'overview' };
 }
 
 function navigationRequestFromState() {
   if (state.editorMode === 'cluster-tags') return { type: 'cluster-tags' };
-  if (state.editorMode === 'recent-edits') return { type: 'recent-edits' };
+  if (state.editorMode === 'story-edits') return { type: 'story-edits' };
+  if (state.editorMode === 'tag-edits') return { type: 'tag-edits' };
   if (state.editorMode === 'create') return { type: 'new-story' };
   if (state.editorMode === 'edit') {
     const story = getActiveStory();
@@ -315,8 +310,10 @@ function adminUrlForNavigation(request = {}) {
     url.searchParams.set('new', 'story');
   } else if (route.type === 'cluster-tags') {
     url.searchParams.set('view', 'clusters-tags');
-  } else if (route.type === 'recent-edits') {
-    url.searchParams.set('view', 'recent-edits');
+  } else if (route.type === 'story-edits') {
+    url.searchParams.set('view', 'story-edits');
+  } else if (route.type === 'tag-edits') {
+    url.searchParams.set('view', 'tag-edits');
   } else if (route.type === 'select-story') {
     url.searchParams.set('story', route.code || route.id);
   }
@@ -1101,38 +1098,54 @@ function recentEditRows() {
 
 
 function recentTagEditRows() {
-  const rows = [];
+  const rowsByStoryId = new Map();
 
   state.stories.forEach((story) => {
     (story.story_tags || []).forEach((row) => {
       if (!isAfterActivityCutoff(row.created_at)) return;
 
+      const storyId = Number(story.id);
       const tag = row.tags || tagById(row.tag_id);
-      rows.push({
+      const createdDate = parseAdminDate(row.created_at);
+      const existing = rowsByStoryId.get(storyId) || {
         story,
+        tags: [],
+        latestCreated: row.created_at,
+        editor: editorNameForStory(story)
+      };
+
+      existing.tags.push({
         tag,
         tagId: Number(row.tag_id),
-        created: row.created_at,
-        editor: editorNameForStory(story)
+        created: row.created_at
+      });
+
+      const currentLatest = parseAdminDate(existing.latestCreated);
+      if (createdDate && (!currentLatest || createdDate > currentLatest)) {
+        existing.latestCreated = row.created_at;
+      }
+
+      rowsByStoryId.set(storyId, existing);
+    });
+  });
+
+  return [...rowsByStoryId.values()]
+    .map((row) => ({
+      ...row,
+      tags: row.tags.sort((a, b) => String(labelFor(a.tag) || a.tagId || '').localeCompare(String(labelFor(b.tag) || b.tagId || ''), undefined, {
+        numeric: true,
+        sensitivity: 'base'
+      }))
+    }))
+    .sort((a, b) => {
+      const createdDifference = (parseAdminDate(b.latestCreated)?.getTime() || 0) - (parseAdminDate(a.latestCreated)?.getTime() || 0);
+      if (createdDifference !== 0) return createdDifference;
+
+      return String(a.story?.code || '').localeCompare(String(b.story?.code || ''), undefined, {
+        numeric: true,
+        sensitivity: 'base'
       });
     });
-  });
-
-  return rows.sort((a, b) => {
-    const createdDifference = (parseAdminDate(b.created)?.getTime() || 0) - (parseAdminDate(a.created)?.getTime() || 0);
-    if (createdDifference !== 0) return createdDifference;
-
-    const codeComparison = String(a.story?.code || '').localeCompare(String(b.story?.code || ''), undefined, {
-      numeric: true,
-      sensitivity: 'base'
-    });
-    if (codeComparison !== 0) return codeComparison;
-
-    return String(labelFor(a.tag) || a.tagId || '').localeCompare(String(labelFor(b.tag) || b.tagId || ''), undefined, {
-      numeric: true,
-      sensitivity: 'base'
-    });
-  });
 }
 
 function renderActivitySortLabel(field, label) {
@@ -1258,9 +1271,6 @@ function renderDeniedCard() {
 function renderStoryList() {
   const stories = filteredStories();
   const creating = isCreatingStory();
-  const overviewActive = state.editorMode === 'overview';
-  const clusterTagsActive = state.editorMode === 'cluster-tags';
-  const recentEditsActive = state.editorMode === 'recent-edits';
   const statusOptions = [
     { value: 'all', label: 'All statuses' },
     { value: 'draft', label: 'Draft' },
@@ -1279,9 +1289,6 @@ function renderStoryList() {
           <button type="button" class="admin-secondary-button" data-action="sign-out">Sign out</button>
         </div>
         <div class="admin-user-line">Signed in as ${escapeHtml(state.user?.email || '')}</div>
-        <button type="button" class="admin-new-story-button ${overviewActive ? 'is-active' : ''}" data-action="show-overview">Overview</button>
-        <button type="button" class="admin-new-story-button ${clusterTagsActive ? 'is-active' : ''}" data-action="show-cluster-tags">Clusters-Tags</button>
-        <button type="button" class="admin-new-story-button ${recentEditsActive ? 'is-active' : ''}" data-action="show-recent-edits">Recent edits</button>
         <button type="button" class="admin-new-story-button ${creating ? 'is-active' : ''}" data-action="new-story">+ New story</button>
         <div class="admin-search">
           <input type="search" data-field="search" placeholder="Search code, name, text, tags…" value="${escapeHtml(state.searchQuery)}">
@@ -1784,16 +1791,15 @@ function renderOverview() {
   `;
 }
 
-function renderRecentEditsView() {
+function renderStoryEditsView() {
   const storyRows = recentEditRows();
-  const tagRows = recentTagEditRows();
 
   return `
     <section class="admin-editor admin-recent-edits-view">
       <div class="admin-editor-header">
         <div class="admin-editor-title">
-          <h2>Recent edits</h2>
-          <p>Shows story and tag rows changed from ${escapeHtml(ACTIVITY_CUTOFF_LABEL)} onwards. Exact before/after field changes need an audit log.</p>
+          <h2>Story edits</h2>
+          <p>Shows stories created or updated from ${escapeHtml(ACTIVITY_CUTOFF_LABEL)} onwards. Exact before/after field changes need an audit log.</p>
         </div>
       </div>
 
@@ -1839,11 +1845,28 @@ function renderRecentEditsView() {
             </table>
           </div>
         </div>
+      </div>
+    </section>
+  `;
+}
 
+function renderTagEditsView() {
+  const tagRows = recentTagEditRows();
+
+  return `
+    <section class="admin-editor admin-recent-edits-view">
+      <div class="admin-editor-header">
+        <div class="admin-editor-title">
+          <h2>Tag edits</h2>
+          <p>Shows current <span class="admin-small-code">story_tags</span> rows created from ${escapeHtml(ACTIVITY_CUTOFF_LABEL)} onwards. Admin user is inferred from the parent story editor fields.</p>
+        </div>
+      </div>
+
+      <div class="admin-overview-body">
         <div class="admin-recent-edits">
           <div class="admin-recent-edits-header">
             <h3>Edits in tags</h3>
-            <p>Current <span class="admin-small-code">story_tags</span> rows whose <span class="admin-small-code">created_at</span> is after the cutoff. Admin user is inferred from the parent story editor fields.</p>
+            <p>One row per story code. Tags are the current tag rows whose <span class="admin-small-code">created_at</span> is after the cutoff.</p>
           </div>
           <div class="admin-overview-table-wrap">
             <table class="admin-overview-table admin-tag-edits-table">
@@ -1851,8 +1874,8 @@ function renderRecentEditsView() {
                 <tr>
                   <th scope="col">Code</th>
                   <th scope="col">Story ID</th>
-                  <th scope="col">Tag</th>
-                  <th scope="col">Time</th>
+                  <th scope="col">Tags</th>
+                  <th scope="col">Latest tag save</th>
                   <th scope="col">Admin user</th>
                 </tr>
               </thead>
@@ -1868,8 +1891,14 @@ function renderRecentEditsView() {
                       >${escapeHtml(row.story.code || `#${row.story.id}`)}</button>
                     </th>
                     <td>${escapeHtml(row.story.id)}</td>
-                    <td>${escapeHtml(labelFor(row.tag) || row.tag?.slug || `Tag #${row.tagId}`)}</td>
-                    <td>${escapeHtml(formatAdminDateTime(row.created))}</td>
+                    <td>
+                      <ul class="admin-tag-edit-list">
+                        ${row.tags.map((item) => `
+                          <li>${escapeHtml(labelFor(item.tag) || item.tag?.slug || `Tag #${item.tagId}`)}</li>
+                        `).join('')}
+                      </ul>
+                    </td>
+                    <td>${escapeHtml(formatAdminDateTime(row.latestCreated))}</td>
                     <td>${escapeHtml(row.editor)}</td>
                   </tr>
                 `).join('') || `
@@ -2077,18 +2106,45 @@ function renderImageDeleteModal() {
   `;
 }
 
+function renderAdminTabs() {
+  const tabs = [
+    { label: 'Overview', type: 'overview', action: 'show-overview' },
+    { label: 'Clusters-Tags', type: 'cluster-tags', action: 'show-cluster-tags' },
+    { label: 'Story edits', type: 'story-edits', action: 'show-story-edits' },
+    { label: 'Tag edits', type: 'tag-edits', action: 'show-tag-edits' }
+  ];
+
+  return `
+    <nav class="admin-section-tabs" aria-label="Admin sections">
+      ${tabs.map((tab) => `
+        <button
+          type="button"
+          class="admin-section-tab ${state.editorMode === tab.type ? 'is-active' : ''}"
+          data-action="${tab.action}"
+          aria-pressed="${state.editorMode === tab.type ? 'true' : 'false'}"
+        >${escapeHtml(tab.label)}</button>
+      `).join('')}
+    </nav>
+  `;
+}
+
 function renderAdminApp() {
   const mainPanel = state.editorMode === 'overview'
     ? renderOverview()
     : state.editorMode === 'cluster-tags'
       ? renderClusterTagsView()
-      : state.editorMode === 'recent-edits'
-        ? renderRecentEditsView()
-        : renderEditor();
+      : state.editorMode === 'story-edits'
+        ? renderStoryEditsView()
+        : state.editorMode === 'tag-edits'
+          ? renderTagEditsView()
+          : renderEditor();
   return `
     <div class="admin-app-frame">
       ${renderStoryList()}
-      ${mainPanel}
+      <main class="admin-main-area">
+        ${renderAdminTabs()}
+        ${mainPanel}
+      </main>
     </div>
     ${renderUnsavedModal()}
     ${renderValidationModal()}
@@ -2252,8 +2308,10 @@ async function loadData() {
     startNewStory();
   } else if (route.type === 'cluster-tags') {
     showClusterTags();
-  } else if (route.type === 'recent-edits') {
-    showRecentEdits();
+  } else if (route.type === 'story-edits') {
+    showStoryEdits();
+  } else if (route.type === 'tag-edits') {
+    showTagEdits();
   } else {
     showOverview();
   }
@@ -2585,9 +2643,16 @@ function performNavigation(request, discard = false, historyMode = 'push') {
     return;
   }
 
-  if (request.type === 'recent-edits') {
-    showRecentEdits();
-    if (historyMode !== 'none') syncAdminHistory({ type: 'recent-edits' }, historyMode);
+  if (request.type === 'story-edits') {
+    showStoryEdits();
+    if (historyMode !== 'none') syncAdminHistory({ type: 'story-edits' }, historyMode);
+    render();
+    return;
+  }
+
+  if (request.type === 'tag-edits') {
+    showTagEdits();
+    if (historyMode !== 'none') syncAdminHistory({ type: 'tag-edits' }, historyMode);
     render();
     return;
   }
@@ -2651,8 +2716,13 @@ app.addEventListener('click', async (event) => {
     return;
   }
 
-  if (action === 'show-recent-edits') {
-    requestNavigation({ type: 'recent-edits' });
+  if (action === 'show-story-edits') {
+    requestNavigation({ type: 'story-edits' });
+    return;
+  }
+
+  if (action === 'show-tag-edits') {
+    requestNavigation({ type: 'tag-edits' });
     return;
   }
 
