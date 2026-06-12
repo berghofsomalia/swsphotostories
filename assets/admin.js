@@ -30,6 +30,8 @@ const ACTIVITY_CUTOFF = new Date('2026-06-05T15:00:00+02:00');
 const ACTIVITY_CUTOFF_LABEL = '5 June 2026, 15:00 Berlin time';
 const ACTIVITY_SORT_FIELDS = new Set(['code', 'kind', 'editor', 'created', 'updated']);
 const ACTIVITY_DATE_SORT_FIELDS = new Set(['created', 'updated']);
+const TAG_ACTIVITY_SORT_FIELDS = new Set(['code', 'latestTagSave', 'editor']);
+const TAG_ACTIVITY_DATE_SORT_FIELDS = new Set(['latestTagSave']);
 const ADMIN_INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000;
 const ADMIN_INACTIVITY_EVENT_THROTTLE_MS = 15 * 1000;
 const ADMIN_ACTIVITY_EVENTS = ['click', 'keydown', 'input', 'change', 'scroll', 'pointerdown', 'pointermove', 'touchstart'];
@@ -55,6 +57,8 @@ const state = {
   districtFilter: 'all',
   activitySortField: 'updated',
   activitySortDirection: 'desc',
+  tagActivitySortField: 'latestTagSave',
+  tagActivitySortDirection: 'desc',
   adminInactivityTimerId: null,
   adminInactivitySignOutInProgress: false,
   lastAdminActivityAt: 0,
@@ -957,16 +961,8 @@ function adminUserLabelById(userId) {
     String(adminUser.user_id || '').trim() === id
     || String(adminUser.id || '').trim() === id
   ));
-  if (user) return adminUserLabel(user);
 
-  if (
-    String(state.adminProfile?.user_id || '').trim() === id
-    || String(state.user?.id || '').trim() === id
-  ) {
-    return adminUserLabel(state.adminProfile) || currentEditorUsername();
-  }
-
-  return '';
+  return user ? adminUserLabel(user) : id;
 }
 
 function storyHasField(story, fieldName) {
@@ -1001,21 +997,21 @@ function addEditorStamp(payload, story = null, creating = false) {
 function storyEditorNames(story = {}) {
   return {
     updated: firstTextValue(
+      adminUserLabelById(story.updated_by_user_id),
       story.updated_by_username,
       story.updated_by_name,
       story.updated_by_email,
       story.editor_username,
       story.editor_name,
       story.editor_email,
-      story.updated_by,
-      adminUserLabelById(story.updated_by_user_id)
+      story.updated_by
     ),
     created: firstTextValue(
+      adminUserLabelById(story.created_by_user_id),
       story.created_by_username,
       story.created_by_name,
       story.created_by_email,
-      story.created_by,
-      adminUserLabelById(story.created_by_user_id)
+      story.created_by
     )
   };
 }
@@ -1129,6 +1125,9 @@ function recentTagEditRows() {
     });
   });
 
+  const field = TAG_ACTIVITY_SORT_FIELDS.has(state.tagActivitySortField) ? state.tagActivitySortField : 'latestTagSave';
+  const direction = state.tagActivitySortDirection === 'asc' ? 1 : -1;
+
   return [...rowsByStoryId.values()]
     .map((row) => ({
       ...row,
@@ -1138,6 +1137,25 @@ function recentTagEditRows() {
       }))
     }))
     .sort((a, b) => {
+      let comparison = 0;
+
+      if (TAG_ACTIVITY_DATE_SORT_FIELDS.has(field)) {
+        const first = parseAdminDate(a.latestCreated)?.getTime() || 0;
+        const second = parseAdminDate(b.latestCreated)?.getTime() || 0;
+        comparison = first - second;
+      } else if (field === 'editor') {
+        comparison = String(a.editor || '').localeCompare(String(b.editor || ''), undefined, {
+          sensitivity: 'base'
+        });
+      } else {
+        comparison = String(a.story?.code || '').localeCompare(String(b.story?.code || ''), undefined, {
+          numeric: true,
+          sensitivity: 'base'
+        });
+      }
+
+      if (comparison !== 0) return comparison * direction;
+
       const createdDifference = (parseAdminDate(b.latestCreated)?.getTime() || 0) - (parseAdminDate(a.latestCreated)?.getTime() || 0);
       if (createdDifference !== 0) return createdDifference;
 
@@ -1156,6 +1174,19 @@ function renderActivitySortLabel(field, label) {
       type="button"
       class="admin-table-sort-button ${active ? 'is-active' : ''}"
       data-action="set-activity-sort"
+      data-value="${field}"
+    >${escapeHtml(label)} ${arrow}</button>
+  `;
+}
+
+function renderTagActivitySortLabel(field, label) {
+  const active = state.tagActivitySortField === field;
+  const arrow = active ? (state.tagActivitySortDirection === 'asc' ? 'ASC' : 'DESC') : '';
+  return `
+    <button
+      type="button"
+      class="admin-table-sort-button ${active ? 'is-active' : ''}"
+      data-action="set-tag-activity-sort"
       data-value="${field}"
     >${escapeHtml(label)} ${arrow}</button>
   `;
@@ -1858,7 +1889,7 @@ function renderTagEditsView() {
       <div class="admin-editor-header">
         <div class="admin-editor-title">
           <h2>Tag edits</h2>
-          <p>Shows current <span class="admin-small-code">story_tags</span> rows created from ${escapeHtml(ACTIVITY_CUTOFF_LABEL)} onwards. Admin user is inferred from the parent story editor fields.</p>
+          <p>Shows current <span class="admin-small-code">story_tags</span> rows created from ${escapeHtml(ACTIVITY_CUTOFF_LABEL)} onwards. Admin user is read from the parent story's stored editor id where available.</p>
         </div>
       </div>
 
@@ -1872,11 +1903,10 @@ function renderTagEditsView() {
             <table class="admin-overview-table admin-tag-edits-table">
               <thead>
                 <tr>
-                  <th scope="col">Code</th>
-                  <th scope="col">Story ID</th>
+                  <th scope="col">${renderTagActivitySortLabel('code', 'Code')}</th>
                   <th scope="col">Tags</th>
-                  <th scope="col">Latest tag save</th>
-                  <th scope="col">Admin user</th>
+                  <th scope="col">${renderTagActivitySortLabel('latestTagSave', 'Latest tag save')}</th>
+                  <th scope="col">${renderTagActivitySortLabel('editor', 'Admin user')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -1890,7 +1920,6 @@ function renderTagEditsView() {
                         data-id="${row.story.id}"
                       >${escapeHtml(row.story.code || `#${row.story.id}`)}</button>
                     </th>
-                    <td>${escapeHtml(row.story.id)}</td>
                     <td>
                       <ul class="admin-tag-edit-list">
                         ${row.tags.map((item) => `
@@ -1903,7 +1932,7 @@ function renderTagEditsView() {
                   </tr>
                 `).join('') || `
                   <tr>
-                    <td colspan="5" class="admin-overview-empty-cell">No tag edits after ${escapeHtml(ACTIVITY_CUTOFF_LABEL)}.</td>
+                    <td colspan="4" class="admin-overview-empty-cell">No tag edits after ${escapeHtml(ACTIVITY_CUTOFF_LABEL)}.</td>
                   </tr>
                 `}
               </tbody>
@@ -2747,6 +2776,18 @@ app.addEventListener('click', async (event) => {
     } else {
       state.activitySortField = field;
       state.activitySortDirection = ACTIVITY_DATE_SORT_FIELDS.has(field) ? 'desc' : 'asc';
+    }
+    render();
+    return;
+  }
+
+  if (action === 'set-tag-activity-sort') {
+    const field = TAG_ACTIVITY_SORT_FIELDS.has(button.dataset.value) ? button.dataset.value : 'latestTagSave';
+    if (state.tagActivitySortField === field) {
+      state.tagActivitySortDirection = state.tagActivitySortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      state.tagActivitySortField = field;
+      state.tagActivitySortDirection = TAG_ACTIVITY_DATE_SORT_FIELDS.has(field) ? 'desc' : 'asc';
     }
     render();
     return;
