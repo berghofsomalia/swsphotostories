@@ -18,100 +18,74 @@
   z-index: 140;
 }
 
-/* ── Shared gap/flap variables ────────────────────────────────
-   Defined once here and reused by both .home-main and the flaps.
-   The card gap = viewport padding. Flap = gap + corner bite.
-   Pentagon clip = rectangle with one diagonal corner cut off. */
-/* ── Corner flaps — album corner holders ─────────────────────
-   The insight: flap width = horizontal card margin (--pad-h),
-   flap height = vertical card margin (--pad-v).
-   That's it. The diagonal connects the two inner edges of the
-   flap rectangle — exactly reaching the card corner.
-   Pentagon clip keeps the outer corner rectangular for text.
-   ─────────────────────────────────────────────────────────── */
-
-/* Shared padding vars used by BOTH home-main AND the flaps */
+/* ── Desktop grid/flap variables ──────────────────────────────
+   The desktop hero is treated as an explicit 8 × 5 placement grid.
+   Flaps are rectangular panels behind the hero: the top-left flap runs
+   from the browser corner to the bottom-right point of hero cell 1,1;
+   the bottom-right flap mirrors this to the top-left point of cell 8,5. */
 .home-shell {
-  --pad-h: clamp(2rem, 5vw, 6rem);
-  --pad-v: clamp(2rem, 5vh, 5rem);
+  --home-hero-max-width: 1160px;
+  --home-hero-aspect: 16 / 9;
+  --home-hero-edge: clamp(1rem, 4vmin, 2.25rem);
+  --home-flap-colour: rgba(141, 82, 15, 0.7);
 }
 
 .home-badge-nexus,
 .home-badge-title {
-  position: fixed;
-  z-index: 10;
+  position: absolute;
+  z-index: 1;
   pointer-events: none;
-  background: rgba(141, 82, 15, 0.72);
+  background: var(--home-flap-colour);
   color: #fff;
-  /* Flap exactly fills the gap between viewport edge and card corner */
-  width:  var(--pad-h);
-  height: var(--pad-v);
+  backdrop-filter: blur(10px) saturate(115%);
+  -webkit-backdrop-filter: blur(10px) saturate(115%);
 }
 
-/* TL pentagon: full rect, diagonal cuts from (100%, bite) to (100%-bite, 100%)
-   "bite" = how far the diagonal intrudes into the card corner.
-   We use 30% of flap size — enough to read as a corner holder. */
+/* TL flap: viewport corner to the bottom-right corner of hero grid cell 1,1. */
 .home-badge-nexus {
-  top: 0;
-  left: 0;
-  clip-path: polygon(
-    0% 0%,
-    100% 0%,
-    100% 55%,
-    45% 100%,
-    0% 100%
-  );
+  top: calc(-50dvh + 50%);
+  left: calc(-50dvw + 50%);
+  width: calc(50dvw - 37.5%);
+  height: calc(50dvh - 30%);
 }
 
-/* BR: mirrored */
+/* BR flap: mirrored, viewport corner to the top-left corner of hero grid cell 8,5. */
 .home-badge-title {
-  bottom: 0;
-  right: 0;
-  clip-path: polygon(
-    55% 0%,
-    100% 0%,
-    100% 100%,
-    0% 100%,
-    0% 45%
-  );
+  right: calc(-50dvw + 50%);
+  bottom: calc(-50dvh + 50%);
+  width: calc(50dvw - 37.5%);
+  height: calc(50dvh - 30%);
 }
 
 .home-badge-nexus p,
 .home-badge-title p {
-  position: absolute;
+  position: fixed;
   display: flex;
   flex-direction: column;
+  margin: 0;
   color: #fff;
   font-weight: 300;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  font-size: clamp(0.65rem, 0.82vw, 0.9rem);
+  font-size: clamp(0.62rem, 0.8vw, 0.88rem);
   line-height: 1.22;
   gap: 0.05em;
 }
 
-/* Text in the outer rectangular zone, away from diagonal */
+/* Text stays pinned to the browser corners, not the hero corners. */
 .home-badge-nexus p {
-  top:  clamp(0.55rem, 1.2vh, 1rem);
-  left: clamp(0.6rem, 1vw, 1rem);
+  top: clamp(0.65rem, 1.35vh, 1.1rem);
+  left: clamp(0.7rem, 1.2vw, 1.2rem);
   align-items: flex-start;
   text-align: left;
-  /* Stay within the safe rectangle — roughly 80% of flap width */
-  max-width: 82%;
-  /* Don't let text run into diagonal area */
-  padding-right: 18%;
-  padding-bottom: 22%;
 }
 
 .home-badge-title p {
-  bottom: clamp(0.55rem, 1.2vh, 1rem);
-  right:  clamp(0.6rem, 1vw, 1rem);
+  right: clamp(0.7rem, 1.2vw, 1.2rem);
+  bottom: clamp(0.65rem, 1.35vh, 1.1rem);
   align-items: flex-end;
   text-align: right;
-  font-size: clamp(0.58rem, 0.72vw, 0.84rem);
-  max-width: 82%;
-  padding-left: 18%;
-  padding-top:  22%;
+  font-size: clamp(0.56rem, 0.72vw, 0.82rem);
 }
 
 .home-badge-nexus p span:nth-child(2),
@@ -126,31 +100,57 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  /* Same vars as flaps — card margin = flap size */
-  padding: var(--pad-v) var(--pad-h);
+  padding: var(--home-hero-edge);
 }
 
 .home-hero-grid {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: relative;
+  z-index: 2;
+  width: min(
+    calc(100dvw - (var(--home-hero-edge) * 2)),
+    calc((100dvh - (var(--home-hero-edge) * 2)) * (16 / 9)),
+    var(--home-hero-max-width)
+  );
+  aspect-ratio: var(--home-hero-aspect);
 }
 
 /* ── Card ─────────────────────────────────────────────────────
-   Slightly narrower than before so flaps have visible breathing room. */
+   The card fills the explicit 8 × 5 desktop placement grid. */
 .home-card {
   position: relative;
-  width: min(
-    100%,
-    calc((100dvh - clamp(2rem, 5vh, 5rem) * 2) * 1.85),
-    1060px
-  );
-  aspect-ratio: 1.85 / 1;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   background: #10151b;
   touch-action: pan-y;
+}
+
+.home-card::before,
+.home-card::after {
+  content: "";
+  position: absolute;
+  z-index: 5;
+  width: 12.5%;
+  height: 20%;
+  pointer-events: none;
+  background: var(--home-flap-colour);
+  backdrop-filter: blur(10px) saturate(115%);
+  -webkit-backdrop-filter: blur(10px) saturate(115%);
+}
+
+/* Glassy half of hero cell 1,1. */
+.home-card::before {
+  top: 0;
+  left: 0;
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+
+/* Mirrored glassy half of hero cell 8,5. */
+.home-card::after {
+  right: 0;
+  bottom: 0;
+  clip-path: polygon(100% 100%, 0 100%, 100% 0);
 }
 
 html[data-theme="light"] .home-card {
@@ -161,6 +161,7 @@ html[data-theme="light"] .home-card {
 .home-card-image {
   position: absolute;
   inset: 0;
+  z-index: 1;
 }
 
 .home-card-image img {
@@ -181,7 +182,9 @@ html[data-theme="light"] .home-card {
   position: absolute;
   inset: 0;
   z-index: 2;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-rows: repeat(5, minmax(0, 1fr));
 }
 
 /* Gradient: photo shows fully on left, fades to dark on right */
@@ -210,28 +213,28 @@ html[data-theme="light"] .home-card-body::before {
 
 .home-card-secondary-panel { display: none; }
 
-/* Primary panel: right 36% of card, three fixed zones stacked */
+/* Teaser panel: columns 6 to 8, rows split by the 8 × 5 hero grid. */
 .home-card-primary-panel {
-  margin-left: auto;
-  width: 38%;
+  grid-column: 6 / 9;
+  grid-row: 1 / 6;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  padding: clamp(1rem, 2.5vw, 2rem) clamp(1rem, 2.5vw, 2rem);
+  min-width: 0;
+  display: grid;
+  grid-template-rows: repeat(5, minmax(0, 1fr));
+  align-items: stretch;
+  justify-items: start;
+  padding: clamp(0.9rem, 2vw, 1.6rem) clamp(0.9rem, 2vw, 1.6rem);
   position: relative;
   z-index: 1;
 }
 
-/* Zone 1 — spacer: smaller so teaser starts higher up */
-.home-card-primary-panel::before {
-  content: "";
-  flex: 0.4;
-}
-
-/* Zone 2 — teaser: larger text, bottom-aligned, rises upward with more content */
+/* Rows 1 to 3: teaser, left-bottom aligned. */
 .home-card-teaser {
+  grid-row: 1 / 4;
+  align-self: end;
+  justify-self: start;
   flex-shrink: 0;
-  margin: 0 0 clamp(1.2rem, 2.8dvh, 2.2rem) 0;
+  margin: 0 0 clamp(0.5rem, 1.3dvh, 0.95rem) 0;
   color: #fff8ee;
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(1rem, 1.6vw, 1.6rem);
@@ -256,8 +259,11 @@ html[data-theme="light"] .home-card-body::before {
 
 html[data-theme="light"] .home-card-teaser { color: #fff8ee; }
 
-/* Zone 3 — actions: fixed at bottom, never move */
+/* Row 4: buttons, left-middle aligned. */
 .home-card-actions {
+  grid-row: 4 / 5;
+  align-self: center;
+  justify-self: start;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -344,12 +350,15 @@ html[data-theme="light"] .home-card-actions .home-read-button {
   cursor: default;
 }
 
-/* Explore link — left-aligned with teaser/buttons, below action row */
+/* Row 5: Explore link, left-top aligned. */
 .home-explore-link {
+  grid-row: 5 / 6;
+  align-self: start;
+  justify-self: start;
   display: inline-flex;
   align-items: center;
   gap: 0.24rem;
-  margin-top: clamp(0.5rem, 1.2dvh, 0.9rem);
+  margin-top: clamp(0.2rem, 0.7dvh, 0.55rem);
   color: rgba(248,243,237,0.42);
   font-size: clamp(0.58rem, 0.72vw, 0.68rem);
   letter-spacing: 0.1em;
@@ -389,13 +398,20 @@ html[data-theme="light"] .home-explore-link:hover {
    ══════════════════════════════════════════════════════════════ */
 @media (max-width: 680px) {
 
+  .home-card::before,
+  .home-card::after {
+    display: none;
+  }
+
   .home-main {
     padding: 0;
     align-items: stretch;
   }
 
   .home-hero-grid {
-    align-items: stretch;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: unset;
   }
 
   /* Card: flex column, fills full viewport */
@@ -504,19 +520,23 @@ html[data-theme="light"] .home-explore-link:hover {
     letter-spacing: 0.08em;
   }
 
-  /* Mobile: card is full-width, so flaps become pure corner triangles.
-     Width and height are independent — width covers left edge of card,
-     height covers how far down/up from viewport corner. */
-  .home-shell {
-    --pad-h: clamp(5rem, 36vw, 9rem);
-    --pad-v: clamp(5rem, 36vw, 9rem);
+  /* Mobile keeps the older simple corner-triangle treatment. */
+  .home-badge-nexus,
+  .home-badge-title {
+    position: fixed;
+    width: clamp(5rem, 36vw, 9rem);
+    height: clamp(5rem, 36vw, 9rem);
   }
 
   .home-badge-nexus {
+    top: 0;
+    left: 0;
     clip-path: polygon(0% 0%, 100% 0%, 0% 100%);
   }
 
   .home-badge-title {
+    right: 0;
+    bottom: 0;
     clip-path: polygon(100% 0%, 100% 100%, 0% 100%);
   }
 
@@ -554,7 +574,7 @@ html[data-theme="light"] .home-explore-link:hover {
 
 /* ── Large screens ────────────────────────────────────────────*/
 @media (min-width: 1400px) {
-  .home-card { max-width: 1160px; }
+  .home-shell { --home-hero-max-width: 1160px; }
 }
 
 /* ══════════════════════════════════════════════════════════════
