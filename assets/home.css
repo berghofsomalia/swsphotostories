@@ -1,8 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════
-   HOME PAGE
-   Layout: flexbox centred card — no absolute-position maths.
-   Flaps: position:fixed corners, independent of card size.
-   Zoom-safe: nothing depends on vw × dvh arithmetic.
+   HOME PAGE — responsive, zoom-safe, album-corner flaps
    ═══════════════════════════════════════════════════════════════ */
 
 .home-shell {
@@ -21,47 +18,63 @@
   z-index: 140;
 }
 
-/* ── Corner flaps (fixed, independent of card) ─────────────────
-   Hidden by default — one class on .home-hero-grid shows them.
-   ─────────────────────────────────────────────────────────────*/
+/* ── Shared gap/flap variables ────────────────────────────────
+   Defined once here and reused by both .home-main and the flaps.
+   The card gap = viewport padding. Flap = gap + corner bite.
+   Pentagon clip = rectangle with one diagonal corner cut off. */
+:root {
+  --home-gap-v:    clamp(2.2rem, 5.5dvh, 5rem);
+  --home-gap-h:    clamp(2.2rem, 5.5vw, 6rem);
+  --home-bite:     clamp(2rem, 3.5vw, 3.8rem);
+  /* total flap size */
+  --home-flap-w:   calc(var(--home-gap-h) + var(--home-bite));
+  --home-flap-h:   calc(var(--home-gap-v) + var(--home-bite));
+}
+
+/* ── Corner flaps — album holder shape ───────────────────────
+   Pentagon: full rectangle MINUS one diagonal corner.
+   TL: top-left stays, diagonal cut at inner corner (bottom-right area).
+   BR: bottom-right stays, diagonal cut at inner corner (top-left area).
+   This gives text the full rectangular safe zone at the outer corner,
+   with the decorative diagonal only where the card corner sits. */
 .home-badge-nexus,
 .home-badge-title {
-  /* Flaps are always shown — hidden class removed.
-     Size = viewport gap + corner bite, matching .home-main padding vars.
-     The diagonal clip runs from (width,0) to (0,height) on TL,
-     and mirrored on BR — exactly meeting the card corner. */
   position: fixed;
   z-index: 10;
   pointer-events: none;
   background: rgba(141, 82, 15, 0.72);
   color: #fff;
-  overflow: hidden;
-  /* Use the same custom properties as .home-main */
-  --home-gap-v: clamp(2rem, 5dvh, 4.5rem);
-  --home-gap-h: clamp(2rem, 5vw, 5.5rem);
-  --home-corner-bite: clamp(1.8rem, 3vw, 3rem);
+  overflow: visible;
+  width:  var(--home-flap-w);
+  height: var(--home-flap-h);
 }
 
-/* Top-left flap: right-triangle filling the corner.
-   Width = gap-h + bite, height = gap-v + bite.
-   Diagonal goes from top-right (w,0) to bottom-left (0,h) —
-   this line passes exactly through the card's top-left corner. */
+/* TL pentagon: 0,0 → 100%,0 → 100%,bite% → (100%-bite%),100% → 0,100%
+   The diagonal cut runs from right-edge at bite height down to
+   bite% from right on the bottom edge — exactly at card corner. */
 .home-badge-nexus {
   top: 0;
   left: 0;
-  width:  calc(var(--home-gap-h) + var(--home-corner-bite));
-  height: calc(var(--home-gap-v) + var(--home-corner-bite));
-  clip-path: polygon(0 0, 100% 0, 0 100%);
+  clip-path: polygon(
+    0% 0%,
+    100% 0%,
+    100% calc(var(--home-bite) / var(--home-flap-h) * 100%),
+    calc(100% - var(--home-bite) / var(--home-flap-w) * 100%) 100%,
+    0% 100%
+  );
 }
 
-/* Bottom-right flap: mirrored right-triangle.
-   Diagonal goes from bottom-left (0,h) to top-right (w,0). */
+/* BR pentagon: mirrored */
 .home-badge-title {
   bottom: 0;
   right: 0;
-  width:  calc(var(--home-gap-h) + var(--home-corner-bite));
-  height: calc(var(--home-gap-v) + var(--home-corner-bite));
-  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  clip-path: polygon(
+    calc(var(--home-bite) / var(--home-flap-w) * 100%) 0%,
+    100% 0%,
+    100% 100%,
+    0% 100%,
+    0% calc(100% - var(--home-bite) / var(--home-flap-h) * 100%)
+  );
 }
 
 .home-badge-nexus p,
@@ -73,27 +86,28 @@
   font-weight: 300;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  font-size: clamp(0.7rem, 0.9vw, 0.96rem);
+  font-size: clamp(0.68rem, 0.85vw, 0.94rem);
   line-height: 1.22;
-  gap: 0.05em;
+  gap: 0.06em;
 }
 
+/* Text sits in the safe rectangle area (top-left of TL flap) */
 .home-badge-nexus p {
-  top: clamp(0.6rem, 1.4dvh, 1.1rem);
-  left: clamp(0.65rem, 1.2vw, 1.1rem);
+  top:  clamp(0.65rem, 1.5dvh, 1.2rem);
+  left: clamp(0.7rem, 1.3vw, 1.2rem);
   align-items: flex-start;
   text-align: left;
-  /* Keep text in the rectangle part, away from the diagonal */
-  max-width: calc(var(--home-gap-h) - 0.4rem);
+  /* Max-width keeps text within the rectangular zone, not drifting to diagonal */
+  max-width: calc(var(--home-gap-h) * 0.85);
 }
 
 .home-badge-title p {
-  bottom: clamp(0.6rem, 1.4dvh, 1.1rem);
-  right: clamp(0.65rem, 1.2vw, 1.1rem);
+  bottom: clamp(0.65rem, 1.5dvh, 1.2rem);
+  right:  clamp(0.7rem, 1.3vw, 1.2rem);
   align-items: flex-end;
   text-align: right;
-  font-size: clamp(0.62rem, 0.78vw, 0.86rem);
-  max-width: calc(var(--home-gap-h) - 0.4rem);
+  font-size: clamp(0.6rem, 0.75vw, 0.86rem);
+  max-width: calc(var(--home-gap-h) * 0.85);
 }
 
 .home-badge-nexus p span:nth-child(2),
@@ -101,18 +115,14 @@
   color: #f3d1b8;
 }
 
-/* ── Main layout: centre the card ─────────────────────────────*/
+/* ── Main layout ──────────────────────────────────────────────*/
 .home-main {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  /* Padding = the gap between viewport edge and card edge.
-     The flap fills exactly this space + a corner-bite onto the card. */
-  --home-gap-v: clamp(2rem, 5dvh, 4.5rem);
-  --home-gap-h: clamp(2rem, 5vw, 5.5rem);
-  --home-corner-bite: clamp(1.8rem, 3vw, 3rem);
+  /* Padding matches --home-gap-* so flap exactly meets card corner */
   padding: var(--home-gap-v) var(--home-gap-h);
 }
 
@@ -124,20 +134,17 @@
   justify-content: center;
 }
 
-/* ── Card ─────────────────────────────────────────────────────*/
+/* ── Card ─────────────────────────────────────────────────────
+   Slightly narrower than before so flaps have visible breathing room. */
 .home-card {
   position: relative;
-  display: grid;
-  grid-template-columns: 1fr;
-  /* Card is as wide as possible but keeps 2:1 aspect ratio */
   width: min(
     100%,
-    calc((100dvh - clamp(1rem, 4dvh, 3rem)) * 2),
-    1100px
+    calc((100dvh - var(--home-gap-v) * 2) * 1.85),
+    1060px
   );
-  aspect-ratio: 2 / 1;
+  aspect-ratio: 1.85 / 1;
   overflow: hidden;
-  border-radius: 0;
   background: #10151b;
   touch-action: pan-y;
 }
@@ -146,7 +153,7 @@ html[data-theme="light"] .home-card {
   background: #d8cfbf;
 }
 
-/* ── Card image (full bleed background) ───────────────────────*/
+/* ── Card image ───────────────────────────────────────────────*/
 .home-card-image {
   position: absolute;
   inset: 0;
@@ -157,76 +164,86 @@ html[data-theme="light"] .home-card {
   height: 100%;
   object-fit: cover;
   object-position: center 30%;
+  transition: opacity 500ms ease, transform 700ms cubic-bezier(0.22,1,0.36,1);
 }
 
-.home-card.is-home-story-exiting .home-card-image img,
-.home-card.is-home-story-exiting .home-card-teaser {
+.home-card.is-home-story-exiting .home-card-image img {
   opacity: 0;
-  transform: scale(0.992);
+  transform: scale(0.993);
 }
 
-/* ── Card body: right-side content panel ──────────────────────*/
+/* ── Card body — right-side content overlay ───────────────────*/
 .home-card-body {
-  position: relative;
+  position: absolute;
+  inset: 0;
   z-index: 2;
-  display: grid;
-  grid-template-columns: 1fr minmax(0, 36%);
-  width: 100%;
-  height: 100%;
+  display: flex;
 }
 
-/* Right-to-left gradient — preserves photo on left */
+/* Gradient: photo shows fully on left, fades to dark on right */
 .home-card-body::before {
   content: "";
   position: absolute;
   inset: 0 0 0 auto;
-  z-index: -1;
-  width: 52%;
+  width: 58%;
   pointer-events: none;
   background: linear-gradient(
     90deg,
-    rgba(13, 17, 22, 0) 0%,
-    rgba(13, 17, 22, 0.72) 28%,
-    rgba(13, 17, 22, 0.97) 100%
+    rgba(13,17,22,0)    0%,
+    rgba(13,17,22,0.68) 26%,
+    rgba(13,17,22,0.97) 100%
   );
 }
 
 html[data-theme="light"] .home-card-body::before {
   background: linear-gradient(
     90deg,
-    rgba(30, 26, 21, 0) 0%,
-    rgba(30, 26, 21, 0.6) 28%,
-    rgba(30, 26, 21, 0.88) 100%
+    rgba(22,18,14,0)    0%,
+    rgba(22,18,14,0.62) 26%,
+    rgba(22,18,14,0.94) 100%
   );
 }
 
-.home-card-secondary-panel {
-  display: none;
-}
+.home-card-secondary-panel { display: none; }
 
+/* Primary panel: right 36% of card, three fixed zones stacked */
 .home-card-primary-panel {
-  grid-column: 2;
+  margin-left: auto;
+  width: 38%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: clamp(0.7rem, 1.8dvh, 1.4rem);
-  padding: clamp(1rem, 3vw, 2.5rem);
+  padding: clamp(1rem, 2.5vw, 2rem) clamp(1rem, 2.5vw, 2rem);
+  position: relative;
+  z-index: 1;
 }
 
-/* ── Teaser ───────────────────────────────────────────────────*/
+/* Zone 1 — spacer (pushes teaser down) */
+.home-card-primary-panel::before {
+  content: "";
+  flex: 1;
+}
+
+/* Zone 2 — teaser: fixed height, bottom-aligned so varying text rises upward */
 .home-card-teaser {
-  margin: 0;
+  flex-shrink: 0;
+  margin: 0 0 clamp(0.9rem, 2dvh, 1.6rem) 0;
   color: #fff8ee;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(0.92rem, 1.5vw, 1.45rem);
+  font-size: clamp(0.88rem, 1.4vw, 1.38rem);
   font-style: italic;
   font-weight: 400;
-  line-height: 1.3;
-  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.5);
+  line-height: 1.32;
+  text-shadow: 0 2px 18px rgba(0,0,0,0.55);
   opacity: 0;
-  transform: translateY(0.18rem);
-  transition: opacity 560ms ease, transform 560ms ease;
+  transform: translateY(0.2rem);
+  transition: opacity 520ms ease, transform 520ms ease;
   will-change: opacity, transform;
+  /* Clamp so very long teasers don't push buttons off */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 6;
+  overflow: hidden;
 }
 
 .home-card-teaser.is-home-content-loaded {
@@ -234,36 +251,35 @@ html[data-theme="light"] .home-card-body::before {
   transform: none;
 }
 
-html[data-theme="light"] .home-card-teaser {
-  color: #fff8ee;
-}
+html[data-theme="light"] .home-card-teaser { color: #fff8ee; }
 
-/* ── Actions ──────────────────────────────────────────────────*/
+/* Zone 3 — actions: fixed at bottom, never move */
 .home-card-actions {
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  gap: clamp(0.5rem, 1.2dvh, 0.9rem);
+  gap: clamp(0.45rem, 1dvh, 0.75rem);
 }
 
+/* Row: Read button + carousel controls side by side */
 .home-card-action-row--top {
   display: flex;
   align-items: center;
-  gap: clamp(0.4rem, 0.8vw, 0.65rem);
-  flex-wrap: wrap;
+  gap: clamp(0.35rem, 0.7vw, 0.55rem);
 }
 
-/* Read button — dark frosted glass, not accent colour */
+/* Read button */
 .home-card-actions .home-read-button {
   display: inline-flex;
   align-items: center;
-  gap: 0.42rem;
-  padding: 0.52rem 1rem;
+  gap: 0.4rem;
+  padding: 0.5rem 0.9rem;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.07);
   backdrop-filter: blur(12px);
-  color: rgba(248, 243, 237, 0.78);
-  font-size: clamp(0.7rem, 0.95vw, 0.9rem);
+  color: rgba(248,243,237,0.78);
+  font-size: clamp(0.68rem, 0.88vw, 0.86rem);
   font-weight: 500;
   text-decoration: none;
   white-space: nowrap;
@@ -271,96 +287,90 @@ html[data-theme="light"] .home-card-teaser {
 }
 
 .home-card-actions .home-read-button:hover {
-  background: rgba(255, 255, 255, 0.13);
+  background: rgba(255,255,255,0.13);
   color: #fff;
 }
 
 html[data-theme="light"] .home-card-actions .home-read-button {
-  border-color: rgba(255, 255, 255, 0.28);
-  background: rgba(255, 255, 255, 0.14);
-  color: rgba(255, 248, 238, 0.85);
+  border-color: rgba(255,255,255,0.28);
+  background: rgba(255,255,255,0.14);
+  color: rgba(255,248,238,0.88);
 }
 
-/* Carousel controls */
+/* Carousel ‹ ∥ › */
 .home-card-action-row--carousel {
   display: inline-flex;
   align-items: center;
-  gap: clamp(0.28rem, 0.6vw, 0.4rem);
+  gap: clamp(0.22rem, 0.45vw, 0.35rem);
 }
 
 .home-card-actions .home-carousel-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: clamp(1.85rem, 3dvh, 2.3rem);
-  height: clamp(1.85rem, 3dvh, 2.3rem);
+  width:  clamp(1.8rem, 2.8dvh, 2.2rem);
+  height: clamp(1.8rem, 2.8dvh, 2.2rem);
   padding: 0;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.06);
   backdrop-filter: blur(12px);
   color: #f8f3ed;
   transition: background 160ms ease;
 }
 
 .home-card-actions .home-carousel-button:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255,255,255,0.12);
 }
 
 .home-card-actions .home-carousel-button--pause {
-  width: clamp(2rem, 3.2dvh, 2.5rem);
-  height: clamp(2rem, 3.2dvh, 2.5rem);
+  width:  clamp(1.95rem, 3dvh, 2.4rem);
+  height: clamp(1.95rem, 3dvh, 2.4rem);
 }
 
 .home-card-actions .home-carousel-button svg,
 .home-card-actions .home-read-button svg {
-  width: clamp(0.78rem, 1vw, 0.92rem);
-  height: clamp(0.78rem, 1vw, 0.92rem);
+  width:  clamp(0.72rem, 0.92vw, 0.86rem);
+  height: clamp(0.72rem, 0.92vw, 0.86rem);
   flex: 0 0 auto;
 }
 
 .home-card-actions .action-button.is-disabled,
 .home-card-actions .action-button:disabled {
-  opacity: 0.4;
+  opacity: 0.38;
   cursor: default;
 }
 
-/* Explore link — below the card, left-aligned with content panel */
+/* Explore link — left-aligned with teaser/buttons, below action row */
 .home-explore-link {
-  position: absolute;
-  bottom: clamp(0.5rem, 1.5dvh, 1rem);
-  right: clamp(1rem, 3vw, 2.5rem);
   display: inline-flex;
   align-items: center;
-  gap: 0.26rem;
-  color: rgba(248, 243, 237, 0.5);
-  font-size: clamp(0.6rem, 0.8vw, 0.72rem);
-  letter-spacing: 0.08em;
+  gap: 0.24rem;
+  margin-top: clamp(0.2rem, 0.6dvh, 0.4rem);
+  color: rgba(248,243,237,0.42);
+  font-size: clamp(0.58rem, 0.72vw, 0.68rem);
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   text-decoration: none;
-  z-index: 3;
   transition: color 160ms ease;
 }
 
-.home-explore-link:hover {
-  color: #fff8ee;
-}
+.home-explore-link:hover { color: #fff8ee; }
 
 html[data-theme="light"] .home-explore-link {
-  color: rgba(32, 28, 23, 0.55);
+  color: rgba(255,248,238,0.55);
 }
-
 html[data-theme="light"] .home-explore-link:hover {
-  color: rgba(32, 28, 23, 0.9);
+  color: rgba(255,248,238,0.9);
 }
 
 .home-explore-link svg {
-  width: 0.72rem;
-  height: 0.72rem;
+  width: 0.68rem;
+  height: 0.68rem;
   flex: 0 0 auto;
 }
 
-/* ── Loading state ────────────────────────────────────────────*/
+/* ── Loading ──────────────────────────────────────────────────*/
 .home-loading {
   display: flex;
   align-items: center;
@@ -372,9 +382,19 @@ html[data-theme="light"] .home-explore-link:hover {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   MOBILE — split card: photo top, content panel below
+   MOBILE ≤680px — split card: photo top (fixed), panel below
    ══════════════════════════════════════════════════════════════ */
 @media (max-width: 680px) {
+
+  /* Reset gap vars — no margins on mobile */
+  :root {
+    --home-gap-v: 0px;
+    --home-gap-h: 0px;
+    --home-bite:  clamp(4.5rem, 40vw, 9rem);
+    --home-flap-w: var(--home-bite);
+    --home-flap-h: var(--home-bite);
+  }
+
   .home-main {
     padding: 0;
     align-items: stretch;
@@ -384,21 +404,21 @@ html[data-theme="light"] .home-explore-link:hover {
     align-items: stretch;
   }
 
+  /* Card: flex column, fills full viewport */
   .home-card {
-    /* On mobile: fill height, no aspect-ratio lock */
     width: 100%;
     aspect-ratio: unset;
     height: 100dvh;
     display: flex;
     flex-direction: column;
-    border-radius: 0;
   }
 
-  /* Photo: top portion, fixed height */
+  /* Photo: fixed height — always the same, crops to fit */
   .home-card-image {
     position: relative;
-    flex: 0 0 46%;
+    flex: 0 0 clamp(180px, 46vw, 260px);
     inset: unset;
+    height: clamp(180px, 46vw, 260px);
   }
 
   .home-card-image img {
@@ -408,51 +428,54 @@ html[data-theme="light"] .home-explore-link:hover {
     object-position: center 25%;
   }
 
-  /* Body: bottom portion */
+  /* Panel: fills remaining space */
   .home-card-body {
     flex: 1;
+    position: relative;
     display: flex;
     flex-direction: column;
-    grid-template-columns: unset;
     background: var(--stage);
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-top: 1px solid rgba(255,255,255,0.06);
     overflow: hidden;
   }
 
-  /* Remove the gradient overlay — not needed on split layout */
-  .home-card-body::before {
-    display: none;
-  }
+  .home-card-body::before { display: none; }
 
+  /* Primary panel: flex column, teaser top, actions pinned bottom */
   .home-card-primary-panel {
-    grid-column: unset;
+    margin-left: 0;
+    width: 100%;
+    height: 100%;
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    padding: clamp(0.9rem, 4vw, 1.4rem) clamp(1rem, 5vw, 1.6rem);
-    gap: 0;
+    padding: clamp(0.85rem, 4vw, 1.3rem) clamp(1rem, 5vw, 1.5rem);
+  }
+
+  /* Remove desktop spacer */
+  .home-card-primary-panel::before { display: none; }
+
+  .home-card-teaser {
+    font-size: clamp(0.92rem, 4vw, 1.28rem);
+    line-height: 1.38;
+    text-shadow: none;
+    color: var(--text);
+    -webkit-line-clamp: 5;
+    margin-bottom: 0;
+    flex-shrink: 1;
     overflow: hidden;
   }
 
-  .home-card-teaser {
-    font-size: clamp(0.95rem, 4.2vw, 1.35rem);
-    line-height: 1.38;
-    /* Clamp to available space — never overflows */
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 5;
-    overflow: hidden;
-    margin-bottom: 0;
-  }
+  html[data-theme="light"] .home-card-teaser { color: var(--text); }
 
   /* Pin actions to bottom regardless of teaser length */
   .home-card-actions {
-    flex-shrink: 0;
     margin-top: auto;
-    gap: clamp(0.5rem, 1.8dvh, 0.8rem);
+    flex-shrink: 0;
+    gap: clamp(0.4rem, 1.5dvh, 0.65rem);
     padding-top: clamp(0.6rem, 2dvh, 1rem);
-    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+    /* Keep clear of BR flap — flap height = --home-bite */
+    padding-bottom: calc(max(0.5rem, env(safe-area-inset-bottom)));
   }
 
   .home-card-action-row--top {
@@ -462,106 +485,85 @@ html[data-theme="light"] .home-explore-link:hover {
   .home-card-actions .home-read-button {
     flex: 1;
     justify-content: center;
-    font-size: clamp(0.72rem, 3.2vw, 0.88rem);
-    padding: 0.56rem 0.9rem;
+    font-size: clamp(0.7rem, 3vw, 0.86rem);
+    padding: 0.55rem 0.85rem;
   }
 
   .home-card-actions .home-carousel-button {
-    width: clamp(2rem, 9vw, 2.4rem);
+    width:  clamp(2rem, 9vw, 2.4rem);
     height: clamp(2rem, 9vw, 2.4rem);
   }
 
   .home-card-actions .home-carousel-button--pause {
-    width: clamp(2.2rem, 10vw, 2.6rem);
+    width:  clamp(2.2rem, 10vw, 2.6rem);
     height: clamp(2.2rem, 10vw, 2.6rem);
   }
 
-  /* Explore link: below actions inside the panel */
+  /* Explore link: more gap from buttons, centred */
   .home-explore-link {
-    position: static;
-    font-size: clamp(0.62rem, 2.8vw, 0.76rem);
-    color: rgba(248, 243, 237, 0.32);
+    margin-top: clamp(0.5rem, 1.8dvh, 0.9rem);
+    /* Keep clear of BR flap */
+    margin-bottom: calc(var(--home-bite) * 0.18);
     align-self: center;
+    font-size: clamp(0.6rem, 2.6vw, 0.74rem);
+    color: rgba(248,243,237,0.3);
+    letter-spacing: 0.08em;
   }
 
-  /* Mobile flaps: card is full width so no gap to fill.
-     Flaps are pure corner triangles that bite into card corners. */
-  .home-badge-nexus,
-  .home-badge-title {
-    --home-corner-bite: clamp(4rem, 36vw, 8rem);
-  }
-
+  /* Mobile flap: pure right-triangle, card fills full width */
   .home-badge-nexus {
-    width:  var(--home-corner-bite);
-    height: var(--home-corner-bite);
-    /* Simple triangle: fills top-left, diagonal from top-right to bottom-left */
-    clip-path: polygon(0 0, 100% 0, 0 100%);
+    clip-path: polygon(0% 0%, 100% 0%, 0% 100%);
   }
 
   .home-badge-title {
-    width:  var(--home-corner-bite);
-    height: var(--home-corner-bite);
-    /* Simple triangle: fills bottom-right */
-    clip-path: polygon(100% 0, 100% 100%, 0 100%);
+    clip-path: polygon(100% 0%, 100% 100%, 0% 100%);
   }
 
   .home-badge-nexus p {
-    font-size: clamp(0.58rem, 2.6vw, 0.76rem);
-    top:  clamp(0.45rem, 2vw, 0.75rem);
-    left: clamp(0.45rem, 2vw, 0.75rem);
-    max-width: 55%;
-    /* Keep text in the triangle's left-top safe area */
-    padding-right: 1rem;
-    padding-bottom: 1.5rem;
+    top:  clamp(0.5rem, 2.5vw, 0.85rem);
+    left: clamp(0.5rem, 2.5vw, 0.85rem);
+    max-width: 58%;
+    padding-right: clamp(1.5rem, 16vw, 3.5rem);
+    padding-bottom: clamp(1.5rem, 16vw, 3.5rem);
+    font-size: clamp(0.56rem, 2.5vw, 0.74rem);
   }
 
   .home-badge-title p {
-    font-size: clamp(0.52rem, 2.3vw, 0.7rem);
-    bottom: clamp(0.45rem, 2vw, 0.75rem);
-    right:  clamp(0.45rem, 2vw, 0.75rem);
-    max-width: 55%;
-    padding-left: 1rem;
-    padding-top: 1.5rem;
+    bottom: clamp(0.5rem, 2.5vw, 0.85rem);
+    right:  clamp(0.5rem, 2.5vw, 0.85rem);
+    max-width: 58%;
+    padding-left:  clamp(1.5rem, 16vw, 3.5rem);
+    padding-top:   clamp(1.5rem, 16vw, 3.5rem);
+    font-size: clamp(0.52rem, 2.2vw, 0.68rem);
   }
 }
 
-/* ══════════════════════════════════════════════════════════════
-   VERY SMALL SCREENS / short phones
-   ══════════════════════════════════════════════════════════════ */
+/* ── Very small / short phones ────────────────────────────────*/
 @media (max-width: 380px) {
-  .home-card-teaser {
-    -webkit-line-clamp: 4;
-    font-size: clamp(0.88rem, 4vw, 1.1rem);
-  }
+  .home-card-teaser { -webkit-line-clamp: 4; }
 }
 
 @media (max-height: 600px) and (max-width: 680px) {
   .home-card-image {
-    flex: 0 0 38%;
+    flex: 0 0 clamp(140px, 35vw, 200px);
+    height: clamp(140px, 35vw, 200px);
   }
-
-  .home-card-teaser {
-    -webkit-line-clamp: 3;
-  }
+  .home-card-teaser { -webkit-line-clamp: 3; }
 }
 
-/* ══════════════════════════════════════════════════════════════
-   LARGE SCREENS
-   ══════════════════════════════════════════════════════════════ */
+/* ── Large screens ────────────────────────────────────────────*/
 @media (min-width: 1400px) {
-  .home-card {
-    max-width: 1200px;
-  }
+  .home-card { max-width: 1160px; }
 }
 
 /* ══════════════════════════════════════════════════════════════
-   SAVED DRAWER (same as before — no changes needed)
+   SAVED DRAWER
    ══════════════════════════════════════════════════════════════ */
 .home-shell .saved-drawer-backdrop {
   position: fixed;
   inset: 0;
   z-index: 65;
-  background: rgba(0, 0, 0, 0.24);
+  background: rgba(0,0,0,0.24);
   opacity: 0;
   pointer-events: none;
   transition: opacity 180ms ease;
@@ -581,7 +583,7 @@ html[data-theme="light"] .home-explore-link:hover {
   height: calc(100dvh - 4.7rem);
   display: flex;
   flex-direction: column;
-  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  border-left: 1px solid rgba(255,255,255,0.08);
   border-top-left-radius: 1rem;
   background: #222a32;
   box-shadow: var(--shadow-soft);
@@ -589,9 +591,7 @@ html[data-theme="light"] .home-explore-link:hover {
   transition: transform 220ms ease;
 }
 
-.home-shell .saved-drawer.is-open {
-  transform: translateX(0);
-}
+.home-shell .saved-drawer.is-open { transform: translateX(0); }
 
 .home-shell .drawer-header {
   display: flex;
@@ -599,7 +599,7 @@ html[data-theme="light"] .home-explore-link:hover {
   justify-content: space-between;
   gap: 1rem;
   padding: 1rem 1.1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
 .home-shell .drawer-header--inline { justify-content: flex-start; }
@@ -633,9 +633,9 @@ html[data-theme="light"] .home-explore-link:hover {
 
 .home-shell .drawer-empty {
   padding: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255,255,255,0.08);
   border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255,255,255,0.04);
   color: var(--muted);
   line-height: 1.7;
 }
@@ -645,9 +645,9 @@ html[data-theme="light"] .home-explore-link:hover {
   display: block;
   width: 100%;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255,255,255,0.08);
   border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255,255,255,0.04);
   text-align: left;
   transition: background 160ms ease, border-color 160ms ease;
 }
@@ -655,13 +655,13 @@ html[data-theme="light"] .home-explore-link:hover {
 .home-shell .saved-item + .saved-item { margin-top: 0.75rem; }
 
 .home-shell .saved-item:hover {
-  border-color: rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
 }
 
 .home-shell .saved-item-main {
   display: grid;
-  grid-template-columns: 5rem minmax(0, 1fr);
+  grid-template-columns: 5rem minmax(0,1fr);
   gap: 0.85rem;
   width: 100%;
   padding: 0.8rem 2.75rem 0.8rem 0.8rem;
@@ -708,9 +708,9 @@ html[data-theme="light"] .home-explore-link:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255,255,255,0.12);
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0,0,0,0.2);
   color: #fff;
   transition: background 160ms ease;
 }
@@ -721,32 +721,32 @@ html[data-theme="light"] .home-explore-link:hover {
 }
 
 .home-shell .saved-remove-button:hover {
-  background: rgba(184, 92, 56, 0.72);
+  background: rgba(184,92,56,0.72);
 }
 
-/* Light theme drawer */
+/* Light theme */
 html[data-theme="light"] .home-shell .saved-drawer {
-  border-color: rgba(31, 29, 26, 0.1);
+  border-color: rgba(31,29,26,0.1);
   background: #f3ebe2;
 }
 
 html[data-theme="light"] .home-shell .drawer-empty,
 html[data-theme="light"] .home-shell .saved-item {
-  border-color: rgba(31, 29, 26, 0.1);
-  background: rgba(255, 255, 255, 0.74);
+  border-color: rgba(31,29,26,0.1);
+  background: rgba(255,255,255,0.74);
   color: #2a2825;
 }
 
 html[data-theme="light"] .home-shell .saved-item:hover {
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255,255,255,0.92);
 }
 
 html[data-theme="light"] .home-shell .saved-summary { color: #2a2825; }
-html[data-theme="light"] .home-shell .drawer-title { color: #2b2825; }
+html[data-theme="light"] .home-shell .drawer-title  { color: #2b2825; }
 
 html[data-theme="light"] .home-shell .saved-remove-button {
-  border-color: rgba(43, 33, 21, 0.12);
-  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(43,33,21,0.12);
+  background: rgba(255,255,255,0.8);
   color: #2b2115;
 }
 
