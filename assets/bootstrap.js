@@ -70,6 +70,26 @@ function renderSite(options = {}) {
   if (galleryScroll) restoreGalleryScroll(galleryScroll);
 }
 
+function renderSitePreservingWindowScroll() {
+  const scrollX = window.scrollX;
+  const scrollY = window.scrollY;
+  renderSite();
+  requestAnimationFrame(() => window.scrollTo({ left: scrollX, top: scrollY, behavior: 'auto' }));
+}
+
+function hydrateRelatedStoriesAfterStoryRender() {
+  if (state.galleryDatasetLoaded || state.galleryDatasetPromise || !state.storyVisible || state.galleryVisible) return;
+
+  loadGalleryDataset()
+    .then(() => {
+      if (!state.storyVisible || state.galleryVisible) return;
+      renderSitePreservingWindowScroll();
+    })
+    .catch((error) => {
+      console.warn('Could not load related photostories.', error);
+    });
+}
+
 function renderLoading() {
   const app = qs('#app');
   if (!app) return;
@@ -952,6 +972,7 @@ export async function initialiseApp() {
 
   savePersistentState(state);
   renderSite();
+  hydrateRelatedStoriesAfterStoryRender();
 
   if (window.location.hash && state.galleryVisible) {
     requestAnimationFrame(() => {
