@@ -1,4 +1,4 @@
-import { initialiseApp } from './bootstrap.js?v=20260608-gallery-batches';
+import { initialiseApp } from './bootstrap.js?v=20260613-related-hydrate';
 import { qs } from './render.js?v=20260608-gallery-batches';
 
 initialiseApp().catch((error) => {
