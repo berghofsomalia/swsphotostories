@@ -260,7 +260,40 @@ function syncHomeImageLoadStates(root = document) {
   root.querySelectorAll('[data-story-fade]').forEach((element) => {
     element.classList.add('is-home-content-loaded');
   });
+  fitHomeTeaserText();
   state.animateStoryContent = false;
+}
+
+function fitHomeTeaserText() {
+  const teaser = document.querySelector('.home-card-teaser');
+  const actions = document.querySelector('.home-card-actions');
+  if (!teaser || !actions) return;
+
+  const isMobile = window.matchMedia('(max-width: 680px)').matches;
+  teaser.style.removeProperty('font-size');
+  teaser.style.removeProperty('line-height');
+  teaser.style.removeProperty('max-height');
+  teaser.style.removeProperty('-webkit-line-clamp');
+
+  if (!isMobile) return;
+
+  const teaserTop = teaser.getBoundingClientRect().top;
+  const actionsTop = actions.getBoundingClientRect().top;
+  const availableHeight = Math.max(44, actionsTop - teaserTop - 14);
+  const computed = window.getComputedStyle(teaser);
+  let fontSize = parseFloat(computed.fontSize) || 15;
+  let lineHeight = parseFloat(computed.lineHeight) || fontSize * 1.24;
+  const minFontSize = 9.5;
+  const ratio = lineHeight / fontSize;
+
+  teaser.style.maxHeight = `${availableHeight}px`;
+  teaser.style.webkitLineClamp = 'unset';
+
+  while (teaser.scrollHeight > availableHeight + 1 && fontSize > minFontSize) {
+    fontSize -= 0.5;
+    teaser.style.fontSize = `${fontSize}px`;
+    teaser.style.lineHeight = `${Math.max(fontSize * ratio, fontSize + 2)}px`;
+  }
 }
 
 function fadeOutCurrentHomeStoryContent() {
@@ -503,6 +536,10 @@ function attachListeners() {
       if (state.savedOpen) { state.savedOpen = false; renderPage(); }
       else if (state.menuOpen) { state.menuOpen = false; renderPage(); }
     }
+  });
+
+  window.addEventListener('resize', () => {
+    window.requestAnimationFrame(fitHomeTeaserText);
   });
 }
 

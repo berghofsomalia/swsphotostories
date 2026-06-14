@@ -514,13 +514,11 @@ html[data-theme="light"] .home-explore-link:hover {
   .home-card-primary-panel::before { display: none; }
 
   .home-card-teaser {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
+    display: block;
     font-size: clamp(0.82rem, 3.85vw, 1.16rem);
     line-height: 1.24;
     text-shadow: 0 2px 16px rgba(0,0,0,0.32);
     color: #fff8ee;
-    -webkit-line-clamp: 6;
     margin-bottom: 0;
     flex-shrink: 1;
     overflow: hidden;
@@ -625,7 +623,6 @@ html[data-theme="light"] .home-explore-link:hover {
   .home-card-teaser {
     font-size: clamp(0.78rem, 3.65vw, 1.05rem);
     line-height: 1.22;
-    -webkit-line-clamp: 5;
   }
 }
 
@@ -643,7 +640,6 @@ html[data-theme="light"] .home-explore-link:hover {
     flex-basis: clamp(8.5rem, 38vw, 12rem);
     height: clamp(8.5rem, 38vw, 12rem);
   }
-  .home-card-teaser { -webkit-line-clamp: 3; }
 }
 
 /* ── Large screens ────────────────────────────────────────────*/
