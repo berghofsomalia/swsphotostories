@@ -6,7 +6,7 @@
   position: fixed;
   inset: 0;
   overflow: hidden;
-  background: var(--bg);
+  background: var(--story);
   color: var(--text);
   display: flex;
   flex-direction: column;
@@ -74,11 +74,18 @@
   margin: 0;
   color: #fff;
   font-weight: 300;
-  text-transform: uppercase;
   letter-spacing: 0.05em;
   font-size: clamp(0.93rem, 1.2vw, 1.32rem);
   line-height: 1.22;
   gap: 0.05em;
+}
+
+.home-badge-nexus p {
+  text-transform: uppercase;
+}
+
+.home-badge-title p {
+  text-transform: none;
 }
 
 /* Text stays pinned to the browser corners, not the hero corners. */
@@ -316,9 +323,14 @@ html[data-theme="light"] .home-card-teaser { color: #fff8ee; }
 }
 
 html[data-theme="light"] .home-card-actions .home-read-button {
-  border-color: rgba(255,255,255,0.28);
-  background: rgba(255,255,255,0.14);
-  color: rgba(255,248,238,0.88);
+  border-color: rgba(255,255,255,0.38);
+  background: rgba(15,22,31,0.28);
+  color: rgba(255,250,242,0.94);
+}
+
+html[data-theme="light"] .home-card-actions .home-read-button:hover {
+  background: rgba(15,22,31,0.38);
+  color: #fffaf2;
 }
 
 /* Carousel ‹ ∥ › */
@@ -350,6 +362,16 @@ html[data-theme="light"] .home-card-actions .home-read-button {
 .home-card-actions .home-carousel-button--pause {
   width:  clamp(1.95rem, 3dvh, 2.4rem);
   height: clamp(1.95rem, 3dvh, 2.4rem);
+}
+
+html[data-theme="light"] .home-card-actions .home-carousel-button {
+  border-color: rgba(255,255,255,0.38);
+  background: rgba(15,22,31,0.28);
+  color: #fffaf2;
+}
+
+html[data-theme="light"] .home-card-actions .home-carousel-button:hover {
+  background: rgba(15,22,31,0.38);
 }
 
 .home-card-actions .home-carousel-button svg,
@@ -385,10 +407,10 @@ html[data-theme="light"] .home-card-actions .home-read-button {
 .home-explore-link:hover { color: #fff8ee; }
 
 html[data-theme="light"] .home-explore-link {
-  color: rgba(255,248,238,0.55);
+  color: rgba(47, 42, 36, 0.82);
 }
 html[data-theme="light"] .home-explore-link:hover {
-  color: rgba(255,248,238,0.9);
+  color: #201c17;
 }
 
 .home-explore-link svg {
@@ -419,13 +441,18 @@ html[data-theme="light"] .home-explore-link:hover {
   }
 
   .home-main {
-    padding: 0;
-    align-items: stretch;
+    padding:
+      clamp(8rem, 34vw, 11.2rem)
+      clamp(0.95rem, 4.5vw, 1.65rem)
+      clamp(6.2rem, 27vw, 9.4rem);
+    align-items: center;
+    justify-content: center;
   }
 
   .home-hero-grid {
-    width: 100%;
-    height: 100%;
+    width: min(100%, 42rem);
+    height: min(calc(100dvh - clamp(12.6rem, 55vw, 18rem)), 82dvh);
+    min-height: min(35rem, calc(100dvh - clamp(11rem, 50vw, 16.8rem)));
     aspect-ratio: unset;
   }
 
@@ -433,17 +460,18 @@ html[data-theme="light"] .home-explore-link:hover {
   .home-card {
     width: 100%;
     aspect-ratio: unset;
-    height: 100dvh;
+    height: 100%;
     display: flex;
     flex-direction: column;
+    background: #18222c;
   }
 
   /* Photo: fixed height — always the same, crops to fit */
   .home-card-image {
     position: relative;
-    flex: 0 0 clamp(180px, 46vw, 260px);
+    flex: 0 0 clamp(12.5rem, 45vw, 17rem);
     inset: unset;
-    height: clamp(180px, 46vw, 260px);
+    height: clamp(12.5rem, 45vw, 17rem);
   }
 
   .home-card-image img {
@@ -459,12 +487,17 @@ html[data-theme="light"] .home-explore-link:hover {
     position: relative;
     display: flex;
     flex-direction: column;
-    background: var(--stage);
+    background: #19232d;
     border-top: 1px solid rgba(255,255,255,0.06);
     overflow: hidden;
   }
 
   .home-card-body::before { display: none; }
+
+  html[data-theme="light"] .home-card-body {
+    background: #d8cdbb;
+    border-top-color: rgba(44, 34, 24, 0.08);
+  }
 
   /* Primary panel: flex column, teaser top, actions pinned bottom */
   .home-card-primary-panel {
@@ -474,37 +507,43 @@ html[data-theme="light"] .home-explore-link:hover {
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding: clamp(0.85rem, 4vw, 1.3rem) clamp(1rem, 5vw, 1.5rem);
+    padding: clamp(1rem, 4.8vw, 1.65rem) clamp(1rem, 5vw, 1.65rem);
   }
 
   /* Remove desktop spacer */
   .home-card-primary-panel::before { display: none; }
 
   .home-card-teaser {
-    font-size: clamp(0.92rem, 4vw, 1.28rem);
-    line-height: 1.38;
-    text-shadow: none;
-    color: var(--text);
-    -webkit-line-clamp: 5;
+    font-size: clamp(0.94rem, 4.75vw, 1.42rem);
+    line-height: 1.32;
+    text-shadow: 0 2px 16px rgba(0,0,0,0.32);
+    color: #fff8ee;
+    -webkit-line-clamp: 6;
     margin-bottom: 0;
     flex-shrink: 1;
     overflow: hidden;
   }
 
-  html[data-theme="light"] .home-card-teaser { color: var(--text); }
+  html[data-theme="light"] .home-card-teaser {
+    color: #5a5247;
+    text-shadow: none;
+  }
 
   /* Pin actions to bottom regardless of teaser length */
   .home-card-actions {
+    align-self: flex-start;
+    width: 100%;
     margin-top: auto;
     flex-shrink: 0;
-    gap: clamp(0.4rem, 1.5dvh, 0.65rem);
-    padding-top: clamp(0.6rem, 2dvh, 1rem);
+    gap: clamp(0.45rem, 1.6dvh, 0.75rem);
+    padding-top: clamp(0.45rem, 1.4dvh, 0.75rem);
     /* Keep clear of BR flap — flap height = --home-bite */
-    padding-bottom: calc(max(0.5rem, env(safe-area-inset-bottom)));
+    padding-bottom: calc(max(1.35rem, env(safe-area-inset-bottom)));
   }
 
   .home-card-action-row--top {
     flex-wrap: nowrap;
+    justify-content: flex-start;
   }
 
   .home-card-actions .home-read-button {
@@ -526,10 +565,10 @@ html[data-theme="light"] .home-explore-link:hover {
 
   /* Explore link: more gap from buttons, centred */
   .home-explore-link {
-    margin-top: clamp(0.5rem, 1.8dvh, 0.9rem);
+    margin-top: clamp(0.45rem, 1.7dvh, 0.85rem);
     /* Keep clear of BR flap */
-    margin-bottom: 0.4rem;
-    align-self: center;
+    margin-bottom: 0;
+    align-self: flex-start;
     font-size: clamp(0.6rem, 2.6vw, 0.74rem);
     color: rgba(248,243,237,0.3);
     letter-spacing: 0.08em;
@@ -539,8 +578,9 @@ html[data-theme="light"] .home-explore-link:hover {
   .home-badge-nexus,
   .home-badge-title {
     position: fixed;
-    width: clamp(5rem, 36vw, 9rem);
-    height: clamp(5rem, 36vw, 9rem);
+    z-index: 8;
+    width: 50vw;
+    height: 50vw;
   }
 
   .home-badge-nexus {
@@ -556,21 +596,21 @@ html[data-theme="light"] .home-explore-link:hover {
   }
 
   .home-badge-nexus p {
-    top:  clamp(0.45rem, 2vw, 0.75rem);
-    left: clamp(0.45rem, 2vw, 0.75rem);
-    font-size: clamp(0.81rem, 3.6vw, 1.08rem);
-    max-width: 55%;
-    padding-right:  32%;
-    padding-bottom: 32%;
+    top:  clamp(1rem, 5.3vw, 1.65rem);
+    left: clamp(1rem, 5vw, 1.7rem);
+    font-size: clamp(0.67rem, 3.36vw, 0.98rem);
+    line-height: 1.18;
+    max-width: 39vw;
+    padding: 0;
   }
 
   .home-badge-title p {
-    bottom: clamp(0.45rem, 2vw, 0.75rem);
-    right:  clamp(0.45rem, 2vw, 0.75rem);
-    font-size: clamp(0.75rem, 3.15vw, 0.99rem);
-    max-width: 55%;
-    padding-left: 32%;
-    padding-top:  32%;
+    bottom: clamp(1.1rem, 5.5vw, 1.9rem);
+    right:  clamp(1rem, 5vw, 1.7rem);
+    font-size: clamp(0.64rem, 3.05vw, 0.95rem);
+    line-height: 1.12;
+    max-width: 43vw;
+    padding: 0;
   }
 }
 
@@ -580,9 +620,18 @@ html[data-theme="light"] .home-explore-link:hover {
 }
 
 @media (max-height: 600px) and (max-width: 680px) {
+  .home-main {
+    padding-top: clamp(6.4rem, 28vw, 9rem);
+    padding-bottom: clamp(6rem, 26vw, 8.8rem);
+  }
+
+  .home-hero-grid {
+    height: min(calc(100dvh - clamp(10rem, 44vw, 14.8rem)), 80dvh);
+  }
+
   .home-card-image {
-    flex: 0 0 clamp(140px, 35vw, 200px);
-    height: clamp(140px, 35vw, 200px);
+    flex-basis: clamp(8.5rem, 38vw, 12rem);
+    height: clamp(8.5rem, 38vw, 12rem);
   }
   .home-card-teaser { -webkit-line-clamp: 3; }
 }
