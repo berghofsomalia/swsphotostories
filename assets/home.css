@@ -76,7 +76,7 @@
   font-weight: 300;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  font-size: clamp(0.62rem, 0.8vw, 0.88rem);
+  font-size: clamp(0.93rem, 1.2vw, 1.32rem);
   line-height: 1.22;
   gap: 0.05em;
 }
@@ -94,7 +94,7 @@
   bottom: clamp(0.65rem, 1.35vh, 1.1rem);
   align-items: flex-end;
   text-align: right;
-  font-size: clamp(0.56rem, 0.72vw, 0.82rem);
+  font-size: clamp(0.84rem, 1.08vw, 1.23rem);
 }
 
 .home-badge-nexus p span:nth-child(2),
@@ -261,10 +261,10 @@ html[data-theme="light"] .home-card-body::before {
   transform: translateY(0.2rem);
   transition: opacity 520ms ease, transform 520ms ease;
   will-change: opacity, transform;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 5;
-  overflow: hidden;
+  display: block;
+  width: 100%;
+  max-height: none;
+  overflow: visible;
 }
 
 .home-card-teaser.is-home-content-loaded {
@@ -558,7 +558,7 @@ html[data-theme="light"] .home-explore-link:hover {
   .home-badge-nexus p {
     top:  clamp(0.45rem, 2vw, 0.75rem);
     left: clamp(0.45rem, 2vw, 0.75rem);
-    font-size: clamp(0.54rem, 2.4vw, 0.72rem);
+    font-size: clamp(0.81rem, 3.6vw, 1.08rem);
     max-width: 55%;
     padding-right:  32%;
     padding-bottom: 32%;
@@ -567,7 +567,7 @@ html[data-theme="light"] .home-explore-link:hover {
   .home-badge-title p {
     bottom: clamp(0.45rem, 2vw, 0.75rem);
     right:  clamp(0.45rem, 2vw, 0.75rem);
-    font-size: clamp(0.5rem, 2.1vw, 0.66rem);
+    font-size: clamp(0.75rem, 3.15vw, 0.99rem);
     max-width: 55%;
     padding-left: 32%;
     padding-top:  32%;
