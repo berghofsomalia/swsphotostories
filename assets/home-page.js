@@ -289,34 +289,55 @@ async function crossfadeToStory(story) {
   const src = leadImageSrcFor(story);
   if (!src) return;
 
-  // ── 1. Fade text out immediately ──────────────────────────────────────────
-  document.querySelectorAll('[data-story-fade]').forEach((el) => el.classList.remove('is-home-content-loaded'));
+  // ── 1. Fade text out ──────────────────────────────────────────────────────
+  const teaser = document.querySelector('[data-story-fade]');
+  teaser?.classList.remove('is-home-content-loaded');
 
-  // ── 2. Pre-load image into inactive slot (silent, off-screen) ─────────────
+  // ── 2. Identify slots ─────────────────────────────────────────────────────
   const imgA = document.querySelector('.home-card-image .img-slot--a');
   const imgB = document.querySelector('.home-card-image .img-slot--b');
   const bgA  = document.querySelector('.home-bg-layer--a');
   const bgB  = document.querySelector('.home-bg-layer--b');
-
   if (!imgA || !imgB) return;
 
   const aIsActive   = imgA.dataset.imgActive === 'true';
   const imgIncoming = aIsActive ? imgB : imgA;
   const imgOutgoing = aIsActive ? imgA : imgB;
+  const bgIncoming  = bgA && bgB ? (aIsActive ? bgB : bgA) : null;
+  const bgOutgoing  = bgA && bgB ? (aIsActive ? bgA : bgB) : null;
 
-  // Set the src while it's still invisible (opacity 0).
+  // ── 3. Pre-load both hero img and blurred bg before touching opacity ──────
+  // Set img src while slot is still invisible.
   imgIncoming.src = src;
   imgIncoming.alt = story.storyteller || '';
 
-  await new Promise((resolve) => {
-    if (imgIncoming.complete && imgIncoming.naturalWidth > 0) { resolve(); return; }
-    imgIncoming.addEventListener('load',  resolve, { once: true });
-    imgIncoming.addEventListener('error', resolve, { once: true });
-  });
+  // Prime the bg slot src via an Image() so it's decoded before we reveal it.
+  if (bgIncoming) bgIncoming.style.backgroundImage = `url("${src}")`;
 
-  if (id !== _crossfadeId) return; // superseded
+  await Promise.all([
+    new Promise((resolve) => {
+      if (imgIncoming.complete && imgIncoming.naturalWidth > 0) { resolve(); return; }
+      imgIncoming.addEventListener('load',  resolve, { once: true });
+      imgIncoming.addEventListener('error', resolve, { once: true });
+    }),
+    new Promise((resolve) => {
+      const probe = new Image();
+      probe.onload  = resolve;
+      probe.onerror = resolve;
+      probe.src = src;
+      if (probe.complete) resolve();
+    }),
+  ]);
 
-  // ── 3. All three transitions fire together in one rAF ─────────────────────
+  if (id !== _crossfadeId) return;
+
+  // ── 4. Swap text content while teaser is still invisible ──────────────────
+  const readBtn = document.querySelector('.home-read-button');
+  if (teaser)  teaser.textContent = labelFor(story.summary, state.language);
+  if (readBtn) readBtn.href = `stories/?code=${story.id}`;
+  fitHomeTeaserText();
+
+  // ── 5. Single rAF: reveal everything together ─────────────────────────────
   requestAnimationFrame(() => {
     if (id !== _crossfadeId) return;
 
@@ -326,11 +347,8 @@ async function crossfadeToStory(story) {
     imgIncoming.dataset.imgActive = 'true';
     imgOutgoing.dataset.imgActive = 'false';
 
-    // Blurred BG
-    if (bgA && bgB) {
-      const bgIncoming = aIsActive ? bgB : bgA;
-      const bgOutgoing = aIsActive ? bgA : bgB;
-      bgIncoming.style.backgroundImage = `url("${src}")`;
+    // Blurred bg
+    if (bgIncoming && bgOutgoing) {
       bgIncoming.classList.add('is-home-bg-loaded');
       bgOutgoing.classList.remove('is-home-bg-loaded');
       bgIncoming.dataset.bgActive = 'true';
@@ -338,12 +356,7 @@ async function crossfadeToStory(story) {
     }
 
     // Text
-    const teaser  = document.querySelector('[data-story-fade]');
-    const readBtn = document.querySelector('.home-read-button');
-    if (teaser)  teaser.textContent = labelFor(story.summary, state.language);
-    if (readBtn) readBtn.href = `stories/?code=${story.id}`;
     teaser?.classList.add('is-home-content-loaded');
-    fitHomeTeaserText();
   });
 }
 
