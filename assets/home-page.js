@@ -251,23 +251,34 @@ function imageLoadingMarkup(code = '') {
 }
 
 function syncHomeImageLoadStates(root = document) {
-  root.querySelectorAll('[data-home-bg-fade]').forEach((element) => {
-    element.classList.add('is-home-bg-loaded');
-  });
-  if (root.querySelector('.home-bg-layer--previous')) {
+  const bgLayers = [...root.querySelectorAll('[data-home-bg-fade]')];
+  const previousBgLayers = [...root.querySelectorAll('.home-bg-layer--previous')];
+  const revealBackground = () => {
+    bgLayers.forEach((element) => element.classList.add('is-home-bg-loaded'));
+    if (previousBgLayers.length) {
+      window.setTimeout(() => {
+        document.querySelectorAll('.home-bg-layer--previous').forEach((element) => element.remove());
+      }, 3000);
+    }
+  };
+  const revealImageAndBackground = (image) => {
     window.setTimeout(() => {
-      document.querySelectorAll('.home-bg-layer--previous').forEach((element) => element.remove());
-    }, 1300);
-  }
-  root.querySelectorAll('img[data-image-fade]').forEach((image) => {
-    if (image.naturalWidth > 0) {
       image.classList.add('is-image-loaded');
+      image.closest('.home-card-image')?.classList.add('is-home-image-loaded');
+      revealBackground();
+    }, 120);
+  };
+  const images = [...root.querySelectorAll('img[data-image-fade]')];
+  if (!images.length) revealBackground();
+  images.forEach((image) => {
+    if (image.naturalWidth > 0) {
+      revealImageAndBackground(image);
       return;
     }
     image.classList.remove('is-image-loaded');
     if (!image.dataset.imageLoadWatch) {
       image.dataset.imageLoadWatch = 'true';
-      image.addEventListener('load', () => image.classList.add('is-image-loaded'), { once: true });
+      image.addEventListener('load', () => revealImageAndBackground(image), { once: true });
     }
   });
   root.querySelectorAll('[data-story-fade]').forEach((element) => {
@@ -365,6 +376,7 @@ function renderPage() {
     ? `<div class="home-card-image-previous" aria-hidden="true" style="background-image: url(&quot;${esc(previousBgSrc)}&quot;)"></div>`
     : '';
   const currentBgLoadedClass = state.animateStoryContent ? '' : ' is-home-bg-loaded';
+  const imagePanelLoadedClass = state.animateStoryContent ? '' : ' is-home-image-loaded';
   const leadImageLoadedClass = hasUsableLeadImage(story) && !state.animateStoryContent ? ' is-image-loaded' : '';
   const storyContentLoadedClass = state.animateStoryContent ? '' : ' is-home-content-loaded';
   const readLabel = t.homeRead || t.readStory || 'Read';
@@ -379,7 +391,7 @@ function renderPage() {
 
   const storyCard = story ? `
     <div class="home-card">
-      <div class="home-card-image"${leadImageStyle}>
+      <div class="home-card-image${imagePanelLoadedClass}"${leadImageStyle}>
         ${previousLeadImage}
         ${leadImageLoading
           ? imageLoadingMarkup(story.code || story.id)
