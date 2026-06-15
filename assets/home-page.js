@@ -20,7 +20,8 @@ const state = {
   queuedStory:    null,
   queuedStoryReady: false,
   queuedStoryPromise: null,
-  animateStoryContent: false
+  animateStoryContent: false,
+  previousHomeBgSrc: ''
 };
 
 // Load saved IDs from localStorage
@@ -85,6 +86,10 @@ function restartHomeCarousel() {
 
 function hasUsableLeadImage(story) {
   return !!story?.images?.[0] && !isLoadingImageSrc(story.images[0]);
+}
+
+function leadImageSrcFor(story) {
+  return hasUsableLeadImage(story) ? story.images[0] : '';
 }
 
 function clearQueuedHomeStory() {
@@ -246,6 +251,14 @@ function imageLoadingMarkup(code = '') {
 }
 
 function syncHomeImageLoadStates(root = document) {
+  root.querySelectorAll('[data-home-bg-fade]').forEach((element) => {
+    element.classList.add('is-home-bg-loaded');
+  });
+  if (root.querySelector('.home-bg-layer--previous')) {
+    window.setTimeout(() => {
+      document.querySelectorAll('.home-bg-layer--previous').forEach((element) => element.remove());
+    }, 760);
+  }
   root.querySelectorAll('img[data-image-fade]').forEach((image) => {
     if (image.naturalWidth > 0) {
       image.classList.add('is-image-loaded');
@@ -316,6 +329,7 @@ async function setHomeStory(story, options = {}) {
   const shouldFadeOut = options.preloaded
     && state.currentStory
     && String(state.currentStory.id) !== String(story.id);
+  state.previousHomeBgSrc = shouldFadeOut ? leadImageSrcFor(state.currentStory) : '';
   if (shouldFadeOut) await fadeOutCurrentHomeStoryContent();
   state.animateStoryContent = state.currentStory
     ? String(state.currentStory.id) !== String(story.id)
@@ -352,7 +366,10 @@ function renderPage() {
 
   const leadSrc = story?.images?.[0] || '';
   const leadImageLoading = isLoadingImageSrc(leadSrc);
-  const homeBgStyle = leadImageLoading ? '' : ` style="--home-bg-image: url('${esc(leadSrc)}')"`;
+  const currentBgSrc = leadImageLoading ? '' : leadSrc;
+  const previousBgSrc = state.animateStoryContent ? state.previousHomeBgSrc : '';
+  const leadImageStyle = currentBgSrc ? ` style="background-image: url(&quot;${esc(currentBgSrc)}&quot;)"` : '';
+  const currentBgLoadedClass = state.animateStoryContent ? '' : ' is-home-bg-loaded';
   const leadImageLoadedClass = hasUsableLeadImage(story) && !state.animateStoryContent ? ' is-image-loaded' : '';
   const storyContentLoadedClass = state.animateStoryContent ? '' : ' is-home-content-loaded';
   const readLabel = t.homeRead || t.readStory || 'Read';
@@ -367,7 +384,7 @@ function renderPage() {
 
   const storyCard = story ? `
     <div class="home-card">
-      <div class="home-card-image">
+      <div class="home-card-image"${leadImageStyle}>
         ${leadImageLoading
           ? imageLoadingMarkup(story.code || story.id)
           : `<img class="${leadImageLoadedClass.trim()}" data-image-fade src="${esc(leadSrc)}" alt="${esc(story.storyteller)}" loading="eager">`}
@@ -400,7 +417,11 @@ function renderPage() {
   ` : `<div class="home-loading">${esc(t.loadingStory || 'Loading story…')}</div>`;
 
   app.innerHTML = `
-    <div class="home-shell"${homeBgStyle}>
+    <div class="home-shell">
+      <div class="home-bg-stack" aria-hidden="true">
+        ${previousBgSrc ? `<div class="home-bg-layer home-bg-layer--previous" style="background-image: url(&quot;${esc(previousBgSrc)}&quot;)"></div>` : ''}
+        ${currentBgSrc ? `<div class="home-bg-layer home-bg-layer--current${currentBgLoadedClass}" data-home-bg-fade style="background-image: url(&quot;${esc(currentBgSrc)}&quot;)"></div>` : ''}
+      </div>
 
       ${renderMenu(t)}
 
