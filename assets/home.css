@@ -37,19 +37,16 @@
   transform: scale(1.05);
 }
 
-.home-bg-layer--previous {
+.home-bg-layer--a,
+.home-bg-layer--b {
   z-index: 1;
-  opacity: 1;
-}
-
-.home-bg-layer--current {
-  z-index: 2;
   opacity: 0;
-  transition: opacity 2400ms ease-in-out;
+  transition: opacity 2000ms ease-in-out;
   will-change: opacity;
 }
 
-.home-bg-layer--current.is-home-bg-loaded {
+.home-bg-layer--a.is-home-bg-loaded,
+.home-bg-layer--b.is-home-bg-loaded {
   opacity: 1;
 }
 
@@ -284,39 +281,6 @@ html[data-theme="light"] .home-card-image::after {
     linear-gradient(90deg, transparent 0, #000 3.5%, #000 96.5%, transparent 100%),
     linear-gradient(0deg, transparent 0, #000 3.5%, #000 96.5%, transparent 100%);
   mask-composite: intersect;
-}
-
-.home-card-image-previous {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background-position: center 30%;
-  background-size: cover;
-  background-repeat: no-repeat;
-  -webkit-mask-image:
-    linear-gradient(90deg, transparent 0, #000 3.5%, #000 96.5%, transparent 100%),
-    linear-gradient(0deg, transparent 0, #000 3.5%, #000 96.5%, transparent 100%);
-  -webkit-mask-composite: source-in;
-  mask-image:
-    linear-gradient(90deg, transparent 0, #000 3.5%, #000 96.5%, transparent 100%),
-    linear-gradient(0deg, transparent 0, #000 3.5%, #000 96.5%, transparent 100%);
-  mask-composite: intersect;
-}
-
-.home-card-image-previous::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(90deg, rgba(12,18,24,0.28), rgba(12,18,24,0) 14%, rgba(12,18,24,0) 86%, rgba(12,18,24,0.28)),
-    linear-gradient(0deg, rgba(12,18,24,0.28), rgba(12,18,24,0) 15%, rgba(12,18,24,0) 85%, rgba(12,18,24,0.28));
-  pointer-events: none;
-}
-
-html[data-theme="light"] .home-card-image-previous::after {
-  background:
-    linear-gradient(90deg, rgba(234,224,211,0.38), rgba(234,224,211,0) 17%, rgba(234,224,211,0) 83%, rgba(234,224,211,0.38)),
-    linear-gradient(0deg, rgba(234,224,211,0.38), rgba(234,224,211,0) 18%, rgba(234,224,211,0) 82%, rgba(234,224,211,0.38));
 }
 
 .home-card-image img[data-image-fade],
@@ -606,10 +570,6 @@ html[data-theme="light"] .home-explore-link:hover {
     height: 100%;
     object-fit: cover;
     object-position: center 25%;
-  }
-
-  .home-card-image-previous {
-    background-position: center 25%;
   }
 
   /* Panel: fills remaining space */

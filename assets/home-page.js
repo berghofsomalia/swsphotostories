@@ -20,8 +20,6 @@ const state = {
   queuedStory:    null,
   queuedStoryReady: false,
   queuedStoryPromise: null,
-  animateStoryContent: false,
-  previousHomeBgSrc: ''
 };
 
 // Load saved IDs from localStorage
@@ -250,42 +248,127 @@ function imageLoadingMarkup(code = '') {
   `;
 }
 
-function syncHomeImageLoadStates(root = document) {
-  const bgLayers = [...root.querySelectorAll('[data-home-bg-fade]')];
-  const previousBgLayers = [...root.querySelectorAll('.home-bg-layer--previous')];
-  const revealBackground = () => {
-    bgLayers.forEach((element) => element.classList.add('is-home-bg-loaded'));
-    if (previousBgLayers.length) {
-      window.setTimeout(() => {
-        document.querySelectorAll('.home-bg-layer--previous').forEach((element) => element.remove());
-      }, 3000);
-    }
-  };
-  const revealImageAndBackground = (image) => {
-    window.setTimeout(() => {
-      image.classList.add('is-image-loaded');
-      image.closest('.home-card-image')?.classList.add('is-home-image-loaded');
-      revealBackground();
-    }, 120);
-  };
-  const images = [...root.querySelectorAll('img[data-image-fade]')];
-  if (!images.length) revealBackground();
-  images.forEach((image) => {
-    if (image.naturalWidth > 0) {
-      revealImageAndBackground(image);
-      return;
-    }
-    image.classList.remove('is-image-loaded');
-    if (!image.dataset.imageLoadWatch) {
-      image.dataset.imageLoadWatch = 'true';
-      image.addEventListener('load', () => revealImageAndBackground(image), { once: true });
+// ── Crossfade helpers ──────────────────────────────────────────────────────────
+// All visual transitions run here, directly on DOM nodes — no re-render mid-flight.
+
+let _crossfadeId = 0; // guards stale async completions
+
+function revealStaticPage() {
+  // Called on first load when no crossfade is needed.
+  document.querySelectorAll('[data-home-bg-fade]').forEach((el) => el.classList.add('is-home-bg-loaded'));
+  document.querySelectorAll('img[data-image-fade]').forEach((img) => {
+    if (img.naturalWidth > 0) {
+      img.classList.add('is-image-loaded');
+      img.closest('.home-card-image')?.classList.add('is-home-image-loaded');
+    } else if (!img.dataset.imageLoadWatch) {
+      img.dataset.imageLoadWatch = 'true';
+      img.addEventListener('load', () => {
+        img.classList.add('is-image-loaded');
+        img.closest('.home-card-image')?.classList.add('is-home-image-loaded');
+      }, { once: true });
     }
   });
-  root.querySelectorAll('[data-story-fade]').forEach((element) => {
-    element.classList.add('is-home-content-loaded');
-  });
+  document.querySelectorAll('[data-story-fade]').forEach((el) => el.classList.add('is-home-content-loaded'));
   fitHomeTeaserText();
-  state.animateStoryContent = false;
+}
+
+/**
+ * Crossfade the hero image and blurred background to a new story.
+ * We mutate the existing DOM layers rather than re-rendering — this
+ * avoids the innerHTML teardown that was causing the flash.
+ *
+ * Strategy:
+ *  • Blurred BG: slot A/B alternating layers, one fades out while the other fades in.
+ *  • Hero image: new <img> fades in on top; previous <img> fades out simultaneously.
+ *  • Text: fades out immediately, content swapped, fades in once image is ready.
+ */
+async function crossfadeToStory(story) {
+  const id = ++_crossfadeId;
+  const src = leadImageSrcFor(story);
+  if (!src) return;
+
+  // ── 1. Freeze text out ──────────────────────────────────────────────────────
+  document.querySelectorAll('[data-story-fade]').forEach((el) => el.classList.remove('is-home-content-loaded'));
+
+  // ── 2. Blurred background crossfade ────────────────────────────────────────
+  const bgStack = document.querySelector('.home-bg-stack');
+  if (bgStack) {
+    // Find or create the two alternating bg layer slots.
+    let layerA = bgStack.querySelector('.home-bg-layer--a');
+    let layerB = bgStack.querySelector('.home-bg-layer--b');
+    if (!layerA) {
+      layerA = Object.assign(document.createElement('div'), { className: 'home-bg-layer home-bg-layer--a is-home-bg-loaded' });
+      bgStack.appendChild(layerA);
+    }
+    if (!layerB) {
+      layerB = Object.assign(document.createElement('div'), { className: 'home-bg-layer home-bg-layer--b' });
+      bgStack.appendChild(layerB);
+    }
+    // Determine which slot is currently "on top" (active).
+    const aIsActive = layerA.dataset.bgActive === 'true';
+    const incoming  = aIsActive ? layerB : layerA;
+    const outgoing  = aIsActive ? layerA : layerB;
+    incoming.style.backgroundImage = `url("${src}")`;
+    // Force a reflow so the transition picks up from opacity:0.
+    incoming.getBoundingClientRect();
+    incoming.classList.add('is-home-bg-loaded');
+    outgoing.classList.remove('is-home-bg-loaded');
+    incoming.dataset.bgActive = 'true';
+    outgoing.dataset.bgActive = 'false';
+  }
+
+  // ── 3. Hero image crossfade ─────────────────────────────────────────────────
+  const imagePanel = document.querySelector('.home-card-image');
+  if (imagePanel) {
+    // Fade out existing img.
+    const oldImg = imagePanel.querySelector('img[data-image-fade]');
+    if (oldImg) oldImg.classList.remove('is-image-loaded');
+
+    // Create the new img, initially invisible.
+    const newImg = document.createElement('img');
+    newImg.setAttribute('data-image-fade', '');
+    newImg.alt     = story.storyteller || '';
+    newImg.loading = 'eager';
+    newImg.src     = src;
+    imagePanel.appendChild(newImg);
+
+    // Wait for it to load (or bail if superseded).
+    await new Promise((resolve) => {
+      if (newImg.complete && newImg.naturalWidth > 0) { resolve(); return; }
+      newImg.addEventListener('load',  resolve, { once: true });
+      newImg.addEventListener('error', resolve, { once: true });
+    });
+
+    if (id !== _crossfadeId) { newImg.remove(); return; } // superseded
+
+    // Fade the new image in.
+    requestAnimationFrame(() => {
+      newImg.classList.add('is-image-loaded');
+      imagePanel.classList.add('is-home-image-loaded');
+      // Remove old image after the transition completes.
+      if (oldImg) {
+        oldImg.addEventListener('transitionend', () => oldImg.remove(), { once: true });
+        // Fallback removal in case transitionend never fires.
+        setTimeout(() => { if (oldImg.isConnected) oldImg.remove(); }, 3000);
+      }
+    });
+  }
+
+  // ── 4. Update text content and fade it back in ──────────────────────────────
+  if (id !== _crossfadeId) return;
+  const teaser = document.querySelector('[data-story-fade]');
+  if (teaser) {
+    const t = getUiText(state.language);
+    teaser.textContent = labelFor(story.summary, state.language);
+    // Also update the read-story link href.
+    const readBtn = document.querySelector('.home-read-button');
+    if (readBtn) readBtn.href = `stories/?code=${story.id}`;
+    requestAnimationFrame(() => {
+      if (id !== _crossfadeId) return;
+      teaser.classList.add('is-home-content-loaded');
+      fitHomeTeaserText();
+    });
+  }
 }
 
 function fitHomeTeaserText() {
@@ -330,13 +413,7 @@ function renderLoading() {
 
 async function setHomeStory(story, options = {}) {
   if (!story) return;
-  const shouldFadeOut = options.preloaded
-    && state.currentStory
-    && String(state.currentStory.id) !== String(story.id);
-  state.previousHomeBgSrc = shouldFadeOut ? leadImageSrcFor(state.currentStory) : '';
-  state.animateStoryContent = state.currentStory
-    ? String(state.currentStory.id) !== String(story.id)
-    : false;
+  const isSameStory = state.currentStory && String(state.currentStory.id) === String(story.id);
   state.currentStory = story;
   if (options.push !== false) {
     state.storyTrail = state.storyTrail.slice(0, state.trailIndex + 1);
@@ -345,14 +422,35 @@ async function setHomeStory(story, options = {}) {
     }
     state.trailIndex = state.storyTrail.length - 1;
   }
+
+  // Update prev/next button states without a full re-render.
+  _syncCarouselButtons();
+
+  if (isSameStory) return;
+
   if (!options.preloaded) {
-    renderPage();
     await ensureStoryImages(story);
   } else if (!hasUsableLeadImage(story)) {
     await ensureStoryImages(story);
   }
-  renderPage();
+
+  await crossfadeToStory(story);
   preloadNextHomeStory();
+}
+
+// ── Light DOM updates (no full re-render) ──────────────────────────────────────
+function _syncCarouselButtons() {
+  const prevBtn = document.querySelector('[data-action="previous-home-story"]');
+  if (prevBtn) {
+    const disabled = state.trailIndex <= 0;
+    prevBtn.disabled = disabled;
+    prevBtn.classList.toggle('is-disabled', disabled);
+  }
+  const nextBtn = document.querySelector('[data-action="next-home-story"]');
+  if (nextBtn) {
+    nextBtn.disabled = false;
+    nextBtn.classList.remove('is-disabled');
+  }
 }
 
 // ── Render ────────────────────────────────────────────────────────────────────
@@ -370,15 +468,7 @@ function renderPage() {
   const leadSrc = story?.images?.[0] || '';
   const leadImageLoading = isLoadingImageSrc(leadSrc);
   const currentBgSrc = leadImageLoading ? '' : leadSrc;
-  const previousBgSrc = state.animateStoryContent ? state.previousHomeBgSrc : '';
   const leadImageStyle = currentBgSrc ? ` style="background-image: url(&quot;${esc(currentBgSrc)}&quot;)"` : '';
-  const previousLeadImage = previousBgSrc
-    ? `<div class="home-card-image-previous" aria-hidden="true" style="background-image: url(&quot;${esc(previousBgSrc)}&quot;)"></div>`
-    : '';
-  const currentBgLoadedClass = state.animateStoryContent ? '' : ' is-home-bg-loaded';
-  const imagePanelLoadedClass = state.animateStoryContent ? '' : ' is-home-image-loaded';
-  const leadImageLoadedClass = hasUsableLeadImage(story) && !state.animateStoryContent ? ' is-image-loaded' : '';
-  const storyContentLoadedClass = state.animateStoryContent ? '' : ' is-home-content-loaded';
   const readLabel = t.homeRead || t.readStory || 'Read';
   const exploreLabel = t.homeExploreAll || t.exploreFilters || 'Explore all';
   const carouselLabel = t.homeCarouselControls || 'Story carousel controls';
@@ -391,15 +481,14 @@ function renderPage() {
 
   const storyCard = story ? `
     <div class="home-card">
-      <div class="home-card-image${imagePanelLoadedClass}"${leadImageStyle}>
-        ${previousLeadImage}
+      <div class="home-card-image is-home-image-loaded"${leadImageStyle}>
         ${leadImageLoading
           ? imageLoadingMarkup(story.code || story.id)
-          : `<img class="${leadImageLoadedClass.trim()}" data-image-fade src="${esc(leadSrc)}" alt="${esc(story.storyteller)}" loading="eager">`}
+          : `<img class="is-image-loaded" data-image-fade src="${esc(leadSrc)}" alt="${esc(story.storyteller)}" loading="eager">`}
       </div>
       <div class="home-card-body">
         <div class="home-card-primary-panel">
-          <p class="home-card-teaser${storyContentLoadedClass}" data-story-fade>${esc(labelFor(story.summary, state.language))}</p>
+          <p class="home-card-teaser is-home-content-loaded" data-story-fade>${esc(labelFor(story.summary, state.language))}</p>
           <div class="home-card-actions home-card-actions--primary">
             <div class="home-card-action-row home-card-action-row--top">
               <a class="action-button home-read-button" href="stories/?code=${esc(story.id)}">
@@ -427,8 +516,8 @@ function renderPage() {
   app.innerHTML = `
     <div class="home-shell">
       <div class="home-bg-stack" aria-hidden="true">
-        ${previousBgSrc ? `<div class="home-bg-layer home-bg-layer--previous" style="background-image: url(&quot;${esc(previousBgSrc)}&quot;)"></div>` : ''}
-        ${currentBgSrc ? `<div class="home-bg-layer home-bg-layer--current${currentBgLoadedClass}" data-home-bg-fade style="background-image: url(&quot;${esc(currentBgSrc)}&quot;)"></div>` : ''}
+        ${currentBgSrc ? `<div class="home-bg-layer home-bg-layer--a is-home-bg-loaded" data-bg-active="true" data-home-bg-fade style="background-image: url(&quot;${esc(currentBgSrc)}&quot;)"></div>
+        <div class="home-bg-layer home-bg-layer--b"></div>` : ''}
       </div>
 
       ${renderMenu(t)}
@@ -448,12 +537,7 @@ function renderPage() {
       ${renderSavedDrawer(t)}
     </div>
   `;
-  const shouldDelayStoryAnimation = state.animateStoryContent;
-  if (shouldDelayStoryAnimation) {
-    requestAnimationFrame(() => requestAnimationFrame(() => syncHomeImageLoadStates()));
-  } else {
-    requestAnimationFrame(() => syncHomeImageLoadStates());
-  }
+  requestAnimationFrame(() => revealStaticPage());
 }
 
 // ── Listeners ─────────────────────────────────────────────────────────────────
