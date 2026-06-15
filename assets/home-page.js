@@ -352,6 +352,7 @@ function renderPage() {
 
   const leadSrc = story?.images?.[0] || '';
   const leadImageLoading = isLoadingImageSrc(leadSrc);
+  const homeBgStyle = leadImageLoading ? '' : ` style="--home-bg-image: url('${esc(leadSrc)}')"`;
   const leadImageLoadedClass = hasUsableLeadImage(story) && !state.animateStoryContent ? ' is-image-loaded' : '';
   const storyContentLoadedClass = state.animateStoryContent ? '' : ' is-home-content-loaded';
   const readLabel = t.homeRead || t.readStory || 'Read';
@@ -399,7 +400,7 @@ function renderPage() {
   ` : `<div class="home-loading">${esc(t.loadingStory || 'Loading story…')}</div>`;
 
   app.innerHTML = `
-    <div class="home-shell">
+    <div class="home-shell"${homeBgStyle}>
 
       ${renderMenu(t)}
 

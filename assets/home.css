@@ -10,6 +10,39 @@
   color: var(--text);
   display: flex;
   flex-direction: column;
+  isolation: isolate;
+}
+
+.home-shell::before,
+.home-shell::after {
+  content: "";
+  position: fixed;
+  pointer-events: none;
+}
+
+.home-shell::before {
+  inset: -2rem;
+  z-index: -2;
+  background:
+    var(--home-bg-image, none)
+    center / cover no-repeat;
+  filter: blur(18px) saturate(0.82) brightness(0.58);
+  transform: scale(1.05);
+  transition: background-image 220ms ease;
+}
+
+.home-shell::after {
+  inset: 0;
+  z-index: -1;
+  background: rgba(12, 18, 24, 0.36);
+}
+
+html[data-theme="light"] .home-shell::before {
+  filter: blur(16px) saturate(0.86) brightness(0.92);
+}
+
+html[data-theme="light"] .home-shell::after {
+  background: rgba(246, 238, 228, 0.5);
 }
 
 .home-menu-shell.utility-menu-shell {
@@ -138,7 +171,7 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #10151b;
+  background: transparent;
   touch-action: pan-y;
 }
 
@@ -175,15 +208,29 @@
     var(--home-flap-colour);
 }
 
-html[data-theme="light"] .home-card {
-  background: #d8cfbf;
-}
+html[data-theme="light"] .home-card { background: transparent; }
 
 /* ── Card image ───────────────────────────────────────────────*/
 .home-card-image {
   position: absolute;
   inset: 0;
   z-index: 1;
+}
+
+.home-card-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(12,18,24,0.82), rgba(12,18,24,0.12) 23%, rgba(12,18,24,0.12) 77%, rgba(12,18,24,0.82)),
+    linear-gradient(0deg, rgba(12,18,24,0.82), rgba(12,18,24,0.08) 24%, rgba(12,18,24,0.08) 76%, rgba(12,18,24,0.82));
+}
+
+html[data-theme="light"] .home-card-image::after {
+  background:
+    linear-gradient(90deg, rgba(234,224,211,0.82), rgba(234,224,211,0.1) 23%, rgba(234,224,211,0.1) 77%, rgba(234,224,211,0.82)),
+    linear-gradient(0deg, rgba(234,224,211,0.82), rgba(234,224,211,0.08) 24%, rgba(234,224,211,0.08) 76%, rgba(234,224,211,0.82));
 }
 
 .home-card-image img {
@@ -463,7 +510,7 @@ html[data-theme="light"] .home-explore-link:hover {
     height: 100%;
     display: flex;
     flex-direction: column;
-    background: #151e27;
+    background: transparent;
   }
 
   /* Photo: fixed height — always the same, crops to fit */
@@ -487,7 +534,7 @@ html[data-theme="light"] .home-explore-link:hover {
     position: relative;
     display: flex;
     flex-direction: column;
-    background: #151f28;
+    background: transparent;
     border-top: 1px solid rgba(255,255,255,0.06);
     overflow: hidden;
   }
@@ -495,7 +542,7 @@ html[data-theme="light"] .home-explore-link:hover {
   .home-card-body::before { display: none; }
 
   html[data-theme="light"] .home-card-body {
-    background: #d8cdbb;
+    background: transparent;
     border-top-color: rgba(44, 34, 24, 0.08);
   }
 
@@ -570,8 +617,12 @@ html[data-theme="light"] .home-explore-link:hover {
     margin-bottom: 0;
     align-self: flex-start;
     font-size: clamp(0.6rem, 2.6vw, 0.74rem);
-    color: rgba(248,243,237,0.3);
+    color: rgba(255,250,242,0.72);
     letter-spacing: 0.08em;
+  }
+
+  html[data-theme="light"] .home-explore-link {
+    color: rgba(255,250,242,0.78);
   }
 
   /* Mobile keeps the older simple corner-triangle treatment. */
