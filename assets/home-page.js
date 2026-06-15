@@ -274,100 +274,77 @@ function revealStaticPage() {
 
 /**
  * Crossfade the hero image and blurred background to a new story.
- * We mutate the existing DOM layers rather than re-rendering — this
- * avoids the innerHTML teardown that was causing the flash.
  *
- * Strategy:
- *  • Blurred BG: slot A/B alternating layers, one fades out while the other fades in.
- *  • Hero image: new <img> fades in on top; previous <img> fades out simultaneously.
- *  • Text: fades out immediately, content swapped, fades in once image is ready.
+ * Both the blurred BG and the hero image use a fixed A/B two-slot system.
+ * Slots are created once by renderPage() and stay in the DOM forever —
+ * no appending or removing elements mid-transition, which was the source
+ * of the ghost-image bug (a re-render would create a new img that crossfade
+ * had never snapshotted, leaving it permanently opaque underneath).
+ *
+ * To navigate back (prev button), pass direction: 'back' — the slots simply
+ * swap roles in reverse, showing whatever src is already in the outgoing slot.
  */
 async function crossfadeToStory(story) {
   const id = ++_crossfadeId;
   const src = leadImageSrcFor(story);
   if (!src) return;
 
-  // ── 1. Freeze text out ──────────────────────────────────────────────────────
+  // ── 1. Fade text out immediately ──────────────────────────────────────────
   document.querySelectorAll('[data-story-fade]').forEach((el) => el.classList.remove('is-home-content-loaded'));
 
-  // ── 2. Blurred background crossfade ────────────────────────────────────────
-  const bgStack = document.querySelector('.home-bg-stack');
-  if (bgStack) {
-    // Find or create the two alternating bg layer slots.
-    let layerA = bgStack.querySelector('.home-bg-layer--a');
-    let layerB = bgStack.querySelector('.home-bg-layer--b');
-    if (!layerA) {
-      layerA = Object.assign(document.createElement('div'), { className: 'home-bg-layer home-bg-layer--a is-home-bg-loaded' });
-      bgStack.appendChild(layerA);
+  // ── 2. Pre-load image into inactive slot (silent, off-screen) ─────────────
+  const imgA = document.querySelector('.home-card-image .img-slot--a');
+  const imgB = document.querySelector('.home-card-image .img-slot--b');
+  const bgA  = document.querySelector('.home-bg-layer--a');
+  const bgB  = document.querySelector('.home-bg-layer--b');
+
+  if (!imgA || !imgB) return;
+
+  const aIsActive   = imgA.dataset.imgActive === 'true';
+  const imgIncoming = aIsActive ? imgB : imgA;
+  const imgOutgoing = aIsActive ? imgA : imgB;
+
+  // Set the src while it's still invisible (opacity 0).
+  imgIncoming.src = src;
+  imgIncoming.alt = story.storyteller || '';
+
+  await new Promise((resolve) => {
+    if (imgIncoming.complete && imgIncoming.naturalWidth > 0) { resolve(); return; }
+    imgIncoming.addEventListener('load',  resolve, { once: true });
+    imgIncoming.addEventListener('error', resolve, { once: true });
+  });
+
+  if (id !== _crossfadeId) return; // superseded
+
+  // ── 3. All three transitions fire together in one rAF ─────────────────────
+  requestAnimationFrame(() => {
+    if (id !== _crossfadeId) return;
+
+    // Hero image
+    imgIncoming.classList.add('is-image-loaded');
+    imgOutgoing.classList.remove('is-image-loaded');
+    imgIncoming.dataset.imgActive = 'true';
+    imgOutgoing.dataset.imgActive = 'false';
+
+    // Blurred BG
+    if (bgA && bgB) {
+      const bgIncoming = aIsActive ? bgB : bgA;
+      const bgOutgoing = aIsActive ? bgA : bgB;
+      bgIncoming.style.backgroundImage = `url("${src}")`;
+      bgIncoming.classList.add('is-home-bg-loaded');
+      bgOutgoing.classList.remove('is-home-bg-loaded');
+      bgIncoming.dataset.bgActive = 'true';
+      bgOutgoing.dataset.bgActive = 'false';
     }
-    if (!layerB) {
-      layerB = Object.assign(document.createElement('div'), { className: 'home-bg-layer home-bg-layer--b' });
-      bgStack.appendChild(layerB);
-    }
-    // Determine which slot is currently "on top" (active).
-    const aIsActive = layerA.dataset.bgActive === 'true';
-    const incoming  = aIsActive ? layerB : layerA;
-    const outgoing  = aIsActive ? layerA : layerB;
-    incoming.style.backgroundImage = `url("${src}")`;
-    // Force a reflow so the transition picks up from opacity:0.
-    incoming.getBoundingClientRect();
-    incoming.classList.add('is-home-bg-loaded');
-    outgoing.classList.remove('is-home-bg-loaded');
-    incoming.dataset.bgActive = 'true';
-    outgoing.dataset.bgActive = 'false';
-  }
 
-  // ── 3. Hero image crossfade ─────────────────────────────────────────────────
-  const imagePanel = document.querySelector('.home-card-image');
-  if (imagePanel) {
-    // Fade out ALL existing images (guards against orphans from rapid transitions).
-    const oldImgs = [...imagePanel.querySelectorAll('img[data-image-fade]')];
-    oldImgs.forEach((img) => img.classList.remove('is-image-loaded'));
-
-    // Create the new img, initially invisible.
-    const newImg = document.createElement('img');
-    newImg.setAttribute('data-image-fade', '');
-    newImg.alt     = story.storyteller || '';
-    newImg.loading = 'eager';
-    newImg.src     = src;
-    imagePanel.appendChild(newImg);
-
-    // Wait for it to load (or bail if superseded).
-    await new Promise((resolve) => {
-      if (newImg.complete && newImg.naturalWidth > 0) { resolve(); return; }
-      newImg.addEventListener('load',  resolve, { once: true });
-      newImg.addEventListener('error', resolve, { once: true });
-    });
-
-    if (id !== _crossfadeId) { newImg.remove(); return; } // superseded
-
-    // Fade the new image in, then purge all old images.
-    requestAnimationFrame(() => {
-      newImg.classList.add('is-image-loaded');
-      imagePanel.classList.add('is-home-image-loaded');
-      const removeOld = () => oldImgs.forEach((img) => { if (img.isConnected) img.remove(); });
-      if (oldImgs.length) {
-        oldImgs[0].addEventListener('transitionend', removeOld, { once: true });
-        setTimeout(removeOld, 2500); // fallback if transitionend never fires
-      }
-    });
-  }
-
-  // ── 4. Update text content and fade it back in ──────────────────────────────
-  if (id !== _crossfadeId) return;
-  const teaser = document.querySelector('[data-story-fade]');
-  if (teaser) {
-    const t = getUiText(state.language);
-    teaser.textContent = labelFor(story.summary, state.language);
-    // Also update the read-story link href.
+    // Text
+    const teaser  = document.querySelector('[data-story-fade]');
     const readBtn = document.querySelector('.home-read-button');
+    if (teaser)  teaser.textContent = labelFor(story.summary, state.language);
     if (readBtn) readBtn.href = `stories/?code=${story.id}`;
-    requestAnimationFrame(() => {
-      if (id !== _crossfadeId) return;
-      teaser.classList.add('is-home-content-loaded');
-      fitHomeTeaserText();
-    });
-  }
+    teaser?.classList.add('is-home-content-loaded');
+    fitHomeTeaserText();
+  });
 }
 
 function fitHomeTeaserText() {
@@ -483,7 +460,8 @@ function renderPage() {
       <div class="home-card-image is-home-image-loaded"${leadImageStyle}>
         ${leadImageLoading
           ? imageLoadingMarkup(story.code || story.id)
-          : `<img class="is-image-loaded" data-image-fade src="${esc(leadSrc)}" alt="${esc(story.storyteller)}" loading="eager">`}
+          : `<img class="img-slot--a is-image-loaded" data-image-fade data-img-active="true"  src="${esc(leadSrc)}" alt="${esc(story.storyteller)}" loading="eager">
+             <img class="img-slot--b"                 data-image-fade data-img-active="false" src="" alt="">`}
       </div>
       <div class="home-card-body">
         <div class="home-card-primary-panel">
@@ -671,12 +649,10 @@ async function init() {
       }
     })
   ]);
-  renderPage();
-  if (state.currentStory) {
-    await ensureStoryImages(state.currentStory);
-    renderPage();
-    preloadNextHomeStory();
-  }
+  // Fetch images first so renderPage stamps them in already-loaded.
+  if (state.currentStory) await ensureStoryImages(state.currentStory);
+  renderPage(); // single render — A slot is live, B slot is empty standby
+  preloadNextHomeStory();
   startHomeCarousel();
 }
 
