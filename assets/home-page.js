@@ -2,7 +2,7 @@ import { getUiText, getLandingText, STORAGE_KEYS, initialiseI18n } from './conte
 import { ensureStoryImages, fetchHomeStories } from './api.js?v=20260607-story-photos';
 import { renderMenu as renderSharedMenu } from './menu.js';
 
-const HOME_CAROUSEL_INTERVAL_MS = 7000;
+const HOME_CAROUSEL_INTERVAL_MS = 10000;
 
 const state = {
   language:     localStorage.getItem(STORAGE_KEYS.language) || 'en',
@@ -300,7 +300,7 @@ function fadeOutCurrentHomeStoryContent() {
   const homeCard = document.querySelector('.home-card');
   if (!homeCard || homeCard.querySelector('.image-loading-panel')) return Promise.resolve();
   homeCard.classList.add('is-home-story-exiting');
-  return new Promise((resolve) => window.setTimeout(resolve, 180));
+  return new Promise((resolve) => window.setTimeout(resolve, 360));
 }
 
 function renderLoading() {
