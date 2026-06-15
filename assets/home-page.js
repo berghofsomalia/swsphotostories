@@ -320,9 +320,9 @@ async function crossfadeToStory(story) {
   // ── 3. Hero image crossfade ─────────────────────────────────────────────────
   const imagePanel = document.querySelector('.home-card-image');
   if (imagePanel) {
-    // Fade out existing img.
-    const oldImg = imagePanel.querySelector('img[data-image-fade]');
-    if (oldImg) oldImg.classList.remove('is-image-loaded');
+    // Fade out ALL existing images (guards against orphans from rapid transitions).
+    const oldImgs = [...imagePanel.querySelectorAll('img[data-image-fade]')];
+    oldImgs.forEach((img) => img.classList.remove('is-image-loaded'));
 
     // Create the new img, initially invisible.
     const newImg = document.createElement('img');
@@ -341,15 +341,14 @@ async function crossfadeToStory(story) {
 
     if (id !== _crossfadeId) { newImg.remove(); return; } // superseded
 
-    // Fade the new image in.
+    // Fade the new image in, then purge all old images.
     requestAnimationFrame(() => {
       newImg.classList.add('is-image-loaded');
       imagePanel.classList.add('is-home-image-loaded');
-      // Remove old image after the transition completes.
-      if (oldImg) {
-        oldImg.addEventListener('transitionend', () => oldImg.remove(), { once: true });
-        // Fallback removal in case transitionend never fires.
-        setTimeout(() => { if (oldImg.isConnected) oldImg.remove(); }, 3000);
+      const removeOld = () => oldImgs.forEach((img) => { if (img.isConnected) img.remove(); });
+      if (oldImgs.length) {
+        oldImgs[0].addEventListener('transitionend', removeOld, { once: true });
+        setTimeout(removeOld, 2500); // fallback if transitionend never fires
       }
     });
   }
