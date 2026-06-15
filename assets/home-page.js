@@ -257,7 +257,7 @@ function syncHomeImageLoadStates(root = document) {
   if (root.querySelector('.home-bg-layer--previous')) {
     window.setTimeout(() => {
       document.querySelectorAll('.home-bg-layer--previous').forEach((element) => element.remove());
-    }, 760);
+    }, 1300);
   }
   root.querySelectorAll('img[data-image-fade]').forEach((image) => {
     if (image.naturalWidth > 0) {
@@ -309,13 +309,6 @@ function fitHomeTeaserText() {
   }
 }
 
-function fadeOutCurrentHomeStoryContent() {
-  const homeCard = document.querySelector('.home-card');
-  if (!homeCard || homeCard.querySelector('.image-loading-panel')) return Promise.resolve();
-  homeCard.classList.add('is-home-story-exiting');
-  return new Promise((resolve) => window.setTimeout(resolve, 360));
-}
-
 function renderLoading() {
   savePrefs();
   const app = document.querySelector('#app');
@@ -330,7 +323,6 @@ async function setHomeStory(story, options = {}) {
     && state.currentStory
     && String(state.currentStory.id) !== String(story.id);
   state.previousHomeBgSrc = shouldFadeOut ? leadImageSrcFor(state.currentStory) : '';
-  if (shouldFadeOut) await fadeOutCurrentHomeStoryContent();
   state.animateStoryContent = state.currentStory
     ? String(state.currentStory.id) !== String(story.id)
     : false;
@@ -369,6 +361,9 @@ function renderPage() {
   const currentBgSrc = leadImageLoading ? '' : leadSrc;
   const previousBgSrc = state.animateStoryContent ? state.previousHomeBgSrc : '';
   const leadImageStyle = currentBgSrc ? ` style="background-image: url(&quot;${esc(currentBgSrc)}&quot;)"` : '';
+  const previousLeadImage = previousBgSrc
+    ? `<div class="home-card-image-previous" aria-hidden="true" style="background-image: url(&quot;${esc(previousBgSrc)}&quot;)"></div>`
+    : '';
   const currentBgLoadedClass = state.animateStoryContent ? '' : ' is-home-bg-loaded';
   const leadImageLoadedClass = hasUsableLeadImage(story) && !state.animateStoryContent ? ' is-image-loaded' : '';
   const storyContentLoadedClass = state.animateStoryContent ? '' : ' is-home-content-loaded';
@@ -385,6 +380,7 @@ function renderPage() {
   const storyCard = story ? `
     <div class="home-card">
       <div class="home-card-image"${leadImageStyle}>
+        ${previousLeadImage}
         ${leadImageLoading
           ? imageLoadingMarkup(story.code || story.id)
           : `<img class="${leadImageLoadedClass.trim()}" data-image-fade src="${esc(leadSrc)}" alt="${esc(story.storyteller)}" loading="eager">`}

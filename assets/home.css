@@ -45,7 +45,7 @@
 .home-bg-layer--current {
   z-index: 2;
   opacity: 0;
-  transition: opacity 680ms ease;
+  transition: opacity 1200ms ease;
   will-change: opacity;
 }
 
@@ -106,7 +106,7 @@ html[data-theme="light"] .home-shell::after {
   background:
     linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 34%, rgba(255,255,255,0) 72%),
     var(--home-flap-colour);
-  box-shadow: inset -1px -1px 0 rgba(255,255,255,0.1);
+  box-shadow: none;
 }
 
 /* BR flap: mirrored, viewport corner to the top-left corner of hero grid cell 8,5. */
@@ -118,7 +118,7 @@ html[data-theme="light"] .home-shell::after {
   background:
     linear-gradient(315deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 34%, rgba(255,255,255,0) 72%),
     var(--home-flap-colour);
-  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.1);
+  box-shadow: none;
 }
 
 .home-badge-nexus p,
@@ -248,18 +248,26 @@ html[data-theme="light"] .home-card { background: transparent; }
 }
 
 .home-card-image::before {
-  inset: -1.35rem;
+  inset: -1.6rem;
+  z-index: 4;
   background: inherit;
-  filter: blur(16px) saturate(0.94);
-  opacity: 0.78;
-  transform: scale(1.03);
+  filter: blur(20px) saturate(0.96);
+  opacity: 0.9;
+  transform: scale(1.04);
+  -webkit-mask:
+    linear-gradient(90deg, #000 0 10%, transparent 22% 78%, #000 90% 100%),
+    linear-gradient(0deg, #000 0 11%, transparent 23% 77%, #000 89% 100%);
+  mask:
+    linear-gradient(90deg, #000 0 10%, transparent 22% 78%, #000 90% 100%),
+    linear-gradient(0deg, #000 0 11%, transparent 23% 77%, #000 89% 100%);
 }
 
 .home-card-image::after {
   inset: 0;
+  z-index: 5;
   background:
-    linear-gradient(90deg, rgba(12,18,24,0.5), rgba(12,18,24,0) 15%, rgba(12,18,24,0) 85%, rgba(12,18,24,0.5)),
-    linear-gradient(0deg, rgba(12,18,24,0.5), rgba(12,18,24,0) 16%, rgba(12,18,24,0) 84%, rgba(12,18,24,0.5));
+    linear-gradient(90deg, rgba(12,18,24,0.28), rgba(12,18,24,0) 14%, rgba(12,18,24,0) 86%, rgba(12,18,24,0.28)),
+    linear-gradient(0deg, rgba(12,18,24,0.28), rgba(12,18,24,0) 15%, rgba(12,18,24,0) 85%, rgba(12,18,24,0.28));
 }
 
 html[data-theme="light"] .home-card-image::after {
@@ -270,14 +278,23 @@ html[data-theme="light"] .home-card-image::after {
 
 .home-card-image img {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center 30%;
   transform: none;
-  transition: opacity 680ms ease;
+  transition: opacity 1200ms ease;
   will-change: opacity;
+}
+
+.home-card-image-previous {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background-position: center 30%;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 .home-card-image img[data-image-fade],
@@ -567,6 +584,10 @@ html[data-theme="light"] .home-explore-link:hover {
     height: 100%;
     object-fit: cover;
     object-position: center 25%;
+  }
+
+  .home-card-image-previous {
+    background-position: center 25%;
   }
 
   /* Panel: fills remaining space */
