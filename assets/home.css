@@ -4,6 +4,8 @@
 
 .home-shell {
   --home-dissolve-duration: 2400ms;
+  --home-teaser-dissolve-duration: 3200ms;
+  --home-teaser-dissolve-delay: 520ms;
   position: fixed;
   inset: 0;
   overflow: hidden;
@@ -318,7 +320,8 @@ html[data-theme="light"] .home-card-body::before {
   line-height: 1.3;
   text-shadow: 0 2px 18px rgba(0,0,0,0.55);
   opacity: 0;
-  transition: opacity var(--home-dissolve-duration) ease-in-out;
+  transition: opacity 260ms ease-in;
+  transition-delay: 0ms;
   display: block;
   width: 100%;
   max-height: none;
@@ -327,6 +330,9 @@ html[data-theme="light"] .home-card-body::before {
 
 .home-card-teaser.is-home-content-loaded {
   opacity: 1;
+  transition-duration: var(--home-teaser-dissolve-duration);
+  transition-timing-function: ease-in-out;
+  transition-delay: var(--home-teaser-dissolve-delay);
 }
 
 html[data-theme="light"] .home-card-teaser { color: #fff8ee; }
