@@ -289,12 +289,9 @@ async function crossfadeToStory(story) {
   const src = leadImageSrcFor(story);
   if (!src) return;
 
-  // ── 1. Prepare the moving scene under the fixed flaps ─────────────────────
-  const shell = document.querySelector('.home-shell');
+  // ── 1. Hide teaser so the next line can slide in after the image swap ─────
   const teaser = document.querySelector('[data-story-fade]');
   teaser?.classList.remove('is-home-content-loaded');
-  shell?.classList.remove('is-home-scene-entering');
-  shell?.classList.add('is-home-scene-ready');
 
   // ── 2. Identify slots ─────────────────────────────────────────────────────
   const imgA = document.querySelector('.home-card-image .img-slot--a');
@@ -308,9 +305,6 @@ async function crossfadeToStory(story) {
   const imgOutgoing = aIsActive ? imgA : imgB;
   const bgIncoming  = bgA && bgB ? (aIsActive ? bgB : bgA) : null;
   const bgOutgoing  = bgA && bgB ? (aIsActive ? bgA : bgB) : null;
-  [imgA, imgB, bgA, bgB].forEach((element) => element?.classList?.remove('is-home-scene-ready'));
-  imgIncoming.classList.add('is-home-scene-ready');
-  bgIncoming?.classList.add('is-home-scene-ready');
 
   // ── 3. Pre-load both hero img and blurred bg before touching opacity ──────
   // Set img src while slot is still invisible.
@@ -350,8 +344,6 @@ async function crossfadeToStory(story) {
   requestAnimationFrame(() => {
     if (id !== _crossfadeId) return;
 
-    shell?.classList.add('is-home-scene-entering');
-
     // Hero image
     imgIncoming.classList.add('is-image-loaded');
     imgOutgoing.classList.remove('is-image-loaded');
@@ -368,13 +360,6 @@ async function crossfadeToStory(story) {
 
     // Text
     teaser?.classList.add('is-home-content-loaded');
-
-    window.setTimeout(() => {
-      if (id !== _crossfadeId) return;
-      shell?.classList.remove('is-home-scene-ready', 'is-home-scene-entering');
-      imgIncoming.classList.remove('is-home-scene-ready');
-      bgIncoming?.classList.remove('is-home-scene-ready');
-    }, 1700);
   });
 }
 
@@ -442,6 +427,9 @@ async function setHomeStory(story, options = {}) {
   }
 
   await crossfadeToStory(story);
+  window.setTimeout(() => {
+    document.querySelector('[data-story-fade]')?.classList.add('is-home-content-loaded');
+  }, 80);
   preloadNextHomeStory();
 }
 
