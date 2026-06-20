@@ -447,9 +447,27 @@ function renderActiveFilterPanel(state, districtItems, peopleItems, tagGroups) {
   `;
 }
 
-function renderSearchBox(state) {
+function renderSearchBox(state, draftQuery = null) {
   const t = getUiText(state.language);
-  const searchQuery = String(state.filters.searchQuery || '');
+  const committedQuery = String(state.filters.searchQuery || '');
+  const value = draftQuery === null ? committedQuery : draftQuery;
+  const trimmedValue = value.trim();
+  const isDirty = trimmedValue !== committedQuery.trim();
+
+  const previewCount = trimmedValue
+    ? countForFilters(state, { ...state.filters, searchQuery: value })
+    : null;
+
+  const hintMarkup = isDirty && trimmedValue
+    ? `<div class="search-hint" data-search-hint>
+        ${escapeHtml(
+          t.searchPendingHint
+            ? t.searchPendingHint.replace('{count}', String(previewCount))
+            : `${previewCount} match${previewCount === 1 ? '' : 'es'} — press Enter or tap search`
+        )}
+      </div>`
+    : '';
+
   return `
     <div class="search-box">
       <span class="search-icon" aria-hidden="true">${icon.search()}</span>
@@ -458,12 +476,19 @@ function renderSearchBox(state) {
         class="search-input"
         data-search-input
         placeholder="${escapeHtml(t.searchPlaceholder)}"
-        value="${escapeHtml(searchQuery)}"
+        value="${escapeHtml(value)}"
         autocomplete="off"
         spellcheck="false"
         aria-label="${escapeHtml(t.searchPlaceholder)}"
       >
+      <button
+        type="button"
+        class="search-submit-button"
+        data-action="submit-search"
+        aria-label="${escapeHtml(t.search || 'Search')}"
+      >${icon.search()}</button>
     </div>
+    ${hintMarkup}
   `;
 }
 
@@ -674,7 +699,7 @@ export function renderApp(state) {
         <div class="gallery-layout ${state.filterDrawerOpen ? 'is-filter-open' : ''}" style="--gallery-split: ${Number(state.gallerySplitPercent || 50)}%;">
           <aside class="filter-panel ${state.filterDrawerOpen ? 'is-open' : ''}">
             <div class="filter-panel-sticky gallery-header gallery-header--filter" data-filter-resize-handle>${storyFilterSummaryMarkup(state)}</div>
-            ${renderSearchBox(state)}
+            ${renderSearchBox(state, state.draftSearchQuery ?? null)}
             <div class="filter-panel-scroll-body">${filterGroupsMarkup}</div>
           </aside>
           <div class="gallery-results-pane">

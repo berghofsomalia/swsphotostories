@@ -3,6 +3,7 @@ import { state, createEmptyFilters, PAGE_SIZE } from './state.js?v=20260608-gall
 import {
   buildShareUrl,
   buildGalleryShareUrl,
+  countForFilters,
   currentStory,
   getStoryById,
   hasActiveFilters,
@@ -24,9 +25,7 @@ let listenersAttached = false;
 let imageHydrationRun = 0;
 let imageHydrationScheduled = false;
 let filterResizeDrag = null;
-let searchRenderTimerId = null;
 let pendingSearchFocus = null;
-const SEARCH_RENDER_DELAY_MS = 160;
 
 async function loadGalleryDataset() {
   if (state.galleryDatasetLoaded) return;
@@ -623,14 +622,19 @@ const ACTIONS = {
   'reset-filters': async () => {
     await loadGalleryDataset();
     state.filters = createEmptyFilters();
+    state.draftSearchQuery = null;
     state.galleryMode = 'total';
     resetPage();
     renderSite();
   },
   'clear-search': async () => {
+    state.draftSearchQuery = null;
     state.filters.searchQuery = '';
     setGalleryModeFromFilters();
     renderSite({ preserveGalleryScroll: true });
+  },
+  'submit-search': async () => {
+    commitDraftSearch();
   },
   'filter-district': async ({ value }) => {
     await loadGalleryDataset();
@@ -806,41 +810,80 @@ function handleFilterResizeEnd(event) {
   replaceCurrentHistoryState(state.galleryVisible ? 'gallery' : 'story');
 }
 
+function updateSearchHintOnly() {
+  // Lightweight update while the user is still typing: refresh just the
+  // hint/count text next to the search box. Never touches #app's innerHTML,
+  // so the live input node — and focus/caret — is never disturbed.
+  const input = qs('[data-search-input]');
+  if (!input) return;
+
+  const t = getUiText(state.language);
+  const value = String(state.draftSearchQuery ?? '');
+  const trimmedValue = value.trim();
+  const committedQuery = String(state.filters.searchQuery || '').trim();
+  const isDirty = trimmedValue !== committedQuery;
+
+  const existingHint = qs('[data-search-hint]');
+
+  if (!isDirty || !trimmedValue) {
+    existingHint?.remove();
+    return;
+  }
+
+  const previewCount = countForFilters(state, { ...state.filters, searchQuery: value });
+  const text = t.searchPendingHint
+    ? t.searchPendingHint.replace('{count}', String(previewCount))
+    : `${previewCount} match${previewCount === 1 ? '' : 'es'} — press Enter or tap search`;
+
+  if (existingHint) {
+    existingHint.textContent = text;
+    return;
+  }
+
+  const hint = document.createElement('div');
+  hint.className = 'search-hint';
+  hint.dataset.searchHint = 'true';
+  hint.textContent = text;
+  input.closest('.search-box')?.insertAdjacentElement('afterend', hint);
+}
+
 function handleSearchInput(event) {
   const input = event.target.closest('[data-search-input]');
   if (!input) return;
 
-  // Update state immediately so filtering logic always has the latest value,
-  // but DON'T touch the DOM (no re-render) until the debounce fires below.
-  // This is what keeps the live input node — and the user's focus/caret —
-  // untouched while they're actively typing.
-  state.filters.searchQuery = input.value;
+  // Track what's been typed without committing it to the active filter yet.
+  // The gallery only re-renders once the user explicitly submits (Enter or
+  // tapping the search button) — see handleSearchSubmit below.
+  state.draftSearchQuery = input.value;
+  updateSearchHintOnly();
+}
+
+function commitDraftSearch() {
+  const input = qs('[data-search-input]');
+  const value = input ? input.value : String(state.draftSearchQuery ?? state.filters.searchQuery ?? '');
+
+  state.draftSearchQuery = null;
+  state.filters.searchQuery = value;
   setGalleryModeFromFilters();
+  renderSite();
+  replaceCurrentHistoryState(state.galleryVisible ? 'gallery' : 'story');
 
-  if (searchRenderTimerId) {
-    window.clearTimeout(searchRenderTimerId);
-  }
-
-  searchRenderTimerId = window.setTimeout(() => {
-    searchRenderTimerId = null;
-
-    const selectionStart = input.selectionStart;
-    const selectionEnd   = input.selectionEnd;
-
-    renderSite();
-    replaceCurrentHistoryState(state.galleryVisible ? 'gallery' : 'story');
-
-    // Restore caret after the debounced render rebuilds the input node.
+  // Keep focus on the (newly rendered) search input after committing.
+  requestAnimationFrame(() => {
     const restored = qs('[data-search-input]');
-    if (restored) {
-      try { restored.focus({ preventScroll: true }); } catch { restored.focus(); }
-      const len = restored.value.length;
-      restored.setSelectionRange(
-        Math.min(selectionStart ?? len, len),
-        Math.min(selectionEnd ?? len, len)
-      );
-    }
-  }, SEARCH_RENDER_DELAY_MS);
+    if (!restored) return;
+    try { restored.focus({ preventScroll: true }); } catch { restored.focus(); }
+    const len = restored.value.length;
+    restored.setSelectionRange(len, len);
+  });
+}
+
+function handleSearchKeydown(event) {
+  if (event.key !== 'Enter') return;
+  const input = event.target.closest('[data-search-input]');
+  if (!input) return;
+  event.preventDefault();
+  commitDraftSearch();
 }
 
 function attachGlobalListeners() {
@@ -849,6 +892,7 @@ function attachGlobalListeners() {
   const app = qs('#app');
   app?.addEventListener('click', handleAppClick);
   app?.addEventListener('input', handleSearchInput);
+  app?.addEventListener('keydown', handleSearchKeydown);
   app?.addEventListener('pointerdown', handleFilterResizeStart);
   app?.addEventListener('touchstart', handleTouchStart, { passive: true });
   app?.addEventListener('touchend', handleTouchEnd, { passive: true });
