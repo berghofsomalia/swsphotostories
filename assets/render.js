@@ -19,7 +19,6 @@ import {
   pagedStories,
   scoreRelated,
   selectedDistricts,
-  SEARCH_MIN_CHARS,
   storyCountLabel
 } from './story-data.js?v=20260608-gallery-batches';
 
@@ -451,15 +450,13 @@ function renderActiveFilterPanel(state, districtItems, peopleItems, tagGroups) {
 function renderSearchBox(state) {
   const t = getUiText(state.language);
   const searchQuery = String(state.filters.searchQuery || '');
-  const isSearchPending = searchQuery.trim().length > 0 && searchQuery.trim().length < SEARCH_MIN_CHARS;
   return `
-    <div class="search-box ${isSearchPending ? 'is-search-pending' : ''}">
+    <div class="search-box">
       <span class="search-icon" aria-hidden="true">${icon.search()}</span>
       <input
         type="search"
         class="search-input"
         data-search-input
-        minlength="${SEARCH_MIN_CHARS}"
         placeholder="${escapeHtml(t.searchPlaceholder)}"
         value="${escapeHtml(searchQuery)}"
         autocomplete="off"
@@ -680,7 +677,7 @@ export function renderApp(state) {
             ${renderSearchBox(state)}
             <div class="filter-panel-scroll-body">${filterGroupsMarkup}</div>
           </aside>
-          <div class="gallery-results-pane ${String(state.filters.searchQuery || '').trim().length > 0 && String(state.filters.searchQuery || '').trim().length < SEARCH_MIN_CHARS ? 'is-search-pending' : ''}">
+          <div class="gallery-results-pane">
             ${activeFilterPanelMarkup}
             <div class="gallery-grid">
               ${galleryGridMarkup}

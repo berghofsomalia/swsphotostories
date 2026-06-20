@@ -810,24 +810,37 @@ function handleSearchInput(event) {
   const input = event.target.closest('[data-search-input]');
   if (!input) return;
 
-  const selectionStart = input.selectionStart;
-  const selectionEnd   = input.selectionEnd;
-
+  // Update state immediately so filtering logic always has the latest value,
+  // but DON'T touch the DOM (no re-render) until the debounce fires below.
+  // This is what keeps the live input node — and the user's focus/caret —
+  // untouched while they're actively typing.
   state.filters.searchQuery = input.value;
   setGalleryModeFromFilters();
-  renderSite();
-  replaceCurrentHistoryState(state.galleryVisible ? 'gallery' : 'story');
 
-  // Restore caret without multi-hop async — same pattern as admin
-  const restored = qs('[data-search-input]');
-  if (restored) {
-    try { restored.focus({ preventScroll: true }); } catch { restored.focus(); }
-    const len = restored.value.length;
-    restored.setSelectionRange(
-      Math.min(selectionStart ?? len, len),
-      Math.min(selectionEnd   ?? len, len)
-    );
+  if (searchRenderTimerId) {
+    window.clearTimeout(searchRenderTimerId);
   }
+
+  searchRenderTimerId = window.setTimeout(() => {
+    searchRenderTimerId = null;
+
+    const selectionStart = input.selectionStart;
+    const selectionEnd   = input.selectionEnd;
+
+    renderSite();
+    replaceCurrentHistoryState(state.galleryVisible ? 'gallery' : 'story');
+
+    // Restore caret after the debounced render rebuilds the input node.
+    const restored = qs('[data-search-input]');
+    if (restored) {
+      try { restored.focus({ preventScroll: true }); } catch { restored.focus(); }
+      const len = restored.value.length;
+      restored.setSelectionRange(
+        Math.min(selectionStart ?? len, len),
+        Math.min(selectionEnd ?? len, len)
+      );
+    }
+  }, SEARCH_RENDER_DELAY_MS);
 }
 
 function attachGlobalListeners() {

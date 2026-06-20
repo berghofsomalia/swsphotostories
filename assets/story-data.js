@@ -1,8 +1,6 @@
 import { STORAGE_KEYS } from './content.js';
 import { PAGE_SIZE } from './state.js?v=20260608-gallery-batches';
 
-export const SEARCH_MIN_CHARS = 3;
-
 export function getStoryById(stories, id) {
   const target = String(id || '').trim();
   return stories.find((story) => String(story.id) === target || String(story.code) === target) || null;
@@ -91,8 +89,7 @@ export function selectedDistricts(filters) {
 }
 
 export function effectiveSearchQuery(filters) {
-  const query = String(filters?.searchQuery || '').trim().toLowerCase();
-  return query.length >= SEARCH_MIN_CHARS ? query : '';
+  return String(filters?.searchQuery || '').trim().toLowerCase();
 }
 
 function storyContainsAny(storyItems = [], selectedSlugs = []) {
