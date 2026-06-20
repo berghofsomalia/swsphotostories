@@ -13,13 +13,15 @@ import {
   currentStory,
   effectiveSearchQuery,
   filteredStories,
+  filteredStoriesExcludingSearch,
   hasActiveFilters,
   hasMoreStories,
   isSaved,
   pagedStories,
   scoreRelated,
   selectedDistricts,
-  storyCountLabel
+  storyCountLabel,
+  storySearchHaystack
 } from './story-data.js?v=20260608-gallery-batches';
 
 export const qs = (selector, root = document) => root.querySelector(selector);
@@ -447,26 +449,10 @@ function renderActiveFilterPanel(state, districtItems, peopleItems, tagGroups) {
   `;
 }
 
-function renderSearchBox(state, draftQuery = null) {
+function renderSearchBox(state) {
   const t = getUiText(state.language);
-  const committedQuery = String(state.filters.searchQuery || '');
-  const value = draftQuery === null ? committedQuery : draftQuery;
-  const trimmedValue = value.trim();
-  const isDirty = trimmedValue !== committedQuery.trim();
-
-  const previewCount = trimmedValue
-    ? countForFilters(state, { ...state.filters, searchQuery: value })
-    : null;
-
-  const hintMarkup = isDirty && trimmedValue
-    ? `<div class="search-hint" data-search-hint>
-        ${escapeHtml(
-          t.searchPendingHint
-            ? t.searchPendingHint.replace('{count}', String(previewCount))
-            : `${previewCount} match${previewCount === 1 ? '' : 'es'} — press Enter or tap search`
-        )}
-      </div>`
-    : '';
+  const searchQuery = String(state.filters.searchQuery || '');
+  const activeCount = searchQuery.trim() ? countForFilters(state, state.filters) : null;
 
   return `
     <div class="search-box">
@@ -476,20 +462,20 @@ function renderSearchBox(state, draftQuery = null) {
         class="search-input"
         data-search-input
         placeholder="${escapeHtml(t.searchPlaceholder)}"
-        value="${escapeHtml(value)}"
+        value="${escapeHtml(searchQuery)}"
         autocomplete="off"
         spellcheck="false"
         aria-label="${escapeHtml(t.searchPlaceholder)}"
       >
-      <button
-        type="button"
-        class="search-submit-button"
-        data-action="submit-search"
-        aria-label="${escapeHtml(t.search || 'Search')}"
-      >${icon.search()}</button>
     </div>
-    ${hintMarkup}
+    <div class="search-hint" data-search-count>${activeCount !== null ? escapeHtml(storyCountLabelLocal(activeCount, t)) : ''}</div>
   `;
+}
+
+function storyCountLabelLocal(count, t) {
+  const singular = t.filteredStory || t.totalStory || 'photostory';
+  const plural = t.filteredStories || t.totalStories || 'photostories';
+  return `${count} ${count === 1 ? singular : plural}`;
 }
 
 function storyGalleryHeader(state) {
@@ -521,13 +507,14 @@ function storyFilterSummaryMarkup(state) {
   `;
 }
 
-function renderGalleryCard(state, item) {
+function renderGalleryCard(state, item, options = {}) {
   const t = getUiText(state.language);
   const visibleTags = [...(item.people || []), ...(item.topicTags || [])];
   const leadImage = item.images?.[0] || '';
   const imageLoading = isLoadingImageSrc(leadImage);
+  const cardClasses = ['gallery-card', options.isSearchHidden ? 'is-search-hidden' : ''].filter(Boolean).join(' ');
   return `
-    <button type="button" class="gallery-card" data-action="open-story" data-value="${escapeHtml(item.id)}">
+    <button type="button" class="${cardClasses}" data-action="open-story" data-value="${escapeHtml(item.id)}" data-story-id="${escapeHtml(item.id)}" data-search-haystack="${escapeHtml(storySearchHaystack(item))}">
       <div class="gallery-image-frame">
         ${imageLoading
           ? imageLoadingMarkup(item.code || item.id)
@@ -588,9 +575,17 @@ export function renderApp(state) {
 
   const t = getUiText(state.language);
   const landing = getLandingText(state.language);
-  const visibleStories = pagedStories(state);
+
+  const isSearchActive = Boolean(effectiveSearchQuery(state.filters));
+  // While searching, render every card that matches the non-search filters
+  // (district/people/tags) so the search box can show/hide cards via a CSS
+  // class on every keystroke, without ever touching #app's innerHTML.
+  // Pagination doesn't apply while searching — "35 matches" should mean 35
+  // visible cards, not "12 of 35".
+  const searchPool = isSearchActive ? filteredStoriesExcludingSearch(state) : null;
+  const visibleStories = isSearchActive ? searchPool : pagedStories(state);
   const totalFiltered = filteredStories(state).length;
-  const moreAvailable = hasMoreStories(state);
+  const moreAvailable = isSearchActive ? false : hasMoreStories(state);
 
   const districtItems = allDistricts(state).map((d) => ({ value: d.slug, label: labelFor(d, state.language) }));
   const peopleItems = allPeople(state).map((p) => ({ value: p.slug, label: labelFor(p, state.language) }));
@@ -663,12 +658,20 @@ export function renderApp(state) {
     ${renderRelatedStoriesSection(state, story, t)}
   ` : '';
 
+  const activeSearchQuery = effectiveSearchQuery(state.filters);
+  const searchMatchFlags = visibleStories.map((item) =>
+    !activeSearchQuery || storySearchHaystack(item).includes(activeSearchQuery)
+  );
+  const noSearchMatches = activeSearchQuery && visibleStories.length > 0 && !searchMatchFlags.some(Boolean);
+
   const galleryGridMarkup = visibleStories.length === 0
     ? `<div class="gallery-empty">
         <p>${escapeHtml(t.noResults)}</p>
         <button type="button" class="action-button" data-action="reset-filters">${escapeHtml(t.reset)}</button>
       </div>`
-    : visibleStories.map((item) => renderGalleryCard(state, item)).join('');
+    : visibleStories.map((item, index) =>
+        renderGalleryCard(state, item, { isSearchHidden: !searchMatchFlags[index] })
+      ).join('');
 
   const loadMoreMarkup = moreAvailable
     ? `<div class="load-more-row">
@@ -699,13 +702,17 @@ export function renderApp(state) {
         <div class="gallery-layout ${state.filterDrawerOpen ? 'is-filter-open' : ''}" style="--gallery-split: ${Number(state.gallerySplitPercent || 50)}%;">
           <aside class="filter-panel ${state.filterDrawerOpen ? 'is-open' : ''}">
             <div class="filter-panel-sticky gallery-header gallery-header--filter" data-filter-resize-handle>${storyFilterSummaryMarkup(state)}</div>
-            ${renderSearchBox(state, state.draftSearchQuery ?? null)}
+            ${renderSearchBox(state)}
             <div class="filter-panel-scroll-body">${filterGroupsMarkup}</div>
           </aside>
           <div class="gallery-results-pane">
             ${activeFilterPanelMarkup}
             <div class="gallery-grid">
               ${galleryGridMarkup}
+            </div>
+            <div class="gallery-empty" data-search-empty-state style="display:${noSearchMatches ? '' : 'none'};">
+              <p>${escapeHtml(t.noResults)}</p>
+              <button type="button" class="action-button" data-action="clear-search">${escapeHtml(t.reset)}</button>
             </div>
             ${loadMoreMarkup}
           </div>

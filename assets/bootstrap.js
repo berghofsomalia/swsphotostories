@@ -3,7 +3,6 @@ import { state, createEmptyFilters, PAGE_SIZE } from './state.js?v=20260608-gall
 import {
   buildShareUrl,
   buildGalleryShareUrl,
-  countForFilters,
   currentStory,
   getStoryById,
   hasActiveFilters,
@@ -622,19 +621,16 @@ const ACTIONS = {
   'reset-filters': async () => {
     await loadGalleryDataset();
     state.filters = createEmptyFilters();
-    state.draftSearchQuery = null;
     state.galleryMode = 'total';
+    wasSearchActiveLastKeystroke = false;
     resetPage();
     renderSite();
   },
   'clear-search': async () => {
-    state.draftSearchQuery = null;
     state.filters.searchQuery = '';
+    wasSearchActiveLastKeystroke = false;
     setGalleryModeFromFilters();
     renderSite({ preserveGalleryScroll: true });
-  },
-  'submit-search': async () => {
-    commitDraftSearch();
   },
   'filter-district': async ({ value }) => {
     await loadGalleryDataset();
@@ -810,80 +806,67 @@ function handleFilterResizeEnd(event) {
   replaceCurrentHistoryState(state.galleryVisible ? 'gallery' : 'story');
 }
 
-function updateSearchHintOnly() {
-  // Lightweight update while the user is still typing: refresh just the
-  // hint/count text next to the search box. Never touches #app's innerHTML,
-  // so the live input node — and focus/caret — is never disturbed.
-  const input = qs('[data-search-input]');
-  if (!input) return;
-
+function updateSearchResultCountOnly(query) {
+  // Lightweight update while the user types: refresh just the match-count
+  // text and toggle visibility on already-rendered cards. Never touches
+  // #app's innerHTML, so the live input node — and focus/caret — is never
+  // disturbed, no matter how fast someone types.
   const t = getUiText(state.language);
-  const value = String(state.draftSearchQuery ?? '');
-  const trimmedValue = value.trim();
-  const committedQuery = String(state.filters.searchQuery || '').trim();
-  const isDirty = trimmedValue !== committedQuery;
+  const q = query.trim().toLowerCase();
 
-  const existingHint = qs('[data-search-hint]');
+  let visibleCount = 0;
+  qsa('[data-story-id]').forEach((card) => {
+    const haystack = card.dataset.searchHaystack || '';
+    const matches = !q || haystack.includes(q);
+    card.classList.toggle('is-search-hidden', !matches);
+    if (matches) visibleCount += 1;
+  });
 
-  if (!isDirty || !trimmedValue) {
-    existingHint?.remove();
-    return;
+  const countLabel = qs('[data-search-count]');
+  if (countLabel) {
+    countLabel.textContent = q
+      ? storyCountLabelText(visibleCount, t)
+      : '';
   }
 
-  const previewCount = countForFilters(state, { ...state.filters, searchQuery: value });
-  const text = t.searchPendingHint
-    ? t.searchPendingHint.replace('{count}', String(previewCount))
-    : `${previewCount} match${previewCount === 1 ? '' : 'es'} — press Enter or tap search`;
-
-  if (existingHint) {
-    existingHint.textContent = text;
-    return;
-  }
-
-  const hint = document.createElement('div');
-  hint.className = 'search-hint';
-  hint.dataset.searchHint = 'true';
-  hint.textContent = text;
-  input.closest('.search-box')?.insertAdjacentElement('afterend', hint);
+  const emptyState = qs('[data-search-empty-state]');
+  if (emptyState) emptyState.style.display = (q && visibleCount === 0) ? '' : 'none';
 }
+
+function storyCountLabelText(count, t) {
+  const singular = t.filteredStory || t.totalStory || 'photostory';
+  const plural = t.filteredStories || t.totalStories || 'photostories';
+  return `${count} ${count === 1 ? singular : plural}`;
+}
+
+let wasSearchActiveLastKeystroke = false;
 
 function handleSearchInput(event) {
   const input = event.target.closest('[data-search-input]');
   if (!input) return;
 
-  // Track what's been typed without committing it to the active filter yet.
-  // The gallery only re-renders once the user explicitly submits (Enter or
-  // tapping the search button) — see handleSearchSubmit below.
-  state.draftSearchQuery = input.value;
-  updateSearchHintOnly();
-}
+  const isNowActive = input.value.trim().length > 0;
 
-function commitDraftSearch() {
-  const input = qs('[data-search-input]');
-  const value = input ? input.value : String(state.draftSearchQuery ?? state.filters.searchQuery ?? '');
-
-  state.draftSearchQuery = null;
-  state.filters.searchQuery = value;
+  state.filters.searchQuery = input.value;
   setGalleryModeFromFilters();
-  renderSite();
-  replaceCurrentHistoryState(state.galleryVisible ? 'gallery' : 'story');
 
-  // Keep focus on the (newly rendered) search input after committing.
-  requestAnimationFrame(() => {
-    const restored = qs('[data-search-input]');
-    if (!restored) return;
-    try { restored.focus({ preventScroll: true }); } catch { restored.focus(); }
-    const len = restored.value.length;
-    restored.setSelectionRange(len, len);
-  });
-}
+  // A real render is needed exactly at the two transition points:
+  //  - turning search ON: every matching card (ignoring pagination) needs
+  //    to actually exist in the DOM before we can just toggle visibility.
+  //  - turning search OFF: pagination/"load more" need to resume, which
+  //    means re-trimming the DOM back down to the current page size.
+  // Everything in between is a pure class-toggle, no re-render.
+  const isTransition = isNowActive !== wasSearchActiveLastKeystroke;
+  wasSearchActiveLastKeystroke = isNowActive;
 
-function handleSearchKeydown(event) {
-  if (event.key !== 'Enter') return;
-  const input = event.target.closest('[data-search-input]');
-  if (!input) return;
-  event.preventDefault();
-  commitDraftSearch();
+  if (isTransition) {
+    renderSite();
+    return;
+  }
+
+  if (isNowActive) {
+    updateSearchResultCountOnly(input.value);
+  }
 }
 
 function attachGlobalListeners() {
@@ -892,7 +875,6 @@ function attachGlobalListeners() {
   const app = qs('#app');
   app?.addEventListener('click', handleAppClick);
   app?.addEventListener('input', handleSearchInput);
-  app?.addEventListener('keydown', handleSearchKeydown);
   app?.addEventListener('pointerdown', handleFilterResizeStart);
   app?.addEventListener('touchstart', handleTouchStart, { passive: true });
   app?.addEventListener('touchend', handleTouchEnd, { passive: true });
@@ -994,6 +976,7 @@ export async function initialiseApp() {
     if (pPeople)   state.filters.people   = pPeople.split(',').filter(Boolean);
     if (pTags)     state.filters.tags     = pTags.split(',').filter(Boolean);
     if (pQ)        state.filters.searchQuery = pQ;
+    wasSearchActiveLastKeystroke = Boolean(pQ && pQ.trim());
   }
   const randomStory = shouldRandomise
     ? state.stories[Math.floor(Math.random() * state.stories.length)] || null

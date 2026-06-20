@@ -149,6 +149,22 @@ function storyReflectionSearchTerms(story) {
   ].join(' ');
 }
 
+export function storySearchHaystack(story) {
+  const tagLabels = (story.tags || []).flatMap((tag) => [tag.en, tag.so]).join(' ');
+  return [
+    story.code,
+    story.storyteller,
+    story.district?.en,
+    story.district?.so,
+    story.summary?.en,
+    story.summary?.so,
+    story.story?.en,
+    story.story?.so,
+    tagLabels,
+    storyReflectionSearchTerms(story)
+  ].join(' ').toLowerCase();
+}
+
 export function storyMatchesFilters(story, filters, selectedTagGroups = []) {
   const districts = selectedDistricts(filters);
   if (districts.length && !districts.includes(story.district?.slug)) return false;
@@ -160,20 +176,7 @@ export function storyMatchesFilters(story, filters, selectedTagGroups = []) {
   if (filters.searchQuery) {
     const q = effectiveSearchQuery(filters);
     if (!q) return true;
-    const tagLabels = (story.tags || []).flatMap((tag) => [tag.en, tag.so]).join(' ');
-    const haystack = [
-      story.code,
-      story.storyteller,
-      story.district?.en,
-      story.district?.so,
-      story.summary?.en,
-      story.summary?.so,
-      story.story?.en,
-      story.story?.so,
-      tagLabels,
-      storyReflectionSearchTerms(story)
-    ].join(' ').toLowerCase();
-    if (!haystack.includes(q)) return false;
+    if (!storySearchHaystack(story).includes(q)) return false;
   }
 
   return true;
@@ -186,6 +189,13 @@ export function filteredStories(state, filters = state.filters) {
     return matches.filter((story) => String(story.id) !== String(state.currentStoryId));
   }
   return matches;
+}
+
+// Same as filteredStories, but ignores the search query — used to render every
+// card that could possibly match while typing, so search can hide/show cards
+// via a CSS class instead of regenerating markup on every keystroke.
+export function filteredStoriesExcludingSearch(state, filters = state.filters) {
+  return filteredStories(state, { ...filters, searchQuery: '' });
 }
 
 export function pagedStories(state) {
