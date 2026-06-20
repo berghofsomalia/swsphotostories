@@ -829,6 +829,11 @@ function updateSearchResultCountOnly(query) {
       : '';
   }
 
+  const activeFilterCount = qs('.gallery-active-filter-count');
+  if (activeFilterCount && q) {
+    activeFilterCount.textContent = `${visibleCount}/${state.stories.length} ${t.photostories || t.stories || 'photostories'}`;
+  }
+
   const emptyState = qs('[data-search-empty-state]');
   if (emptyState) emptyState.style.display = (q && visibleCount === 0) ? '' : 'none';
 }

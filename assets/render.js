@@ -436,15 +436,13 @@ function renderActiveFilterPanel(state, districtItems, peopleItems, tagGroups) {
   });
 
   const searchQuery = effectiveSearchQuery(state.filters);
-  if (searchQuery) {
-    chips.push(removableFilterChip(searchQuery, 'clear-search', ''));
-  }
+  const hasActiveSelection = chips.length > 0 || Boolean(searchQuery);
 
   return `
     <div class="gallery-active-filter-panel">
       <div class="gallery-active-filter-count">${visible}/${total} ${escapeHtml(t.photostories || t.stories || 'photostories')}</div>
       ${chips.length ? `<div class="gallery-active-filter-chips">${chips.join('')}</div>` : ''}
-      ${chips.length ? `<button type="button" class="gallery-active-filter-reset" data-action="reset-filters">${escapeHtml(t.resetFilters || 'Reset filters')}</button>` : ''}
+      ${hasActiveSelection ? `<button type="button" class="gallery-active-filter-reset" data-action="reset-filters">${escapeHtml(t.resetFilters || 'Reset filters')}</button>` : ''}
     </div>
   `;
 }
@@ -702,8 +700,8 @@ export function renderApp(state) {
         <div class="gallery-layout ${state.filterDrawerOpen ? 'is-filter-open' : ''}" style="--gallery-split: ${Number(state.gallerySplitPercent || 50)}%;">
           <aside class="filter-panel ${state.filterDrawerOpen ? 'is-open' : ''}">
             <div class="filter-panel-sticky gallery-header gallery-header--filter" data-filter-resize-handle>${storyFilterSummaryMarkup(state)}</div>
-            ${renderSearchBox(state)}
             <div class="filter-panel-scroll-body">${filterGroupsMarkup}</div>
+            <div class="filter-panel-search-dock">${renderSearchBox(state)}</div>
           </aside>
           <div class="gallery-results-pane">
             ${activeFilterPanelMarkup}
