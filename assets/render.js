@@ -230,13 +230,12 @@ function renderStageControls(state, story) {
   const dots = story.images.map((_, i) => `
     <button type="button" class="stage-dot ${i === state.currentImageIndex ? 'is-active' : ''}"
       data-action="go-image" data-value="${i}" aria-label="${escapeHtml(t.imageLabel)} ${i + 1}">
+      <span class="stage-dot-progress" aria-hidden="true"></span>
     </button>
   `).join('');
   return `
     <div class="story-stage-controls-strip">
-      <button type="button" class="control-button" data-action="prev-image" aria-label="${escapeHtml(t.previousImage)}">${icon.chevronLeft()}</button>
       <div class="stage-dots">${dots}</div>
-      <button type="button" class="control-button" data-action="next-image" aria-label="${escapeHtml(t.nextImage)}">${icon.chevronRight()}</button>
     </div>
   `;
 }
