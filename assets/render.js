@@ -538,9 +538,9 @@ const RELATED_PAGE_SIZE = 4;
 function renderRelatedStoriesSection(state, story, t) {
   const relatedPageSize = state.relatedPage ? state.relatedPage * RELATED_PAGE_SIZE : RELATED_PAGE_SIZE;
   const scored = state.stories
-    .map((s) => ({ story: s, score: scoreRelated(story, s) }))
+    .map((s, index) => ({ story: s, score: scoreRelated(story, s), index }))
     .filter((e) => e.score > 0)
-    .sort((a, b) => b.score - a.score);
+    .sort((a, b) => b.score - a.score || a.index - b.index);
 
   if (!scored.length) return '';
 

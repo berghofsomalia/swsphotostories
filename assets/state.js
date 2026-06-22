@@ -31,6 +31,7 @@ export function createInitialState() {
     currentStoryId: null,
     currentImageIndex: 0,
     filters: createEmptyFilters(),
+    galleryOrder: [],
     galleryPage: 1,
     galleryMode: 'total',
     storyVisible: true,

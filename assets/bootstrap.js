@@ -12,10 +12,11 @@ import {
   savePersistentState,
   scoreRelated,
   selectedDistricts,
+  shuffle,
   updateUrlForStory,
   isSaved
 } from './story-data.js?v=20260608-gallery-batches';
-import { getUiText, labelFor, initialiseI18n } from './content.js?v=20260605-story-actions2';
+import { getUiText, labelFor, initialiseI18n, STORAGE_KEYS } from './content.js?v=20260605-story-actions2';
 import { ensureStoryImages, fetchStories, fetchStoryByCode, fetchTagCatalogue } from './api.js?v=20260608-lazy-gallery';
 
 let actionMessageTimerId = null;
@@ -49,6 +50,16 @@ function viewportInitialPageCount() {
   return 1;
 }
 
+function randomizeGalleryOrder() {
+  state.galleryOrder = shuffle(state.stories || []).map((story) => String(story.id));
+}
+
+function ensureGalleryOrder() {
+  if (!Array.isArray(state.galleryOrder) || state.galleryOrder.length === 0) {
+    randomizeGalleryOrder();
+  }
+}
+
 // ── Rendering ─────────────────────────────────────────────────────────────────
 
 function renderSite(options = {}) {
@@ -67,6 +78,7 @@ function renderSite(options = {}) {
 
   if (searchFocus) restoreSearchFocus(searchFocus);
   if (galleryScroll) restoreGalleryScroll(galleryScroll);
+  if (state.galleryVisible || hasActiveFilters(state.filters) || state.galleryOrder?.length) saveGallerySession();
 }
 
 function syncStoryStageOffset() {
@@ -108,11 +120,14 @@ function renderLoading() {
 
 function captureGalleryScroll() {
   const pane = qs('.gallery-results-pane');
+  const filterPane = qs('.filter-panel-scroll-body');
   const snapshot = {
     windowX: window.scrollX,
     windowY: window.scrollY,
     paneScrollLeft: pane?.scrollLeft ?? null,
     paneScrollTop: pane?.scrollTop ?? null,
+    filterScrollLeft: filterPane?.scrollLeft ?? null,
+    filterScrollTop: filterPane?.scrollTop ?? null,
     paneAnchorValue: null,
     paneAnchorOffset: 0
   };
@@ -148,6 +163,11 @@ function restoreGalleryScroll(snapshot) {
       } else {
         pane.scrollTop = snapshot.paneScrollTop;
       }
+    }
+    const filterPane = qs('.filter-panel-scroll-body');
+    if (filterPane && snapshot.filterScrollTop !== null) {
+      filterPane.scrollLeft = snapshot.filterScrollLeft || 0;
+      filterPane.scrollTop = snapshot.filterScrollTop;
     }
     window.scrollTo(snapshot.windowX || 0, snapshot.windowY || 0);
   };
@@ -309,6 +329,36 @@ function cloneFilters(filters) {
   };
 }
 
+function saveGallerySession() {
+  try {
+    sessionStorage.setItem(STORAGE_KEYS.gallerySession, JSON.stringify({
+      filters: cloneFilters(state.filters),
+      galleryOrder: Array.isArray(state.galleryOrder) ? [...state.galleryOrder] : [],
+      galleryPage: state.galleryPage,
+      galleryMode: state.galleryMode,
+      filterDrawerOpen: state.filterDrawerOpen,
+      gallerySplitPercent: state.gallerySplitPercent
+    }));
+  } catch {}
+}
+
+function restoreGallerySession() {
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEYS.gallerySession);
+    if (!raw) return false;
+    const parsed = JSON.parse(raw);
+    state.filters = cloneFilters(parsed.filters);
+    state.galleryOrder = Array.isArray(parsed.galleryOrder) ? [...parsed.galleryOrder] : [];
+    state.galleryPage = Number(parsed.galleryPage) || state.galleryPage || 1;
+    state.galleryMode = parsed.galleryMode || (hasActiveFilters(state.filters) ? 'filtered' : 'total');
+    state.filterDrawerOpen = parsed.filterDrawerOpen ?? state.filterDrawerOpen;
+    state.gallerySplitPercent = clampGallerySplit(Number(parsed.gallerySplitPercent) || state.gallerySplitPercent || 50);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function makeHistoryState(kind = 'story') {
   return {
     swsPhotostories: true,
@@ -316,6 +366,7 @@ function makeHistoryState(kind = 'story') {
     currentStoryId: state.currentStoryId,
     currentImageIndex: state.currentImageIndex,
     filters: cloneFilters(state.filters),
+    galleryOrder: Array.isArray(state.galleryOrder) ? [...state.galleryOrder] : [],
     galleryPage: state.galleryPage,
     galleryMode: state.galleryMode,
     storyVisible: state.storyVisible,
@@ -358,6 +409,7 @@ async function restoreHistoryState(snapshot) {
   state.currentStoryId = snapshot.currentStoryId || state.currentStoryId;
   state.currentImageIndex = Number(snapshot.currentImageIndex) || 0;
   state.filters = cloneFilters(snapshot.filters);
+  state.galleryOrder = Array.isArray(snapshot.galleryOrder) ? [...snapshot.galleryOrder] : [];
   state.galleryPage = Number(snapshot.galleryPage) || 1;
   state.galleryMode = snapshot.galleryMode || 'total';
   state.storyVisible = Boolean(snapshot.storyVisible);
@@ -617,9 +669,9 @@ const ACTIONS = {
   },
   'explore-all': async () => {
     await loadGalleryDataset();
-    state.filters = createEmptyFilters();
-    state.galleryMode = 'total';
-    resetPage();
+    ensureGalleryOrder();
+    state.galleryMode = hasActiveFilters(state.filters) ? 'filtered' : 'total';
+    state.galleryPage = state.galleryPage || viewportInitialPageCount();
     state.storyVisible = true;
     state.galleryVisible = true;
     state.filterDrawerOpen = true;
@@ -646,13 +698,13 @@ const ACTIONS = {
       ? state.filters.district.filter((slug) => slug !== value)
       : [...state.filters.district, value];
     setGalleryModeFromFilters();
-    renderSite();
+    renderSite({ preserveGalleryScroll: true });
   },
   'filter-district-all': async () => {
     await loadGalleryDataset();
     state.filters.district = [];
     setGalleryModeFromFilters();
-    renderSite();
+    renderSite({ preserveGalleryScroll: true });
   },
   'filter-tag': async ({ value }) => {
     await loadGalleryDataset();
@@ -660,7 +712,7 @@ const ACTIONS = {
       ? state.filters.tags.filter((slug) => slug !== value)
       : [...state.filters.tags, value];
     setGalleryModeFromFilters();
-    renderSite();
+    renderSite({ preserveGalleryScroll: true });
   },
   'filter-tag-all': async ({ value }) => {
     await loadGalleryDataset();
@@ -674,7 +726,7 @@ const ACTIONS = {
       state.filters.tags = state.filters.tags.filter((slug) => !activeCluster.includes(slug));
     }
     setGalleryModeFromFilters();
-    renderSite();
+    renderSite({ preserveGalleryScroll: true });
   },
   'filter-people': async ({ value }) => {
     await loadGalleryDataset();
@@ -682,13 +734,13 @@ const ACTIONS = {
       ? state.filters.people.filter((p) => p !== value)
       : [...state.filters.people, value];
     setGalleryModeFromFilters();
-    renderSite();
+    renderSite({ preserveGalleryScroll: true });
   },
   'filter-people-all': async () => {
     await loadGalleryDataset();
     state.filters.people = [];
     setGalleryModeFromFilters();
-    renderSite();
+    renderSite({ preserveGalleryScroll: true });
   },
   'open-story': async ({ value }) => {
     const story = getStoryById(state.stories, value);
@@ -721,9 +773,9 @@ const ACTIONS = {
       state.storyVisible = false;
       state.galleryVisible = true;
       state.filterDrawerOpen = true;
-      state.filters = { district: [], people: [], tags: [], searchQuery: '' };
-      state.galleryMode = 'total';
-      state.galleryPage = viewportInitialPageCount();
+      ensureGalleryOrder();
+      state.galleryMode = hasActiveFilters(state.filters) ? 'filtered' : 'total';
+      state.galleryPage = state.galleryPage || viewportInitialPageCount();
       const url = new URL(window.location.href);
       url.search = '';
       url.hash = 'gallery';
@@ -979,20 +1031,26 @@ export async function initialiseApp() {
   const code = params.get('code');
   const shouldFocusSearch = params.get('focus') === 'search';
   const shouldRandomise = params.has('random') && !code;
+  const hasExplicitGalleryParams = ['district', 'people', 'tags', 'q'].some((key) => params.has(key));
   const selectedStory = code ? await fetchStoryByCode(code) : null;
 
   // Restore gallery filter state from shared URL params
   if (!code) {
     await loadGalleryDataset();
-    const pDistrict = params.get('district');
-    const pPeople   = params.get('people');
-    const pTags     = params.get('tags');
-    const pQ        = params.get('q');
-    if (pDistrict) state.filters.district = pDistrict.split(',').filter(Boolean);
-    if (pPeople)   state.filters.people   = pPeople.split(',').filter(Boolean);
-    if (pTags)     state.filters.tags     = pTags.split(',').filter(Boolean);
-    if (pQ)        state.filters.searchQuery = pQ;
-    wasSearchActiveLastKeystroke = Boolean(pQ && pQ.trim());
+    if (hasExplicitGalleryParams) {
+      const pDistrict = params.get('district');
+      const pPeople   = params.get('people');
+      const pTags     = params.get('tags');
+      const pQ        = params.get('q');
+      if (pDistrict) state.filters.district = pDistrict.split(',').filter(Boolean);
+      if (pPeople)   state.filters.people   = pPeople.split(',').filter(Boolean);
+      if (pTags)     state.filters.tags     = pTags.split(',').filter(Boolean);
+      if (pQ)        state.filters.searchQuery = pQ;
+      wasSearchActiveLastKeystroke = Boolean(pQ && pQ.trim());
+    } else {
+      restoreGallerySession();
+      wasSearchActiveLastKeystroke = Boolean(state.filters.searchQuery && state.filters.searchQuery.trim());
+    }
   }
   const randomStory = shouldRandomise
     ? state.stories[Math.floor(Math.random() * state.stories.length)] || null
@@ -1012,6 +1070,8 @@ export async function initialiseApp() {
 
   if (startInGallery) {
     showGalleryOnly();
+    ensureGalleryOrder();
+    state.galleryMode = hasActiveFilters(state.filters) ? 'filtered' : state.galleryMode || 'total';
   } else {
     state.currentStoryId = activeStory.id;
     state.storyVisible = true;

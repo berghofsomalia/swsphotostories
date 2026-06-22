@@ -1,5 +1,6 @@
 export const STORAGE_KEYS = {
   language: 'photostory_language',
+  gallerySession: 'photostory_gallery_session',
   saved: 'photostory_saved',
   theme: 'photostory_theme'
 };

@@ -98,6 +98,12 @@ function storyContainsAny(storyItems = [], selectedSlugs = []) {
   return selectedSlugs.some((slug) => storySlugs.has(slug));
 }
 
+function storyContainsAll(storyItems = [], selectedSlugs = []) {
+  if (selectedSlugs.length === 0) return true;
+  const storySlugs = new Set(storyItems.map((item) => resolveSlug(item)).filter(Boolean));
+  return selectedSlugs.every((slug) => storySlugs.has(slug));
+}
+
 function selectedTagGroups(state, selectedSlugs = []) {
   const selectedSet = new Set(selectedSlugs.filter(Boolean));
   if (selectedSet.size === 0) return [];
@@ -169,9 +175,9 @@ export function storyMatchesFilters(story, filters, selectedTagGroups = []) {
   const districts = selectedDistricts(filters);
   if (districts.length && !districts.includes(story.district?.slug)) return false;
 
-  if (!storyContainsAny(story.people || [], filters.people || [])) return false;
+  if (!storyContainsAll(story.people || [], filters.people || [])) return false;
 
-  if (!selectedTagGroups.every((clusterSlugs) => storyContainsAny(story.topicTags || [], clusterSlugs))) return false;
+  if (!selectedTagGroups.every((clusterSlugs) => storyContainsAll(story.topicTags || [], clusterSlugs))) return false;
 
   if (filters.searchQuery) {
     const q = effectiveSearchQuery(filters);
@@ -185,10 +191,22 @@ export function storyMatchesFilters(story, filters, selectedTagGroups = []) {
 export function filteredStories(state, filters = state.filters) {
   const tagGroups = selectedTagGroups(state, filters.tags || []);
   const matches = state.stories.filter((story) => storyMatchesFilters(story, filters, tagGroups));
-  if (state.galleryMode === 'related' && state.currentStoryId) {
-    return matches.filter((story) => String(story.id) !== String(state.currentStoryId));
-  }
-  return matches;
+  const visible = state.galleryMode === 'related' && state.currentStoryId
+    ? matches.filter((story) => String(story.id) !== String(state.currentStoryId))
+    : matches;
+  return applyGalleryOrder(state, visible);
+}
+
+function applyGalleryOrder(state, stories = []) {
+  const order = Array.isArray(state.galleryOrder) ? state.galleryOrder : [];
+  if (!order.length) return stories;
+
+  const rank = new Map(order.map((id, index) => [String(id), index]));
+  return [...stories].sort((a, b) => {
+    const aRank = rank.has(String(a.id)) ? rank.get(String(a.id)) : Number.MAX_SAFE_INTEGER;
+    const bRank = rank.has(String(b.id)) ? rank.get(String(b.id)) : Number.MAX_SAFE_INTEGER;
+    return aRank - bRank;
+  });
 }
 
 // Same as filteredStories, but ignores the search query — used to render every
@@ -217,7 +235,6 @@ export function scoreRelated(base, candidate) {
     if (candidateTags.has(slug)) score += 4;
   });
 
-  if (base.district?.slug && base.district.slug === candidate.district?.slug) score += 1;
   return score;
 }
 
