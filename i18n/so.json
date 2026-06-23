@@ -15,13 +15,13 @@
     "communityReflections": "ARAGTIYO BULSHO",
     "direct": "Toos",
     "indirect": "Dadban",
-    "reset": "Nadiifi shaandhooyinka",
+    "reset": "Nadiifi shaandhooyinka/raadinta",
     "district": "Degmo",
     "cluster": "Kutla",
     "primaryTheme": "Mawduuca koowaad",
     "secondaryThemes": "Mawduucyo kale",
     "people": "Dadka",
-    "searchPlaceholder": "Raadi sheekooyinka…",
+    "searchPlaceholder": "Dooro tags iyo/ama raadi",
     "noResults": "Wax sheeko ah oo la jaanqaadi kara shaandhooyinkaaga lama helin.",
     "loading": "Sheekooyinka waa la raraya…",
     "loadingStory": "Sheekada waa la raraya…",
@@ -76,7 +76,7 @@
     "nextStory": "Mid kale",
     "filteredShort": "la shaandheeyey",
     "photostories": "sheeko-sawirro",
-    "resetFilters": "Nadiifi shaandhooyinka"
+    "resetFilters": "Nadiifi shaandhooyinka/raadinta"
   },
   "landing": {
     "section1NexusLines": [

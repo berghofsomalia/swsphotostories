@@ -15,13 +15,13 @@
     "communityReflections": "COMMUNITY REFLECTIONS",
     "direct": "Direct",
     "indirect": "Indirect",
-    "reset": "Reset all filters",
+    "reset": "Reset filters/search",
     "district": "District",
     "cluster": "Cluster",
     "primaryTheme": "Primary theme",
     "secondaryThemes": "Secondary themes",
     "people": "People",
-    "searchPlaceholder": "Search stories…",
+    "searchPlaceholder": "Choose tags and/or search",
     "noResults": "No stories match these filters.",
     "loading": "Loading stories…",
     "loadingStory": "Loading story…",
@@ -76,7 +76,7 @@
     "nextStory": "Next random",
     "filteredShort": "filtered",
     "photostories": "photostories",
-    "resetFilters": "Reset filters"
+    "resetFilters": "Reset filters/search"
   },
   "landing": {
     "section1NexusLines": [

@@ -353,7 +353,6 @@ function cloneFilters(filters) {
 function renderFilterGroup(state, title, allLabel, items, currentValue, action, options = {}) {
   const isMulti = options.multi !== false;
   const filterKey = options.filterKey;
-  const groupSlugs = items.map((item) => item.value);
   const clusterTone = filterKey === 'district'
     ? 'cluster-tone-district'
     : filterKey === 'people'
@@ -364,12 +363,6 @@ function renderFilterGroup(state, title, allLabel, items, currentValue, action, 
   const clusterSlug = filterKey === 'district' ? 'district' : filterKey === 'people' ? 'people' : options.groupValue || '';
   const groupClasses = ['filter-group'];
   if (clusterTone) groupClasses.push(clusterTone);
-  const allCountFilters = cloneFilters(state.filters);
-
-  if (filterKey === 'district') allCountFilters.district = [];
-  if (filterKey === 'people') allCountFilters.people = [];
-  if (filterKey === 'tags') allCountFilters.tags = allCountFilters.tags.filter((slug) => !groupSlugs.includes(slug));
-  const itemCountBase = cloneFilters(allCountFilters);
 
   return `
     <section class="${groupClasses.join(' ')}">
@@ -377,7 +370,7 @@ function renderFilterGroup(state, title, allLabel, items, currentValue, action, 
       <div class="chip-list">
         ${items.map((item) => {
           const active = isMulti ? currentValue.includes(item.value) : currentValue === item.value;
-          const nextFilters = cloneFilters(itemCountBase);
+          const nextFilters = cloneFilters(state.filters);
           if (filterKey === 'district' && !nextFilters.district.includes(item.value)) nextFilters.district.push(item.value);
           if (filterKey === 'people' && !nextFilters.people.includes(item.value)) nextFilters.people.push(item.value);
           if (filterKey === 'tags' && !nextFilters.tags.includes(item.value)) nextFilters.tags.push(item.value);
@@ -449,7 +442,6 @@ function renderActiveFilterPanel(state, districtItems, peopleItems, tagGroups) {
 function renderSearchBox(state) {
   const t = getUiText(state.language);
   const searchQuery = String(state.filters.searchQuery || '');
-  const activeCount = searchQuery.trim() ? countForFilters(state, state.filters) : null;
 
   return `
     <div class="search-box">
@@ -465,7 +457,6 @@ function renderSearchBox(state) {
         aria-label="${escapeHtml(t.searchPlaceholder)}"
       >
     </div>
-    <div class="search-hint" data-search-count>${activeCount !== null ? escapeHtml(storyCountLabelLocal(activeCount, t)) : ''}</div>
   `;
 }
 
@@ -511,7 +502,7 @@ function renderGalleryCard(state, item, options = {}) {
   const imageLoading = isLoadingImageSrc(leadImage);
   const cardClasses = ['gallery-card', options.isSearchHidden ? 'is-search-hidden' : ''].filter(Boolean).join(' ');
   return `
-    <button type="button" class="${cardClasses}" data-action="open-story" data-value="${escapeHtml(item.id)}" data-story-id="${escapeHtml(item.id)}" data-search-haystack="${escapeHtml(storySearchHaystack(item))}">
+    <button type="button" class="${cardClasses}" data-action="open-story" data-value="${escapeHtml(item.id)}" data-story-id="${escapeHtml(item.id)}" data-search-haystack="${escapeHtml(storySearchHaystack(item, state.language))}">
       <div class="gallery-image-frame">
         ${imageLoading
           ? imageLoadingMarkup(item.code || item.id)
@@ -657,7 +648,7 @@ export function renderApp(state) {
 
   const activeSearchQuery = effectiveSearchQuery(state.filters);
   const searchMatchFlags = visibleStories.map((item) =>
-    !activeSearchQuery || storySearchHaystack(item).includes(activeSearchQuery)
+    !activeSearchQuery || storySearchHaystack(item, state.language).includes(activeSearchQuery)
   );
   const noSearchMatches = activeSearchQuery && visibleStories.length > 0 && !searchMatchFlags.some(Boolean);
 
@@ -703,13 +694,14 @@ export function renderApp(state) {
             <div class="filter-panel-search-dock">${renderSearchBox(state)}</div>
           </aside>
           <div class="gallery-results-pane">
+            <div class="gallery-results-search-dock">${renderSearchBox(state)}</div>
             ${activeFilterPanelMarkup}
             <div class="gallery-grid">
               ${galleryGridMarkup}
             </div>
             <div class="gallery-empty" data-search-empty-state style="display:${noSearchMatches ? '' : 'none'};">
               <p>${escapeHtml(t.noResults)}</p>
-              <button type="button" class="action-button" data-action="clear-search">${escapeHtml(t.reset)}</button>
+              <button type="button" class="action-button" data-action="reset-filters">${escapeHtml(t.reset)}</button>
             </div>
             ${loadMoreMarkup}
           </div>

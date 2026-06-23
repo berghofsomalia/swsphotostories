@@ -7,6 +7,7 @@ import {
   getStoryById,
   hasActiveFilters,
   hasMoreStories,
+  filteredStories,
   pagedStories,
   pickRandomRelatedStory,
   savePersistentState,
@@ -57,6 +58,18 @@ function randomizeGalleryOrder() {
 function ensureGalleryOrder() {
   if (!Array.isArray(state.galleryOrder) || state.galleryOrder.length === 0) {
     randomizeGalleryOrder();
+  }
+}
+
+function prepareGalleryEntry() {
+  if (hasActiveFilters(state.filters)) {
+    ensureGalleryOrder();
+    state.galleryMode = 'filtered';
+    state.galleryPage = state.galleryPage || viewportInitialPageCount();
+  } else {
+    randomizeGalleryOrder();
+    state.galleryMode = 'total';
+    state.galleryPage = viewportInitialPageCount();
   }
 }
 
@@ -232,8 +245,12 @@ function scrollGallery() {
   qs('#gallery')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+function visibleSearchInput() {
+  return qsa('[data-search-input]').find((input) => input.offsetParent !== null) || qs('[data-search-input]');
+}
+
 function focusSearchInput() {
-  const input = qs('[data-search-input]');
+  const input = visibleSearchInput();
   if (!input) return;
   pendingSearchFocus = captureSearchFocus(input, { atEnd: true });
   input.focus({ preventScroll: true });
@@ -256,7 +273,7 @@ function captureSearchFocus(input, options = {}) {
 }
 
 function applySearchFocus(focusState) {
-  const restored = qs('[data-search-input]');
+  const restored = visibleSearchInput();
   if (!restored) return;
   try {
     restored.focus({ preventScroll: true });
@@ -347,7 +364,9 @@ function restoreGallerySession() {
     const raw = sessionStorage.getItem(STORAGE_KEYS.gallerySession);
     if (!raw) return false;
     const parsed = JSON.parse(raw);
-    state.filters = cloneFilters(parsed.filters);
+    const filters = cloneFilters(parsed.filters);
+    if (!hasActiveFilters(filters)) return false;
+    state.filters = filters;
     state.galleryOrder = Array.isArray(parsed.galleryOrder) ? [...parsed.galleryOrder] : [];
     state.galleryPage = Number(parsed.galleryPage) || state.galleryPage || 1;
     state.galleryMode = parsed.galleryMode || (hasActiveFilters(state.filters) ? 'filtered' : 'total');
@@ -669,9 +688,7 @@ const ACTIONS = {
   },
   'explore-all': async () => {
     await loadGalleryDataset();
-    ensureGalleryOrder();
-    state.galleryMode = hasActiveFilters(state.filters) ? 'filtered' : 'total';
-    state.galleryPage = state.galleryPage || viewportInitialPageCount();
+    prepareGalleryEntry();
     state.storyVisible = true;
     state.galleryVisible = true;
     state.filterDrawerOpen = true;
@@ -773,9 +790,7 @@ const ACTIONS = {
       state.storyVisible = false;
       state.galleryVisible = true;
       state.filterDrawerOpen = true;
-      ensureGalleryOrder();
-      state.galleryMode = hasActiveFilters(state.filters) ? 'filtered' : 'total';
-      state.galleryPage = state.galleryPage || viewportInitialPageCount();
+      prepareGalleryEntry();
       const url = new URL(window.location.href);
       url.search = '';
       url.hash = 'gallery';
@@ -873,21 +888,13 @@ function updateSearchResultCountOnly(query) {
   // disturbed, no matter how fast someone types.
   const t = getUiText(state.language);
   const q = query.trim().toLowerCase();
+  const visibleCount = filteredStories(state).length;
 
-  let visibleCount = 0;
   qsa('[data-story-id]').forEach((card) => {
     const haystack = card.dataset.searchHaystack || '';
     const matches = !q || haystack.includes(q);
     card.classList.toggle('is-search-hidden', !matches);
-    if (matches) visibleCount += 1;
   });
-
-  const countLabel = qs('[data-search-count]');
-  if (countLabel) {
-    countLabel.textContent = q
-      ? storyCountLabelText(visibleCount, t)
-      : '';
-  }
 
   const activeFilterCount = qs('.gallery-active-filter-count');
   if (activeFilterCount && q) {
@@ -896,12 +903,6 @@ function updateSearchResultCountOnly(query) {
 
   const emptyState = qs('[data-search-empty-state]');
   if (emptyState) emptyState.style.display = (q && visibleCount === 0) ? '' : 'none';
-}
-
-function storyCountLabelText(count, t) {
-  const singular = t.filteredStory || t.totalStory || 'photostory';
-  const plural = t.filteredStories || t.totalStories || 'photostories';
-  return `${count} ${count === 1 ? singular : plural}`;
 }
 
 let wasSearchActiveLastKeystroke = false;
@@ -913,6 +914,9 @@ function handleSearchInput(event) {
   const isNowActive = input.value.trim().length > 0;
 
   state.filters.searchQuery = input.value;
+  qsa('[data-search-input]').forEach((field) => {
+    if (field !== input) field.value = input.value;
+  });
   setGalleryModeFromFilters();
 
   // A real render is needed exactly at the two transition points:
@@ -1070,8 +1074,7 @@ export async function initialiseApp() {
 
   if (startInGallery) {
     showGalleryOnly();
-    ensureGalleryOrder();
-    state.galleryMode = hasActiveFilters(state.filters) ? 'filtered' : state.galleryMode || 'total';
+    prepareGalleryEntry();
   } else {
     state.currentStoryId = activeStory.id;
     state.storyVisible = true;

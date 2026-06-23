@@ -135,13 +135,18 @@ function selectedTagGroups(state, selectedSlugs = []) {
   return [...clusters.values()].map((group) => [...new Set(group)]);
 }
 
-function storyReflectionSearchTerms(story) {
+function localizedValue(value, language = 'en') {
+  if (!value) return '';
+  if (typeof value === 'string') return value;
+  return value?.[language] || value?.en || value?.so || '';
+}
+
+function storyReflectionSearchTerms(story, language = 'en') {
   const reflectionTerms = (story.reflections || []).flatMap((reflection) => {
     const text = reflection?.text || reflection;
     return [
       reflection?.type,
-      text?.en,
-      text?.so,
+      localizedValue(text, language),
       typeof text === 'string' ? text : ''
     ];
   });
@@ -149,29 +154,25 @@ function storyReflectionSearchTerms(story) {
 
   return [
     ...reflectionTerms,
-    legacyReflection?.en,
-    legacyReflection?.so,
+    localizedValue(legacyReflection, language),
     typeof legacyReflection === 'string' ? legacyReflection : ''
   ].join(' ');
 }
 
-export function storySearchHaystack(story) {
-  const tagLabels = (story.tags || []).flatMap((tag) => [tag.en, tag.so]).join(' ');
+export function storySearchHaystack(story, language = 'en') {
+  const tagLabels = (story.tags || []).map((tag) => localizedValue(tag, language)).join(' ');
   return [
     story.code,
     story.storyteller,
-    story.district?.en,
-    story.district?.so,
-    story.summary?.en,
-    story.summary?.so,
-    story.story?.en,
-    story.story?.so,
+    localizedValue(story.district, language),
+    localizedValue(story.summary, language),
+    localizedValue(story.story, language),
     tagLabels,
-    storyReflectionSearchTerms(story)
+    storyReflectionSearchTerms(story, language)
   ].join(' ').toLowerCase();
 }
 
-export function storyMatchesFilters(story, filters, selectedTagGroups = []) {
+export function storyMatchesFilters(story, filters, selectedTagGroups = [], language = 'en') {
   const districts = selectedDistricts(filters);
   if (districts.length && !districts.includes(story.district?.slug)) return false;
 
@@ -182,7 +183,7 @@ export function storyMatchesFilters(story, filters, selectedTagGroups = []) {
   if (filters.searchQuery) {
     const q = effectiveSearchQuery(filters);
     if (!q) return true;
-    if (!storySearchHaystack(story).includes(q)) return false;
+    if (!storySearchHaystack(story, language).includes(q)) return false;
   }
 
   return true;
@@ -190,7 +191,7 @@ export function storyMatchesFilters(story, filters, selectedTagGroups = []) {
 
 export function filteredStories(state, filters = state.filters) {
   const tagGroups = selectedTagGroups(state, filters.tags || []);
-  const matches = state.stories.filter((story) => storyMatchesFilters(story, filters, tagGroups));
+  const matches = state.stories.filter((story) => storyMatchesFilters(story, filters, tagGroups, state.language));
   const visible = state.galleryMode === 'related' && state.currentStoryId
     ? matches.filter((story) => String(story.id) !== String(state.currentStoryId))
     : matches;
