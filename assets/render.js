@@ -32,6 +32,8 @@ export function syncGalleryCardHeights() {}
 const icon = {
   chevronLeft:  () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg>',
   chevronRight: () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>',
+  chevronUp:    () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>',
+  chevronDown:  () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>',
   bookmark:     () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v16l-6-4-6 4z"/></svg>',
   share:        () => '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.7 15.4 6.3M8.6 13.3l6.8 4.4"/></svg>',
   shuffle:      () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 3h5v5"/><path d="M4 20 20 4"/><path d="M21 16v5h-5"/><path d="M15 15 21 21"/><path d="M4 4l5 5"/></svg>',
@@ -442,20 +444,80 @@ function renderActiveFilterPanel(state, districtItems, peopleItems, tagGroups) {
 function renderSearchBox(state) {
   const t = getUiText(state.language);
   const searchQuery = String(state.filters.searchQuery || '');
+  const showLabel = state.language === 'so' ? 'Muuji' : 'Show';
+  const canShowResults = hasActiveFilters(state.filters) && filteredStories(state).length > 0;
 
   return `
-    <div class="search-box">
-      <span class="search-icon" aria-hidden="true">${icon.search()}</span>
-      <input
-        type="search"
-        class="search-input"
-        data-search-input
-        placeholder="${escapeHtml(t.searchPlaceholder)}"
-        value="${escapeHtml(searchQuery)}"
-        autocomplete="off"
-        spellcheck="false"
-        aria-label="${escapeHtml(t.searchPlaceholder)}"
-      >
+    <div class="search-tools">
+      <div class="search-box">
+        <span class="search-icon" aria-hidden="true">${icon.search()}</span>
+        <input
+          type="search"
+          class="search-input"
+          data-search-input
+          placeholder="${escapeHtml(t.searchPlaceholder)}"
+          value="${escapeHtml(searchQuery)}"
+          autocomplete="off"
+          spellcheck="false"
+          aria-label="${escapeHtml(t.searchPlaceholder)}"
+        >
+      </div>
+      ${hasActiveFilters(state.filters) ? `<button type="button" class="gallery-active-filter-reset gallery-search-reset" data-action="reset-filters">${escapeHtml(t.resetFilters || 'Reset filters')}</button>` : ''}
+      <button type="button" class="gallery-show-results" data-action="close-filter-drawer" ${canShowResults ? '' : 'disabled'}>${escapeHtml(showLabel)}</button>
+    </div>
+  `;
+}
+
+function renderMobileFilterFooter(state) {
+  const t = getUiText(state.language);
+  const total = state.stories.length;
+  const visible = filteredStories(state).length;
+  const hasActiveSelection = hasActiveFilters(state.filters);
+  const resetLabel = state.language === 'so' ? 'Nadiifi' : 'Reset';
+  return `
+    <div class="mobile-filter-footer-summary">
+      <div class="mobile-filter-footer-count">${visible}/${total} ${escapeHtml(t.photostories || t.stories || 'Photostories')}</div>
+      <div class="mobile-filter-footer-actions">
+        ${hasActiveSelection ? `<button type="button" class="gallery-show-results mobile-filter-footer-reset" data-action="reset-filters">${escapeHtml(resetLabel)}</button>` : ''}
+        <button type="button" class="icon-button drawer-close-button mobile-filter-close" data-action="close-filter-drawer" aria-label="${escapeHtml(t.close || 'Close')}">${icon.close()}</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderMobileFilterControls(state) {
+  const t = getUiText(state.language);
+  const searchQuery = String(state.filters.searchQuery || '');
+  const total = state.stories.length;
+  const visible = filteredStories(state).length;
+  const hasActiveSelection = hasActiveFilters(state.filters);
+  const showLabel = state.language === 'so' ? 'Muuji' : 'Show';
+  const resetLabel = state.language === 'so' ? 'Nadiifi' : 'Reset';
+  const canShowResults = hasActiveSelection && visible > 0;
+
+  return `
+    <div class="mobile-filter-controls">
+      <div class="mobile-filter-controls-row mobile-filter-controls-row--top">
+        <div class="mobile-filter-footer-count">${visible}/${total} ${escapeHtml(t.photostories || t.stories || 'Photostories')}</div>
+        <button type="button" class="gallery-show-results" data-action="close-filter-drawer" ${canShowResults ? '' : 'disabled'}>${escapeHtml(showLabel)}</button>
+        <button type="button" class="icon-button drawer-close-button mobile-filter-close" data-action="close-filter-drawer" aria-label="${escapeHtml(t.close || 'Close')}">${icon.close()}</button>
+      </div>
+      <div class="mobile-filter-controls-row mobile-filter-controls-row--bottom">
+        <div class="search-box">
+          <span class="search-icon" aria-hidden="true">${icon.search()}</span>
+          <input
+            type="search"
+            class="search-input"
+            data-search-input
+            placeholder="${escapeHtml(t.searchPlaceholder)}"
+            value="${escapeHtml(searchQuery)}"
+            autocomplete="off"
+            spellcheck="false"
+            aria-label="${escapeHtml(t.searchPlaceholder)}"
+          >
+        </div>
+        ${hasActiveSelection ? `<button type="button" class="gallery-show-results mobile-filter-footer-reset" data-action="reset-filters">${escapeHtml(resetLabel)}</button>` : '<span class="mobile-filter-footer-reset-placeholder" aria-hidden="true"></span>'}
+      </div>
     </div>
   `;
 }
@@ -655,7 +717,6 @@ export function renderApp(state) {
   const galleryGridMarkup = visibleStories.length === 0
     ? `<div class="gallery-empty">
         <p>${escapeHtml(t.noResults)}</p>
-        <button type="button" class="action-button" data-action="reset-filters">${escapeHtml(t.reset)}</button>
       </div>`
     : visibleStories.map((item, index) =>
         renderGalleryCard(state, item, { isSearchHidden: !searchMatchFlags[index] })
@@ -684,14 +745,17 @@ export function renderApp(state) {
     <section id="gallery" class="gallery-band gallery-band--entry">
       <div class="content-wrap">
         <button type="button" class="mobile-filter-toggle ${state.filterDrawerOpen ? 'is-open' : ''}" data-action="toggle-filter-drawer">
-          <span>${escapeHtml(state.filterDrawerOpen ? t.hideFilters : t.showFilters)}</span>
-          <span class="mobile-filter-toggle-icon" aria-hidden="true">${state.filterDrawerOpen ? '⌄' : '⌃'}</span>
+          <span>${escapeHtml(state.language === 'so' ? 'Shaandhee/Raadi' : 'Filter/Search')}</span>
+          <span class="mobile-filter-toggle-icon" aria-hidden="true">${state.filterDrawerOpen ? icon.chevronDown() : icon.chevronUp()}</span>
         </button>
         <div class="gallery-layout ${state.filterDrawerOpen ? 'is-filter-open' : ''}" style="--gallery-split: ${Number(state.gallerySplitPercent || 50)}%;">
           <aside class="filter-panel ${state.filterDrawerOpen ? 'is-open' : ''}">
             <div class="filter-panel-sticky gallery-header gallery-header--filter" data-filter-resize-handle>${storyFilterSummaryMarkup(state)}</div>
             <div class="filter-panel-scroll-body">${filterGroupsMarkup}</div>
-            <div class="filter-panel-search-dock">${renderSearchBox(state)}</div>
+            <div class="filter-panel-search-dock">
+              ${renderSearchBox(state)}
+              ${renderMobileFilterControls(state)}
+            </div>
           </aside>
           <div class="gallery-results-pane">
             <div class="gallery-results-search-dock">${renderSearchBox(state)}</div>
@@ -701,7 +765,6 @@ export function renderApp(state) {
             </div>
             <div class="gallery-empty" data-search-empty-state style="display:${noSearchMatches ? '' : 'none'};">
               <p>${escapeHtml(t.noResults)}</p>
-              <button type="button" class="action-button" data-action="reset-filters">${escapeHtml(t.reset)}</button>
             </div>
             ${loadMoreMarkup}
           </div>

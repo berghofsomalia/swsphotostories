@@ -317,7 +317,7 @@ function showGalleryOnly() {
   state.currentStoryId = null;
   state.storyVisible = false;
   state.galleryVisible = true;
-  state.filterDrawerOpen = true;
+  state.filterDrawerOpen = false;
 }
 
 function clampGallerySplit(value) {
@@ -370,7 +370,7 @@ function restoreGallerySession() {
     state.galleryOrder = Array.isArray(parsed.galleryOrder) ? [...parsed.galleryOrder] : [];
     state.galleryPage = Number(parsed.galleryPage) || state.galleryPage || 1;
     state.galleryMode = parsed.galleryMode || (hasActiveFilters(state.filters) ? 'filtered' : 'total');
-    state.filterDrawerOpen = parsed.filterDrawerOpen ?? state.filterDrawerOpen;
+    state.filterDrawerOpen = false;
     state.gallerySplitPercent = clampGallerySplit(Number(parsed.gallerySplitPercent) || state.gallerySplitPercent || 50);
     return true;
   } catch {
@@ -675,7 +675,7 @@ const ACTIONS = {
     resetPage();
     state.storyVisible = true;
     state.galleryVisible = true;
-    state.filterDrawerOpen = true;
+    state.filterDrawerOpen = false;
     renderSite();
     scrollGallery();
   },
@@ -691,7 +691,7 @@ const ACTIONS = {
     prepareGalleryEntry();
     state.storyVisible = true;
     state.galleryVisible = true;
-    state.filterDrawerOpen = true;
+    state.filterDrawerOpen = false;
     renderSite();
     scrollGallery();
   },
@@ -789,7 +789,7 @@ const ACTIONS = {
       state.currentStoryId = null;
       state.storyVisible = false;
       state.galleryVisible = true;
-      state.filterDrawerOpen = true;
+      state.filterDrawerOpen = false;
       prepareGalleryEntry();
       const url = new URL(window.location.href);
       url.search = '';
@@ -831,6 +831,7 @@ async function handleAction(action, value = '') {
 function handleAppClick(event) {
   const target = event.target.closest('[data-action]');
   if (!target) return;
+  if (target.disabled || target.getAttribute('aria-disabled') === 'true') return;
   event.preventDefault();
   handleAction(target.dataset.action, target.dataset.value || '').catch(console.error);
 }
@@ -889,6 +890,8 @@ function updateSearchResultCountOnly(query) {
   const t = getUiText(state.language);
   const q = query.trim().toLowerCase();
   const visibleCount = filteredStories(state).length;
+  const countText = `${visibleCount}/${state.stories.length} ${t.photostories || t.stories || 'photostories'}`;
+  const canShowResults = hasActiveFilters(state.filters) && visibleCount > 0;
 
   qsa('[data-story-id]').forEach((card) => {
     const haystack = card.dataset.searchHaystack || '';
@@ -897,9 +900,18 @@ function updateSearchResultCountOnly(query) {
   });
 
   const activeFilterCount = qs('.gallery-active-filter-count');
-  if (activeFilterCount && q) {
-    activeFilterCount.textContent = `${visibleCount}/${state.stories.length} ${t.photostories || t.stories || 'photostories'}`;
+  if (activeFilterCount) {
+    activeFilterCount.textContent = countText;
   }
+  qsa('.mobile-filter-footer-count').forEach((label) => {
+    label.textContent = countText;
+  });
+  qsa('.gallery-show-results[data-action="close-filter-drawer"]').forEach((button) => {
+    button.disabled = !canShowResults;
+  });
+  qsa('.filter-summary-text').forEach((label) => {
+    label.textContent = countText;
+  });
 
   const emptyState = qs('[data-search-empty-state]');
   if (emptyState) emptyState.style.display = (q && visibleCount === 0) ? '' : 'none';
