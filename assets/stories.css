@@ -2508,6 +2508,7 @@ button.chip.cluster-tone-district:hover,
     display: none !important;
   }
 
+  .site-shell.is-filter-split .mobile-filter-toggle,
   .mobile-filter-toggle {
     position: fixed;
     left: auto;
@@ -2516,16 +2517,23 @@ button.chip.cluster-tone-district:hover,
     top: auto;
     z-index: 82;
     display: inline-flex;
+    align-items: flex-start;
     width: auto;
-    min-height: 2.25rem;
-    min-width: 7.6rem;
-    max-width: min(46vw, 11rem);
+    min-height: 2.85rem;
+    min-width: 8.25rem;
+    max-width: min(50vw, 11.75rem);
     margin: 0;
     transform: none;
-    padding: 0 0.75rem;
+    padding: 0.42rem 0.78rem 0.28rem;
     border-radius: 0.9rem 0.9rem 0 0;
-    font-size: 0.72rem;
-    letter-spacing: 0.08em;
+    font-size: 0.64rem;
+    line-height: 1;
+    letter-spacing: 0.075em;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(34, 38, 43, 0.72);
+    color: rgba(255, 255, 255, 0.86);
+    -webkit-backdrop-filter: blur(12px) saturate(1.05);
+    backdrop-filter: blur(12px) saturate(1.05);
     box-shadow: 0 0.9rem 2rem rgba(0,0,0,0.28);
   }
 
@@ -2628,7 +2636,7 @@ button.chip.cluster-tone-district:hover,
     transform: translateY(110%) !important;
     background: rgba(29,35,42,0.98);
     box-shadow: 0 1.2rem 3rem rgba(0,0,0,0.42);
-    transition: transform 320ms cubic-bezier(.2,.72,.2,1), opacity 220ms ease;
+    transition: transform 520ms cubic-bezier(.2,.72,.2,1), opacity 360ms ease;
   }
 
   .site-shell.is-filter-split .filter-panel.is-open,
@@ -2737,6 +2745,16 @@ button.chip.cluster-tone-district:hover,
   html[data-theme="light"] .filter-panel.is-open,
   html[data-theme="light"] .site-shell.is-filter-split .filter-panel.is-open {
     background: rgba(246,239,230,0.98);
+  }
+
+  html[data-theme="light"] .site-shell.is-filter-split .mobile-filter-toggle,
+  html[data-theme="light"] .mobile-filter-toggle {
+    border-color: rgba(255, 255, 255, 0.58);
+    background: rgba(255, 255, 255, 0.46);
+    color: rgba(31, 29, 26, 0.78);
+    -webkit-backdrop-filter: blur(14px) saturate(1.08);
+    backdrop-filter: blur(14px) saturate(1.08);
+    box-shadow: 0 0.9rem 2rem rgba(43, 33, 21, 0.18);
   }
 
   html[data-theme="light"] .filter-panel.is-open .filter-panel-search-dock {

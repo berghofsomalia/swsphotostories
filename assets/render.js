@@ -22,7 +22,7 @@ import {
   selectedDistricts,
   storyCountLabel,
   storySearchHaystack
-} from './story-data.js?v=20260608-gallery-batches';
+} from './story-data.js?v=20260625-filter-mobile-tune';
 
 export const qs = (selector, root = document) => root.querySelector(selector);
 export const qsa = (selector, root = document) => Array.from(root.querySelectorAll(selector));
@@ -516,7 +516,7 @@ function renderMobileFilterControls(state) {
             aria-label="${escapeHtml(t.searchPlaceholder)}"
           >
         </div>
-        ${hasActiveSelection ? `<button type="button" class="gallery-show-results mobile-filter-footer-reset" data-action="reset-filters">${escapeHtml(resetLabel)}</button>` : '<span class="mobile-filter-footer-reset-placeholder" aria-hidden="true"></span>'}
+        <button type="button" class="gallery-show-results mobile-filter-footer-reset" data-action="reset-filters" ${hasActiveSelection ? '' : 'disabled'}>${escapeHtml(resetLabel)}</button>
       </div>
     </div>
   `;
