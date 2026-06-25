@@ -776,7 +776,7 @@ export function renderApp(state) {
   const shellClasses = [
     'site-shell',
     !state.storyVisible ? 'is-gallery-only' : '',
-    state.galleryVisible && state.filterDrawerOpen ? 'is-filter-split' : '',
+    state.galleryVisible ? 'is-filter-split' : '',
     state.storySlideOut ? 'is-story-sliding-out' : '',
     state.storySlideIn ? 'is-story-sliding-in' : ''
   ].filter(Boolean).join(' ');

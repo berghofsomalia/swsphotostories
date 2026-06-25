@@ -2366,9 +2366,6 @@ button.chip.cluster-tone-district:hover,
     padding: 0.9rem 1rem 1.05rem;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     background: rgba(22, 27, 34, 0.98);
-  }
-
-  .site-shell.is-gallery-only.is-filter-split .filter-panel-search-dock {
     display: none;
   }
 
@@ -2394,6 +2391,10 @@ button.chip.cluster-tone-district:hover,
 
   .site-shell.is-gallery-only.is-filter-split .filter-panel-search-dock .search-box {
     margin: 0;
+  }
+
+  .site-shell.is-gallery-only.is-filter-split .filter-panel-search-dock .mobile-filter-controls {
+    display: none;
   }
 
   .site-shell.is-gallery-only.is-filter-split .filter-group {
@@ -2666,6 +2667,7 @@ button.chip.cluster-tone-district:hover,
   }
 
   .filter-panel.is-open .filter-panel-search-dock {
+    display: block !important;
     flex: 0 0 auto;
     position: relative;
     bottom: auto;
