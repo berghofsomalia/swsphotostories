@@ -253,7 +253,7 @@ export function pickRandomRelatedStory(state, base) {
 
 export function countForFilters(state, nextFilters) {
   const tagGroups = selectedTagGroups(state, nextFilters.tags || []);
-  let matches = state.stories.filter((story) => storyMatchesFilters(story, nextFilters, tagGroups));
+  let matches = state.stories.filter((story) => storyMatchesFilters(story, nextFilters, tagGroups, state.language));
   if (state.galleryMode === 'related' && state.currentStoryId) {
     matches = matches.filter((story) => String(story.id) !== String(state.currentStoryId));
   }

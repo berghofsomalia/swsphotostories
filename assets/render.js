@@ -373,7 +373,7 @@ function renderFilterGroup(state, title, allLabel, items, currentValue, action, 
         ${items.map((item) => {
           const active = isMulti ? currentValue.includes(item.value) : currentValue === item.value;
           const nextFilters = cloneFilters(state.filters);
-          if (filterKey === 'district' && !nextFilters.district.includes(item.value)) nextFilters.district.push(item.value);
+          if (filterKey === 'district') nextFilters.district = [item.value];
           if (filterKey === 'people' && !nextFilters.people.includes(item.value)) nextFilters.people.push(item.value);
           if (filterKey === 'tags' && !nextFilters.tags.includes(item.value)) nextFilters.tags.push(item.value);
           return renderChip(item.label, {
