@@ -540,21 +540,6 @@ function storyGalleryHeader(state) {
   return storyCountLabel(count, t.totalStory, t.totalStories);
 }
 
-function mobileFilterToggleLabel(state) {
-  const t = getUiText(state.language);
-  const total = state.stories.length;
-  const visible = filteredStories(state).length;
-  const defaultLabel = state.language === 'so' ? 'Shaandhee/Raadi' : 'Filter/Search';
-
-  if (hasActiveFilters(state.filters) && visible < total) {
-    const filteredLabel = t.filteredShort || (state.language === 'so' ? 'la shaandheeyey' : 'filtered');
-    const storyLabel = t.photostories || t.stories || 'photostories';
-    return `${visible}/${total} ${filteredLabel} ${storyLabel}`;
-  }
-
-  return defaultLabel;
-}
-
 function storyFilterSummaryMarkup(state) {
   const t = getUiText(state.language);
   const total = state.stories.length;
@@ -764,7 +749,7 @@ export function renderApp(state) {
     <section id="gallery" class="gallery-band gallery-band--entry">
       <div class="content-wrap">
         <button type="button" class="mobile-filter-toggle ${state.filterDrawerOpen ? 'is-open' : ''}" data-action="toggle-filter-drawer">
-          <span>${escapeHtml(mobileFilterToggleLabel(state))}</span>
+          <span>${escapeHtml(state.language === 'so' ? 'Shaandhee/Raadi' : 'Filter/Search')}</span>
           <span class="mobile-filter-toggle-icon" aria-hidden="true">${state.filterDrawerOpen ? icon.chevronDown() : icon.chevronUp()}</span>
         </button>
         <div class="gallery-layout ${state.filterDrawerOpen ? 'is-filter-open' : ''}" style="--gallery-split: ${Number(state.gallerySplitPercent || 50)}%;">
