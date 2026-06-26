@@ -134,17 +134,15 @@ function renderChip(label, options = {}) {
   const classes = ['chip'];
   if (options.muted) classes.push('chip-muted');
   if (options.active) classes.push('chip-active');
-  if (options.disabled) classes.push('chip-disabled');
   if (options.clusterTone) classes.push(options.clusterTone);
   const countMarkup = typeof options.count === 'number'
     ? `<span class="chip-count">${options.count}</span>`
     : '';
   const content = `<span>${escapeHtml(label)}</span>${countMarkup}`;
   const clusterAttr = options.clusterSlug ? ` data-cluster="${escapeHtml(options.clusterSlug)}"` : '';
-  const disabledAttr = options.disabled ? ' disabled aria-disabled="true"' : '';
 
   if (!options.onClick) return `<span class="${classes.join(' ')}"${clusterAttr}>${content}</span>`;
-  return `<button type="button" class="${classes.join(' ')}"${clusterAttr} data-action="${escapeHtml(options.onClick.action)}" data-value="${escapeHtml(options.onClick.value)}"${disabledAttr}>${content}</button>`;
+  return `<button type="button" class="${classes.join(' ')}"${clusterAttr} data-action="${escapeHtml(options.onClick.action)}" data-value="${escapeHtml(options.onClick.value)}">${content}</button>`;
 }
 
 function clusterToneClass(state, clusterSlug) {
@@ -378,14 +376,12 @@ function renderFilterGroup(state, title, allLabel, items, currentValue, action, 
           if (filterKey === 'district') nextFilters.district = [item.value];
           if (filterKey === 'people' && !nextFilters.people.includes(item.value)) nextFilters.people.push(item.value);
           if (filterKey === 'tags' && !nextFilters.tags.includes(item.value)) nextFilters.tags.push(item.value);
-          const count = countForFilters(state, nextFilters);
           return renderChip(item.label, {
             active,
             muted: !active,
-            disabled: !active && count === 0,
             clusterTone,
             clusterSlug,
-            count,
+            count: countForFilters(state, nextFilters),
             onClick: { action, value: item.value }
           });
         }).join('')}
