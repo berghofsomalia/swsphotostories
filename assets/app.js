@@ -1,5 +1,5 @@
-import { initialiseApp } from './bootstrap.js?v=20260625-filter-mobile-tune';
-import { qs } from './render.js?v=20260625-filter-mobile-tune';
+import { initialiseApp } from './bootstrap.js?v=20260701-photo-refresh';
+import { qs } from './render.js?v=20260701-photo-refresh';
 
 initialiseApp().catch((error) => {
   console.error(error);

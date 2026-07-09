@@ -1,4 +1,4 @@
-import { renderApp, qs, qsa, syncGalleryCardHeights, syncImageLoadStates, markImageLoaded } from './render.js?v=20260625-filter-mobile-tune';
+import { renderApp, qs, qsa, syncGalleryCardHeights, syncImageLoadStates, markImageLoaded } from './render.js?v=20260701-photo-refresh';
 import { state, createEmptyFilters, PAGE_SIZE } from './state.js?v=20260608-gallery-batches';
 import {
   buildShareUrl,
@@ -16,9 +16,9 @@ import {
   shuffle,
   updateUrlForStory,
   isSaved
-} from './story-data.js?v=20260625-filter-mobile-tune';
+} from './story-data.js?v=20260701-photo-refresh';
 import { getUiText, labelFor, initialiseI18n, STORAGE_KEYS } from './content.js?v=20260605-story-actions2';
-import { ensureStoryImages, fetchStories, fetchStoryByCode, fetchTagCatalogue } from './api.js?v=20260608-lazy-gallery';
+import { ensureStoryImages, fetchStories, fetchStoryByCode, fetchTagCatalogue } from './api.js?v=20260701-photo-refresh';
 
 let actionMessageTimerId = null;
 let touchStartX = null;

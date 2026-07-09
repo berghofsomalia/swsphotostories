@@ -78,6 +78,13 @@ function slugify(value = '') {
     .replace(/^-+|-+$/g, '');
 }
 
+function normaliseStoryCode(value = '') {
+  return String(value || '')
+    .trim()
+    .replace(/\s+/g, '')
+    .toUpperCase();
+}
+
 function isExternalUrl(src = '') {
   return /^(https?:|data:|blob:|\/)/i.test(src);
 }
@@ -527,13 +534,23 @@ async function fetchStoriesFromSupabase({ includePhotos = true } = {}) {
 async function fetchStoryByCodeFromSupabase(code, { includePhotos = true } = {}) {
   const storyCode = String(code || '').trim();
   if (!storyCode) return null;
+  const normalisedCode = normaliseStoryCode(storyCode);
   const supabase = await getSupabase();
-  const { data, error } = await supabase
-    .from('stories')
-    .select(fullStorySelect({ includePhotos }))
-    .eq('status', 'published')
-    .eq('code', storyCode)
-    .maybeSingle();
+  const select = fullStorySelect({ includePhotos });
+
+  async function queryByCode(value) {
+    return supabase
+      .from('stories')
+      .select(select)
+      .eq('status', 'published')
+      .eq('code', value)
+      .maybeSingle();
+  }
+
+  let { data, error } = await queryByCode(storyCode);
+  if (!error && !data && normalisedCode && normalisedCode !== storyCode) {
+    ({ data, error } = await queryByCode(normalisedCode));
+  }
 
   if (error) throw error;
   if (!data) return null;

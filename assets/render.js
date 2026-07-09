@@ -22,7 +22,7 @@ import {
   selectedDistricts,
   storyCountLabel,
   storySearchHaystack
-} from './story-data.js?v=20260625-filter-mobile-tune';
+} from './story-data.js?v=20260701-photo-refresh';
 
 export const qs = (selector, root = document) => root.querySelector(selector);
 export const qsa = (selector, root = document) => Array.from(root.querySelectorAll(selector));
