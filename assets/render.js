@@ -22,7 +22,7 @@ import {
   selectedDistricts,
   storyCountLabel,
   storySearchHaystack
-} from './story-data.js?v=20260701-photo-refresh';
+} from './story-data.js?v=20260709-gallery-facets';
 
 export const qs = (selector, root = document) => root.querySelector(selector);
 export const qsa = (selector, root = document) => Array.from(root.querySelectorAll(selector));

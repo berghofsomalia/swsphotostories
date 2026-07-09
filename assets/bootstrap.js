@@ -1,4 +1,4 @@
-import { renderApp, qs, qsa, syncGalleryCardHeights, syncImageLoadStates, markImageLoaded } from './render.js?v=20260701-photo-refresh';
+import { renderApp, qs, qsa, syncGalleryCardHeights, syncImageLoadStates, markImageLoaded } from './render.js?v=20260709-gallery-facets';
 import { state, createEmptyFilters, PAGE_SIZE } from './state.js?v=20260608-gallery-batches';
 import {
   buildShareUrl,
@@ -16,9 +16,9 @@ import {
   shuffle,
   updateUrlForStory,
   isSaved
-} from './story-data.js?v=20260701-photo-refresh';
+} from './story-data.js?v=20260709-gallery-facets';
 import { getUiText, labelFor, initialiseI18n, STORAGE_KEYS } from './content.js?v=20260605-story-actions2';
-import { ensureStoryImages, fetchStories, fetchStoryByCode, fetchTagCatalogue } from './api.js?v=20260701-photo-refresh';
+import { ensureStoryImages, fetchStories, fetchStoryByCode, fetchTagCatalogue } from './api.js?v=20260709-gallery-facets';
 
 let actionMessageTimerId = null;
 let touchStartX = null;
@@ -930,24 +930,9 @@ function handleSearchInput(event) {
     if (field !== input) field.value = input.value;
   });
   setGalleryModeFromFilters();
-
-  // A real render is needed exactly at the two transition points:
-  //  - turning search ON: every matching card (ignoring pagination) needs
-  //    to actually exist in the DOM before we can just toggle visibility.
-  //  - turning search OFF: pagination/"load more" need to resume, which
-  //    means re-trimming the DOM back down to the current page size.
-  // Everything in between is a pure class-toggle, no re-render.
-  const isTransition = isNowActive !== wasSearchActiveLastKeystroke;
   wasSearchActiveLastKeystroke = isNowActive;
 
-  if (isTransition) {
-    renderSite();
-    return;
-  }
-
-  if (isNowActive) {
-    updateSearchResultCountOnly(input.value);
-  }
+  renderSite({ preserveGalleryScroll: true });
 }
 
 function attachGlobalListeners() {

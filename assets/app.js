@@ -1,5 +1,5 @@
-import { initialiseApp } from './bootstrap.js?v=20260701-photo-refresh';
-import { qs } from './render.js?v=20260701-photo-refresh';
+import { initialiseApp } from './bootstrap.js?v=20260709-gallery-facets';
+import { qs } from './render.js?v=20260709-gallery-facets';
 
 initialiseApp().catch((error) => {
   console.error(error);
