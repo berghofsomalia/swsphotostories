@@ -10,7 +10,7 @@ const ABOUT_COPY = {
     processOutreach: 'They reached out to the community members who either appear in the photos or were available nearby. They showed them the photos and listened to their stories and reflections on the photos.',
     sharedPhotos: 'They shared the photos in community spaces of storytelling and dialogue.',
     communityPicked: 'Community members picked photos that resonated with them and shared their own stories and reflections.',
-    processFinal: 'Finally, 30 community members across the three locations set out on a similar journey of developing photostories.',
+    processFinal: '10 of these community members in each location set out on a similar journey of developing photostories.',
     questionsIntro: 'The taking of the photos and the writing and telling of the stories were guided by these questions:',
     questions: [
       'Why did I choose to take in these photos? Or what do I see in these photos?',
@@ -300,12 +300,12 @@ function renderLandingPage() {
           </div>
         </section>
 
-        <section class="about-v2-section about-v2-section--guide">
-          ${renderExploreGuide(copy)}
-        </section>
-
         <section class="about-v2-section about-v2-section--full-image about-v2-section--final-image">
           ${renderImagePanel(images.shir3, 'about-v2-image--full')}
+        </section>
+
+        <section class="about-v2-section about-v2-section--guide">
+          ${renderExploreGuide(copy)}
         </section>
       </main>
     </div>

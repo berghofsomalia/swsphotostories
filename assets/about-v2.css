@@ -46,7 +46,7 @@ html[data-theme="dark"] .about-v2-shell {
 .about-v2-grid--intro {
   position: relative;
   grid-template-columns: minmax(20rem, 44vw) minmax(0, 1fr);
-  min-height: min(100svh, 56rem);
+  align-items: stretch;
   background: var(--about-panel-a);
 }
 
@@ -111,13 +111,13 @@ html[data-theme="dark"] .about-v2-shell {
 }
 
 .about-v2-image--map {
-  align-self: stretch;
+  align-self: start;
   background: #c9e0ea;
 }
 
 .about-v2-image--map img {
   width: 100%;
-  height: 100%;
+  height: auto;
   object-fit: contain;
 }
 
@@ -127,14 +127,14 @@ html[data-theme="dark"] .about-v2-shell {
 
 .about-process-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   width: 100%;
 }
 
 .about-process-step {
   display: grid;
-  grid-template-rows: minmax(14rem, 0.72fr) minmax(16rem, 1fr);
-  min-height: clamp(32rem, 80svh, 48rem);
+  grid-template-columns: minmax(18rem, 0.68fr) minmax(0, 1fr);
+  min-height: clamp(18rem, 32svh, 26rem);
 }
 
 .about-process-step--1 { background: var(--about-panel-a); }
@@ -156,7 +156,7 @@ html[data-theme="dark"] .about-v2-shell {
 .about-question-shell p {
   margin: 0;
   color: inherit;
-  font-size: clamp(1.08rem, 1.35vw, 1.32rem);
+  font-size: clamp(2.16rem, 2.7vw, 2.64rem);
   font-weight: 300;
   line-height: 1.48;
   letter-spacing: 0;
@@ -169,14 +169,38 @@ html[data-theme="dark"] .about-v2-shell {
   object-fit: cover;
 }
 
+.about-v2-image--story {
+  align-self: start;
+  width: 100%;
+}
+
+.about-v2-image--story img {
+  height: auto;
+  max-width: none;
+  object-fit: contain;
+  object-position: center;
+}
+
+.about-v2-image--process {
+  min-height: clamp(18rem, 32svh, 26rem);
+  width: 100%;
+}
+
+.about-v2-image--process img {
+  height: auto;
+  max-width: none;
+  object-fit: contain;
+  object-position: center;
+}
+
 .about-v2-section--full-image {
-  min-height: 100svh;
+  height: 100svh;
   background: var(--about-page-bg);
 }
 
 .about-v2-image--full {
   width: 100%;
-  min-height: 100svh;
+  height: 100svh;
 }
 
 .about-v2-image--full img {
@@ -187,8 +211,13 @@ html[data-theme="dark"] .about-v2-shell {
 }
 
 .about-v2-grid--two-col {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  min-height: clamp(32rem, 86svh, 52rem);
+  grid-template-columns: minmax(0, 2fr) minmax(18rem, 1fr);
+  align-items: stretch;
+  min-height: 0;
+}
+
+.about-v2-grid--reverse {
+  grid-template-columns: minmax(18rem, 1fr) minmax(0, 2fr);
 }
 
 .about-v2-grid--reverse .about-copy-panel {
@@ -205,7 +234,6 @@ html[data-theme="dark"] .about-v2-shell {
 
 .about-v2-section--questions {
   display: grid;
-  min-height: 100svh;
   padding: clamp(2rem, 5vw, 5rem);
   background:
     radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.16), transparent 32rem),
@@ -215,6 +243,7 @@ html[data-theme="dark"] .about-v2-shell {
 
 .about-question-shell {
   width: min(100%, 78rem);
+  margin-inline: auto;
   color: var(--about-text);
 }
 
@@ -226,13 +255,12 @@ html[data-theme="dark"] .about-v2-shell {
 
 .about-question-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1px;
   background: rgba(255, 255, 255, 0.16);
 }
 
 .about-question-grid p {
-  min-height: clamp(12rem, 22vw, 18rem);
   padding: clamp(1.35rem, 3vw, 2.6rem);
   background: rgba(16, 37, 54, 0.68);
 }
@@ -305,6 +333,7 @@ html[data-theme="light"] .about-question-grid p {
   }
 
   .about-process-step {
+    grid-template-columns: 1fr;
     grid-template-rows: auto minmax(18rem, 58svh);
     min-height: 0;
   }
@@ -324,13 +353,8 @@ html[data-theme="light"] .about-question-grid p {
     min-height: 62svh;
   }
 
-  .about-v2-section--questions,
   .about-v2-section--guide {
     min-height: 0;
-  }
-
-  .about-question-grid p {
-    min-height: 10rem;
   }
 }
 
@@ -339,7 +363,7 @@ html[data-theme="light"] .about-question-grid p {
   .about-copy-panel p,
   .about-guide-copy p,
   .about-question-shell p {
-    font-size: 1.02rem;
+    font-size: 1.72rem;
     line-height: 1.52;
   }
 
