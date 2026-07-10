@@ -27,7 +27,7 @@ const ABOUT_COPY = {
     exploreRandomMiddle: ' or go back to the ',
     exploreHomeLink: 'homepage',
     exploreRandomSuffix: ' to interact through the carousel of random photostories.',
-    exploreGalleryPrefix: 'Or you can ',
+    exploreGalleryPrefix: 'Or ',
     exploreGalleryLink: 'visit the photostory gallery',
     exploreGalleryMiddle: ' to ',
     exploreSearchLink: 'search for specific words',
@@ -41,7 +41,7 @@ const ABOUT_COPY = {
     processOutreach: 'Waxay la xiriireen xubno bulsho oo ka muuqday sawirrada ama markaas ag joogay. Waxay tuseen sawirrada, waxayna dhegeysteen sheekooyinkooda iyo milicsigooda ku saabsan sawirrada.',
     sharedPhotos: 'Waxay sawirrada ku wadaageen goobo bulsho oo sheeko-wadaag iyo wadahadal ah.',
     communityPicked: 'Xubnaha bulshadu waxay doorteen sawirro dareen ku abuuray, waxayna wadaageen sheekooyinkooda iyo milicsigooda.',
-    processFinal: 'Ugu dambayn, 30 xubnood oo bulshada ka kala yimid saddexda goobood ayaa iyaguna galay safar la mid ah oo lagu horumarinayo sheeko-sawirro.',
+    processFinal: '10 xubnood oo bulshada ka mid ah goob kasta ayaa iyaguna galay safar la mid ah oo lagu horumarinayo sheeko-sawirro.',
     questionsIntro: 'Qaadista sawirrada, qorista iyo ka sheekayntooduba waxay raaceen su’aalahan:',
     questions: [
       'Maxaan u doortay in aan sawirradan qaado? Ama maxaan ku arkaa sawirradan?',
@@ -82,6 +82,9 @@ const FIXED_IMAGES = {
   process4: 'images/process4.png'
 };
 
+const ABOUT_CAROUSEL_INTERVAL_MS = 7000;
+let aboutCarouselTimer = null;
+
 const state = {
   language: localStorage.getItem(STORAGE_KEYS.language) || 'en',
   theme: localStorage.getItem(STORAGE_KEYS.theme) || 'dark',
@@ -89,7 +92,6 @@ const state = {
   menuOpen: false,
   savedOpen: false,
   savedIds: [],
-  aboutImages: {},
   siteStats: { stories: null, reflections: null }
 };
 
@@ -111,16 +113,6 @@ function escapeHtml(value = '') {
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#39;');
-}
-
-function randomItem(items = []) {
-  return items[Math.floor(Math.random() * items.length)] || '';
-}
-
-function pickAboutImages() {
-  return Object.fromEntries(
-    Object.entries(ABOUT_IMAGE_SETS).map(([key, images]) => [key, randomItem(images)])
-  );
 }
 
 function countReflections(stories = []) {
@@ -157,6 +149,29 @@ function renderImagePanel(src, modifier = '', eager = false) {
   `;
 }
 
+function renderCarouselPanel(images = [], key = '', modifier = '', eager = false) {
+  const slides = images.filter(Boolean);
+  if (slides.length <= 1) return renderImagePanel(slides[0] || '', modifier, eager);
+
+  return `
+    <div class="about-v2-image ${modifier} about-v2-carousel" data-about-carousel="${escapeHtml(key)}" style="--about-image-url: url('${escapeHtml(slides[0])}')">
+      ${slides.map((src, index) => `
+        <img
+          class="about-v2-carousel-image ${index === 0 ? 'is-active' : ''}"
+          src="${escapeHtml(src)}"
+          alt=""
+          loading="${eager && index === 0 ? 'eager' : 'lazy'}"
+          ${eager && index === 0 ? 'fetchpriority="high"' : ''}
+          decoding="async"
+        >
+      `).join('')}
+      <div class="about-carousel-progress" aria-hidden="true">
+        ${slides.map((_, index) => `<span class="${index === 0 ? 'is-active' : ''}"></span>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
 function renderProcessStep(text, image, index) {
   return `
     <article class="about-process-step about-process-step--${index}">
@@ -170,16 +185,19 @@ function renderExploreGuide(copy) {
   const stories = state.siteStats.stories == null ? '...' : String(state.siteStats.stories);
   const randomLink = randomStoryLink('../stories/');
   const homeLink = '../';
-  const galleryLink = '../stories/#gallery';
   const searchLink = '../stories/?focus=search#gallery';
 
   return `
     <div class="about-guide-copy">
-      <p>${escapeHtml(copy.exploreIntro.replace('{stories}', stories))}</p>
-      <p>${escapeHtml(copy.exploreStoryInfo)}</p>
-      <p>${escapeHtml(copy.exploreRandomPrefix)}<a href="${escapeHtml(randomLink)}">${escapeHtml(copy.exploreRandomLink)}</a>${escapeHtml(copy.exploreRandomMiddle)}<a href="${escapeHtml(homeLink)}">${escapeHtml(copy.exploreHomeLink)}</a>${escapeHtml(copy.exploreRandomSuffix)}</p>
-      <p>${escapeHtml(copy.exploreGalleryPrefix)}<a href="${escapeHtml(galleryLink)}">${escapeHtml(copy.exploreGalleryLink)}</a>${escapeHtml(copy.exploreGalleryMiddle)}<a href="${escapeHtml(searchLink)}">${escapeHtml(copy.exploreSearchLink)}</a>${escapeHtml(copy.exploreGallerySuffix)}</p>
-      <p>${escapeHtml(copy.exploreMenuNote)}</p>
+      <div class="about-guide-column">
+        <p>${escapeHtml(copy.exploreIntro.replace('{stories}', stories))}</p>
+        <p>${escapeHtml(copy.exploreStoryInfo)}</p>
+      </div>
+      <div class="about-guide-column">
+        <p>${escapeHtml(copy.exploreRandomPrefix)}<a href="${escapeHtml(randomLink)}">${escapeHtml(copy.exploreRandomLink)}</a>${escapeHtml(copy.exploreRandomMiddle)}<a href="${escapeHtml(homeLink)}">${escapeHtml(copy.exploreHomeLink)}</a>${escapeHtml(copy.exploreRandomSuffix)}</p>
+        <p>${escapeHtml(copy.exploreGalleryPrefix)}${escapeHtml(copy.exploreGalleryLink)}${escapeHtml(copy.exploreGalleryMiddle)}<a href="${escapeHtml(searchLink)}">${escapeHtml(copy.exploreSearchLink)}</a>${escapeHtml(copy.exploreGallerySuffix)}</p>
+        <p>${escapeHtml(copy.exploreMenuNote)}</p>
+      </div>
     </div>
   `;
 }
@@ -242,7 +260,6 @@ function renderLandingPage() {
   const landing = getLandingText(state.language);
   const t = getUiText(state.language);
   const copy = ABOUT_COPY[state.language] || ABOUT_COPY.en;
-  const images = state.aboutImages;
   document.title = `${t.about} - ${t.siteTitle}`;
 
   app.innerHTML = `
@@ -267,12 +284,12 @@ function renderLandingPage() {
         </section>
 
         <section class="about-v2-section about-v2-section--full-image">
-          ${renderImagePanel(images.shir0, 'about-v2-image--full')}
+          ${renderCarouselPanel(ABOUT_IMAGE_SETS.shir0, 'shir0', 'about-v2-image--full', true)}
         </section>
 
         <section class="about-v2-section about-v2-section--two-col">
           <div class="about-v2-grid about-v2-grid--two-col">
-            ${renderImagePanel(images.shir1, 'about-v2-image--story')}
+            ${renderCarouselPanel(ABOUT_IMAGE_SETS.shir1, 'shir1', 'about-v2-image--story')}
             <div class="about-copy-panel about-copy-panel--shared"><p>${escapeHtml(copy.sharedPhotos)}</p></div>
           </div>
         </section>
@@ -280,7 +297,7 @@ function renderLandingPage() {
         <section class="about-v2-section about-v2-section--two-col">
           <div class="about-v2-grid about-v2-grid--two-col about-v2-grid--reverse">
             <div class="about-copy-panel about-copy-panel--community"><p>${escapeHtml(copy.communityPicked)}</p></div>
-            ${renderImagePanel(images.shir2, 'about-v2-image--story')}
+            ${renderCarouselPanel(ABOUT_IMAGE_SETS.shir2, 'shir2', 'about-v2-image--story')}
           </div>
         </section>
 
@@ -301,7 +318,7 @@ function renderLandingPage() {
         </section>
 
         <section class="about-v2-section about-v2-section--full-image about-v2-section--final-image">
-          ${renderImagePanel(images.shir3, 'about-v2-image--full')}
+          ${renderCarouselPanel(ABOUT_IMAGE_SETS.shir3, 'shir3', 'about-v2-image--full', true)}
         </section>
 
         <section class="about-v2-section about-v2-section--guide">
@@ -310,6 +327,34 @@ function renderLandingPage() {
       </main>
     </div>
   `;
+
+  startAboutCarousels();
+}
+
+function startAboutCarousels() {
+  if (aboutCarouselTimer) {
+    window.clearInterval(aboutCarouselTimer);
+    aboutCarouselTimer = null;
+  }
+
+  const carousels = Array.from(document.querySelectorAll('[data-about-carousel]'));
+  if (!carousels.length) return;
+
+  aboutCarouselTimer = window.setInterval(() => {
+    document.querySelectorAll('[data-about-carousel]').forEach((carousel) => {
+      const slides = Array.from(carousel.querySelectorAll('.about-v2-carousel-image'));
+      const bars = Array.from(carousel.querySelectorAll('.about-carousel-progress span'));
+      if (slides.length < 2) return;
+
+      const currentIndex = Math.max(0, slides.findIndex((slide) => slide.classList.contains('is-active')));
+      const nextIndex = (currentIndex + 1) % slides.length;
+      slides[currentIndex]?.classList.remove('is-active');
+      bars[currentIndex]?.classList.remove('is-active');
+      slides[nextIndex]?.classList.add('is-active');
+      bars[nextIndex]?.classList.add('is-active');
+      carousel.style.setProperty('--about-image-url', `url('${slides[nextIndex].getAttribute('src') || ''}')`);
+    });
+  }, ABOUT_CAROUSEL_INTERVAL_MS);
 }
 
 function attachListeners() {
@@ -374,7 +419,6 @@ function attachListeners() {
 async function init() {
   attachListeners();
   renderLoading();
-  state.aboutImages = pickAboutImages();
   await initialiseI18n(state.language);
   renderLandingPage();
 
