@@ -141,9 +141,15 @@ function pageImage(src, alt = '', eager = false) {
     : `<img src="${escapeHtml(src)}" alt="${escapeHtml(alt)}" loading="lazy" decoding="async">`;
 }
 
+function cssImageUrl(src = '') {
+  if (!src) return '';
+  if (/^(?:https?:|data:|\/)/i.test(src)) return src;
+  return src.startsWith('images/') ? `../about/${src}` : src;
+}
+
 function renderImagePanel(src, modifier = '', eager = false) {
   return `
-    <div class="about-v2-image ${modifier}" style="--about-image-url: url('${escapeHtml(src)}')">
+    <div class="about-v2-image ${modifier}" style="--about-image-url: url('${escapeHtml(cssImageUrl(src))}')">
       ${pageImage(src, '', eager)}
     </div>
   `;
@@ -154,7 +160,17 @@ function renderCarouselPanel(images = [], key = '', modifier = '', eager = false
   if (slides.length <= 1) return renderImagePanel(slides[0] || '', modifier, eager);
 
   return `
-    <div class="about-v2-image ${modifier} about-v2-carousel" data-about-carousel="${escapeHtml(key)}" style="--about-image-url: url('${escapeHtml(slides[0])}')">
+    <div class="about-v2-image ${modifier} about-v2-carousel" data-about-carousel="${escapeHtml(key)}" style="--about-image-url: url('${escapeHtml(cssImageUrl(slides[0]))}')">
+      ${slides.map((src, index) => `
+        <img
+          class="about-v2-carousel-bg ${index === 0 ? 'is-active' : ''}"
+          src="${escapeHtml(src)}"
+          alt=""
+          aria-hidden="true"
+          loading="${eager && index === 0 ? 'eager' : 'lazy'}"
+          decoding="async"
+        >
+      `).join('')}
       ${slides.map((src, index) => `
         <img
           class="about-v2-carousel-image ${index === 0 ? 'is-active' : ''}"
@@ -343,16 +359,19 @@ function startAboutCarousels() {
   aboutCarouselTimer = window.setInterval(() => {
     document.querySelectorAll('[data-about-carousel]').forEach((carousel) => {
       const slides = Array.from(carousel.querySelectorAll('.about-v2-carousel-image'));
+      const bgSlides = Array.from(carousel.querySelectorAll('.about-v2-carousel-bg'));
       const bars = Array.from(carousel.querySelectorAll('.about-carousel-progress span'));
       if (slides.length < 2) return;
 
       const currentIndex = Math.max(0, slides.findIndex((slide) => slide.classList.contains('is-active')));
       const nextIndex = (currentIndex + 1) % slides.length;
       slides[currentIndex]?.classList.remove('is-active');
+      bgSlides[currentIndex]?.classList.remove('is-active');
       bars[currentIndex]?.classList.remove('is-active');
       slides[nextIndex]?.classList.add('is-active');
+      bgSlides[nextIndex]?.classList.add('is-active');
       bars[nextIndex]?.classList.add('is-active');
-      carousel.style.setProperty('--about-image-url', `url('${slides[nextIndex].getAttribute('src') || ''}')`);
+      carousel.style.setProperty('--about-image-url', `url('${cssImageUrl(slides[nextIndex].getAttribute('src') || '')}')`);
     });
   }, ABOUT_CAROUSEL_INTERVAL_MS);
 }
