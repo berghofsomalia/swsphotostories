@@ -48,7 +48,8 @@ html[data-theme="dark"] .about-v2-shell {
   --about-map-height: min(100svh, calc(44vw / var(--about-map-aspect)));
   position: relative;
   grid-template-columns: minmax(18rem, calc(var(--about-map-height) * var(--about-map-aspect))) minmax(0, 1fr);
-  align-items: start;
+  grid-template-rows: var(--about-map-height);
+  align-items: stretch;
   background: var(--about-panel-a);
 }
 
@@ -56,7 +57,9 @@ html[data-theme="dark"] .about-v2-shell {
   position: relative;
   display: flex;
   align-items: center;
+  align-self: stretch;
   min-width: 0;
+  height: var(--about-map-height);
   padding: clamp(3.2rem, 8vw, 8rem);
   background: linear-gradient(90deg, rgba(215, 231, 239, 0.18), var(--about-panel-a) 18%, var(--about-panel-b));
 }
@@ -207,22 +210,17 @@ html[data-theme="dark"] .about-v2-shell {
 .about-process-copy p,
 .about-copy-panel p,
 .about-guide-copy p,
-.about-question-shell p {
+.about-question-intro {
   margin: 0;
   color: inherit;
-  font-size: clamp(2.16rem, 2.7vw, 2.64rem);
+  font-size: clamp(1.55rem, 2.05vw, 2rem);
   font-weight: 300;
-  line-height: 1.48;
+  line-height: 1.42;
   letter-spacing: 0;
 }
 
 .about-process-copy {
   padding: clamp(1.2rem, 2.7vw, 2.4rem);
-}
-
-.about-process-copy p {
-  font-size: clamp(1.55rem, 2.05vw, 2rem);
-  line-height: 1.42;
 }
 
 .about-v2-image--process img,
@@ -357,6 +355,11 @@ html[data-theme="dark"] .about-v2-shell {
   min-height: 0;
 }
 
+.about-v2-grid--two-col .about-v2-image--story {
+  height: min(100svh, 48rem);
+  min-height: 0;
+}
+
 .about-v2-grid--reverse {
   grid-template-columns: minmax(18rem, 1fr) minmax(0, 2fr);
 }
@@ -392,7 +395,7 @@ html[data-theme="dark"] .about-v2-shell {
 .about-question-intro {
   width: 100%;
   max-width: none;
-  margin: 0 auto clamp(1.6rem, 4vw, 3rem);
+  margin: 0 auto clamp(2.2rem, 4.8vw, 4rem);
   text-align: center;
 }
 
@@ -412,10 +415,10 @@ html[data-theme="dark"] .about-v2-shell {
     linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(16, 37, 54, 0.7) 24%, rgba(16, 37, 54, 0.76) 76%, rgba(255, 255, 255, 0.07));
   box-shadow: inset 0 0 2.2rem rgba(16, 37, 54, 0.28);
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.45rem, 2.05vw, 2rem);
+  font-size: clamp(1.05rem, 1.45vw, 1.34rem);
   font-style: italic;
   font-weight: 400;
-  line-height: 1.42;
+  line-height: 1.36;
 }
 
 html[data-theme="light"] .about-question-grid p {
@@ -504,7 +507,12 @@ html[data-theme="light"] .about-guide-column:nth-child(2) {
     min-height: 0;
   }
 
+  .about-v2-grid--intro {
+    grid-template-rows: auto auto;
+  }
+
   .about-title-panel {
+    height: auto;
     min-height: 46svh;
     padding: clamp(3rem, 12vw, 5rem) clamp(1.4rem, 7vw, 2.4rem);
     background: linear-gradient(180deg, var(--about-panel-a), var(--about-panel-b));
@@ -563,6 +571,10 @@ html[data-theme="light"] .about-guide-column:nth-child(2) {
 
   .about-v2-grid--two-col .about-v2-image--story {
     order: 2;
+  }
+
+  .about-v2-grid--two-col .about-v2-image--story {
+    height: min(100svh, 48rem);
   }
 
   .about-v2-image--story {
@@ -624,9 +636,17 @@ html[data-theme="light"] .about-guide-column:nth-child(2) {
     padding: clamp(0.8rem, 1.8vw, 1.4rem);
   }
 
-  .about-process-copy p {
+  .about-process-copy p,
+  .about-copy-panel p,
+  .about-guide-copy p,
+  .about-question-intro {
     font-size: clamp(1.18rem, 1.7vw, 1.45rem);
     line-height: 1.32;
+  }
+
+  .about-question-grid p {
+    font-size: clamp(0.98rem, 1.26vw, 1.12rem);
+    line-height: 1.34;
   }
 }
 
@@ -634,14 +654,14 @@ html[data-theme="light"] .about-guide-column:nth-child(2) {
   .about-process-copy p,
   .about-copy-panel p,
   .about-guide-copy p,
-  .about-question-shell p {
-    font-size: 1.72rem;
-    line-height: 1.52;
+  .about-question-intro {
+    font-size: clamp(1.18rem, 5.2vw, 1.55rem);
+    line-height: 1.42;
   }
 
   .about-question-grid p {
-    font-size: clamp(1.24rem, 6vw, 1.55rem);
-    line-height: 1.42;
+    font-size: clamp(0.98rem, 4.5vw, 1.18rem);
+    line-height: 1.36;
   }
 
   .about-v2-section--questions,
@@ -649,8 +669,4 @@ html[data-theme="light"] .about-guide-column:nth-child(2) {
     padding: 1.2rem 1.2rem 5rem;
   }
 
-  .about-process-copy p {
-    font-size: clamp(1.18rem, 5.2vw, 1.55rem);
-    line-height: 1.42;
-  }
 }
