@@ -188,6 +188,10 @@ function renderCarouselPanel(images = [], key = '', modifier = '', eager = false
   `;
 }
 
+function aboutImageStyle(src = '') {
+  return `style="--about-image-url: url('${escapeHtml(cssImageUrl(src))}')"`;
+}
+
 function renderProcessStep(text, image, index) {
   return `
     <article class="about-process-step about-process-step--${index}">
@@ -304,21 +308,21 @@ function renderLandingPage() {
         </section>
 
         <section class="about-v2-section about-v2-section--two-col">
-          <div class="about-v2-grid about-v2-grid--two-col">
+          <div class="about-v2-grid about-v2-grid--two-col" ${aboutImageStyle(ABOUT_IMAGE_SETS.shir1?.[0])}>
             ${renderCarouselPanel(ABOUT_IMAGE_SETS.shir1, 'shir1', 'about-v2-image--story')}
             <div class="about-copy-panel about-copy-panel--shared"><p>${escapeHtml(copy.sharedPhotos)}</p></div>
           </div>
         </section>
 
         <section class="about-v2-section about-v2-section--two-col">
-          <div class="about-v2-grid about-v2-grid--two-col about-v2-grid--reverse">
+          <div class="about-v2-grid about-v2-grid--two-col about-v2-grid--reverse" ${aboutImageStyle(ABOUT_IMAGE_SETS.shir2?.[0])}>
             <div class="about-copy-panel about-copy-panel--community"><p>${escapeHtml(copy.communityPicked)}</p></div>
             ${renderCarouselPanel(ABOUT_IMAGE_SETS.shir2, 'shir2', 'about-v2-image--story')}
           </div>
         </section>
 
         <section class="about-v2-section about-v2-section--two-col">
-          <div class="about-v2-grid about-v2-grid--two-col">
+          <div class="about-v2-grid about-v2-grid--two-col" ${aboutImageStyle(FIXED_IMAGES.process4)}>
             ${renderImagePanel(FIXED_IMAGES.process4, 'about-v2-image--story')}
             <div class="about-copy-panel about-copy-panel--final"><p>${escapeHtml(copy.processFinal)}</p></div>
           </div>
@@ -372,6 +376,7 @@ function startAboutCarousels() {
       bgSlides[nextIndex]?.classList.add('is-active');
       bars[nextIndex]?.classList.add('is-active');
       carousel.style.setProperty('--about-image-url', `url('${cssImageUrl(slides[nextIndex].getAttribute('src') || '')}')`);
+      carousel.closest('.about-v2-grid--two-col')?.style.setProperty('--about-image-url', `url('${cssImageUrl(slides[nextIndex].getAttribute('src') || '')}')`);
     });
   }, ABOUT_CAROUSEL_INTERVAL_MS);
 }

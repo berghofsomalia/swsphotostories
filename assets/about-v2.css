@@ -350,18 +350,51 @@ html[data-theme="dark"] .about-v2-shell {
 }
 
 .about-v2-grid--two-col {
-  grid-template-columns: minmax(0, 2fr) minmax(18rem, 1fr);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto minmax(0, 1fr);
   align-items: stretch;
-  min-height: 0;
+  min-height: 100svh;
+  background: var(--about-panel-d);
+}
+
+.about-v2-grid--two-col::before {
+  content: "";
+  position: absolute;
+  inset: -2rem;
+  z-index: -2;
+  background-image: var(--about-image-url);
+  background-position: center;
+  background-size: cover;
+  filter: blur(30px) saturate(1.08);
+  opacity: 0.74;
+  transform: scale(1.08);
+  pointer-events: none;
+}
+
+.about-v2-grid--two-col::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: transparent;
+  pointer-events: none;
 }
 
 .about-v2-grid--two-col .about-v2-image--story {
-  height: min(100svh, 48rem);
+  order: 2;
+  height: 100%;
   min-height: 0;
 }
 
+.about-v2-grid--two-col .about-v2-carousel.about-v2-image--story {
+  height: 100%;
+}
+
 .about-v2-grid--reverse {
-  grid-template-columns: minmax(18rem, 1fr) minmax(0, 2fr);
+  grid-template-columns: 1fr;
 }
 
 .about-v2-grid--reverse .about-copy-panel {
@@ -372,9 +405,33 @@ html[data-theme="dark"] .about-v2-shell {
   order: 2;
 }
 
-.about-copy-panel--shared { background: var(--about-panel-d); }
-.about-copy-panel--community { background: var(--about-panel-b); }
-.about-copy-panel--final { background: var(--about-panel-c); }
+.about-v2-grid--two-col .about-copy-panel {
+  order: 1;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  background: transparent;
+  text-align: center;
+  text-shadow:
+    0 0.12rem 0.7rem rgba(16, 37, 54, 0.5),
+    0 0 1.2rem rgba(16, 37, 54, 0.34);
+}
+
+.about-v2-grid--two-col .about-copy-panel p {
+  margin-inline: auto;
+  max-width: min(48rem, 86vw);
+  text-align: center;
+}
+
+.about-copy-panel--shared,
+.about-copy-panel--community,
+.about-copy-panel--final {
+  background: transparent;
+}
+
+.about-v2-grid--two-col .about-v2-carousel::after {
+  display: none;
+}
 
 .about-v2-section--questions {
   display: grid;
@@ -502,8 +559,7 @@ html[data-theme="light"] .about-guide-column:nth-child(2) {
     grid-template-columns: 1fr;
   }
 
-  .about-v2-grid--intro,
-  .about-v2-grid--two-col {
+  .about-v2-grid--intro {
     min-height: 0;
   }
 
@@ -574,7 +630,7 @@ html[data-theme="light"] .about-guide-column:nth-child(2) {
   }
 
   .about-v2-grid--two-col .about-v2-image--story {
-    height: min(100svh, 48rem);
+    height: 100%;
   }
 
   .about-v2-image--story {
