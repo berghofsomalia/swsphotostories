@@ -184,13 +184,15 @@ html[data-theme="dark"] .about-v2-shell {
 
 .about-process-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(20rem, 0.9fr) minmax(0, 1fr);
+  grid-template-rows: repeat(3, minmax(0, 1fr));
   width: 100%;
+  height: 100svh;
+  overflow: hidden;
 }
 
 .about-process-step {
-  display: grid;
-  grid-template-columns: minmax(18rem, 0.68fr) minmax(0, 1fr);
+  display: contents;
   min-height: 0;
 }
 
@@ -223,6 +225,10 @@ html[data-theme="dark"] .about-v2-shell {
   padding: clamp(1.2rem, 2.7vw, 2.4rem);
 }
 
+.about-process-step--1 .about-process-copy { background: var(--about-panel-a); }
+.about-process-step--2 .about-process-copy { background: var(--about-panel-b); }
+.about-process-step--3 .about-process-copy { background: var(--about-panel-c); }
+
 .about-v2-image--process img,
 .about-v2-image--story img {
   width: 100%;
@@ -243,23 +249,20 @@ html[data-theme="dark"] .about-v2-shell {
 }
 
 .about-v2-image--process {
-  align-self: start;
+  align-self: stretch;
+  box-sizing: border-box;
   min-height: 0;
   width: 100%;
-  background: transparent;
+  height: 100%;
+  background: #fff;
 }
 
 .about-v2-image--process::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  background: rgba(109, 159, 186, 0.14);
-  pointer-events: none;
+  display: none;
 }
 
 .about-v2-image--process img {
-  height: auto;
+  height: 100%;
   max-width: none;
   object-fit: contain;
   object-position: center;
@@ -582,6 +585,12 @@ html[data-theme="light"] .about-guide-column:nth-child(2) {
     grid-template-columns: 1fr;
   }
 
+  .about-process-grid {
+    grid-template-rows: none;
+    height: auto;
+    overflow: visible;
+  }
+
   .about-v2-grid--intro {
     min-height: 0;
   }
@@ -631,9 +640,20 @@ html[data-theme="light"] .about-guide-column:nth-child(2) {
   }
 
   .about-process-step {
+    display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: auto auto;
     min-height: 0;
+  }
+
+  .about-process-step--1 { background: var(--about-panel-a); }
+  .about-process-step--2 { background: var(--about-panel-b); }
+  .about-process-step--3 { background: var(--about-panel-c); }
+
+  .about-process-step--1 .about-process-copy,
+  .about-process-step--2 .about-process-copy,
+  .about-process-step--3 .about-process-copy {
+    background: transparent;
   }
 
   .about-process-copy,
@@ -701,6 +721,11 @@ html[data-theme="light"] .about-guide-column:nth-child(2) {
 
   .about-v2-image--process {
     align-self: stretch;
+    height: auto;
+  }
+
+  .about-v2-image--process img {
+    height: auto;
   }
 
   .about-v2-section--guide {
