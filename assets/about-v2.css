@@ -294,7 +294,6 @@ html[data-theme="dark"] .about-v2-shell {
 }
 
 .about-v2-carousel::before,
-.about-v2-carousel.about-v2-image--story::before,
 .about-v2-carousel.about-v2-image--full::before {
   display: none;
 }
@@ -377,15 +376,6 @@ html[data-theme="dark"] .about-v2-shell {
   pointer-events: none;
 }
 
-.about-v2-grid--two-col::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: transparent;
-  pointer-events: none;
-}
-
 .about-v2-grid--two-col .about-v2-image--story {
   order: 2;
   height: 100%;
@@ -424,12 +414,6 @@ html[data-theme="dark"] .about-v2-shell {
   margin-inline: auto;
   max-width: min(48rem, 86vw);
   text-align: center;
-}
-
-.about-copy-panel--shared,
-.about-copy-panel--community,
-.about-copy-panel--final {
-  background: transparent;
 }
 
 .about-v2-grid--two-col .about-v2-carousel::after {
@@ -605,9 +589,6 @@ html[data-theme="light"] .about-guide-column:nth-child(2) {
 
   .about-v2-grid--intro {
     min-height: 0;
-  }
-
-  .about-v2-grid--intro {
     grid-template-rows: auto auto;
   }
 
@@ -658,10 +639,6 @@ html[data-theme="light"] .about-guide-column:nth-child(2) {
     min-height: 0;
   }
 
-  .about-process-step--1 { background: var(--about-panel-a); }
-  .about-process-step--2 { background: var(--about-panel-b); }
-  .about-process-step--3 { background: var(--about-panel-c); }
-
   .about-process-step--1 .about-process-copy,
   .about-process-step--2 .about-process-copy,
   .about-process-step--3 .about-process-copy {
@@ -711,18 +688,6 @@ html[data-theme="light"] .about-guide-column:nth-child(2) {
     max-width: calc(100% - 20px);
     max-height: calc(100% - 20px);
     object-fit: contain;
-    object-position: center;
-  }
-
-  .about-v2-image.about-v2-carousel > img.about-v2-carousel-bg {
-    position: absolute;
-    inset: -1.25rem;
-    z-index: 0;
-    width: calc(100% + 2.5rem);
-    height: calc(100% + 2.5rem);
-    max-width: none;
-    max-height: none;
-    object-fit: cover;
     object-position: center;
   }
 

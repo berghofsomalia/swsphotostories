@@ -20,19 +20,6 @@ const ABOUT_COPY = {
       'If the issue would be resolved or the strength amplified over the next three years, what would these photos look like?',
       'What cultural and religious wisdom describe the present situation and could inspire us to move towards the imagined future?'
     ],
-    exploreIntro: 'There are currently {stories} photostories for you to explore.',
-    exploreStoryInfo: 'Each photostory features one or more photos, the story of the photographer-storyteller, and if available: direct reflections from the community members who were associated with the photos or indirect reflections from others. At the end of the story, you can save or share it or explore related photostories.',
-    exploreRandomPrefix: 'If you are in the mood for a surprise, ',
-    exploreRandomLink: 'see a random photostory',
-    exploreRandomMiddle: ' or go back to the ',
-    exploreHomeLink: 'homepage',
-    exploreRandomSuffix: ' to interact through the carousel of random photostories.',
-    exploreGalleryPrefix: 'Or ',
-    exploreGalleryLink: 'visit the photostory gallery',
-    exploreGalleryMiddle: ' to ',
-    exploreSearchLink: 'search for specific words',
-    exploreGallerySuffix: ' you have in mind, or combine place, people, and thematic cluster-tags to follow the connections that matter to you. The taxonomy of thematic clusters and tags emerged from workshops with the 12 community peacebuilders.',
-    exploreMenuNote: 'The menu in the top-right corner lets you choose other navigation options.',
     guideStoryIntro: 'In each story, you will see one or more photographs, the story of the photographer-storyteller, and, where available, reflections from community members. Some reflections come from people directly connected to the photographs, while others come from people who responded to them through their own experiences.',
     guideStoryActions: 'At the end of each story, you can save or share it, or continue exploring related photostories.',
     guideDiscoverPrefix: 'Discover {stories} photostories in this collection. On the ',
@@ -60,19 +47,6 @@ const ABOUT_COPY = {
       'Haddii arrintaas la xalliyo ama awooddaas la xoojiyo saddexda sano ee soo socota, sawirradani sidee bay u ekaan lahaayeen?',
       'Xigmad dhaqameed iyo mid diimeed noocee ah ayaa sharxi karta xaaladda hadda jirta, nagu dhiirrigelinna karta in aan u dhaqaaqno mustaqbalka la qiyaasay?'
     ],
-    exploreIntro: 'Hadda waxaa jira {stories} sheeko-sawirro oo aad sahamin karto.',
-    exploreStoryInfo: 'Sheeko-sawir kasta wuxuu ka kooban yahay hal ama dhowr sawir, sheekada sawir-qaadaha/sheekeeyaha, iyo haddii la hayo: milicsiyo toos ah oo ka yimid xubnaha bulshada ee sawirrada la xiriiray ama milicsiyo dad kale ka yimid. Dhammaadka sheekada, waad kaydin kartaa, la wadaagi kartaa, ama sahamin kartaa sheeko-sawirro la xiriira.',
-    exploreRandomPrefix: 'Haddii aad rabto wax lama-filaan ah, ',
-    exploreRandomLink: 'fur sheeko-sawir aan kala sooc lahayn',
-    exploreRandomMiddle: ' ama ku noqo ',
-    exploreHomeLink: 'bogga hore',
-    exploreRandomSuffix: ' si aad ula falgasho carousel-ka sheeko-sawirrada aan kala sooc lahayn.',
-    exploreGalleryPrefix: 'Ama waxaad ',
-    exploreGalleryLink: 'booqan kartaa galbeedka sheeko-sawirrada',
-    exploreGalleryMiddle: ' si aad u ',
-    exploreSearchLink: 'raadiso erayo gaar ah',
-    exploreGallerySuffix: ' oo maskaxdaada ku jira, ama aad isugu darto goob, dad, iyo cluster-tags si aad u raacdo xiriirrada adiga kuu muuqda. Taxonomy-ga cluster-yada iyo tags-ku wuxuu ka soo baxay aqoon-isweydaarsiyo lala yeeshay 12-ka nabad-dhise bulsho.',
-    exploreMenuNote: 'Menu-ga ku yaal geeska midig ee kore wuxuu kuu oggolaanayaa xulashooyin kale oo navigation ah.',
     guideStoryIntro: 'Sheeko kasta waxaad ku arki doontaa hal ama dhowr sawir, sheekada sawir-qaadaha/sheekeeyaha, iyo, haddii la hayo, milicsiyo ka yimid xubnaha bulshada. Milicsiyada qaarkood waxay ka yimaadaan dad si toos ah ula xiriira sawirrada, halka kuwo kalena ay ka yimaadaan dad sawirrada kaga falceliyay waaya-aragnimadooda.',
     guideStoryActions: 'Dhammaadka sheeko kasta, waad kaydin kartaa ama la wadaagi kartaa, ama waad sii sahamin kartaa sheeko-sawirro la xiriira.',
     guideDiscoverPrefix: 'Sahami {stories} sheeko-sawirro oo ku jira ururintan. ',
@@ -137,12 +111,6 @@ function countReflections(stories = []) {
   return stories.reduce((total, story) => total + Number(story.reflectionCount || (story.reflection?.en || story.reflection?.so ? 1 : 0)), 0);
 }
 
-function randomStoryLink(basePath = '../stories/') {
-  const story = state.stories[Math.floor(Math.random() * state.stories.length)];
-  if (!story) return `${basePath}#gallery`;
-  return `${basePath}?code=${encodeURIComponent(story.code || story.id)}`;
-}
-
 function renderContextStrips(landing) {
   const nexusLines = landing.section1NexusLines || [];
   const titleLines = landing.section1TitleLines || [];
@@ -177,30 +145,47 @@ function renderCarouselPanel(images = [], key = '', modifier = '', eager = false
   const slides = images.filter(Boolean);
   if (slides.length <= 1) return renderImagePanel(slides[0] || '', modifier, eager);
 
+  const bgImages = [];
+  const fgImages = [];
+  const progressBars = [];
+
+  slides.forEach((src, index) => {
+    const isFirst = index === 0;
+    const activeClass = isFirst ? 'is-active' : '';
+    const loading = eager && isFirst ? 'eager' : 'lazy';
+    const escapedSrc = escapeHtml(src);
+
+    bgImages.push(`
+      <img
+        class="about-v2-carousel-bg ${activeClass}"
+        src="${escapedSrc}"
+        alt=""
+        aria-hidden="true"
+        loading="${loading}"
+        decoding="async"
+      >
+    `);
+
+    fgImages.push(`
+      <img
+        class="about-v2-carousel-image ${activeClass}"
+        src="${escapedSrc}"
+        alt=""
+        loading="${loading}"
+        ${eager && isFirst ? 'fetchpriority="high"' : ''}
+        decoding="async"
+      >
+    `);
+
+    progressBars.push(`<span class="${activeClass}"></span>`);
+  });
+
   return `
     <div class="about-v2-image ${modifier} about-v2-carousel" data-about-carousel="${escapeHtml(key)}" style="--about-image-url: url('${escapeHtml(cssImageUrl(slides[0]))}')">
-      ${slides.map((src, index) => `
-        <img
-          class="about-v2-carousel-bg ${index === 0 ? 'is-active' : ''}"
-          src="${escapeHtml(src)}"
-          alt=""
-          aria-hidden="true"
-          loading="${eager && index === 0 ? 'eager' : 'lazy'}"
-          decoding="async"
-        >
-      `).join('')}
-      ${slides.map((src, index) => `
-        <img
-          class="about-v2-carousel-image ${index === 0 ? 'is-active' : ''}"
-          src="${escapeHtml(src)}"
-          alt=""
-          loading="${eager && index === 0 ? 'eager' : 'lazy'}"
-          ${eager && index === 0 ? 'fetchpriority="high"' : ''}
-          decoding="async"
-        >
-      `).join('')}
+      ${bgImages.join('')}
+      ${fgImages.join('')}
       <div class="about-carousel-progress" aria-hidden="true">
-        ${slides.map((_, index) => `<span class="${index === 0 ? 'is-active' : ''}"></span>`).join('')}
+        ${progressBars.join('')}
       </div>
     </div>
   `;
@@ -221,12 +206,10 @@ function renderProcessStep(text, image, index) {
 
 function renderExploreGuide(copy) {
   const stories = state.siteStats.stories == null ? '...' : String(state.siteStats.stories);
-  const randomLink = randomStoryLink('../stories/');
   const homeLink = '../';
   const searchLink = '../stories/?focus=search#gallery';
 
-  if (copy.guideStoryIntro) {
-    return `
+  return `
     <div class="about-guide-copy">
       <div class="about-guide-column">
         <p>${escapeHtml(copy.guideStoryIntro)}</p>
@@ -235,21 +218,6 @@ function renderExploreGuide(copy) {
       <div class="about-guide-column">
         <p>${escapeHtml(copy.guideDiscoverPrefix.replace('{stories}', stories))}<a href="${escapeHtml(homeLink)}">${escapeHtml(copy.guideHomeLink)}</a>${escapeHtml(copy.guideDiscoverMiddle)}<a href="${escapeHtml(searchLink)}">${escapeHtml(copy.guideGalleryLink)}</a>${escapeHtml(copy.guideDiscoverSuffix)}</p>
         <p>${escapeHtml(copy.guideMenuPrefix)}<span class="about-guide-menu-icon" aria-hidden="true">☰</span>${escapeHtml(copy.guideMenuSuffix)}</p>
-      </div>
-    </div>
-  `;
-  }
-
-  return `
-    <div class="about-guide-copy">
-      <div class="about-guide-column">
-        <p>${escapeHtml(copy.exploreIntro.replace('{stories}', stories))}</p>
-        <p>${escapeHtml(copy.exploreStoryInfo)}</p>
-      </div>
-      <div class="about-guide-column">
-        <p>${escapeHtml(copy.exploreRandomPrefix)}<a href="${escapeHtml(randomLink)}">${escapeHtml(copy.exploreRandomLink)}</a>${escapeHtml(copy.exploreRandomMiddle)}<a href="${escapeHtml(homeLink)}">${escapeHtml(copy.exploreHomeLink)}</a>${escapeHtml(copy.exploreRandomSuffix)}</p>
-        <p>${escapeHtml(copy.exploreGalleryPrefix)}${escapeHtml(copy.exploreGalleryLink)}${escapeHtml(copy.exploreGalleryMiddle)}<a href="${escapeHtml(searchLink)}">${escapeHtml(copy.exploreSearchLink)}</a>${escapeHtml(copy.exploreGallerySuffix)}</p>
-        <p>${escapeHtml(copy.exploreMenuNote)}</p>
       </div>
     </div>
   `;
@@ -414,61 +382,54 @@ function startAboutCarousels() {
   }, ABOUT_CAROUSEL_INTERVAL_MS);
 }
 
+const ACTION_HANDLERS = {
+  'toggle-menu': () => {
+    state.menuOpen = !state.menuOpen;
+  },
+  'close-menu': () => {
+    state.menuOpen = false;
+  },
+  'open-saved': () => {
+    state.menuOpen = false;
+    state.savedOpen = true;
+  },
+  'close-saved': () => {
+    state.savedOpen = false;
+  },
+  'remove-saved': (value) => {
+    state.savedIds = state.savedIds.filter((id) => String(id) !== String(value));
+    localStorage.setItem(STORAGE_KEYS.saved, JSON.stringify(state.savedIds.map(String)));
+  },
+  'set-language': async (value) => {
+    state.language = value === 'so' ? 'so' : 'en';
+    state.menuOpen = false;
+    await initialiseI18n(state.language);
+  },
+  'set-theme': (value) => {
+    state.theme = value === 'light' ? 'light' : 'dark';
+    state.menuOpen = false;
+  }
+};
+
 function attachListeners() {
   document.addEventListener('click', async (event) => {
     const target = event.target.closest('[data-action]');
-    if (!target) return;
+    const handler = target && ACTION_HANDLERS[target.dataset.action];
+    if (!handler) return;
 
-    if (target.dataset.action === 'toggle-menu') {
-      state.menuOpen = !state.menuOpen;
-      renderLandingPage();
-      return;
-    }
-    if (target.dataset.action === 'close-menu') {
-      state.menuOpen = false;
-      renderLandingPage();
-      return;
-    }
-    if (target.dataset.action === 'open-saved') {
-      state.menuOpen = false;
-      state.savedOpen = true;
-      renderLandingPage();
-      return;
-    }
-    if (target.dataset.action === 'close-saved') {
-      state.savedOpen = false;
-      renderLandingPage();
-      return;
-    }
-    if (target.dataset.action === 'remove-saved') {
-      state.savedIds = state.savedIds.filter((id) => String(id) !== String(target.dataset.value));
-      localStorage.setItem(STORAGE_KEYS.saved, JSON.stringify(state.savedIds.map(String)));
-      renderLandingPage();
-      return;
-    }
-    if (target.dataset.action === 'set-language') {
-      state.language = target.dataset.value === 'so' ? 'so' : 'en';
-      state.menuOpen = false;
-      await initialiseI18n(state.language);
-      renderLandingPage();
-      return;
-    }
-    if (target.dataset.action === 'set-theme') {
-      state.theme = target.dataset.value === 'light' ? 'light' : 'dark';
-      state.menuOpen = false;
-      renderLandingPage();
-    }
+    await handler(target.dataset.value);
+    renderLandingPage();
   });
 
   document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') {
-      if (state.savedOpen) {
-        state.savedOpen = false;
-        renderLandingPage();
-      } else if (state.menuOpen) {
-        state.menuOpen = false;
-        renderLandingPage();
-      }
+    if (event.key !== 'Escape') return;
+
+    if (state.savedOpen) {
+      state.savedOpen = false;
+      renderLandingPage();
+    } else if (state.menuOpen) {
+      state.menuOpen = false;
+      renderLandingPage();
     }
   });
 }
