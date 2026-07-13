@@ -567,6 +567,18 @@ html[data-theme="light"] .about-guide-column:nth-child(2) {
   color: #ffffff;
 }
 
+.about-guide-menu-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1em;
+  height: 1em;
+  margin: 0 0.12em;
+  font-size: 0.82em;
+  line-height: 1;
+  vertical-align: -0.06em;
+}
+
 .about-v2-section--final-image {
   margin-bottom: 0;
 }

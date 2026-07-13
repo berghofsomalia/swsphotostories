@@ -13,7 +13,7 @@ const ABOUT_COPY = {
     processFinal: '10 of these community members in each location set out on a similar journey of developing photostories.',
     questionsIntro: 'The taking of the photos and the writing and telling of the stories were guided by these questions:',
     questions: [
-      'Why did I choose to take in these photos? Or what do I see in these photos?',
+      'Why did I choose to take these photos? Or what do I see in these photos?',
       'What memories or emotions do they awaken in me?',
       'What do I want others to feel and understand?',
       'What community issue or strength do I want to emphasise?',
@@ -32,7 +32,16 @@ const ABOUT_COPY = {
     exploreGalleryMiddle: ' to ',
     exploreSearchLink: 'search for specific words',
     exploreGallerySuffix: ' you have in mind, or combine place, people, and thematic cluster-tags to follow the connections that matter to you. The taxonomy of thematic clusters and tags emerged from workshops with the 12 community peacebuilders.',
-    exploreMenuNote: 'The menu in the top-right corner lets you choose other navigation options.'
+    exploreMenuNote: 'The menu in the top-right corner lets you choose other navigation options.',
+    guideStoryIntro: 'In each story, you will see one or more photographs, the story of the photographer-storyteller, and, where available, reflections from community members. Some reflections come from people directly connected to the photographs, while others come from people who responded to them through their own experiences.',
+    guideStoryActions: 'At the end of each story, you can save or share it, or continue exploring related photostories.',
+    guideDiscoverPrefix: 'Discover {stories} photostories in this collection. On the ',
+    guideHomeLink: 'homepage',
+    guideDiscoverMiddle: ', the carousel presents a changing selection of stories to spark your interest. The ',
+    guideGalleryLink: 'gallery',
+    guideDiscoverSuffix: ' lets you search for particular words or combine filters for places, people and thematic tags to follow the connections that matter to you. The thematic clusters and tags were developed through workshops with the 12 community peacebuilders.',
+    guideMenuPrefix: 'Wherever you are on the site, the menu ',
+    guideMenuSuffix: ' in the top-right corner gives you access to these different navigation options.'
   },
   so: {
     title: 'Ku saabsan sheeko-sawirrada',
@@ -63,7 +72,16 @@ const ABOUT_COPY = {
     exploreGalleryMiddle: ' si aad u ',
     exploreSearchLink: 'raadiso erayo gaar ah',
     exploreGallerySuffix: ' oo maskaxdaada ku jira, ama aad isugu darto goob, dad, iyo cluster-tags si aad u raacdo xiriirrada adiga kuu muuqda. Taxonomy-ga cluster-yada iyo tags-ku wuxuu ka soo baxay aqoon-isweydaarsiyo lala yeeshay 12-ka nabad-dhise bulsho.',
-    exploreMenuNote: 'Menu-ga ku yaal geeska midig ee kore wuxuu kuu oggolaanayaa xulashooyin kale oo navigation ah.'
+    exploreMenuNote: 'Menu-ga ku yaal geeska midig ee kore wuxuu kuu oggolaanayaa xulashooyin kale oo navigation ah.',
+    guideStoryIntro: 'Sheeko kasta waxaad ku arki doontaa hal ama dhowr sawir, sheekada sawir-qaadaha/sheekeeyaha, iyo, haddii la hayo, milicsiyo ka yimid xubnaha bulshada. Milicsiyada qaarkood waxay ka yimaadaan dad si toos ah ula xiriira sawirrada, halka kuwo kalena ay ka yimaadaan dad sawirrada kaga falceliyay waaya-aragnimadooda.',
+    guideStoryActions: 'Dhammaadka sheeko kasta, waad kaydin kartaa ama la wadaagi kartaa, ama waad sii sahamin kartaa sheeko-sawirro la xiriira.',
+    guideDiscoverPrefix: 'Sahami {stories} sheeko-sawirro oo ku jira ururintan. ',
+    guideHomeLink: 'Bogga hore',
+    guideDiscoverMiddle: ', carousel-ku wuxuu soo bandhigaa sheekooyin is bedbeddelaya si uu xiisahaaga u kiciyo. ',
+    guideGalleryLink: 'Galeeriga',
+    guideDiscoverSuffix: ' wuxuu kuu oggolaanayaa inaad raadiso erayo gaar ah ama aad isku darto shaandheeyayaal ku saabsan goobo, dad iyo tags mawduuceed si aad u raacdo xiriirrada adiga kuu muuqda. Kooxaha mawduucyada iyo tags-ka waxaa lagu horumariyay aqoon-isweydaarsiyo lala yeeshay 12-ka nabad-dhise bulsho.',
+    guideMenuPrefix: 'Meel kasta oo aad ka joogto boggan, menu-ga ',
+    guideMenuSuffix: ' ee ku yaal geeska midig ee kore wuxuu kuu furayaa xulashooyinkan kala duwan ee navigation-ka.'
   }
 };
 
@@ -206,6 +224,21 @@ function renderExploreGuide(copy) {
   const randomLink = randomStoryLink('../stories/');
   const homeLink = '../';
   const searchLink = '../stories/?focus=search#gallery';
+
+  if (copy.guideStoryIntro) {
+    return `
+    <div class="about-guide-copy">
+      <div class="about-guide-column">
+        <p>${escapeHtml(copy.guideStoryIntro)}</p>
+        <p>${escapeHtml(copy.guideStoryActions)}</p>
+      </div>
+      <div class="about-guide-column">
+        <p>${escapeHtml(copy.guideDiscoverPrefix.replace('{stories}', stories))}<a href="${escapeHtml(homeLink)}">${escapeHtml(copy.guideHomeLink)}</a>${escapeHtml(copy.guideDiscoverMiddle)}<a href="${escapeHtml(searchLink)}">${escapeHtml(copy.guideGalleryLink)}</a>${escapeHtml(copy.guideDiscoverSuffix)}</p>
+        <p>${escapeHtml(copy.guideMenuPrefix)}<span class="about-guide-menu-icon" aria-hidden="true">☰</span>${escapeHtml(copy.guideMenuSuffix)}</p>
+      </div>
+    </div>
+  `;
+  }
 
   return `
     <div class="about-guide-copy">
