@@ -44,33 +44,29 @@ html[data-theme="dark"] .about-v2-shell {
 }
 
 .about-v2-grid--intro {
-  --about-map-aspect: 0.8125;
-  --about-map-height: min(100svh, calc(44vw / var(--about-map-aspect)));
   position: relative;
-  grid-template-columns: minmax(18rem, calc(var(--about-map-height) * var(--about-map-aspect))) minmax(0, 1fr);
-  grid-template-rows: var(--about-map-height);
-  align-items: stretch;
-  background: var(--about-panel-a);
+  display: block;
+  height: 100svh;
+  overflow: hidden;
+  background: #7fa8bc;
 }
 
 .about-title-panel {
-  position: relative;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
   display: flex;
   align-items: center;
-  align-self: stretch;
+  justify-content: flex-end;
   min-width: 0;
-  height: var(--about-map-height);
-  padding: clamp(3.2rem, 8vw, 8rem);
-  background: linear-gradient(90deg, rgba(215, 231, 239, 0.18), var(--about-panel-a) 18%, var(--about-panel-b));
+  height: 100%;
+  padding: clamp(2rem, 5vw, 5rem) clamp(2.5rem, 4.5vw, 5rem);
+  background: transparent;
+  pointer-events: none;
 }
 
 .about-title-panel::before {
-  content: "";
-  position: absolute;
-  inset: 0 auto 0 -14rem;
-  width: 14rem;
-  background: linear-gradient(90deg, rgba(215, 231, 239, 0), rgba(109, 159, 186, 0.58) 36%, var(--about-panel-a) 74%, var(--about-panel-b));
-  pointer-events: none;
+  content: none;
 }
 
 .about-title-panel::after {
@@ -80,15 +76,19 @@ html[data-theme="dark"] .about-v2-shell {
 .about-title-panel h1 {
   position: relative;
   z-index: 1;
-  max-width: 12ch;
+  max-width: 8.5ch;
   margin: 0;
   color: var(--about-text);
   font-family: var(--font-sans);
-  font-size: clamp(3.2rem, min(8vw, 12svh), 8rem);
+  font-size: clamp(3.2rem, min(7.2vw, 11svh), 7.5rem);
   font-weight: 300;
   line-height: 0.95;
   letter-spacing: 0;
-  transform: translateY(-8%);
+  text-align: left;
+  text-shadow:
+    0 0.15rem 0.4rem rgba(14, 42, 56, 0.58),
+    0 0.55rem 1.5rem rgba(14, 42, 56, 0.34);
+  transform: none;
 }
 
 .about-v2-image {
@@ -166,16 +166,21 @@ html[data-theme="dark"] .about-v2-shell {
 }
 
 .about-v2-image--map {
-  align-self: start;
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: var(--about-map-height);
-  background: #c9e0ea;
+  height: 100%;
+  background: #7fa8bc;
+  place-items: stretch;
 }
 
 .about-v2-image--map img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  max-width: none;
+  max-height: none;
+  object-fit: cover;
+  object-position: left center;
 }
 
 .about-v2-section--process {
@@ -212,12 +217,15 @@ html[data-theme="dark"] .about-v2-shell {
 .about-process-copy p,
 .about-copy-panel p,
 .about-guide-copy p,
-.about-question-intro {
+.about-question-intro,
+.about-question-item p {
   margin: 0;
   color: inherit;
-  font-size: clamp(1.55rem, 2.05vw, 2rem);
-  font-weight: 300;
-  line-height: 1.42;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.02rem, 1.2vw, 1.13rem);
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.62;
   letter-spacing: 0;
 }
 
@@ -445,53 +453,73 @@ html[data-theme="dark"] .about-v2-shell {
 .about-v2-section--questions {
   display: grid;
   min-height: 100svh;
-  padding: clamp(1.4rem, 3vw, 3rem);
-  background:
-    radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.16), transparent 32rem),
-    var(--about-panel-d);
+  padding: clamp(2rem, 5vw, 5rem);
+  background: var(--about-panel-d);
   place-items: center;
 }
 
 .about-question-shell {
-  width: 100%;
-  max-width: none;
+  width: min(100%, 78rem);
   margin-inline: auto;
+  padding: clamp(1.5rem, 4vw, 3.5rem);
+  border: 1px solid rgba(247, 251, 255, 0.26);
+  border-radius: clamp(1.5rem, 3vw, 2.5rem);
   color: var(--about-text);
 }
 
 .about-question-intro {
-  width: 100%;
-  max-width: none;
-  margin: 0 auto clamp(1rem, 2.4vw, 2rem);
-  text-align: center;
+  max-width: 48rem;
+  margin: 0 0 clamp(1.6rem, 3vw, 2.6rem);
+  font-weight: 400;
 }
 
 .about-question-grid {
   display: grid;
-  width: min(100%, 78rem);
-  margin-inline: auto;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(0.55rem, 1.2vw, 1rem);
+  column-gap: clamp(2rem, 5vw, 5rem);
+  row-gap: 0;
 }
 
-.about-question-grid p {
-  padding: clamp(1rem, 2vw, 1.8rem);
-  border-radius: clamp(0.7rem, 1.2vw, 1rem);
-  background:
-    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 68%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(16, 37, 54, 0.7) 24%, rgba(16, 37, 54, 0.76) 76%, rgba(255, 255, 255, 0.07));
-  box-shadow: inset 0 0 2.2rem rgba(16, 37, 54, 0.28);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(0.95rem, 1.2vw, 1.15rem);
-  font-style: italic;
-  font-weight: 400;
-  line-height: 1.28;
+.about-question-item {
+  display: grid;
+  grid-template-columns: clamp(2.7rem, 4vw, 3.5rem) minmax(0, 1fr);
+  gap: clamp(0.9rem, 1.8vw, 1.4rem);
+  align-items: center;
+  min-height: clamp(7rem, 12vw, 9.5rem);
+  padding: clamp(1rem, 2vw, 1.5rem) 0;
+  border-top: 1px solid rgba(247, 251, 255, 0.16);
 }
 
-html[data-theme="light"] .about-question-grid p {
-  background:
-    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0) 68%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(49, 85, 107, 0.72) 24%, rgba(49, 85, 107, 0.82) 76%, rgba(255, 255, 255, 0.08));
+.about-question-item p {
+  min-width: 0;
+}
+
+.about-question-icon {
+  display: grid;
+  width: clamp(2.7rem, 4vw, 3.5rem);
+  aspect-ratio: 1;
+  place-items: center;
+  color: rgba(247, 251, 255, 0.88);
+}
+
+.about-question-icon svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.about-question-icon .question-icon-fill {
+  fill: currentColor;
+  stroke: none;
+}
+
+html[data-theme="light"] .about-question-shell {
+  border-color: rgba(247, 251, 255, 0.38);
 }
 
 .about-v2-section--guide {
@@ -588,48 +616,52 @@ html[data-theme="light"] .about-guide-column:nth-child(2) {
   }
 
   .about-v2-grid--intro {
+    display: block;
+    height: auto;
     min-height: 0;
-    grid-template-rows: auto auto;
+    aspect-ratio: 1 / 1;
+    background: #7fa8bc;
   }
 
   .about-title-panel {
-    align-items: flex-start;
-    justify-content: flex-start;
-    height: auto;
-    min-height: 46svh;
-    padding: clamp(2.2rem, 8vw, 3.8rem) clamp(1.4rem, 7vw, 2.4rem);
-    background: linear-gradient(180deg, var(--about-panel-a), var(--about-panel-b));
+    position: absolute;
+    inset: 0;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+    min-height: 0;
+    padding: 0 clamp(1.5rem, 7vw, 2.2rem);
+    background: transparent;
   }
 
   .about-title-panel::before {
-    inset: -7rem 0 auto 0;
-    width: auto;
-    height: 7rem;
-    background: linear-gradient(180deg, rgba(215, 231, 239, 0), rgba(109, 159, 186, 0.58), var(--about-panel-a));
+    content: none;
   }
 
   .about-title-panel::after {
-    content: "";
-    position: absolute;
-    inset: auto 0 -7rem 0;
-    height: 7rem;
-    background: linear-gradient(180deg, var(--about-panel-b), rgba(85, 127, 153, 0.58), rgba(215, 231, 239, 0));
-    pointer-events: none;
+    content: none;
   }
 
   .about-title-panel h1 {
-    max-width: 9ch;
-    font-size: clamp(3rem, 16vw, 5.8rem);
+    max-width: 8ch;
+    font-size: clamp(1.35rem, 6.6vw, 1.9rem);
+    line-height: 0.98;
+    text-align: left;
     transform: none;
   }
 
   .about-v2-image--map {
-    height: auto;
-    min-height: 56svh;
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    min-height: 0;
   }
 
   .about-v2-image--map img {
-    height: auto;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: left center;
   }
 
   .about-process-step {
@@ -723,45 +755,30 @@ html[data-theme="light"] .about-guide-column:nth-child(2) {
     padding: clamp(0.8rem, 1.8vw, 1.4rem);
   }
 
-  .about-process-copy p,
-  .about-copy-panel p,
-  .about-guide-copy p,
-  .about-question-intro {
-    font-size: clamp(1.18rem, 1.7vw, 1.45rem);
-    line-height: 1.32;
-  }
-
-  .about-question-grid p {
-    font-size: clamp(0.98rem, 1.26vw, 1.12rem);
-    line-height: 1.34;
-  }
 }
 
 @media (max-width: 560px) {
-  .about-process-copy p,
-  .about-copy-panel p,
-  .about-guide-copy p,
-  .about-question-intro {
-    font-size: clamp(1.18rem, 5.2vw, 1.55rem);
-    line-height: 1.42;
-  }
-
-  .about-question-grid p {
-    font-size: clamp(0.9rem, 4vw, 1.05rem);
-    line-height: 1.26;
-    padding: 0.95rem 1.05rem;
-  }
-
   .about-v2-section--guide {
     padding: 1.2rem 1.2rem 5rem;
   }
 
   .about-v2-section--questions {
-    padding: 0.9rem 1.05rem 4.25rem;
+    padding: 1.25rem 1rem 4.25rem;
+  }
+
+  .about-question-shell {
+    padding: 1.35rem 1.15rem;
+    border-radius: 1.4rem;
   }
 
   .about-question-intro {
-    margin-bottom: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .about-question-item {
+    grid-template-columns: 2.65rem minmax(0, 1fr);
+    min-height: 0;
+    padding: 1.05rem 0;
   }
 
 }
