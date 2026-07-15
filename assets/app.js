@@ -1,7 +1,13 @@
-import { initialiseApp } from './bootstrap.js?v=20260709-gallery-facets';
+import { initialiseApp } from './bootstrap.js?v=20260715-private-images';
 import { qs } from './render.js?v=20260709-gallery-facets';
+import { requireReviewSession } from './review-auth.js';
 
-initialiseApp().catch((error) => {
+async function start() {
+  await requireReviewSession();
+  await initialiseApp();
+}
+
+start().catch((error) => {
   console.error(error);
   const app = qs('#app');
   if (app) {

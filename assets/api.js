@@ -1,28 +1,15 @@
 import {
-  SUPABASE_PUBLISHABLE_KEY,
-  SUPABASE_STORY_PHOTO_BUCKET,
   SUPABASE_URL,
-  USE_SUPABASE_IMAGES
+  SUPABASE_STORY_PHOTO_BUCKET,
+  USE_SUPABASE_IMAGES,
+  REQUIRE_REVIEW_AUTH,
+  SIGNED_IMAGE_URL_TTL_SECONDS
 } from './supabase-config.js';
+import { getSupabaseClient, isSupabaseConfigured } from './supabase-client.js';
 const IMAGE_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'webp', 'gif', 'avif']);
 
-function hasRealValue(value, placeholder) {
-  return Boolean(value) && value !== placeholder && !String(value).includes('YOUR_');
-}
-
-const isSupabaseConfigured =
-  hasRealValue(SUPABASE_URL, 'https://YOUR_PROJECT_ID.supabase.co') &&
-  hasRealValue(SUPABASE_PUBLISHABLE_KEY, 'YOUR_PUBLISHABLE_OR_LEGACY_ANON_KEY');
-
-let supabaseClientPromise = null;
-
 async function getSupabase() {
-  if (!isSupabaseConfigured) return null;
-  if (!supabaseClientPromise) {
-    supabaseClientPromise = import('https://esm.sh/@supabase/supabase-js@2')
-      .then(({ createClient }) => createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY));
-  }
-  return supabaseClientPromise;
+  return getSupabaseClient();
 }
 
 const imageCache = new Map();
@@ -30,24 +17,36 @@ const IMAGE_CACHE_PREFIX = 'photostory_images_';
 
 function readCachedImages(code) {
   if (!code) return null;
-  if (imageCache.has(code)) return imageCache.get(code);
+  const memoryEntry = imageCache.get(code);
+  if (memoryEntry && (!memoryEntry.expiresAt || memoryEntry.expiresAt > Date.now() + 60000)) {
+    return memoryEntry.urls;
+  }
+  imageCache.delete(code);
   try {
     const cached = sessionStorage.getItem(`${IMAGE_CACHE_PREFIX}${code}`);
     if (!cached) return null;
     const parsed = JSON.parse(cached);
-    if (!Array.isArray(parsed) || parsed.length === 0) return null;
-    imageCache.set(code, parsed);
-    return parsed;
+    const entry = Array.isArray(parsed)
+      ? { urls: parsed, expiresAt: REQUIRE_REVIEW_AUTH ? 0 : null }
+      : parsed;
+    if (!Array.isArray(entry?.urls) || entry.urls.length === 0) return null;
+    if (REQUIRE_REVIEW_AUTH && (!entry.expiresAt || entry.expiresAt <= Date.now() + 60000)) {
+      sessionStorage.removeItem(`${IMAGE_CACHE_PREFIX}${code}`);
+      return null;
+    }
+    imageCache.set(code, entry);
+    return entry.urls;
   } catch {
     return null;
   }
 }
 
-function writeCachedImages(code, urls) {
+function writeCachedImages(code, urls, expiresAt = null) {
   if (!code || !Array.isArray(urls) || urls.length === 0) return;
-  imageCache.set(code, urls);
+  const entry = { urls, expiresAt };
+  imageCache.set(code, entry);
   try {
-    sessionStorage.setItem(`${IMAGE_CACHE_PREFIX}${code}`, JSON.stringify(urls));
+    sessionStorage.setItem(`${IMAGE_CACHE_PREFIX}${code}`, JSON.stringify(entry));
   } catch {}
 }
 
@@ -91,12 +90,26 @@ function isExternalUrl(src = '') {
 
 function storagePathToPublicUrl(path = '') {
   const cleanPath = String(path || '').replace(/^\/+/, '');
-  if (!isSupabaseConfigured || !USE_SUPABASE_IMAGES || !cleanPath) return '';
+  if (!isSupabaseConfigured || !USE_SUPABASE_IMAGES || !cleanPath || REQUIRE_REVIEW_AUTH) return '';
   const encodedPath = cleanPath
     .split('/')
     .map((part) => encodeURIComponent(part))
     .join('/');
   return `${SUPABASE_URL.replace(/\/+$/, '')}/storage/v1/object/public/${SUPABASE_STORY_PHOTO_BUCKET}/${encodedPath}`;
+}
+
+async function createStorySignedUrls(paths = []) {
+  const cleanPaths = paths.map((path) => String(path || '').replace(/^\/+/, '')).filter(Boolean);
+  if (!cleanPaths.length) return [];
+  const supabase = await getSupabase();
+  const signed = await Promise.all(cleanPaths.map(async (path) => {
+    const { data, error } = await supabase.storage
+      .from(SUPABASE_STORY_PHOTO_BUCKET)
+      .createSignedUrl(path, SIGNED_IMAGE_URL_TTL_SECONDS);
+    if (error) throw error;
+    return data.signedUrl;
+  }));
+  return signed;
 }
 
 function localStoryImage(src = '') {
@@ -217,7 +230,7 @@ function mapStoryPhotos(photos = [], story = {}) {
       sortOrder: photo.sort_order ?? index + 1,
       isCover: Boolean(photo.is_cover)
     }))
-    .filter((photo) => photo.url);
+    .filter((photo) => photo.storagePath && (REQUIRE_REVIEW_AUTH || photo.url));
 
   if (mapped.length && !mapped.some((photo) => photo.isCover)) {
     mapped[0].isCover = true;
@@ -236,7 +249,22 @@ async function fetchImagesForStory(story) {
   }
 
   const cached = readCachedImages(story.code);
-  if (cached?.length) return cached;
+  if (cached?.length) {
+    (story.photos || []).forEach((photo, index) => {
+      if (cached[index]) photo.url = cached[index];
+    });
+    return cached;
+  }
+
+  const knownPaths = (story.photos || []).map((photo) => photo.storagePath).filter(Boolean);
+  if (REQUIRE_REVIEW_AUTH && knownPaths.length) {
+    const urls = await createStorySignedUrls(knownPaths);
+    (story.photos || []).forEach((photo, index) => {
+      if (urls[index]) photo.url = urls[index];
+    });
+    writeCachedImages(story.code, urls, Date.now() + (SIGNED_IMAGE_URL_TTL_SECONDS * 1000));
+    return urls;
+  }
 
   const supabase = await getSupabase();
   const { data, error } = await supabase.storage
@@ -251,16 +279,22 @@ async function fetchImagesForStory(story) {
     return [placeholderImage(story)];
   }
 
-  const urls = cleanStorageFiles(data).map((file) => {
-    const path = `${story.code}/${file.name}`;
-    const { data: urlData } = supabase.storage
-      .from(SUPABASE_STORY_PHOTO_BUCKET)
-      .getPublicUrl(path);
-    return urlData.publicUrl;
-  });
+  const storagePaths = cleanStorageFiles(data).map((file) => `${story.code}/${file.name}`);
+  const urls = REQUIRE_REVIEW_AUTH
+    ? await createStorySignedUrls(storagePaths)
+    : storagePaths.map((path) => {
+        const { data: urlData } = supabase.storage
+          .from(SUPABASE_STORY_PHOTO_BUCKET)
+          .getPublicUrl(path);
+        return urlData.publicUrl;
+      });
 
   const resolved = urls.length > 0 ? urls : [placeholderImage(story)];
-  writeCachedImages(story.code, resolved);
+  writeCachedImages(
+    story.code,
+    resolved,
+    REQUIRE_REVIEW_AUTH ? Date.now() + (SIGNED_IMAGE_URL_TTL_SECONDS * 1000) : null
+  );
   return resolved;
 }
 
@@ -273,6 +307,7 @@ export async function ensureStoryImages(story) {
   story.imagesLoading = true;
   try {
     story.images = await fetchImagesForStory(story);
+    story.coverImage = story.images[0] || story.coverImage;
     story.imagesLoaded = true;
   } catch (error) {
     console.warn(`Could not hydrate photos for ${story.code || story.id}`, error);
@@ -395,10 +430,24 @@ async function mapSupabaseStory(row) {
   const dbPhotos = mapStoryPhotos(row.story_photos || [], story);
   if (dbPhotos.length) {
     story.photos = dbPhotos;
-    story.images = dbPhotos.map((photo) => photo.url);
-    story.coverImage = (dbPhotos.find((photo) => photo.isCover) || dbPhotos[0]).url;
-    story.imagesLoaded = true;
-    writeCachedImages(story.code, story.images);
+    const cachedImages = readCachedImages(story.code);
+    if (cachedImages?.length) {
+      dbPhotos.forEach((photo, index) => {
+        if (cachedImages[index]) photo.url = cachedImages[index];
+      });
+      story.images = cachedImages;
+      const coverIndex = Math.max(0, dbPhotos.findIndex((photo) => photo.isCover));
+      story.coverImage = cachedImages[coverIndex] || cachedImages[0];
+      story.imagesLoaded = true;
+    } else if (REQUIRE_REVIEW_AUTH) {
+      story.images = [placeholderImage(story)];
+      story.coverImage = story.images[0];
+    } else {
+      story.images = dbPhotos.map((photo) => photo.url);
+      story.coverImage = (dbPhotos.find((photo) => photo.isCover) || dbPhotos[0]).url;
+      story.imagesLoaded = true;
+      writeCachedImages(story.code, story.images);
+    }
   } else {
     story.photos = [];
     const cachedImages = readCachedImages(story.code);

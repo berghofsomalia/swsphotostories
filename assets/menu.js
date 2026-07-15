@@ -33,6 +33,7 @@ export function renderMenu(state, opts) {
     basePaths,
     savedCount = 0,
     savedAction = 'open-saved',
+    signOutAction = '',
     showSwitchers = true,
     shellClass = ''
   } = opts;
@@ -88,6 +89,16 @@ export function renderMenu(state, opts) {
               ${savedCount > 0 ? `<span class="utility-menu-badge">${savedCount}</span>` : ''}
             </button>
           </div>
+
+          ${signOutAction ? `
+            <div class="utility-menu-pill utility-menu-pill--single">
+              <button type="button" class="utility-menu-control utility-menu-control--single" data-action="${esc(signOutAction)}">
+                <span class="utility-menu-control-copy">
+                  <span>${esc(state.language === 'so' ? 'Ka bax' : 'Sign out')}</span>
+                </span>
+              </button>
+            </div>
+          ` : ''}
 
           ${showSwitchers ? `
             <div class="utility-menu-group">

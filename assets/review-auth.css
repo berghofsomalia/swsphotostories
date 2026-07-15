@@ -1,0 +1,99 @@
+.is-review-locked,
+.is-review-locked body {
+  min-height: 100%;
+  overflow: hidden;
+}
+
+.review-login-shell {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(96, 154, 181, 0.28), transparent 36rem),
+    #121a28;
+  color: #f8f3ed;
+}
+
+.review-login-card {
+  width: min(100%, 24rem);
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1.5rem, 5vw, 2.25rem);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 1.25rem;
+  background: rgba(18, 27, 42, 0.9);
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(18px);
+}
+
+.review-login-card h1,
+.review-login-card p {
+  margin: 0;
+}
+
+.review-login-kicker {
+  color: rgba(248, 243, 237, 0.62);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.review-login-card h1 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.8rem, 7vw, 2.55rem);
+  font-weight: 400;
+}
+
+.review-login-intro {
+  color: rgba(248, 243, 237, 0.74);
+  font-family: Georgia, 'Times New Roman', serif;
+  line-height: 1.5;
+}
+
+.review-login-card label {
+  display: grid;
+  gap: 0.42rem;
+  color: rgba(248, 243, 237, 0.76);
+  font-size: 0.78rem;
+}
+
+.review-login-card input {
+  width: 100%;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 0.7rem;
+  outline: none;
+  background: rgba(255, 255, 255, 0.07);
+  color: #fff;
+  font: inherit;
+}
+
+.review-login-card input:focus {
+  border-color: rgba(150, 205, 230, 0.8);
+  box-shadow: 0 0 0 3px rgba(112, 177, 207, 0.16);
+}
+
+.review-login-card button {
+  margin-top: 0.25rem;
+  padding: 0.82rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  background: rgba(239, 244, 247, 0.95);
+  color: #172130;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.review-login-card button:disabled {
+  cursor: wait;
+  opacity: 0.68;
+}
+
+.review-login-error {
+  color: #ffb8b8;
+  font-size: 0.82rem;
+}

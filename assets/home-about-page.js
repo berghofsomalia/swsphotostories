@@ -1,6 +1,8 @@
 import { getUiText, getLandingText, STORAGE_KEYS, initialiseI18n } from './content.js?v=20260607-home-carousel23';
-import { ensureStoryImages, fetchHomeStories } from './api.js?v=20260607-story-photos';
+import { ensureStoryImages, fetchHomeStories } from './api.js?v=20260715-private-images';
 import { renderMenu as renderSharedMenu } from './menu.js';
+import { requireReviewSession, signOutReviewSession } from './review-auth.js';
+import { REQUIRE_REVIEW_AUTH } from './supabase-config.js';
 
 const HOME_CAROUSEL_INTERVAL_MS = 10000;
 
@@ -444,6 +446,7 @@ function renderMenu(t) {
     basePaths: { home: '#home-carousel', about: '#background-map', stories: 'stories/' },
     savedCount: state.savedIds.length,
     savedAction: 'open-saved',
+    signOutAction: REQUIRE_REVIEW_AUTH ? 'review-sign-out' : '',
     showSwitchers: true,
     shellClass: 'home-menu-shell'
   });
@@ -899,6 +902,10 @@ function attachListeners() {
       await mountBackground({ scroll: true });
       return;
     }
+    if (action === 'review-sign-out') {
+      await signOutReviewSession();
+      return;
+    }
     if (action === 'scroll-home') {
       e.preventDefault();
       window.setTimeout(() => {
@@ -925,6 +932,7 @@ function attachListeners() {
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 async function init() {
+  await requireReviewSession();
   attachListeners();
   renderLoading();
   await Promise.all([

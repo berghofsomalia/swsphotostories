@@ -18,7 +18,8 @@ import {
   isSaved
 } from './story-data.js?v=20260709-gallery-facets';
 import { getUiText, labelFor, initialiseI18n, STORAGE_KEYS } from './content.js?v=20260605-story-actions2';
-import { ensureStoryImages, fetchStories, fetchStoryByCode, fetchTagCatalogue } from './api.js?v=20260709-gallery-facets';
+import { ensureStoryImages, fetchStories, fetchStoryByCode, fetchTagCatalogue } from './api.js?v=20260715-private-images';
+import { signOutReviewSession } from './review-auth.js';
 
 let actionMessageTimerId = null;
 let touchStartX = null;
@@ -557,6 +558,9 @@ function currentStoryLabel(story) {
 // ── Actions ───────────────────────────────────────────────────────────────────
 
 const ACTIONS = {
+  'review-sign-out': async () => {
+    await signOutReviewSession();
+  },
   'set-language': async ({ value }) => {
     state.language = value === 'so' ? 'so' : 'en';
     await initialiseI18n(state.language);

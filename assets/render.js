@@ -5,6 +5,7 @@ import {
   labelFor
 } from './content.js?v=20260605-story-actions2';
 import { renderMenu } from './menu.js';
+import { REQUIRE_REVIEW_AUTH } from './supabase-config.js';
 import {
   allDistricts,
   allPeople,
@@ -224,7 +225,8 @@ function renderUtilityMenu(state) {
     t,
     basePaths: { home: '../', about: '../#background-map', stories: './' },
     savedCount: state.savedIds.length,
-    savedAction: 'open-saved'
+    savedAction: 'open-saved',
+    signOutAction: REQUIRE_REVIEW_AUTH ? 'review-sign-out' : ''
   });
 }
 
