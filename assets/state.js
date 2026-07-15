@@ -1,4 +1,4 @@
-import { STORAGE_KEYS } from './content.js';
+import { STORAGE_KEYS } from './content.js?v=20260715-shared-questions';
 
 export const PAGE_SIZE = 12;
 

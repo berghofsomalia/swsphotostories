@@ -8,7 +8,21 @@ export const STORAGE_KEYS = {
 // ── i18n cache ────────────────────────────────────────────────────────────────
 // Loaded once on first call to loadI18n(), then reused.
 const cache = {};
+let aboutCopy = null;
+let aboutCopyPromise = null;
 const I18N_CACHE_VERSION = '20260607-home-carousel23';
+
+async function loadAboutCopy() {
+  if (aboutCopy) return;
+  if (!aboutCopyPromise) {
+    const url = new URL('../content/about.json', import.meta.url);
+    aboutCopyPromise = fetch(url, { cache: 'no-store' }).then(async (response) => {
+      if (!response.ok) throw new Error(`Failed to load content/about.json (HTTP ${response.status})`);
+      aboutCopy = await response.json();
+    });
+  }
+  await aboutCopyPromise;
+}
 
 /**
  * Loads the i18n JSON for a given language and caches it.
@@ -28,7 +42,11 @@ async function loadI18n(language) {
 
 export async function initialiseI18n(language = 'en') {
   // Load the requested language; always ensure English is also loaded as fallback
-  await Promise.all([loadI18n(language), language !== 'en' ? loadI18n('en') : Promise.resolve()]);
+  await Promise.all([
+    loadI18n(language),
+    language !== 'en' ? loadI18n('en') : Promise.resolve(),
+    loadAboutCopy()
+  ]);
 }
 
 function get(language, section) {
@@ -47,6 +65,10 @@ export function getLandingText(language = 'en') {
 
 export function getGuidanceText(language = 'en') {
   return get(language, 'guidance') || get('en', 'guidance');
+}
+
+export function getAboutText(language = 'en') {
+  return aboutCopy?.[language] || aboutCopy?.en || {};
 }
 
 export function labelFor(entry, language = 'en') {

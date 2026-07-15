@@ -1,10 +1,11 @@
 import {
-  getGuidanceText,
+  getAboutText,
   getLandingText,
   getUiText,
   labelFor
-} from './content.js?v=20260605-story-actions2';
+} from './content.js?v=20260715-shared-questions';
 import { renderMenu } from './menu.js';
+import { renderQuestionIcon } from './question-icons.js';
 import { REQUIRE_REVIEW_AUTH } from './supabase-config.js';
 import {
   allDistricts,
@@ -268,8 +269,8 @@ function renderSavedDrawer(state) {
     <aside class="saved-drawer ${state.savedOpen ? 'is-open' : ''}" aria-hidden="${!state.savedOpen}">
       <div class="drawer-header drawer-header--inline">
         <div class="drawer-title-row">
-          <button type="button" class="icon-button drawer-close-button" data-action="close-saved" aria-label="${escapeHtml(t.close)}">${icon.close()}</button>
           <div class="drawer-title">${escapeHtml(t.savedPhotostories)}</div>
+          <button type="button" class="icon-button drawer-close-button" data-action="close-saved" aria-label="${escapeHtml(t.close)}">${icon.close()}</button>
         </div>
       </div>
       <div class="drawer-body">
@@ -288,7 +289,6 @@ function renderSavedDrawer(state) {
                   </div>
                 </div>
               </button>
-              <button type="button" class="saved-remove-button" data-action="remove-saved" data-value="${escapeHtml(s.id)}" aria-label="${escapeHtml(t.close)}">${icon.close()}</button>
             </div>
           `).join('')}
       </div>
@@ -320,18 +320,19 @@ function renderShareModal(state) {
   `;
 }
 
-function renderGuidanceBox(state, options = {}) {
-  const guidance = getGuidanceText(state.language);
-  const classes = ['story-guidance-box'];
-  if (options.compact) classes.push('is-compact');
-  if (options.plain) classes.push('story-guidance-box--plain');
-  if (options.modal) classes.push('story-guidance-box--modal');
+function renderGuidanceBox(state) {
+  const copy = getAboutText(state.language);
   return `
-    <div class="${classes.join(' ')}">
-      <p class="story-guidance-intro">${escapeHtml(guidance.intro)}</p>
-      <ul class="story-guidance-list">
-        ${guidance.questions.map((q) => `<li>${escapeHtml(q)}</li>`).join('')}
-      </ul>
+    <div class="about-question-shell guidance-question-shell">
+      <p class="about-question-intro">${escapeHtml(copy.questionsIntro || '')}</p>
+      <div class="about-question-grid">
+        ${(copy.questions || []).map((question, index) => `
+          <article class="about-question-item">
+            ${renderQuestionIcon(index)}
+            <p>${escapeHtml(question)}</p>
+          </article>
+        `).join('')}
+      </div>
     </div>
   `;
 }
@@ -342,7 +343,7 @@ function renderGuidanceModal(state) {
     <div class="modal-backdrop ${state.guidanceOpen ? 'is-open' : ''}" data-action="close-guidance"></div>
     <div class="guidance-modal ${state.guidanceOpen ? 'is-open' : ''}" role="dialog" aria-modal="true" aria-hidden="${!state.guidanceOpen}">
       <button type="button" class="icon-button guidance-modal-close" data-action="close-guidance" aria-label="${escapeHtml(t.close)}">${icon.close()}</button>
-      ${renderGuidanceBox(state, { modal: true })}
+      ${renderGuidanceBox(state)}
     </div>
   `;
 }

@@ -1,4 +1,4 @@
-import { renderApp, qs, qsa, syncGalleryCardHeights, syncImageLoadStates, markImageLoaded } from './render.js?v=20260709-gallery-facets';
+import { renderApp, qs, qsa, syncGalleryCardHeights, syncImageLoadStates, markImageLoaded } from './render.js?v=20260715-related-top-drawer';
 import { state, createEmptyFilters, PAGE_SIZE } from './state.js?v=20260608-gallery-batches';
 import {
   buildShareUrl,
@@ -17,7 +17,7 @@ import {
   updateUrlForStory,
   isSaved
 } from './story-data.js?v=20260709-gallery-facets';
-import { getUiText, labelFor, initialiseI18n, STORAGE_KEYS } from './content.js?v=20260605-story-actions2';
+import { getUiText, labelFor, initialiseI18n, STORAGE_KEYS } from './content.js?v=20260715-shared-questions';
 import { ensureStoryImages, fetchStories, fetchStoryByCode, fetchTagCatalogue } from './api.js?v=20260715-private-images';
 import { signOutReviewSession } from './review-auth.js';
 
@@ -85,7 +85,7 @@ function renderSite(options = {}) {
 
   renderApp(state);
   startAutoplay();
-  requestAnimationFrame(syncImageLoadStates);
+  requestAnimationFrame(() => syncImageLoadStates());
   requestAnimationFrame(syncGalleryCardHeights);
   requestAnimationFrame(syncStoryStageOffset);
   scheduleVisibleImageHydration();
@@ -239,7 +239,7 @@ function clearActionMessageSoon() {
 }
 
 function scrollStoryTop() {
-  qs('#story-top')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  window.scrollTo({ left: 0, top: 0, behavior: 'smooth' });
 }
 
 function scrollGallery() {

@@ -1,5 +1,5 @@
-import { initialiseApp } from './bootstrap.js?v=20260715-private-images';
-import { qs } from './render.js?v=20260709-gallery-facets';
+import { initialiseApp } from './bootstrap.js?v=20260715-related-top-drawer';
+import { qs } from './render.js?v=20260715-related-top-drawer';
 import { requireReviewSession } from './review-auth.js';
 
 async function start() {

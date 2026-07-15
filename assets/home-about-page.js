@@ -412,8 +412,8 @@ function renderSavedDrawer(t) {
     <aside class="saved-drawer ${state.savedOpen ? 'is-open' : ''}" aria-hidden="${!state.savedOpen}">
       <div class="drawer-header drawer-header--inline">
         <div class="drawer-title-row">
-          <button type="button" class="icon-button drawer-close-button" data-action="close-saved" aria-label="${esc(t.close)}">${icon.close()}</button>
           <div class="drawer-title">${esc(t.savedPhotostories)}</div>
+          <button type="button" class="icon-button drawer-close-button" data-action="close-saved" aria-label="${esc(t.close)}">${icon.close()}</button>
         </div>
       </div>
       <div class="drawer-body">
@@ -430,7 +430,6 @@ function renderSavedDrawer(t) {
                   <div class="saved-summary">${esc(labelFor(s.summary, state.language))}</div>
                 </div>
               </a>
-              <button type="button" class="saved-remove-button" data-action="remove-saved" data-value="${esc(s.id)}" aria-label="${esc(t.close)}">${icon.close()}</button>
             </div>
           `).join('')}
       </div>
@@ -763,8 +762,8 @@ function renderPage() {
         <span>${esc(backgroundLabel())}</span>${icon.chevronDown()}
       </button>
 
-      ${renderSavedDrawer(t)}
     </div>
+    ${renderSavedDrawer(t)}
   `;
   requestAnimationFrame(() => revealStaticPage());
 }
