@@ -1,0 +1,147 @@
+/* Experimental combined home + background page. */
+
+.home-about-page {
+  background: var(--bg);
+}
+
+.home-about-page .home-shell {
+  position: relative;
+  inset: auto;
+  width: 100%;
+  height: 100svh;
+  min-height: 34rem;
+  overflow: hidden;
+}
+
+.home-about-page .home-bg-stack,
+.home-about-page .home-shell::after {
+  position: absolute;
+}
+
+/* Keep the home flaps and their labels inside the opening viewport. */
+.home-about-page .home-badge-nexus p,
+.home-about-page .home-badge-title p {
+  position: absolute;
+}
+
+.home-about-page .home-badge-nexus p {
+  top: clamp(0.65rem, 1.35vh, 1.1rem);
+  left: clamp(0.7rem, 1.2vw, 1.2rem);
+}
+
+.home-about-page .home-badge-title p {
+  right: clamp(0.7rem, 1.2vw, 1.2rem);
+  bottom: clamp(0.65rem, 1.35vh, 1.1rem);
+}
+
+.home-background-link {
+  position: absolute;
+  z-index: 35;
+  bottom: 0;
+  left: 50%;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-bottom: 0;
+  border-radius: 999px 999px 0 0;
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(248, 243, 237, 0.78);
+  font-size: clamp(0.68rem, 0.88vw, 0.86rem);
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: normal;
+  text-transform: none;
+  text-shadow: none;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  backdrop-filter: blur(12px);
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.home-background-link svg {
+  width: clamp(0.72rem, 0.92vw, 0.86rem);
+  height: clamp(0.72rem, 0.92vw, 0.86rem);
+  transition: transform 180ms ease;
+}
+
+.home-background-link:hover svg,
+.home-background-link:focus-visible svg {
+  transform: translateY(0.2rem);
+}
+
+.home-background-link:hover,
+.home-background-link:focus-visible {
+  background: rgba(255, 255, 255, 0.13);
+  color: #fff;
+}
+
+html[data-theme="light"] .home-background-link {
+  border-color: rgba(255, 255, 255, 0.38);
+  background: rgba(15, 22, 31, 0.28);
+  color: rgba(255, 250, 242, 0.94);
+}
+
+html[data-theme="light"] .home-background-link:hover,
+html[data-theme="light"] .home-background-link:focus-visible {
+  background: rgba(15, 22, 31, 0.38);
+  color: #fffaf2;
+}
+
+#background-root {
+  min-height: 0;
+  scroll-margin-top: 0;
+}
+
+#background-root.is-loading {
+  display: grid;
+  min-height: 100svh;
+  background: #7fa8bc;
+  color: #fff;
+  place-items: center;
+}
+
+.home-about-background {
+  position: relative;
+}
+
+/* About flaps take over only after the opening home viewport has passed. */
+.home-about-background .context-strip {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 180ms ease;
+}
+
+.home-about-background.is-context-active .context-strip {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* The combined version starts with the map and intentionally omits its title. */
+.home-about-background .about-title-panel {
+  display: none;
+}
+
+@media (max-width: 680px) {
+  .home-about-page .home-shell {
+    min-height: 31rem;
+  }
+
+  .home-background-link {
+    right: auto;
+    bottom: 0;
+    left: clamp(1rem, 5vw, 1.7rem);
+    padding: 0.55rem 0.85rem;
+    font-size: clamp(0.7rem, 3vw, 0.86rem);
+    transform: none;
+    backdrop-filter: blur(12px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-background-link svg,
+  .home-about-background .context-strip {
+    transition: none;
+  }
+}

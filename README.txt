@@ -1,19 +1,22 @@
 Photostory GitHub Pages package
 
 Contents
-- index.html: home experience
-- about/index.html: about page
+- index.html: combined home and project-background experience
+- _about-source/index.html: private lazy-rendering source for the background sections
 - stories/index.html: stories and gallery page
 - admin/index.html: admin interface
 - assets/base.css: shared reset, tokens, loading states and utility menu
 - assets/home.css: home page styles
 - assets/about.css: about page styles
+- assets/home-about.css: combined-page layout and transition styles
 - assets/stories.css: stories page styles
 - assets/admin.css: admin page styles
 - assets/app.js: site logic
 - data/stories.json: cleaned story data used by the site
 - images/: bundled image assets, including local lead photos in images/leads/
 - .github/workflows/pages.yml: GitHub Pages workflow for static deployment
+- content/about.json: editable English and Somali background copy
+- backup/legacy-home-about/: recoverable standalone home and About sources
 
 Deploy
 1. Create a GitHub repository or open your existing Pages repository.
@@ -28,4 +31,4 @@ Notes
 - The remaining carousel images come from the original package image folders.
 
 
-Landing assets: place landing visuals in /about/images using names like 1 (1).jpg, 1 (2).jpg for section 1, 3 (1).jpg for section 3, 4 (1).jpg for section 4, 5 (1).jpg for section 5, and map 2.png for the map section. The first digit is the section number and the number in brackets is used for randomisation on each page load.
+Background images used by the combined homepage are stored in /_about-source/images.

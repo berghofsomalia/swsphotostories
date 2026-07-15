@@ -222,7 +222,7 @@ function renderUtilityMenu(state) {
   return renderMenu(state, {
     esc: escapeHtml,
     t,
-    basePaths: { home: '../', about: '../about/', stories: './' },
+    basePaths: { home: '../', about: '../#background-map', stories: './' },
     savedCount: state.savedIds.length,
     savedAction: 'open-saved'
   });

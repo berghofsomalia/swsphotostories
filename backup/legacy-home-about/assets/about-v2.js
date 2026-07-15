@@ -168,7 +168,7 @@ function pageImage(src, alt = '', eager = false) {
 function cssImageUrl(src = '') {
   if (!src) return '';
   if (/^(?:https?:|data:|\/)/i.test(src)) return src;
-  return src.startsWith('images/') ? `../_about-source/${src}` : src;
+  return src.startsWith('images/') ? `../about/${src}` : src;
 }
 
 function renderImagePanel(src, modifier = '', eager = false) {
