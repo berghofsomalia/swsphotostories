@@ -1,6 +1,6 @@
 import { getUiText, getLandingText, STORAGE_KEYS, initialiseI18n } from './content.js?v=20260607-home-carousel23';
 import { ensureStoryImages, fetchHomeStories } from './api.js?v=20260715-private-images';
-import { renderMenu as renderSharedMenu } from './menu.js';
+import { renderMenu as renderSharedMenu } from './menu.js?v=20260715-no-about-menu';
 import { requireReviewSession, signOutReviewSession } from './review-auth.js';
 import { REQUIRE_REVIEW_AUTH } from './supabase-config.js';
 
@@ -442,7 +442,7 @@ function renderMenu(t) {
   return renderSharedMenu(state, {
     esc,
     t,
-    basePaths: { home: '#home-carousel', about: '#background-map', stories: 'stories/' },
+    basePaths: { home: '#home-carousel', stories: 'stories/' },
     savedCount: state.savedIds.length,
     savedAction: 'open-saved',
     signOutAction: REQUIRE_REVIEW_AUTH ? 'review-sign-out' : '',

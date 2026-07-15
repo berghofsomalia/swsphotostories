@@ -1,6 +1,6 @@
 import { getLandingText, getUiText, STORAGE_KEYS, initialiseI18n } from './content.js';
 import { fetchStories } from './api.js?v=20260607-story-photos';
-import { renderMenu } from './menu.js';
+import { renderMenu } from './menu.js?v=20260715-no-about-menu';
 
 const LANDING_MAP_IMAGE = 'images/1.png';
 
@@ -183,7 +183,7 @@ function renderMenuForAbout(t) {
   return renderMenu(state, {
     esc: escapeHtml,
     t,
-    basePaths: { home: '../', about: './', stories: '../stories/' },
+    basePaths: { home: '../', stories: '../stories/' },
     savedCount:  state.savedIds.length,
     savedAction: 'open-saved'
   });

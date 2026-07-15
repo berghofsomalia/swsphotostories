@@ -4,7 +4,7 @@ import {
   getUiText,
   labelFor
 } from './content.js?v=20260715-shared-questions';
-import { renderMenu } from './menu.js';
+import { renderMenu } from './menu.js?v=20260715-no-about-menu';
 import { renderQuestionIcon } from './question-icons.js';
 import { REQUIRE_REVIEW_AUTH } from './supabase-config.js';
 import {
@@ -224,7 +224,7 @@ function renderUtilityMenu(state) {
   return renderMenu(state, {
     esc: escapeHtml,
     t,
-    basePaths: { home: '../', about: '../#background-map', stories: './' },
+    basePaths: { home: '../', stories: './' },
     savedCount: state.savedIds.length,
     savedAction: 'open-saved',
     signOutAction: REQUIRE_REVIEW_AUTH ? 'review-sign-out' : ''

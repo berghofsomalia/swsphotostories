@@ -1,4 +1,4 @@
-import { renderApp, qs, qsa, syncGalleryCardHeights, syncImageLoadStates, markImageLoaded } from './render.js?v=20260715-related-top-drawer';
+import { renderApp, qs, qsa, syncGalleryCardHeights, syncImageLoadStates, markImageLoaded } from './render.js?v=20260715-no-about-menu';
 import { state, createEmptyFilters, PAGE_SIZE } from './state.js?v=20260608-gallery-batches';
 import {
   buildShareUrl,

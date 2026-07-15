@@ -1,5 +1,5 @@
-import { initialiseApp } from './bootstrap.js?v=20260715-modal-scroll-lock';
-import { qs } from './render.js?v=20260715-related-top-drawer';
+import { initialiseApp } from './bootstrap.js?v=20260715-no-about-menu';
+import { qs } from './render.js?v=20260715-no-about-menu';
 import { requireReviewSession } from './review-auth.js';
 
 async function start() {

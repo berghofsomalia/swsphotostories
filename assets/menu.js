@@ -10,7 +10,6 @@
  *   t:         object,     // getUiText() result
  *   basePaths: {           // relative paths FROM this page's directory
  *     home:    string,     // e.g. '../'  or  './'
- *     about:   string,     // e.g. '../about/'  or  './'
  *     stories: string      // e.g. '../stories/'  or  './'
  *   },
  *   savedCount:  number,
@@ -22,7 +21,6 @@
 
 const menuIcon     = () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/></svg>';
 const homeIcon     = () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 12 5l8 6.5"/><path d="M6.5 10.5V20h11V10.5"/></svg>';
-const aboutIcon    = () => '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01"/><path d="M11 12h1v4h1"/></svg>';
 const galleryIcon  = () => '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>';
 const bookmarkIcon = () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v16l-6-4-6 4z"/></svg>';
 
@@ -57,15 +55,6 @@ export function renderMenu(state, opts) {
               <span class="utility-menu-control-copy">
                 <span class="utility-menu-control-icon" aria-hidden="true">${homeIcon()}</span>
                 <span>${esc(t.home)}</span>
-              </span>
-            </a>
-          </div>
-
-          <div class="utility-menu-pill utility-menu-pill--single">
-            <a class="utility-menu-control utility-menu-control--single" href="${esc(basePaths.about)}">
-              <span class="utility-menu-control-copy">
-                <span class="utility-menu-control-icon" aria-hidden="true">${aboutIcon()}</span>
-                <span>${esc(t.about)}</span>
               </span>
             </a>
           </div>
