@@ -683,6 +683,8 @@ function renderPage() {
   const app = document.querySelector('#app');
   if (!app) return;
 
+  document.documentElement.classList.toggle('is-modal-open', Boolean(state.menuOpen || state.savedOpen));
+
   const t       = getUiText(state.language);
   const landing = getLandingText(state.language);
   const story   = state.currentStory;

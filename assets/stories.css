@@ -1,4 +1,12 @@
 /* ── Story app layout ────────────────────────────────────────── */
+/* Story changes replace most of the document; prevent late image/content updates
+   from anchoring the viewport back toward the previously clicked card. */
+html,
+body,
+#app {
+  overflow-anchor: none;
+}
+
 .site-shell {
   --context-strip-color: #fff;
   --context-strip-top-bg: rgba(141, 82, 15, 0.72);
@@ -3093,8 +3101,10 @@ html[data-theme="light"] .story-stage-image.adaptive-image {
 
 /* Keep the story-flow modal aligned with the active story palette. */
 html[data-theme="dark"] .guidance-modal {
-  border-color: rgba(247, 251, 255, 0.18);
-  background: var(--story);
+  padding: 0;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
   color: #f7fbff;
 }
 
@@ -3110,6 +3120,8 @@ html[data-theme="dark"] .guidance-modal .icon-button:hover {
 
 html[data-theme="dark"] .guidance-question-shell {
   border-color: rgba(247, 251, 255, 0.18);
+  background: var(--story);
+  box-shadow: var(--shadow-soft);
 }
 
 html[data-theme="dark"] .guidance-question-shell .about-question-icon {
@@ -3117,8 +3129,10 @@ html[data-theme="dark"] .guidance-question-shell .about-question-icon {
 }
 
 html[data-theme="light"] .guidance-modal {
-  border-color: rgba(37, 42, 47, 0.18);
-  background: #d6d8d8;
+  padding: 0;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
   color: #252a2f;
 }
 
@@ -3134,6 +3148,8 @@ html[data-theme="light"] .guidance-modal .icon-button:hover {
 
 html[data-theme="light"] .guidance-question-shell {
   border-color: rgba(37, 42, 47, 0.18);
+  background: #d6d8d8;
+  box-shadow: var(--shadow-soft);
 }
 
 html[data-theme="light"] .guidance-question-shell .about-question-icon {

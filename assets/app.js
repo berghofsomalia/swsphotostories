@@ -1,4 +1,4 @@
-import { initialiseApp } from './bootstrap.js?v=20260715-related-top-drawer';
+import { initialiseApp } from './bootstrap.js?v=20260715-modal-scroll-lock';
 import { qs } from './render.js?v=20260715-related-top-drawer';
 import { requireReviewSession } from './review-auth.js';
 

@@ -28,6 +28,8 @@ let imageHydrationRun = 0;
 let imageHydrationScheduled = false;
 let filterResizeDrag = null;
 let pendingSearchFocus = null;
+let pendingStoryTopId = null;
+let pendingStoryTopTimerId = null;
 
 async function loadGalleryDataset() {
   if (state.galleryDatasetLoaded) return;
@@ -77,18 +79,24 @@ function prepareGalleryEntry() {
 // ── Rendering ─────────────────────────────────────────────────────────────────
 
 function renderSite(options = {}) {
-  const galleryScroll = options.preserveGalleryScroll ? captureGalleryScroll() : null;
+  const resetStoryTop = pendingStoryTopId && String(pendingStoryTopId) === String(state.currentStoryId);
+  const galleryScroll = options.preserveGalleryScroll && !resetStoryTop ? captureGalleryScroll() : null;
   const activeElement = document.activeElement;
   const activeSearch = activeElement?.matches?.('[data-search-input]') ? captureSearchFocus(activeElement) : null;
   const searchFocus = pendingSearchFocus || activeSearch;
   pendingSearchFocus = null;
 
   renderApp(state);
+  document.documentElement.classList.toggle('is-modal-open', Boolean(
+    state.menuOpen || state.shareOpen || state.guidanceOpen || state.savedOpen || state.filterDrawerOpen
+  ));
   startAutoplay();
   requestAnimationFrame(() => syncImageLoadStates());
   requestAnimationFrame(syncGalleryCardHeights);
   requestAnimationFrame(syncStoryStageOffset);
   scheduleVisibleImageHydration();
+
+  if (resetStoryTop) maintainPendingStoryTop();
 
   if (searchFocus) restoreSearchFocus(searchFocus);
   if (galleryScroll) restoreGalleryScroll(galleryScroll);
@@ -239,7 +247,39 @@ function clearActionMessageSoon() {
 }
 
 function scrollStoryTop() {
-  window.scrollTo({ left: 0, top: 0, behavior: 'smooth' });
+  window.scrollTo({ left: 0, top: 0, behavior: 'auto' });
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
+}
+
+function maintainPendingStoryTop() {
+  if (!pendingStoryTopId || String(pendingStoryTopId) !== String(state.currentStoryId)) return;
+  scrollStoryTop();
+  requestAnimationFrame(scrollStoryTop);
+}
+
+function cancelPendingStoryTop() {
+  pendingStoryTopId = null;
+  window.clearTimeout(pendingStoryTopTimerId);
+  pendingStoryTopTimerId = null;
+}
+
+function beginPendingStoryTop(storyId) {
+  pendingStoryTopId = String(storyId);
+  window.clearTimeout(pendingStoryTopTimerId);
+  pendingStoryTopTimerId = window.setTimeout(() => {
+    if (String(pendingStoryTopId) === String(state.currentStoryId)) scrollStoryTop();
+    cancelPendingStoryTop();
+  }, 2600);
+}
+
+function cancelPendingStoryTopOnIntent(event) {
+  if (!pendingStoryTopId) return;
+  if (event.type === 'keydown') {
+    const scrollKeys = ['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '];
+    if (!scrollKeys.includes(event.key)) return;
+  }
+  cancelPendingStoryTop();
 }
 
 function scrollGallery() {
@@ -477,6 +517,7 @@ function setCurrentStory(id, options = {}) {
       updateUrlForStory(story, { hash: options.hash || '', state: makeHistoryState('story') });
     }
   }
+  if (options.scrollTop) beginPendingStoryTop(story.id);
   renderSite();
 
   if (options.scrollTop) scrollStoryTop();
@@ -779,7 +820,8 @@ const ACTIONS = {
     // Remove slide-in class after animation completes
     window.setTimeout(() => {
       state.storySlideIn = false;
-      renderSite();
+      qs('.site-shell')?.classList.remove('is-story-sliding-in');
+      scrollStoryTop();
     }, 420);
   },
   'close-story': async () => {
@@ -952,6 +994,9 @@ function attachGlobalListeners() {
   window.addEventListener('pointermove', handleFilterResizeMove);
   window.addEventListener('pointerup', handleFilterResizeEnd);
   window.addEventListener('pointercancel', handleFilterResizeEnd);
+  window.addEventListener('wheel', cancelPendingStoryTopOnIntent, { passive: true });
+  window.addEventListener('touchstart', cancelPendingStoryTopOnIntent, { passive: true });
+  window.addEventListener('pointerdown', cancelPendingStoryTopOnIntent, { passive: true });
 
   window.addEventListener('resize', () => {
     window.clearTimeout(window.__photostoryResizeTimer);
@@ -970,6 +1015,7 @@ function attachGlobalListeners() {
   });
 
   window.addEventListener('keydown', (event) => {
+    cancelPendingStoryTopOnIntent(event);
     // Close overlays
     if (event.key === 'Escape') {
       if (!state.menuOpen && !state.shareOpen && !state.guidanceOpen && !state.savedOpen) return;
