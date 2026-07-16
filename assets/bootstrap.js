@@ -1,4 +1,4 @@
-import { renderApp, qs, qsa, syncGalleryCardHeights, syncImageLoadStates, markImageLoaded } from './render.js?v=20260715-no-about-menu';
+import { renderApp, qs, qsa, syncGalleryCardHeights, syncImageLoadStates, markImageLoaded } from './render.js?v=20260716-filtered-gallery-pages';
 import { state, createEmptyFilters, PAGE_SIZE } from './state.js?v=20260608-gallery-batches';
 import {
   buildShareUrl,
@@ -936,13 +936,17 @@ function updateSearchResultCountOnly(query) {
   const t = getUiText(state.language);
   const q = query.trim().toLowerCase();
   const visibleCount = filteredStories(state).length;
+  const visibleLimit = state.galleryPage * PAGE_SIZE;
   const countText = `${visibleCount}/${state.stories.length} ${t.photostories || t.stories || 'photostories'}`;
   const canShowResults = hasActiveFilters(state.filters) && visibleCount > 0;
 
-  qsa('[data-story-id]').forEach((card) => {
+  let matchingIndex = 0;
+  qsa('.gallery-results-pane [data-story-id]').forEach((card) => {
     const haystack = card.dataset.searchHaystack || '';
     const matches = !q || haystack.includes(q);
-    card.classList.toggle('is-search-hidden', !matches);
+    const isWithinCurrentPage = matches && matchingIndex < visibleLimit;
+    if (matches) matchingIndex += 1;
+    card.classList.toggle('is-search-hidden', !isWithinCurrentPage);
   });
 
   const activeFilterCount = qs('.gallery-active-filter-count');
@@ -955,12 +959,38 @@ function updateSearchResultCountOnly(query) {
   qsa('.gallery-show-results[data-action="close-filter-drawer"]').forEach((button) => {
     button.disabled = !canShowResults;
   });
+  qsa('.mobile-filter-footer-reset[data-action="reset-filters"]').forEach((button) => {
+    button.disabled = !hasActiveFilters(state.filters);
+  });
   qsa('.filter-summary-text').forEach((label) => {
     label.textContent = countText;
   });
 
   const emptyState = qs('[data-search-empty-state]');
-  if (emptyState) emptyState.style.display = (q && visibleCount === 0) ? '' : 'none';
+  if (emptyState) emptyState.style.display = visibleCount === 0 ? '' : 'none';
+
+  const resultsPane = qs('.gallery-results-pane');
+  let loadMoreRow = resultsPane ? qs('.load-more-row', resultsPane) : null;
+  const hasMore = visibleCount > visibleLimit;
+  if (!loadMoreRow && hasMore && resultsPane) {
+    loadMoreRow = document.createElement('div');
+    loadMoreRow.className = 'load-more-row';
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'load-more-button';
+    button.dataset.action = 'load-more';
+    button.append(document.createTextNode(`${t.loadMore} `));
+    const count = document.createElement('span');
+    count.className = 'load-more-count';
+    button.append(count);
+    loadMoreRow.append(button);
+    resultsPane.append(loadMoreRow);
+  }
+  if (loadMoreRow) {
+    loadMoreRow.style.display = hasMore ? '' : 'none';
+    const count = qs('.load-more-count', loadMoreRow);
+    if (count) count.textContent = `${Math.min(visibleLimit, visibleCount)} / ${visibleCount}`;
+  }
 }
 
 let wasSearchActiveLastKeystroke = false;
@@ -970,6 +1000,7 @@ function handleSearchInput(event) {
   if (!input) return;
 
   const isNowActive = input.value.trim().length > 0;
+  const isMobileFilterSearch = Boolean(input.closest('.mobile-filter-controls'));
 
   state.filters.searchQuery = input.value;
   qsa('[data-search-input]').forEach((field) => {
@@ -977,6 +1008,12 @@ function handleSearchInput(event) {
   });
   setGalleryModeFromFilters();
   wasSearchActiveLastKeystroke = isNowActive;
+
+  if (isMobileFilterSearch) {
+    updateSearchResultCountOnly(input.value);
+    saveGallerySession();
+    return;
+  }
 
   renderSite({ preserveGalleryScroll: true });
 }

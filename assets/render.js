@@ -7,6 +7,7 @@ import {
 import { renderMenu } from './menu.js?v=20260715-no-about-menu';
 import { renderQuestionIcon } from './question-icons.js';
 import { REQUIRE_REVIEW_AUTH } from './supabase-config.js';
+import { PAGE_SIZE } from './state.js?v=20260608-gallery-batches';
 import {
   allDistricts,
   allPeople,
@@ -633,16 +634,15 @@ export function renderApp(state) {
   const t = getUiText(state.language);
   const landing = getLandingText(state.language);
 
-  const isSearchActive = Boolean(effectiveSearchQuery(state.filters));
-  // While searching, render every card that matches the non-search filters
-  // (district/people/tags) so the search box can show/hide cards via a CSS
-  // class on every keystroke, without ever touching #app's innerHTML.
-  // Pagination doesn't apply while searching — "35 matches" should mean 35
-  // visible cards, not "12 of 35".
-  const searchPool = isSearchActive ? filteredStoriesExcludingSearch(state) : null;
-  const visibleStories = isSearchActive ? searchPool : pagedStories(state);
+  // Keep the mobile drawer's searchable pool in the gallery DOM so typing
+  // never replaces the live input. Cards beyond the current page stay hidden.
+  const keepStableMobileSearchPool = state.filterDrawerOpen;
+  const visibleStories = keepStableMobileSearchPool
+    ? filteredStoriesExcludingSearch(state)
+    : pagedStories(state);
   const totalFiltered = filteredStories(state).length;
-  const moreAvailable = isSearchActive ? false : hasMoreStories(state);
+  const visibleStoryLimit = state.galleryPage * PAGE_SIZE;
+  const moreAvailable = hasMoreStories(state);
 
   const districtItems = allDistricts(state).map((d) => ({ value: d.slug, label: labelFor(d, state.language) }));
   const peopleItems = allPeople(state).map((p) => ({ value: p.slug, label: labelFor(p, state.language) }));
@@ -716,10 +716,15 @@ export function renderApp(state) {
   ` : '';
 
   const activeSearchQuery = effectiveSearchQuery(state.filters);
-  const searchMatchFlags = visibleStories.map((item) =>
-    !activeSearchQuery || storySearchHaystack(item, state.language).includes(activeSearchQuery)
-  );
-  const noSearchMatches = activeSearchQuery && visibleStories.length > 0 && !searchMatchFlags.some(Boolean);
+  let matchingStoryIndex = 0;
+  const searchMatchFlags = visibleStories.map((item) => {
+    const matchesSearch = !activeSearchQuery || storySearchHaystack(item, state.language).includes(activeSearchQuery);
+    if (!matchesSearch) return false;
+    const isWithinCurrentPage = matchingStoryIndex < visibleStoryLimit;
+    matchingStoryIndex += 1;
+    return isWithinCurrentPage;
+  });
+  const noSearchMatches = Boolean(activeSearchQuery) && totalFiltered === 0;
 
   const galleryGridMarkup = visibleStories.length === 0
     ? `<div class="gallery-empty">
@@ -732,7 +737,7 @@ export function renderApp(state) {
   const loadMoreMarkup = moreAvailable
     ? `<div class="load-more-row">
         <button type="button" class="load-more-button" data-action="load-more">
-          ${escapeHtml(t.loadMore)} <span class="load-more-count">${visibleStories.length} / ${totalFiltered}</span>
+          ${escapeHtml(t.loadMore)} <span class="load-more-count">${Math.min(visibleStoryLimit, totalFiltered)} / ${totalFiltered}</span>
         </button>
       </div>`
     : '';
