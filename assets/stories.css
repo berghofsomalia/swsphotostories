@@ -2431,7 +2431,7 @@ button.chip.cluster-tone-district:hover,
 }
 
 /* Current gallery-only layout: full-width filter rail + adaptive results grid. */
-@media (min-width: 901px) {
+@media (min-width: 701px) {
   .site-shell.is-gallery-only.is-filter-split {
     height: 100svh;
     min-height: 100svh;
@@ -2569,9 +2569,9 @@ button.chip.cluster-tone-district:hover,
   }
 
   .site-shell.is-gallery-only.is-filter-split .gallery-grid {
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15.75rem), 20.5rem));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15.75rem), 1fr));
     gap: 1rem;
-    justify-content: start;
+    justify-content: stretch;
   }
 
   .site-shell.is-gallery-only.is-filter-split .gallery-image-frame {
@@ -2914,6 +2914,102 @@ button.chip.cluster-tone-district:hover,
   }
 }
 
+/* Tablet-sized viewports use a persistent half-and-half split. Portrait
+   tablets keep that composition through 1024px; the modal is phone-only. */
+@media (min-width: 701px) and (max-width: 900px),
+       (orientation: portrait) and (min-width: 901px) and (max-width: 1024px) {
+  .site-shell.is-gallery-only.is-filter-split .mobile-filter-toggle {
+    display: none;
+  }
+
+  .site-shell.is-gallery-only.is-filter-split .gallery-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) !important;
+    gap: 0;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .gallery-layout.is-filter-open::before {
+    display: none;
+  }
+
+  .site-shell.is-gallery-only.is-filter-split .filter-panel,
+  .site-shell.is-gallery-only.is-filter-split .filter-panel.is-open,
+  .site-shell.is-gallery-only.is-filter-split .filter-panel:not(.is-open) {
+    position: relative !important;
+    inset: auto;
+    z-index: auto !important;
+    display: flex;
+    width: auto;
+    height: 100%;
+    min-height: 0;
+    max-height: none;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    border-radius: 0;
+    opacity: 1;
+    pointer-events: auto;
+    transform: none !important;
+    transition: none;
+    order: 0;
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .site-shell.is-gallery-only.is-filter-split .filter-panel-scroll-body,
+  .site-shell.is-gallery-only.is-filter-split .filter-panel.is-open .filter-panel-scroll-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding-top: 0;
+    overflow-y: auto;
+  }
+
+  .site-shell.is-gallery-only.is-filter-split .filter-panel-search-dock,
+  .site-shell.is-gallery-only.is-filter-split .filter-panel.is-open .filter-panel-search-dock {
+    display: none !important;
+  }
+
+  .site-shell.is-gallery-only.is-filter-split .gallery-results-search-dock {
+    display: block !important;
+  }
+
+  .site-shell.is-gallery-only.is-filter-split .gallery-results-search-dock .search-tools {
+    display: flex;
+    width: 100%;
+  }
+
+  .site-shell.is-gallery-only.is-filter-split .gallery-results-search-dock .gallery-show-results {
+    display: none !important;
+  }
+
+  .site-shell.is-gallery-only.is-filter-split .gallery-results-search-dock .gallery-search-reset {
+    display: inline-flex !important;
+  }
+
+  .site-shell.is-gallery-only.is-filter-split .gallery-results-pane {
+    order: 0;
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 0;
+    width: auto;
+    height: 100%;
+    padding: 0 1rem 3rem;
+    overflow-y: auto;
+  }
+
+  .site-shell.is-gallery-only.is-filter-split .gallery-results-pane .gallery-active-filter-panel {
+    display: flex !important;
+  }
+
+  .site-shell.is-gallery-only.is-filter-split .gallery-grid {
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+  }
+}
+
 @media (min-width: 901px) {
   .related-band .content-wrap {
     display: grid;
@@ -3104,8 +3200,25 @@ html[data-theme="light"] .story-stage-image.adaptive-image {
 /* Fluid gallery columns: use the largest number of columns that fits, then stretch them to fill the row. */
 @media (min-width: 901px) {
   .site-shell.is-gallery-only.is-filter-split .gallery-grid {
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15.75rem), 20.5rem));
-    justify-content: start;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15.75rem), 1fr));
+    justify-content: stretch;
+  }
+}
+
+/* Within the tablet split, the results half uses one full-width card column. */
+@media (min-width: 701px) and (max-width: 900px) {
+  .gallery-grid,
+  .site-shell.is-filter-split .gallery-grid,
+  .site-shell.is-gallery-only.is-filter-split .gallery-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .gallery-grid,
+  .site-shell.is-filter-split .gallery-grid,
+  .site-shell.is-gallery-only.is-filter-split .gallery-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
