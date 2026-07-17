@@ -312,6 +312,15 @@ html[data-theme="light"] .loading-spinner {
   background: transparent;
 }
 
+/* Public overlays blur the page beneath them. The gallery's mobile filter
+   drawer has no matching backdrop class and deliberately remains unblurred. */
+.utility-menu-backdrop,
+.modal-backdrop,
+.saved-drawer-backdrop {
+  -webkit-backdrop-filter: blur(10px) saturate(0.92);
+  backdrop-filter: blur(10px) saturate(0.92);
+}
+
 .utility-menu-toggle,
 .icon-button,
 .control-button {

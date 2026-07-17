@@ -128,9 +128,71 @@ html[data-theme="light"] .home-background-link:focus-visible {
   text-shadow: none;
 }
 
+/* These captions sit over changing photography. A pale halo preserves the
+   dark-blue type on darker frames, with a small dark shadow for definition. */
+.home-about-background .about-copy-panel--shared,
+.home-about-background .about-copy-panel--community,
+.home-about-background .about-copy-panel--final {
+  text-shadow:
+    0 0 0.12rem rgba(239, 248, 252, 0.98),
+    0 0 0.65rem rgba(213, 235, 245, 0.9),
+    0 0.14rem 0.55rem rgba(15, 45, 61, 0.34);
+}
+
 /* The combined version starts with the map and intentionally omits its title. */
 .home-about-background .about-title-panel {
   display: none;
+}
+
+/* The map is a full-viewport visual at every width and orientation. */
+.home-about-background .about-v2-section--intro,
+.home-about-background .about-v2-grid--intro {
+  height: 100dvh;
+  min-height: 100dvh;
+}
+
+/* Keep carousel controls below the visible image and make every bar a slide control. */
+.home-about-background .about-v2-image.about-v2-carousel > img.about-v2-carousel-image {
+  inset: 10px 10px 1.7rem;
+  height: calc(100% - 10px - 1.7rem);
+}
+
+.home-about-background .about-carousel-progress {
+  right: clamp(0.65rem, 2vw, 1.25rem);
+  bottom: 0.2rem;
+  left: clamp(0.65rem, 2vw, 1.25rem);
+  pointer-events: auto;
+}
+
+.home-about-background .about-carousel-progress span {
+  height: 1rem;
+  overflow: visible;
+  background: transparent;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.home-about-background .about-carousel-progress span::before {
+  content: "";
+  position: absolute;
+  top: calc(50% - 0.11rem);
+  right: 0;
+  left: 0;
+  height: 0.22rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.34);
+  box-shadow: 0 0.15rem 0.7rem rgba(16, 37, 54, 0.2);
+}
+
+.home-about-background .about-carousel-progress span::after {
+  top: calc(50% - 0.11rem);
+  bottom: auto;
+  height: 0.22rem;
+}
+
+.home-about-background .about-carousel-progress span:focus-visible {
+  outline: 2px solid rgba(195, 98, 56, 0.95);
+  outline-offset: 0.2rem;
 }
 
 /* Desktop process narrative: keep the map in place while the three process
@@ -140,7 +202,7 @@ html[data-theme="light"] .home-background-link:focus-visible {
     position: sticky;
     top: 0;
     z-index: 0;
-    height: 100svh;
+    height: 100dvh;
   }
 
   .home-about-background .about-v2-section--process {
@@ -241,7 +303,7 @@ html[data-theme="light"] .home-background-link:focus-visible {
   }
 }
 
-@media (max-width: 680px) {
+@media (max-width: 680px), (orientation: portrait) and (max-width: 1024px) {
   .home-about-page .home-shell {
     min-height: 31rem;
   }
@@ -254,6 +316,29 @@ html[data-theme="light"] .home-background-link:focus-visible {
     font-size: clamp(0.7rem, 3vw, 0.86rem);
     transform: none;
     backdrop-filter: blur(12px);
+  }
+}
+
+@media (max-width: 1024px) and (orientation: portrait) {
+  .home-background-link {
+    right: auto;
+    bottom: 0;
+    left: 0;
+    padding-left: max(0.85rem, env(safe-area-inset-left));
+    border-left: 0;
+    border-radius: 0 1.35rem 0 0;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 680px) {
+  .home-about-page .home-shell {
+    height: 100svh;
+    min-height: 0;
+  }
+
+  .home-background-link {
+    padding: 0.42rem 0.72rem;
+    font-size: clamp(0.58rem, 2dvh, 0.72rem);
   }
 }
 

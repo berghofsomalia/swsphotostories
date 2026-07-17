@@ -70,6 +70,16 @@ function stopHomeCarousel() {
   if (!state.carouselTimer) return;
   window.clearInterval(state.carouselTimer);
   state.carouselTimer = null;
+  document.querySelector('[data-home-carousel-progress]')?.classList.add('is-paused');
+}
+
+function restartHomeCarouselProgress() {
+  const progress = document.querySelector('[data-home-carousel-progress]');
+  if (!progress) return;
+  const nextCycle = progress.classList.contains('is-cycle-a') ? 'is-cycle-b' : 'is-cycle-a';
+  progress.classList.remove('is-cycle-a', 'is-cycle-b', 'is-paused');
+  progress.classList.add(nextCycle);
+  progress.classList.toggle('is-paused', state.carouselPaused);
 }
 
 function startHomeCarousel() {
@@ -78,6 +88,7 @@ function startHomeCarousel() {
   state.carouselTimer = window.setInterval(() => {
     void goNextHomeStory({ resetTimer: false });
   }, HOME_CAROUSEL_INTERVAL_MS);
+  restartHomeCarouselProgress();
 }
 
 function restartHomeCarousel() {
@@ -136,7 +147,7 @@ async function goPreviousHomeStory({ resetTimer = true } = {}) {
   try {
     state.trailIndex -= 1;
     const previous = findStoryById(state.storyTrail[state.trailIndex]);
-    if (previous) await setHomeStory(previous, { push: false, preloaded: hasUsableLeadImage(previous) });
+    if (previous) await setHomeStory(previous, { push: false, preloaded: hasUsableLeadImage(previous), direction: 'back' });
   } finally {
     state.carouselBusy = false;
     if (resetTimer) restartHomeCarousel();
@@ -151,13 +162,13 @@ async function goNextHomeStory({ resetTimer = true } = {}) {
       state.trailIndex += 1;
       const next = findStoryById(state.storyTrail[state.trailIndex]);
       if (next) {
-        await setHomeStory(next, { push: false, preloaded: hasUsableLeadImage(next) });
+        await setHomeStory(next, { push: false, preloaded: hasUsableLeadImage(next), direction: 'forward' });
         return;
       }
       state.storyTrail = state.storyTrail.slice(0, state.trailIndex);
     }
     const nextRandom = takeQueuedHomeStory() || pickNextRandomStory();
-    await setHomeStory(nextRandom, { preloaded: hasUsableLeadImage(nextRandom) });
+    await setHomeStory(nextRandom, { preloaded: hasUsableLeadImage(nextRandom), direction: 'forward' });
   } finally {
     state.carouselBusy = false;
     if (resetTimer) restartHomeCarousel();
@@ -212,31 +223,37 @@ function syncBackgroundCarouselProgress(carousel, activeIndex, running) {
   });
 }
 
-function advanceBackgroundCarousel(carousel) {
-  if (document.hidden || !carousel.isConnected) return;
+function showBackgroundCarouselSlide(carousel, targetIndex, running) {
   const slides = Array.from(carousel.querySelectorAll('.about-v2-carousel-image'));
   const bgSlides = Array.from(carousel.querySelectorAll('.about-v2-carousel-bg'));
-  if (slides.length < 2) return;
+  if (!slides.length) return;
 
-  const currentIndex = Math.max(0, slides.findIndex((slide) => slide.classList.contains('is-active')));
-  const nextIndex = (currentIndex + 1) % slides.length;
+  const nextIndex = ((Number(targetIndex) || 0) + slides.length) % slides.length;
   const followingIndex = (nextIndex + 1) % slides.length;
   hydrateDeferredImage(slides[nextIndex]);
   hydrateDeferredImage(bgSlides[nextIndex]);
   hydrateDeferredImage(slides[followingIndex]);
   hydrateDeferredImage(bgSlides[followingIndex]);
 
-  slides[currentIndex]?.classList.remove('is-active');
-  bgSlides[currentIndex]?.classList.remove('is-active');
-  slides[nextIndex]?.classList.add('is-active');
-  bgSlides[nextIndex]?.classList.add('is-active');
-  syncBackgroundCarouselProgress(carousel, nextIndex, true);
+  slides.forEach((slide, index) => slide.classList.toggle('is-active', index === nextIndex));
+  bgSlides.forEach((slide, index) => slide.classList.toggle('is-active', index === nextIndex));
+  syncBackgroundCarouselProgress(carousel, nextIndex, running);
 
   const nextSrc = slides[nextIndex]?.getAttribute('src') || slides[nextIndex]?.dataset.src || '';
   if (nextSrc) {
     carousel.style.setProperty('--about-image-url', `url('${nextSrc}')`);
     carousel.closest('.about-v2-grid--two-col')?.style.setProperty('--about-image-url', `url('${nextSrc}')`);
   }
+}
+
+function advanceBackgroundCarousel(carousel) {
+  if (document.hidden || !carousel.isConnected) return;
+  const slides = Array.from(carousel.querySelectorAll('.about-v2-carousel-image'));
+  if (slides.length < 2) return;
+
+  const currentIndex = Math.max(0, slides.findIndex((slide) => slide.classList.contains('is-active')));
+  const nextIndex = (currentIndex + 1) % slides.length;
+  showBackgroundCarouselSlide(carousel, nextIndex, true);
 }
 
 function stopBackgroundCarousel(carousel) {
@@ -279,6 +296,26 @@ function setupBackgroundCarousels(root) {
   }, { rootMargin: '0px', threshold: [0, 0.9, 1] });
 
   root.querySelectorAll('[data-about-carousel]').forEach((carousel) => {
+    carousel.querySelectorAll('.about-carousel-progress span').forEach((bar, index) => {
+      bar.dataset.carouselIndex = String(index);
+      bar.setAttribute('role', 'button');
+      bar.setAttribute('tabindex', '0');
+      bar.setAttribute('aria-label', `Show image ${index + 1}`);
+
+      const selectSlide = () => {
+        const wasRunning = backgroundCarouselTimers.has(carousel);
+        stopBackgroundCarousel(carousel);
+        showBackgroundCarouselSlide(carousel, index, false);
+        if (wasRunning) startBackgroundCarousel(carousel);
+      };
+
+      bar.addEventListener('click', selectSlide);
+      bar.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        selectSlide();
+      });
+    });
     backgroundCarouselObserver.observe(carousel);
   });
 }
@@ -535,14 +572,20 @@ function revealStaticPage() {
  * To navigate back (prev button), pass direction: 'back' — the slots simply
  * swap roles in reverse, showing whatever src is already in the outgoing slot.
  */
-async function crossfadeToStory(story) {
+async function crossfadeToStory(story, { direction = 'forward' } = {}) {
   const id = ++_crossfadeId;
   const src = leadImageSrcFor(story);
   if (!src) return;
 
   // ── 1. Hide teaser so the next line can slide in after the image swap ─────
   const teaser = document.querySelector('[data-story-fade]');
-  teaser?.classList.remove('is-home-content-loaded');
+  const shell = document.querySelector('.home-shell');
+  shell?.style.setProperty(
+    '--home-slide-distance',
+    direction === 'back'
+      ? 'calc(-1 * clamp(1rem, 4vw, 3.5rem))'
+      : 'clamp(1rem, 4vw, 3.5rem)'
+  );
 
   // ── 2. Identify slots ─────────────────────────────────────────────────────
   const imgA = document.querySelector('.home-card-image .img-slot--a');
@@ -584,9 +627,17 @@ async function crossfadeToStory(story) {
 
   // ── 4. Swap text content while teaser is still invisible ──────────────────
   const readBtn = document.querySelector('.home-read-button');
-  if (teaser)  teaser.textContent = labelFor(story.summary, state.language);
+  if (teaser) {
+    teaser.style.transition = 'none';
+    teaser.classList.remove('is-home-content-loaded');
+    teaser.textContent = labelFor(story.summary, state.language);
+  }
   if (readBtn) readBtn.href = `stories/?code=${story.id}`;
   fitHomeTeaserText();
+  if (teaser) {
+    void teaser.offsetWidth;
+    teaser.style.removeProperty('transition');
+  }
 
   await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   if (id !== _crossfadeId) return;
@@ -611,6 +662,7 @@ async function crossfadeToStory(story) {
 
     // Text
     teaser?.classList.add('is-home-content-loaded');
+    restartHomeCarouselProgress();
   });
 }
 
@@ -677,7 +729,7 @@ async function setHomeStory(story, options = {}) {
     await ensureStoryImages(story);
   }
 
-  await crossfadeToStory(story);
+  await crossfadeToStory(story, { direction: options.direction || 'forward' });
   window.setTimeout(() => {
     document.querySelector('[data-story-fade]')?.classList.add('is-home-content-loaded');
   }, 80);
@@ -697,6 +749,20 @@ function _syncCarouselButtons() {
     nextBtn.disabled = false;
     nextBtn.classList.remove('is-disabled');
   }
+}
+
+function _syncHomeCarouselPauseButton() {
+  const button = document.querySelector('[data-action="toggle-home-carousel"]');
+  if (!button) return;
+  const t = getUiText(state.language);
+  button.innerHTML = state.carouselPaused ? icon.play() : icon.pause();
+  button.setAttribute('aria-pressed', state.carouselPaused ? 'true' : 'false');
+  button.setAttribute(
+    'aria-label',
+    state.carouselPaused
+      ? (t.resumeCarousel || 'Resume carousel')
+      : (t.pauseCarousel || 'Pause carousel')
+  );
 }
 
 // ── Render ────────────────────────────────────────────────────────────────────
@@ -739,6 +805,7 @@ function renderPage() {
           : `<img class="img-slot--a is-image-loaded" data-image-fade data-img-active="true"  src="${esc(leadSrc)}" alt="${esc(story.storyteller)}" loading="eager">
              <img class="img-slot--b"                 data-image-fade data-img-active="false" src="" alt="">`}
       </div>
+      <div class="home-carousel-progress is-cycle-a${state.carouselPaused ? ' is-paused' : ''}" data-home-carousel-progress aria-hidden="true"><span></span></div>
       <div class="home-card-body">
         <div class="home-card-primary-panel">
           <p class="home-card-teaser is-home-content-loaded" data-story-fade>${esc(labelFor(story.summary, state.language))}</p>
@@ -931,7 +998,7 @@ function attachListeners() {
       state.carouselPaused = !state.carouselPaused;
       if (state.carouselPaused) stopHomeCarousel();
       else startHomeCarousel();
-      renderPage();
+      _syncHomeCarouselPauseButton();
       return;
     }
     if (action === 'read-background') {

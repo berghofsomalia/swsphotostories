@@ -46,7 +46,7 @@ html[data-theme="dark"] .about-v2-shell {
 .about-v2-grid--intro {
   position: relative;
   display: block;
-  height: 100svh;
+  height: 100dvh;
   overflow: hidden;
   background: #7fa8bc;
 }
@@ -637,10 +637,15 @@ html[data-theme="light"] .about-guide-column:nth-child(2) {
 
   .about-v2-grid--intro {
     display: block;
-    height: auto;
-    min-height: 0;
-    aspect-ratio: 1 / 1;
+    height: 100dvh;
+    min-height: 100dvh;
+    aspect-ratio: auto;
     background: #7fa8bc;
+  }
+
+  .about-v2-section--intro {
+    height: 100dvh;
+    min-height: 100dvh;
   }
 
   .about-title-panel {
