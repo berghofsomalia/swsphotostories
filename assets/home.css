@@ -662,7 +662,8 @@ html[data-theme="light"] .home-explore-link:hover {
   }
 
   .home-card-actions .home-read-button {
-    flex: 1;
+    flex: 0 0 auto;
+    width: auto;
     justify-content: center;
     font-size: clamp(0.7rem, 3vw, 0.86rem);
     padding: 0.55rem 0.85rem;
@@ -765,7 +766,7 @@ html[data-theme="light"] .home-explore-link:hover {
 /* Short landscape viewports need the compact overlay composition. The normal
    phone layout stacks photo, teaser and controls vertically and cannot fit
    when a rotated phone is only about 280-400 CSS pixels tall. */
-@media (orientation: landscape) and (max-height: 680px) {
+@media (orientation: landscape) and (max-width: 1024px) and (max-height: 680px) {
   .home-shell {
     --home-hero-edge: clamp(0.45rem, 2vmin, 0.9rem);
   }
@@ -918,8 +919,34 @@ html[data-theme="light"] .home-explore-link:hover {
    than a phone. Keep the controls with the teaser instead of pinning them to
    the bottom, where the lower-right album flap can cover them. */
 @media (orientation: portrait) and (min-width: 681px) and (max-width: 1024px) {
+  .home-hero-grid {
+    width: min(88vw, 54rem);
+  }
+
+  .home-card-image {
+    flex: 0 0 auto;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+
+  .home-badge-nexus,
+  .home-badge-title {
+    width: min(42vw, 20rem);
+    height: min(42vw, 20rem);
+  }
+
+  .home-card-primary-panel {
+    padding-bottom: clamp(8rem, 14vh, 10rem);
+  }
+
+  .home-card-teaser {
+    flex-shrink: 0;
+    overflow: visible;
+  }
+
   .home-card-actions {
-    margin-top: clamp(1.75rem, 4vh, 3.25rem);
+    margin-top: auto;
     padding-top: 0;
     padding-bottom: 0;
   }
