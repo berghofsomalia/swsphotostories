@@ -148,15 +148,35 @@ html[data-theme="dark"] .about-v2-shell {
 }
 
 .about-carousel-progress span {
+  position: relative;
   flex: 1 1 0;
   height: 0.22rem;
+  overflow: hidden;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.34);
   box-shadow: 0 0.15rem 0.7rem rgba(16, 37, 54, 0.2);
 }
 
-.about-carousel-progress span.is-active {
+.about-carousel-progress span::after {
+  content: "";
+  position: absolute;
+  inset: 0;
   background: rgba(195, 98, 56, 0.9);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+.about-carousel-progress span.is-complete::after {
+  transform: scaleX(1);
+}
+
+.about-carousel-progress span.is-active.is-running::after {
+  animation: about-carousel-progress 7000ms linear forwards;
+}
+
+@keyframes about-carousel-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }
 
 .about-v2-image--map::before,
