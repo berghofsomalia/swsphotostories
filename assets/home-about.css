@@ -118,6 +118,16 @@ html[data-theme="light"] .home-background-link:focus-visible {
   visibility: visible;
 }
 
+/* Process narrative: from the opening peacebuilders paragraph through the
+   final community-photostories paragraph. */
+.home-about-background .about-v2-section--process .about-process-step .about-process-copy,
+.home-about-background .about-copy-panel--shared,
+.home-about-background .about-copy-panel--community,
+.home-about-background .about-copy-panel--final {
+  color: #244f68;
+  text-shadow: none;
+}
+
 /* The combined version starts with the map and intentionally omits its title. */
 .home-about-background .about-title-panel {
   display: none;

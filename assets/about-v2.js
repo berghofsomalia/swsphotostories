@@ -284,12 +284,12 @@ function renderLandingPage() {
     <div class="intro-modal intro-modal--pdfstyle landing-page-shell about-v2-shell">
       ${renderMenuForAbout(t)}
       ${renderSavedDrawer(t)}
+      ${renderContextStrips(landing)}
       <main class="about-v2-scroll" id="about-main">
         <section class="about-v2-section about-v2-section--intro">
           <div class="about-v2-grid about-v2-grid--intro">
             ${renderImagePanel(FIXED_IMAGES.map, 'about-v2-image--map', true)}
             <div class="about-title-panel"><h1>${escapeHtml(copy.title)}</h1></div>
-            ${renderContextStrips(landing)}
           </div>
         </section>
 

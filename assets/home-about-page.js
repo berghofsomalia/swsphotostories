@@ -349,6 +349,12 @@ async function mountBackground({ scroll = true } = {}) {
       const sourceUrl = frame.contentWindow.location.href;
       const clonedMain = sourceMain.cloneNode(true);
       clonedMain.removeAttribute('id');
+      let clonedContextStrips = Array.from(clonedMain.querySelectorAll('.context-strip'));
+      if (clonedContextStrips.length === 0) {
+        clonedContextStrips = Array.from(sourceMain.parentElement?.children || [])
+          .filter((element) => element.classList?.contains('context-strip'))
+          .map((element) => element.cloneNode(true));
+      }
       clonedMain.querySelector('.about-title-panel')?.remove();
       const guideCopy = clonedMain.querySelector('.about-guide-copy');
       if (guideCopy) guideCopy.innerHTML = guideCopy.innerHTML.replace('...', String(state.stories.length));
@@ -380,6 +386,7 @@ async function mountBackground({ scroll = true } = {}) {
       const wrapper = document.createElement('div');
       wrapper.className = 'intro-modal intro-modal--pdfstyle landing-page-shell about-v2-shell home-about-background';
       wrapper.appendChild(clonedMain);
+      clonedContextStrips.forEach((strip) => wrapper.appendChild(strip));
       root.className = '';
       root.innerHTML = '';
       root.appendChild(wrapper);
@@ -683,7 +690,11 @@ function renderPage() {
   const app = document.querySelector('#app');
   if (!app) return;
 
-  document.documentElement.classList.toggle('is-modal-open', Boolean(state.menuOpen || state.savedOpen));
+  // The combined page contains a viewport-sticky map. Applying the shared
+  // overflow:hidden modal lock changes its scroll container and makes the map
+  // jump when an overlay opens, so scrolling is locked by event handlers here.
+  document.documentElement.classList.remove('is-modal-open');
+  document.documentElement.classList.toggle('is-home-overlay-open', Boolean(state.menuOpen || state.savedOpen));
 
   const t       = getUiText(state.language);
   const landing = getLandingText(state.language);
@@ -772,6 +783,15 @@ function renderPage() {
 
 // ── Listeners ─────────────────────────────────────────────────────────────────
 function attachListeners() {
+  const blockBackgroundScroll = (event) => {
+    if (!state.menuOpen && !state.savedOpen) return;
+    if (state.savedOpen && event.target.closest?.('.saved-drawer .drawer-body')) return;
+    event.preventDefault();
+  };
+
+  document.addEventListener('wheel', blockBackgroundScroll, { passive: false });
+  document.addEventListener('touchmove', blockBackgroundScroll, { passive: false });
+
   const swipe = {
     active: false,
     pointerId: null,
