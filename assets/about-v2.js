@@ -54,11 +54,20 @@ async function loadAboutCopy() {
   }
 }
 
+function shuffledImageSet(images = []) {
+  const shuffled = [...images];
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+  }
+  return shuffled;
+}
+
 const ABOUT_IMAGE_SETS = {
-  shir0: ['images/shir0 (1).jpg', 'images/shir0 (2).jpg', 'images/shir0 (3).jpg', 'images/shir0 (4).jpg', 'images/shir0 (5).jpg'],
-  shir1: ['images/shir1 (1).jpg', 'images/shir1 (5).JPG', 'images/shir1 (6).jpg', 'images/shir1 (7).jpg', 'images/shir1 (8).jpg'],
-  shir2: ['images/shir2 (1).JPG', 'images/shir2 (2).jpg', 'images/shir2 (3).jpg', 'images/shir2 (4).jpg', 'images/shir2 (5).jpg', 'images/shir2 (6).jpg', 'images/shir2 (7).jpg', 'images/shir2 (8).jpg', 'images/shir2 (9).JPG', 'images/shir2 (10).JPG'],
-  shir3: ['images/shir3 (1).JPG', 'images/shir3 (2).JPG', 'images/shir3 (3).JPG', 'images/shir3 (4).jpg', 'images/shir3 (5).JPG', 'images/shir3 (6).JPG', 'images/shir3 (7).JPG', 'images/shir3 (8).JPG', 'images/shir3 (9).JPG', 'images/shir3 (10).JPG']
+  shir0: shuffledImageSet(['images/shir0 (1).jpg', 'images/shir0 (2).jpg', 'images/shir0 (3).jpg', 'images/shir0 (4).jpg', 'images/shir0 (5).jpg']),
+  shir1: shuffledImageSet(['images/shir1 (1).jpg', 'images/shir1 (5).JPG', 'images/shir1 (6).jpg', 'images/shir1 (7).jpg', 'images/shir1 (8).jpg']),
+  shir2: shuffledImageSet(['images/shir2 (1).JPG', 'images/shir2 (2).jpg', 'images/shir2 (3).jpg', 'images/shir2 (4).jpg', 'images/shir2 (5).jpg', 'images/shir2 (6).jpg', 'images/shir2 (7).jpg', 'images/shir2 (8).jpg', 'images/shir2 (9).JPG', 'images/shir2 (10).JPG']),
+  shir3: shuffledImageSet(['images/shir3 (1).JPG', 'images/shir3 (2).JPG', 'images/shir3 (3).JPG', 'images/shir3 (4).jpg', 'images/shir3 (5).JPG', 'images/shir3 (6).JPG', 'images/shir3 (7).JPG', 'images/shir3 (8).JPG', 'images/shir3 (9).JPG', 'images/shir3 (10).JPG'])
 };
 
 const FIXED_IMAGES = {
@@ -70,7 +79,8 @@ const FIXED_IMAGES = {
 };
 
 const ABOUT_CAROUSEL_INTERVAL_MS = 7000;
-let aboutCarouselTimer = null;
+let aboutCarouselObserver = null;
+const aboutCarouselTimers = new Map();
 
 const state = {
   language: localStorage.getItem(STORAGE_KEYS.language) || 'en',
@@ -354,34 +364,70 @@ function renderLandingPage() {
   startAboutCarousels();
 }
 
+function isFullyVisible(entry) {
+  const root = entry.rootBounds;
+  const rect = entry.boundingClientRect;
+  const tolerance = 1;
+  return Boolean(
+    entry.isIntersecting &&
+    entry.intersectionRatio >= 0.99 &&
+    root &&
+    rect.top >= root.top - tolerance &&
+    rect.left >= root.left - tolerance &&
+    rect.bottom <= root.bottom + tolerance &&
+    rect.right <= root.right + tolerance
+  );
+}
+
+function advanceAboutCarousel(carousel) {
+  if (document.hidden || !carousel.isConnected) return;
+  const slides = Array.from(carousel.querySelectorAll('.about-v2-carousel-image'));
+  const bgSlides = Array.from(carousel.querySelectorAll('.about-v2-carousel-bg'));
+  const bars = Array.from(carousel.querySelectorAll('.about-carousel-progress span'));
+  if (slides.length < 2) return;
+
+  const currentIndex = Math.max(0, slides.findIndex((slide) => slide.classList.contains('is-active')));
+  const nextIndex = (currentIndex + 1) % slides.length;
+  slides[currentIndex]?.classList.remove('is-active');
+  bgSlides[currentIndex]?.classList.remove('is-active');
+  bars[currentIndex]?.classList.remove('is-active');
+  slides[nextIndex]?.classList.add('is-active');
+  bgSlides[nextIndex]?.classList.add('is-active');
+  bars[nextIndex]?.classList.add('is-active');
+  carousel.style.setProperty('--about-image-url', `url('${cssImageUrl(slides[nextIndex].getAttribute('src') || '')}')`);
+  carousel.closest('.about-v2-grid--two-col')?.style.setProperty('--about-image-url', `url('${cssImageUrl(slides[nextIndex].getAttribute('src') || '')}')`);
+}
+
+function stopAboutCarousel(carousel) {
+  const timer = aboutCarouselTimers.get(carousel);
+  if (timer) window.clearInterval(timer);
+  aboutCarouselTimers.delete(carousel);
+}
+
+function startAboutCarousel(carousel) {
+  if (aboutCarouselTimers.has(carousel)) return;
+  aboutCarouselTimers.set(carousel, window.setInterval(
+    () => advanceAboutCarousel(carousel),
+    ABOUT_CAROUSEL_INTERVAL_MS
+  ));
+}
+
 function startAboutCarousels() {
-  if (aboutCarouselTimer) {
-    window.clearInterval(aboutCarouselTimer);
-    aboutCarouselTimer = null;
-  }
+  aboutCarouselObserver?.disconnect();
+  aboutCarouselTimers.forEach((timer) => window.clearInterval(timer));
+  aboutCarouselTimers.clear();
 
   const carousels = Array.from(document.querySelectorAll('[data-about-carousel]'));
   if (!carousels.length) return;
 
-  aboutCarouselTimer = window.setInterval(() => {
-    document.querySelectorAll('[data-about-carousel]').forEach((carousel) => {
-      const slides = Array.from(carousel.querySelectorAll('.about-v2-carousel-image'));
-      const bgSlides = Array.from(carousel.querySelectorAll('.about-v2-carousel-bg'));
-      const bars = Array.from(carousel.querySelectorAll('.about-carousel-progress span'));
-      if (slides.length < 2) return;
-
-      const currentIndex = Math.max(0, slides.findIndex((slide) => slide.classList.contains('is-active')));
-      const nextIndex = (currentIndex + 1) % slides.length;
-      slides[currentIndex]?.classList.remove('is-active');
-      bgSlides[currentIndex]?.classList.remove('is-active');
-      bars[currentIndex]?.classList.remove('is-active');
-      slides[nextIndex]?.classList.add('is-active');
-      bgSlides[nextIndex]?.classList.add('is-active');
-      bars[nextIndex]?.classList.add('is-active');
-      carousel.style.setProperty('--about-image-url', `url('${cssImageUrl(slides[nextIndex].getAttribute('src') || '')}')`);
-      carousel.closest('.about-v2-grid--two-col')?.style.setProperty('--about-image-url', `url('${cssImageUrl(slides[nextIndex].getAttribute('src') || '')}')`);
+  aboutCarouselObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (isFullyVisible(entry)) startAboutCarousel(entry.target);
+      else stopAboutCarousel(entry.target);
     });
-  }, ABOUT_CAROUSEL_INTERVAL_MS);
+  }, { rootMargin: '0px', threshold: [0, 0.99, 1] });
+
+  carousels.forEach((carousel) => aboutCarouselObserver.observe(carousel));
 }
 
 const ACTION_HANDLERS = {

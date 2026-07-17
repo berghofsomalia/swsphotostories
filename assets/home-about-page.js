@@ -251,6 +251,21 @@ function startBackgroundCarousel(carousel) {
   backgroundCarouselTimers.set(carousel, window.setInterval(() => advanceBackgroundCarousel(carousel), 7000));
 }
 
+function isBackgroundCarouselFullyVisible(entry) {
+  const root = entry.rootBounds;
+  const rect = entry.boundingClientRect;
+  const tolerance = 1;
+  return Boolean(
+    entry.isIntersecting &&
+    entry.intersectionRatio >= 0.99 &&
+    root &&
+    rect.top >= root.top - tolerance &&
+    rect.left >= root.left - tolerance &&
+    rect.bottom <= root.bottom + tolerance &&
+    rect.right <= root.right + tolerance
+  );
+}
+
 function setupBackgroundCarousels(root) {
   backgroundCarouselObserver?.disconnect();
   backgroundCarouselTimers.forEach((timer) => window.clearInterval(timer));
@@ -258,10 +273,10 @@ function setupBackgroundCarousels(root) {
 
   backgroundCarouselObserver = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
-      if (entry.isIntersecting) startBackgroundCarousel(entry.target);
+      if (isBackgroundCarouselFullyVisible(entry)) startBackgroundCarousel(entry.target);
       else stopBackgroundCarousel(entry.target);
     });
-  }, { rootMargin: '20% 0px', threshold: 0.01 });
+  }, { rootMargin: '0px', threshold: [0, 0.99, 1] });
 
   root.querySelectorAll('[data-about-carousel]').forEach((carousel) => {
     backgroundCarouselObserver.observe(carousel);

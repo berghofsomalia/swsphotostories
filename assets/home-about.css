@@ -206,6 +206,41 @@ html[data-theme="light"] .home-background-link:focus-visible {
   }
 }
 
+@media (max-width: 900px) {
+  .home-about-background .about-v2-section--process,
+  .home-about-background .about-process-grid,
+  .home-about-background .about-process-step,
+  .home-about-background .about-process-step .about-process-copy {
+    background: #c7dff2;
+  }
+
+  .home-about-background .about-v2-section--process {
+    padding-bottom: clamp(2.75rem, 10vw, 4rem);
+  }
+
+  .home-about-background .about-v2-image--process {
+    box-sizing: border-box;
+    width: 100%;
+    height: auto;
+    justify-self: center;
+    overflow: hidden;
+    border-radius: 1.15rem;
+    background: #c7dff2;
+    -webkit-mask-image:
+      linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%),
+      linear-gradient(to bottom, transparent 0, #000 9%, #000 91%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%),
+      linear-gradient(to bottom, transparent 0, #000 9%, #000 91%, transparent 100%);
+    mask-composite: intersect;
+  }
+
+  .home-about-background .about-v2-image--process img {
+    height: auto;
+  }
+}
+
 @media (max-width: 680px) {
   .home-about-page .home-shell {
     min-height: 31rem;
