@@ -139,6 +139,11 @@ html[data-theme="light"] .home-background-link:focus-visible {
     0 0.14rem 0.55rem rgba(15, 45, 61, 0.34);
 }
 
+.home-about-background .about-v2-grid--process-final .about-copy-panel--final {
+  min-height: 0;
+  padding: clamp(0.75rem, 2vh, 1.25rem) clamp(1rem, 4vw, 3rem) 0.25rem;
+}
+
 /* The combined version starts with the map and intentionally omits its title. */
 .home-about-background .about-title-panel {
   display: none;
