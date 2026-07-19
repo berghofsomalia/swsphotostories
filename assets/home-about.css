@@ -89,6 +89,127 @@ html[data-theme="light"] .home-background-link:focus-visible {
   color: #fffaf2;
 }
 
+.home-bottom-nav {
+  display: none;
+}
+
+@media (min-width: 1025px), (orientation: landscape) and (min-width: 681px) {
+  .home-background-link,
+  .home-explore-link--card {
+    display: none;
+  }
+
+  .home-bottom-nav {
+    position: absolute;
+    z-index: 35;
+    bottom: clamp(0.7rem, 1.5vh, 1rem);
+    left: 50%;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: clamp(0.58rem, 0.72vw, 0.68rem);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transform: translateX(-50%);
+    white-space: nowrap;
+  }
+
+  .home-bottom-nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+    text-decoration: none;
+    text-transform: inherit;
+    cursor: pointer;
+  }
+
+  .home-bottom-nav-link:hover,
+  .home-bottom-nav-link:focus-visible {
+    color: #fff8ee;
+  }
+
+  .home-bottom-nav-link svg {
+    width: 0.72rem;
+    height: 0.72rem;
+    flex: 0 0 auto;
+  }
+
+  .home-bottom-nav-divider {
+    color: rgba(255, 255, 255, 0.48);
+  }
+}
+
+@media (max-width: 680px), (orientation: portrait) and (max-width: 1024px) {
+  .home-background-link,
+  .home-explore-link--card {
+    display: none;
+  }
+
+  .home-bottom-nav {
+    position: absolute;
+    z-index: 35;
+    bottom: max(1rem, env(safe-area-inset-bottom));
+    left: max(1rem, env(safe-area-inset-left));
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.42rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: clamp(0.58rem, 2.6vw, 0.68rem);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .home-bottom-nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+    text-decoration: none;
+    text-transform: inherit;
+    cursor: pointer;
+  }
+
+  .home-bottom-nav-link--gallery { order: 1; }
+  .home-bottom-nav-link--backstory { order: 2; }
+
+  .home-bottom-nav-link svg {
+    width: 0.72rem;
+    height: 0.72rem;
+    flex: 0 0 auto;
+  }
+
+  .home-bottom-nav-divider {
+    display: none;
+  }
+}
+
+html[data-theme="light"] .home-bottom-nav {
+  color: #111;
+}
+
+html[data-theme="light"] .home-bottom-nav-link:hover,
+html[data-theme="light"] .home-bottom-nav-link:focus-visible {
+  color: #000;
+}
+
+html[data-theme="light"] .home-bottom-nav-divider {
+  color: rgba(0, 0, 0, 0.5);
+}
+
 #background-root {
   min-height: 0;
   scroll-margin-top: 0;

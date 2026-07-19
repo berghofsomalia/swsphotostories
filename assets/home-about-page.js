@@ -183,6 +183,8 @@ const icon = {
   pause:        () => '<svg viewBox="0 0 24 24"><path d="M9 5v14"/><path d="M15 5v14"/></svg>',
   play:         () => '<svg viewBox="0 0 24 24"><path d="M7 5v14l11-7-11-7Z"/></svg>',
   sliders:      () => '<svg viewBox="0 0 24 24"><path d="M4 21v-7"/><path d="M4 10V3"/><path d="M12 21v-9"/><path d="M12 8V3"/><path d="M20 21v-5"/><path d="M20 12V3"/><path d="M1 14h6"/><path d="M9 8h6"/><path d="M17 16h6"/></svg>',
+  backstory:    () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.5c3.2-.8 6-.2 9 2v12c-3-2.2-5.8-2.8-9-2Z"/><path d="M21 5.5c-3.2-.8-6-.2-9 2v12c3-2.2 5.8-2.8 9-2Z"/></svg>',
+  grid:         () => '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
   close:        () => '<svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>',
   glasses:      () => '<svg viewBox="0 0 24 24"><circle cx="7.5" cy="14" r="3.2"/><circle cx="16.5" cy="14" r="3.2"/><path d="M10.7 13.5c.7-.5 1.9-.5 2.6 0"/><path d="M4.5 13.2 3 8.5"/><path d="M19.5 13.2 21 8.5"/></svg>'
 };
@@ -827,7 +829,7 @@ function renderPage() {
               </div>
             </div>
           </div>
-          <a class="home-explore-link" href="stories/#gallery">${icon.sliders()}<span>${esc(exploreLabel)}</span><span aria-hidden="true">&rarr;</span></a>
+          <a class="home-explore-link home-explore-link--card" href="stories/#gallery">${icon.sliders()}<span>${esc(exploreLabel)}</span><span aria-hidden="true">&rarr;</span></a>
         </div>
       </div>
     </div>
@@ -856,6 +858,16 @@ function renderPage() {
       <button type="button" class="home-background-link" data-action="read-background">
         <span>${esc(backgroundLabel())}</span>${icon.chevronDown()}
       </button>
+
+      <nav class="home-bottom-nav" aria-label="${esc(state.language === 'so' ? 'Xiriiriyeyaasha hordhaca' : 'Introduction links')}">
+        <button type="button" class="home-bottom-nav-link home-bottom-nav-link--backstory" data-action="read-background">
+          ${icon.backstory()}<span>${state.language === 'so' ? 'ASALKA' : 'BACKSTORY'}</span>${icon.chevronDown()}
+        </button>
+        <span class="home-bottom-nav-divider" aria-hidden="true">|</span>
+        <a class="home-bottom-nav-link home-bottom-nav-link--gallery" href="stories/#gallery">
+          ${icon.grid()}<span>${state.language === 'so' ? 'GALEERI' : 'GALLERY'}</span><span aria-hidden="true">&rarr;</span>
+        </a>
+      </nav>
 
     </div>
     ${renderSavedDrawer(t)}
