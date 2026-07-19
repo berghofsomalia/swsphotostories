@@ -151,6 +151,16 @@ html[data-theme="light"] .home-background-link:focus-visible {
   min-height: 100dvh;
 }
 
+/* A full-height map is too narrow in phone portrait and crops eastern Somalia.
+   A shorter, wider frame keeps substantially more of the country visible. */
+@media (orientation: portrait) and (max-width: 680px) {
+  .home-about-background .about-v2-section--intro,
+  .home-about-background .about-v2-grid--intro {
+    height: 50dvh;
+    min-height: 50dvh;
+  }
+}
+
 /* Keep carousel controls below the visible image and make every bar a slide control. */
 .home-about-background .about-v2-image.about-v2-carousel > img.about-v2-carousel-image {
   inset: 10px 10px 1.7rem;
