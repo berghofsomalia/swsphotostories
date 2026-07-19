@@ -329,8 +329,8 @@ function renderLandingPage() {
           </div>
         </section>
 
-        <section class="about-v2-section about-v2-section--two-col">
-          <div class="about-v2-grid about-v2-grid--two-col" ${aboutImageStyle(FIXED_IMAGES.process4)}>
+        <section class="about-v2-section about-v2-section--two-col about-v2-section--process-final">
+          <div class="about-v2-grid about-v2-grid--two-col about-v2-grid--process-final" ${aboutImageStyle(FIXED_IMAGES.process4)}>
             ${renderImagePanel(FIXED_IMAGES.process4, 'about-v2-image--story')}
             <div class="about-copy-panel about-copy-panel--final"><p>${escapeHtml(copy.processFinal)}</p></div>
           </div>

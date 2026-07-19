@@ -470,6 +470,19 @@ html[data-theme="dark"] .about-v2-shell {
   object-position: center;
 }
 
+/* The closing process illustration and its caption form one complete screen.
+   Fixing the grid height lets the image shrink inside the remaining row. */
+.about-v2-section--process-final,
+.about-v2-grid--process-final {
+  height: 100svh;
+  min-height: 0;
+}
+
+.about-v2-grid--process-final .about-v2-image--story {
+  min-height: 0;
+  overflow: hidden;
+}
+
 .about-v2-section--questions {
   display: grid;
   min-height: 100svh;
