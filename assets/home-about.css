@@ -256,16 +256,10 @@ html[data-theme="light"] .home-background-link:focus-visible {
     height: auto;
     width: calc(100% - clamp(1rem, 2.2vw, 2rem));
     justify-self: start;
-    overflow: hidden;
-    border-radius: clamp(1rem, 2vw, 1.6rem);
-    -webkit-mask-image:
-      linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%),
-      linear-gradient(to bottom, transparent 0, #000 9%, #000 91%, transparent 100%);
-    -webkit-mask-composite: source-in;
-    mask-image:
-      linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%),
-      linear-gradient(to bottom, transparent 0, #000 9%, #000 91%, transparent 100%);
-    mask-composite: intersect;
+    overflow: visible;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
   }
 
   .home-about-background .about-v2-image--process img {
@@ -295,17 +289,10 @@ html[data-theme="light"] .home-background-link:focus-visible {
     width: 100%;
     height: auto;
     justify-self: center;
-    overflow: hidden;
-    border-radius: 1.15rem;
-    background: #c7dff2;
-    -webkit-mask-image:
-      linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%),
-      linear-gradient(to bottom, transparent 0, #000 9%, #000 91%, transparent 100%);
-    -webkit-mask-composite: source-in;
-    mask-image:
-      linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%),
-      linear-gradient(to bottom, transparent 0, #000 9%, #000 91%, transparent 100%);
-    mask-composite: intersect;
+    overflow: visible;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
   }
 
   .home-about-background .about-v2-image--process img {
