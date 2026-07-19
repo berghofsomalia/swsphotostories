@@ -479,8 +479,18 @@ html[data-theme="dark"] .about-v2-shell {
 }
 
 .about-v2-grid--process-final .about-v2-image--story {
+  display: grid;
   min-height: 0;
   overflow: hidden;
+  padding: clamp(0.5rem, 1.5vw, 1rem);
+  place-items: center;
+}
+
+.about-v2-grid--process-final .about-v2-image--story > img {
+  width: auto;
+  height: auto;
+  max-width: min(86vw, 36rem);
+  max-height: 100%;
 }
 
 .about-v2-section--questions {
