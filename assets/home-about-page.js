@@ -419,7 +419,8 @@ async function mountBackground({ scroll = true } = {}) {
       }
       const galleryGuideLink = clonedMain.querySelector('[data-about-gallery-link]');
       if (galleryGuideLink) {
-        galleryGuideLink.href = 'stories/?focus=search#gallery';
+        const siteRootUrl = new URL('./', window.location.href);
+        galleryGuideLink.setAttribute('href', new URL('stories/#gallery', siteRootUrl).href);
       }
       const intro = clonedMain.querySelector('.about-v2-section--intro');
       if (intro) intro.id = 'background-map';
