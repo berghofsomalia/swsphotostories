@@ -417,6 +417,10 @@ async function mountBackground({ scroll = true } = {}) {
         homeGuideLink.href = '#home-carousel';
         homeGuideLink.dataset.action = 'scroll-home';
       }
+      const galleryGuideLink = clonedMain.querySelector('[data-about-gallery-link]');
+      if (galleryGuideLink) {
+        galleryGuideLink.href = 'stories/?focus=search#gallery';
+      }
       const intro = clonedMain.querySelector('.about-v2-section--intro');
       if (intro) intro.id = 'background-map';
 

@@ -221,7 +221,7 @@ function renderExploreGuide(copy) {
         <p>${escapeHtml(copy.guideStoryActions)}</p>
       </div>
       <div class="about-guide-column">
-        <p>${escapeHtml(copy.guideDiscoverPrefix.replace('{stories}', stories))}<a data-about-home-link href="${escapeHtml(homeLink)}">${escapeHtml(copy.guideHomeLink)}</a>${escapeHtml(copy.guideDiscoverMiddle)}<a href="${escapeHtml(searchLink)}">${escapeHtml(copy.guideGalleryLink)}</a>${escapeHtml(copy.guideDiscoverSuffix)}</p>
+        <p>${escapeHtml(copy.guideDiscoverPrefix.replace('{stories}', stories))}<a data-about-home-link href="${escapeHtml(homeLink)}">${escapeHtml(copy.guideHomeLink)}</a>${escapeHtml(copy.guideDiscoverMiddle)}<a data-about-gallery-link href="${escapeHtml(searchLink)}">${escapeHtml(copy.guideGalleryLink)}</a>${escapeHtml(copy.guideDiscoverSuffix)}</p>
         <p>${escapeHtml(copy.guideMenuPrefix)}<span class="about-guide-menu-icon" aria-hidden="true">☰</span>${escapeHtml(copy.guideMenuSuffix)}</p>
       </div>
     </div>
