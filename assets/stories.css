@@ -1856,7 +1856,12 @@ button.chip.cluster-tone-people:hover {
 }
 
 .related-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   margin-bottom: 1.25rem;
+  padding: calc(clamp(1.35rem, 3vw, 2.15rem) + 0.35rem) 0 0.55rem;
+  background: var(--stage);
 }
 
 .related-label {
@@ -1880,6 +1885,11 @@ button.chip.cluster-tone-people:hover {
   padding-top: 1.25rem;
   border-top: 1px solid var(--color-border-secondary, rgba(255,255,255,0.06));
   gap: 1rem;
+}
+
+.related-footer .action-button {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .related-more-button {
@@ -3030,10 +3040,10 @@ button.chip.cluster-tone-district:hover,
   .related-band .related-header {
     grid-column: 1;
     position: sticky;
-    top: clamp(4.4rem, 7vh, 6rem);
+    top: 0;
     min-height: clamp(11rem, 26vh, 18rem);
     margin: 0;
-    padding: 1.4rem 1.15rem;
+    padding: calc(clamp(1.35rem, 3vw, 2.15rem) + 1rem) 1.15rem 1.4rem;
     display: flex;
     align-items: flex-start;
     background: rgba(26, 31, 38, 0.98);
@@ -3205,7 +3215,8 @@ html[data-theme="light"] .story-stage-image.adaptive-image {
   }
 }
 
-/* Within the tablet split, the results half uses one full-width card column. */
+/* With the persistent 50/50 filter rail, the 701-900px results half only has
+   room for one card column. */
 @media (min-width: 701px) and (max-width: 900px) {
   .gallery-grid,
   .site-shell.is-filter-split .gallery-grid,
@@ -3214,11 +3225,45 @@ html[data-theme="light"] .story-stage-image.adaptive-image {
   }
 }
 
-@media (max-width: 700px) {
+/* At 700px the filters move into the modal, leaving the full page width free
+   for two card columns until the phone breakpoint. */
+@media (min-width: 601px) and (max-width: 700px) {
+  .gallery-grid,
+  .site-shell.is-filter-split .gallery-grid,
+  .site-shell.is-gallery-only.is-filter-split .gallery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
   .gallery-grid,
   .site-shell.is-filter-split .gallery-grid,
   .site-shell.is-gallery-only.is-filter-split .gallery-grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Related stories use the full content width below the story, so they can
+   retain two columns even while the gallery itself has a side filter rail. */
+@media (min-width: 600px) and (max-width: 900px) {
+  .related-band .related-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Just above the side-heading breakpoint, use a slimmer sticky heading rail
+   so the remaining area still accommodates two related cards. */
+@media (min-width: 901px) and (max-width: 1057px) {
+  .related-band .content-wrap {
+    grid-template-columns: clamp(11rem, 18vw, 13rem) minmax(0, 1fr);
+  }
+
+  .related-band .related-label {
+    font-size: clamp(1.45rem, 2.6vw, 2rem);
+  }
+
+  .related-band .related-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

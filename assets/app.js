@@ -1,5 +1,5 @@
-import { initialiseApp } from './bootstrap.js?v=20260716-filtered-gallery-pages';
-import { qs } from './render.js?v=20260716-filtered-gallery-pages';
+import { initialiseApp } from './bootstrap.js?v=20260721-related-controls';
+import { qs } from './render.js?v=20260721-related-controls';
 import { requireReviewSession } from './review-auth.js';
 
 async function start() {

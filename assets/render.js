@@ -43,6 +43,7 @@ const icon = {
   related:      () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 13.5 7 17a3 3 0 0 1-4.24-4.24l3.54-3.54A3 3 0 0 1 10.5 9"/><path d="M13.5 10.5 17 7a3 3 0 0 1 4.24 4.24L17.7 14.8A3 3 0 0 1 13.5 15"/><path d="m8.5 15.5 7-7"/></svg>',
   flow:         () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h7a4 4 0 0 1 4 4v6"/><path d="M8 3 4 7l4 4"/><path d="M20 17h-5"/><path d="m17 14 3 3-3 3"/></svg>',
   sliders:      () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21v-7"/><path d="M4 10V3"/><path d="M12 21v-9"/><path d="M12 8V3"/><path d="M20 21v-5"/><path d="M20 12V3"/><path d="M1 14h6"/><path d="M9 8h6"/><path d="M17 16h6"/></svg>',
+  grid:         () => '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
   copy:         () => '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><rect x="4" y="4" width="11" height="11" rx="2"/></svg>',
   facebook:     () => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 21v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.6 1.7-1.6H16.7V3.8c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4V10H8v3h2.5v8h3z"/></svg>',
   instagram:    () => '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" ry="5" fill="none"/><circle cx="12" cy="12" r="4" fill="none"/><circle cx="17.5" cy="6.5" r="1.1"/></svg>',
@@ -619,7 +620,7 @@ function renderRelatedStoriesSection(state, story, t) {
         <div class="gallery-grid related-grid">${cards}</div>
         <div class="related-footer">
           ${hasMore ? `<button type="button" class="action-button related-more-button" data-action="load-more-related">${icon.related()}<span>${escapeHtml(t.loadMoreRelated || 'More related stories...')}</span></button>` : ''}
-          <button type="button" class="action-button close-story-button" data-action="close-story">${icon.sliders()}<span>${escapeHtml(t.allStories || 'All stories')}</span></button>
+          <button type="button" class="action-button close-story-button" data-action="close-story">${icon.grid()}<span>${escapeHtml(t.allStories || 'Gallery')}</span></button>
         </div>
       </div>
     </section>

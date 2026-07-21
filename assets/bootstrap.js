@@ -1,4 +1,4 @@
-import { renderApp, qs, qsa, syncGalleryCardHeights, syncImageLoadStates, markImageLoaded } from './render.js?v=20260716-filtered-gallery-pages';
+import { renderApp, qs, qsa, syncGalleryCardHeights, syncImageLoadStates, markImageLoaded } from './render.js?v=20260721-related-controls';
 import { state, createEmptyFilters, PAGE_SIZE } from './state.js?v=20260608-gallery-batches';
 import {
   buildShareUrl,
