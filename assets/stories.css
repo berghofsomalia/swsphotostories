@@ -2579,7 +2579,7 @@ button.chip.cluster-tone-district:hover,
   }
 
   .site-shell.is-gallery-only.is-filter-split .gallery-grid {
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15.75rem), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15.75rem), 1fr));
     gap: 1rem;
     justify-content: stretch;
   }
@@ -3210,7 +3210,7 @@ html[data-theme="light"] .story-stage-image.adaptive-image {
 /* Fluid gallery columns: use the largest number of columns that fits, then stretch them to fill the row. */
 @media (min-width: 901px) {
   .site-shell.is-gallery-only.is-filter-split .gallery-grid {
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15.75rem), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15.75rem), 1fr));
     justify-content: stretch;
   }
 }
